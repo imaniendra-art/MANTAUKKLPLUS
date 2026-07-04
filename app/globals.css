@@ -1,0 +1,112 @@
+@import "tailwindcss";
+
+/* Tailwind v4 Dark Mode Class Strategy */
+@variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* Brand Theme Customization based on user palette */
+  --color-indigo-950: #1a103c;
+  --color-indigo-900: #291c53;
+  --color-indigo-800: #3d2b77; /* Deep Purple from palette */
+  --color-indigo-700: #4e3a89;
+  --color-indigo-600: #60559a; /* Muted Purple from palette */
+  --color-indigo-500: #7b70ae;
+  --color-indigo-400: #978ec1;
+  --color-indigo-300: #b5aed4;
+  --color-indigo-200: #d4d0e6;
+  --color-indigo-100: #eceaf3;
+  --color-indigo-50:  #f6f5f9;
+
+  --color-amber-300: #fbf3a3; /* Pale Yellow from palette */
+  --color-amber-200: #fcf6c2;
+  --color-amber-100: #fdfae1;
+  --color-amber-50:  #fefdf0;
+  
+  --color-orange-400: #f8c78c; /* Peach from palette */
+  --color-orange-300: #facf9c;
+  --color-orange-200: #fce1c2;
+  --color-orange-100: #fef0e1;
+  --color-orange-50:  #fff8f0;
+}
+
+:root {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+}
+
+html {
+  font-size: 65%;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  antialiased: true;
+}
+
+.dark {
+  --background: #0f172a;
+  --foreground: #f8fafc;
+}
+
+
+
+/* ═══════════════════════ ANIMATIONS ═══════════════════════ */
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* ═══════════════════════ TOAST ANIMATION ═══════════════════════ */
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(-12px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.animate-toast {
+  animation: toastIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media print {
+  aside, header, nav, .no-print, button {
+    display: none !important;
+  }
+  body, html, #__next, div.min-h-screen, div.flex-1 {
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+    position: static !important;
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    color: black !important;
+  }
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+  }
+  .print-white {
+    background: white !important;
+    color: black !important;
+  }
+}
