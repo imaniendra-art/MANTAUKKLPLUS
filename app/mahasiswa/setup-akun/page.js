@@ -169,11 +169,15 @@ function SetupAkunContent() {
                     className="w-full px-4 py-3 border border-white/60 dark:border-slate-700 rounded-xl bg-white/20 dark:bg-slate-900/20 focus:ring-2 focus:ring-[#1398A5] focus:border-[#1398A5] text-slate-900 dark:text-white appearance-none disabled:opacity-75 disabled:bg-slate-100"
                   >
                     <option value="" disabled>-- Pilih Kelompok Anda --</option>
-                    {availablePokjas.map(p => (
-                      <option key={p._id} value={p._id}>
-                        {p.nama_pokja} (Ketua: {p.ketua_nama}) - {p.jumlah_anggota} Anggota
-                      </option>
-                    ))}
+                    {availablePokjas.map(p => {
+                      const totalMembers = p.jumlah_anggota + 1; // 1 for Ketua
+                      const isFull = p.jumlah_anggota >= 4;
+                      return (
+                        <option key={p._id} value={p._id} disabled={isFull && p._id !== inviteId}>
+                          {p.nama_pokja} (Ketua: {p.ketua_nama}) - {isFull ? 'Penuh (5/5)' : `${totalMembers}/5 Orang`}
+                        </option>
+                      );
+                    })}
                   </select>
                 ) : (
                   <div className="p-4 bg-amber-50 text-amber-700 border border-amber-200 rounded-xl text-sm">

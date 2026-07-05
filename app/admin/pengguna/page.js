@@ -309,7 +309,6 @@ export default function ManajemenPenggunaPage() {
   const tabs = [
     { id: "mahasiswa", label: "Data Mahasiswa" },
     { id: "dpl", label: "Data DPL" },
-    { id: "mentor", label: "Data Mentor" },
   ];
 
   return (
@@ -415,7 +414,7 @@ export default function ManajemenPenggunaPage() {
                         >
                           {activeTab === 'mahasiswa' ? 'NIM' : 'ID'} {getSortIcon('nim_nidn')}
                         </th>
-                        {activeTab !== 'mahasiswa' && activeTab !== 'mentor' && (
+                        {activeTab === 'dpl' && (
                           <th 
                             scope="col" 
                             onClick={() => requestSort('nidn')}
@@ -433,10 +432,10 @@ export default function ManajemenPenggunaPage() {
                         </th>
                         <th 
                           scope="col" 
-                          onClick={() => requestSort(activeTab === 'mentor' ? 'lokasi' : 'program_studi')}
+                          onClick={() => requestSort(activeTab === 'mahasiswa' ? 'program_studi' : 'email')}
                           className="px-6 py-4 text-left text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                         >
-                          {activeTab === 'mentor' ? 'Instansi / Lokasi' : 'Prodi'} {getSortIcon(activeTab === 'mentor' ? 'lokasi' : 'program_studi')}
+                          {activeTab === 'mahasiswa' ? 'Prodi' : 'Email'} {getSortIcon(activeTab === 'mahasiswa' ? 'program_studi' : 'email')}
                         </th>
                         {activeTab === 'mahasiswa' && (
                           <th 
@@ -449,18 +448,20 @@ export default function ManajemenPenggunaPage() {
                         )}
                         <th 
                           scope="col" 
-                          onClick={() => requestSort(activeTab === 'mentor' ? 'devisi' : 'kegiatan')}
+                          onClick={() => requestSort('kegiatan')}
                           className="px-6 py-4 text-left text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                         >
-                          {activeTab === 'mentor' ? 'Posisi / Devisi' : 'Jabatan'} {getSortIcon(activeTab === 'mentor' ? 'devisi' : 'kegiatan')}
+                          {activeTab === 'dpl' ? 'Nomor HP' : 'Jabatan'} {getSortIcon('kegiatan')}
                         </th>
-                        <th 
-                          scope="col" 
-                          onClick={() => requestSort('nomor_hp')}
-                          className="px-6 py-4 text-left text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                        >
-                          Nomor HP {getSortIcon('nomor_hp')}
-                        </th>
+                        {activeTab === 'mahasiswa' && (
+                          <th 
+                            scope="col" 
+                            onClick={() => requestSort('nomor_hp')}
+                            className="px-6 py-4 text-left text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                          >
+                            Nomor HP {getSortIcon('nomor_hp')}
+                          </th>
+                        )}
                         <th 
                           scope="col" 
                           onClick={() => requestSort('isFirstLogin')}
@@ -476,20 +477,22 @@ export default function ManajemenPenggunaPage() {
                         <tr key={user._id} className="hover:bg-white/50 dark:hover:bg-slate-700/60 transition-colors">
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-500">{startIndex + idx + 1}</td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">{user.nim_nidn}</td>
-                          {activeTab !== 'mahasiswa' && activeTab !== 'mentor' && (
+                          {activeTab === 'dpl' && (
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">{user.nidn || '-'}</td>
                           )}
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-slate-900 dark:text-white">{user.nama_lengkap}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">{activeTab === 'mentor' ? (user.lokasi || '-') : (user.program_studi || '-')}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">{activeTab === 'dpl' ? (user.email || '-') : (user.program_studi || '-')}</td>
                           {activeTab === 'mahasiswa' && (
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">{user.konsentrasi || '-'}</td>
                           )}
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
-                            {activeTab === 'mentor' ? (user.devisi || '-') : (user.kegiatan || '-')}
+                            {activeTab === 'dpl' ? (user.nomor_hp || '-') : (user.kegiatan || '-')}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
-                            {user.nomor_hp || '-'}
-                          </td>
+                          {activeTab === 'mahasiswa' && (
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
+                              {user.nomor_hp || '-'}
+                            </td>
+                          )}
                           <td className="px-6 py-4 whitespace-nowrap text-sm">
                             {user.isFirstLogin !== false ? (
                               <span className="px-2.5 py-1 bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400 rounded-full text-[10px] font-bold uppercase tracking-wider border border-amber-200 dark:border-amber-800 whitespace-nowrap">Aktif (Belum Ganti PW)</span>
@@ -666,9 +669,9 @@ export default function ManajemenPenggunaPage() {
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/60 dark:border-slate-700 w-full max-w-lg overflow-hidden relative scale-in-95 duration-200">
             <div className="p-8 border-b border-white/60 dark:border-slate-700">
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-                Tambah {activeTab === 'dpl' ? 'DPL' : 'Mentor'}
-              </h2>
+              <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100">
+                Tambah DPL
+              </h3>
             </div>
             
             <form onSubmit={handleAddSubmit} className="p-8 bg-white/20 dark:bg-slate-900/20/50 space-y-5">
@@ -685,20 +688,17 @@ export default function ManajemenPenggunaPage() {
                   placeholder="Contoh: riswan"
                 />
               </div>
-              {activeTab !== 'mahasiswa' && activeTab !== 'mentor' && (
-                <div>
-                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
-                    NIDN
-                  </label>
-                  <input 
-                    type="text" 
+              <div className="mb-4">
+                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">NIDN</label>
+                  <input
+                    type="text"
+                    required
                     value={addForm.nidn}
-                    onChange={(e) => setAddForm({...addForm, nidn: e.target.value})}
+                    onChange={(e) => setAddForm({ ...addForm, nidn: e.target.value, nim_nidn: e.target.value })}
                     className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1398A5]"
-                    placeholder="Contoh: 09123456"
+                    placeholder="Masukkan NIDN"
                   />
-                </div>
-              )}
+              </div>
               <div>
                 <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
                   Nama Lengkap

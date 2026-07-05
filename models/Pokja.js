@@ -22,6 +22,12 @@ const PokjaSchema = new mongoose.Schema({
   tanggal_mulai: { type: Date, required: false },
   tanggal_selesai: { type: Date, required: false },
   is_laporan_unlocked: { type: Boolean, default: false },
+  
+  // Dokumen Kelompok (Brankas Dokumen)
+  file_surat_pengantar: { type: String, default: '' },
+  file_surat_balasan: { type: String, default: '' }, // LOA
+  file_surat_tugas: { type: String, default: '' },
+  file_surat_selesai: { type: String, default: '' },
 }, { timestamps: true });
 
 export default mongoose.models.Pokja || mongoose.model('Pokja', PokjaSchema);

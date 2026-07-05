@@ -32,7 +32,7 @@ export async function GET(req) {
           namaPokja = pokja.nama_pokja || '-';
         } else {
           // Cari sebagai anggota
-          pokja = await Pokja.findOne({ "anggota.mhs_id": mhs._id, "anggota.status_undangan": "bergabung" }).lean();
+          pokja = await Pokja.findOne({ "anggota.user_id": mhs._id, "anggota.status_undangan": "bergabung" }).lean();
           if (pokja) {
             jabatan = 'Anggota';
             namaPokja = pokja.nama_pokja || '-';

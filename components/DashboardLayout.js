@@ -118,7 +118,7 @@ const MENU_CONFIG = {
     subtitle: "Kelola master data, monitoring seluruh aktivitas KKL Plus, dan pantau DPL serta Mahasiswa.",
     menus: [
       { name: "Manajemen Pengguna", href: "/admin/pengguna", icon: <Users className="w-6 h-6" />, desc: "Kelola akun Mahasiswa, DPL, dan Mentor.", color: "from-[#1398A5] to-teal-700" },
-      { name: "Master Data", href: "/admin/master-data", icon: <Database className="w-6 h-6" />, desc: "Kelola Instansi Mitra, Posisi, dan Matkul.", color: "from-indigo-500 to-indigo-600" },
+      { name: "Master Data", href: "/admin/master-data", icon: <Database className="w-6 h-6" />, desc: "Kelola Instansi Mitra dan Posisi.", color: "from-indigo-500 to-indigo-600" },
       { name: "Validasi dan Data Pengajuan", href: "/admin/validasi", icon: <ClipboardCheck className="w-6 h-6" />, desc: "Persetujuan KKL Plus & plotting DPL.", color: "from-emerald-500 to-emerald-600" },
       { name: "Monitoring KKL Plus", href: "/admin/monitoring", icon: <Monitor className="w-6 h-6" />, desc: "Pantau logbook dan kendala lapangan.", color: "from-amber-500 to-amber-600" },
       { name: "Rekapitulasi Nilai", href: "/admin/rekapitulasi", icon: <Award className="w-6 h-6" />, desc: "Hasil akhir dan konversi SKS.", color: "from-purple-500 to-purple-600" },

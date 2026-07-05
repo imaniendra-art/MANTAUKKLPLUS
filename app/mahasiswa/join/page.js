@@ -68,7 +68,6 @@ function JoinPokjaContent() {
     setError('');
     
     try {
-      // Add user to Pokja (this will create an invite or direct join depending on our API)
       const res = await fetch('/api/pokja', {
         method: 'PATCH',
         headers: {
@@ -77,7 +76,7 @@ function JoinPokjaContent() {
         body: JSON.stringify({
           id: inviteId,
           mhs_id: session.user.id,
-          action: 'invite'
+          action: 'join_by_link'
         })
       });
       
@@ -85,18 +84,6 @@ function JoinPokjaContent() {
         const errData = await res.json();
         throw new Error(errData.error || 'Gagal bergabung ke kelompok.');
       }
-      
-      // Because 'invite' might just set status to 'menunggu', let's also auto-accept it
-      await fetch('/api/pokja', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: inviteId,
-          mhs_id: session.user.id,
-          action: 'respond_invite',
-          status_undangan: 'bergabung'
-        })
-      });
       
       setSuccess('Berhasil bergabung ke kelompok!');
       setTimeout(() => {

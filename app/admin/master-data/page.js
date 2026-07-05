@@ -4,17 +4,19 @@ import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import DashboardLayout from "@/components/DashboardLayout";
 import * as XLSX from "xlsx";
-import { Check } from "lucide-react";
+import { Check, Edit2, Trash2, FileText, CheckCircle, XCircle } from "lucide-react";
 
 export default function MasterData() {
   const [mounted, setMounted] = useState(false);
-  const [activeTab, setActiveTab] = useState("mitra"); // 'mitra' | 'kurikulum'
   const [expandedMatkulId, setExpandedMatkulId] = useState(null);
   
   // Data State
   const [mitras, setMitras] = useState([]);
   const [pakets, setPakets] = useState([]);
+  const [mentors, setMentors] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("mitra");
+
   
   // Modals State
   const [showMitraModal, setShowMitraModal] = useState(false);
@@ -36,7 +38,7 @@ export default function MasterData() {
   const [toastMessage, setToastMessage] = useState("");
 
   // Form State
-  const [mitraForm, setMitraForm] = useState({ id: null, nama_instansi: "", jenis_skema: "Corporate", alamat: "", deskripsi_mitra: "" });
+  const [mitraForm, setMitraForm] = useState({ id: null, nama_instansi: "", kategori: "Pemerintahan & Desa (Sektor Publik)", deskripsi_singkat: "" });
   
   // Posisi State
   const [showKelolaPosisiModal, setShowKelolaPosisiModal] = useState(false);
@@ -58,21 +60,77 @@ export default function MasterData() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [mitraRes, paketRes] = await Promise.all([
+      const [mitraRes, paketRes, mentorRes] = await Promise.all([
         fetch('/api/mitra'),
-        fetch('/api/paket-matkul')
+        fetch('/api/paket-matkul'),
+        fetch('/api/admin/pengguna?role=mentor')
       ]);
       const mitraData = await mitraRes.json();
       const paketData = await paketRes.json();
+      const mentorData = await mentorRes.json();
       
       if (Array.isArray(mitraData)) setMitras(mitraData);
       if (Array.isArray(paketData)) setPakets(paketData);
+      if (Array.isArray(mentorData)) setMentors(mentorData);
     } catch (error) {
       console.error("Gagal mengambil data", error);
     } finally {
       setLoading(false);
     }
   };
+
+  // Mentor State & Handlers
+  const [showAddMentorModal, setShowAddMentorModal] = useState(false);
+  const [showEditMentorModal, setShowEditMentorModal] = useState(false);
+  const [mentorForm, setMentorForm] = useState({ id: null, nidn: "", nama_lengkap: "", nomor_hp: "", email: "", lokasi: "", devisi: "" });
+  const [currentPageMentor, setCurrentPageMentor] = useState(1);
+  const mentorsPerPage = 8;
+  const indexOfLastMentor = currentPageMentor * mentorsPerPage;
+  const indexOfFirstMentor = indexOfLastMentor - mentorsPerPage;
+  const currentMentors = mentors.slice(indexOfFirstMentor, indexOfLastMentor);
+  const totalPagesMentor = Math.ceil(mentors.length / mentorsPerPage);
+
+  const handleMentorSubmit = async (e, isEdit) => {
+    e.preventDefault();
+    try {
+      const res = await fetch('/api/admin/pengguna', {
+        method: isEdit ? 'PATCH' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...mentorForm, role: 'mentor', nim_nidn: mentorForm.nidn })
+      });
+      if (res.ok) {
+        if(isEdit) setShowEditMentorModal(false);
+        else setShowAddMentorModal(false);
+        setMentorForm({ id: null, nidn: "", nama_lengkap: "", nomor_hp: "", email: "", lokasi: "", devisi: "" });
+        setToastMessage(isEdit ? "Mentor diperbarui!" : "Mentor ditambahkan!");
+        setTimeout(() => setToastMessage(""), 3000);
+        fetchData();
+      } else {
+        const data = await res.json();
+        setToastMessage(data.error || "Gagal menyimpan mentor");
+        setTimeout(() => setToastMessage(""), 3000);
+      }
+    } catch (error) { 
+        setToastMessage("Terjadi kesalahan sistem"); 
+        setTimeout(() => setToastMessage(""), 3000);
+    }
+  };
+
+  const handleDeleteMentor = async (id) => {
+    if (!window.confirm("Hapus mentor ini?")) return;
+    try {
+      const res = await fetch(`/api/admin/pengguna?id=${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        setToastMessage("Mentor berhasil dihapus!");
+        setTimeout(() => setToastMessage(""), 3000);
+        fetchData();
+      }
+    } catch (error) { 
+        setToastMessage("Terjadi kesalahan sistem"); 
+        setTimeout(() => setToastMessage(""), 3000);
+    }
+  };
+
 
   const handleGenerateAI = async (paketId, matkulId, cpmkId) => {
     setGeneratingAIId(cpmkId);
@@ -151,9 +209,8 @@ export default function MasterData() {
       const method = mitraForm.id ? 'PATCH' : 'POST';
       const body = {
         nama_instansi: mitraForm.nama_instansi,
-        jenis_skema: mitraForm.jenis_skema.toLowerCase(),
-        alamat: mitraForm.alamat,
-        deskripsi_mitra: mitraForm.deskripsi_mitra
+        kategori: mitraForm.kategori,
+        deskripsi_singkat: mitraForm.deskripsi_singkat
       };
       if (mitraForm.id) body.id = mitraForm.id;
 
@@ -164,7 +221,7 @@ export default function MasterData() {
       });
       if (res.ok) {
         setShowMitraModal(false);
-        setMitraForm({ id: null, nama_instansi: "", jenis_skema: "Corporate", alamat: "", deskripsi_mitra: "" });
+        setMitraForm({ id: null, nama_instansi: "", kategori: "Pemerintahan & Desa (Sektor Publik)", deskripsi_singkat: "" });
         showToast(mitraForm.id ? "Data Mitra berhasil diperbarui!" : "Data Mitra berhasil disimpan!");
         fetchData();
       }
@@ -610,9 +667,8 @@ export default function MasterData() {
     setMounted(true);
   }, []);
 
-  // ... (inside return statement)
   return (
-    <DashboardLayout title="Master Data & OBE">
+    <DashboardLayout title="Master Data Mitra">
       
       {/* Toast Notification (Portaled) */}
       {mounted && toastMessage && createPortal(
@@ -622,44 +678,28 @@ export default function MasterData() {
         document.body
       )}
 
-      {/* Tabs Navigation */}
-      <div className="flex space-x-1 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl border-white/60 dark:border-slate-700 shadow-sm p-1.5 rounded-xl w-max mb-8 border border-white/60 dark:border-slate-700">
-        <button 
-          onClick={() => setActiveTab("mitra")}
-          className={`px-6 py-2.5 text-sm font-bold rounded-lg transition-all ${
-            activeTab === "mitra" 
-            ? "bg-[#1398A5] text-amber-300 shadow-sm" 
-            : "text-slate-500 dark:text-slate-400 hover:text-white"
-          }`}
-        >
-          Mitra Tempat KKL Plus
-        </button>
-        <button 
-          onClick={() => setActiveTab("kurikulum")}
-          className={`px-6 py-2.5 text-sm font-bold rounded-lg transition-all ${
-            activeTab === "kurikulum" 
-            ? "bg-[#1398A5] text-amber-300 shadow-sm" 
-            : "text-slate-500 dark:text-slate-400 hover:text-white"
-          }`}
-        >
-          Kurikulum Konversi OBE
-        </button>
-      </div>
-
       {loading ? (
         <div className="text-center py-20 text-slate-500 dark:text-slate-400 font-bold animate-pulse">Memuat data dari database...</div>
       ) : (
         <>
-          {/* Tab 1: Mitra Tempat KKL Plus */}
+          <div className="flex space-x-1 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl shadow-sm p-1.5 rounded-xl w-max mb-6 border border-white/60 dark:border-slate-700">
+            <button onClick={() => setActiveTab("mitra")} className={`px-6 py-2.5 text-sm font-bold rounded-lg transition-all ${activeTab === "mitra" ? "bg-[#1398A5] text-amber-300 shadow-sm" : "text-slate-500 hover:text-[#1398A5] dark:text-slate-400 dark:hover:text-teal-400"}`}>Daftar Instansi</button>
+            <button onClick={() => setActiveTab("mentor")} className={`px-6 py-2.5 text-sm font-bold rounded-lg transition-all ${activeTab === "mentor" ? "bg-[#1398A5] text-amber-300 shadow-sm" : "text-slate-500 hover:text-[#1398A5] dark:text-slate-400 dark:hover:text-teal-400"}`}>Data Mentor</button>
+          </div>
+
+          <div className="space-y-6">
           {activeTab === "mitra" && (
-            <div className="space-y-6">
+            <>
               <div className="flex justify-between items-center bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-6 rounded-2xl border border-white/60 dark:border-slate-700 shadow-sm">
                 <div>
                   <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">Daftar Instansi / Mitra KKL Plus</h2>
                   <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Kelola perusahaan tempat mahasiswa melakukan kegiatan KKL Plus.</p>
                 </div>
                 <button 
-                  onClick={() => setShowMitraModal(true)}
+                  onClick={() => {
+                    setMitraForm({ id: null, nama_instansi: "", kategori: "Pemerintahan & Desa (Sektor Publik)", deskripsi_singkat: "" });
+                    setShowMitraModal(true);
+                  }}
                   className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl transition-all shadow-md shadow-indigo-200/50"
                 >
                   + Tambah Mitra Baru
@@ -672,9 +712,11 @@ export default function MasterData() {
                     <tr className="bg-slate-50 dark:bg-slate-800/80 border-b border-white/60 dark:border-slate-700 text-slate-500 dark:text-slate-400 text-sm font-bold">
                       <th className="py-4 px-6 w-16 text-center">No</th>
                       <th className="py-4 px-6">Nama Instansi</th>
-                      <th className="py-4 px-6">Jumlah Tersedia</th>
-                      <th className="py-4 px-6">Divisi / Posisi</th>
-                      <th className="py-4 px-6 text-right">Aksi</th>
+                      <th className="py-4 px-6 text-center">Kuota Penerimaan</th>
+                      <th className="py-4 px-6">Alamat</th>
+                      <th className="py-4 px-6">Kontak</th>
+                      <th className="py-4 px-6 text-center">Dokumen</th>
+                      <th className="py-4 px-6 text-center w-24">Aksi</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
@@ -686,33 +728,51 @@ export default function MasterData() {
                           <td className="py-4 px-6 text-center text-slate-500 dark:text-slate-400 font-medium">{indexOfFirstMitra + index + 1}</td>
                           <td className="py-4 px-6">
                             <div className="font-semibold text-slate-800 dark:text-slate-100">{mitra.nama_instansi}</div>
-                            <span className={`inline-block mt-1 px-2.5 py-0.5 rounded-md text-[10px] font-bold capitalize ${mitra.jenis_skema === 'corporate' ? 'bg-teal-50 text-[#1398A5]' : mitra.jenis_skema === 'wirausaha' ? 'bg-orange-50 text-orange-600' : 'bg-green-50 text-green-600'}`}>
-                              {mitra.kategori || mitra.jenis_skema}
+                            <span className={`inline-block mt-1 px-2.5 py-0.5 rounded-md text-[10px] font-bold ${mitra.kategori?.includes('Sektor Publik') ? 'bg-teal-50 text-[#1398A5]' : mitra.kategori?.includes('Ekonomi Kerakyatan') ? 'bg-orange-50 text-orange-600' : mitra.kategori?.includes('Privat') ? 'bg-indigo-50 text-indigo-600' : 'bg-slate-100 text-slate-600'}`}>
+                              {mitra.kategori}
                             </span>
                           </td>
-                          <td className="py-4 px-6">
+                          <td className="py-4 px-6 text-center">
                             <span className="font-bold text-slate-700 dark:text-slate-300">
-                              {(mitra.posisi_list || []).reduce((acc, pos) => acc + (pos.kuota || 0), 0)} Slot
+                              {mitra.kuota_maksimal || 0} Orang
                             </span>
                           </td>
+                          <td className="py-4 px-6 max-w-[200px] truncate">
+                            {mitra.alamat_lengkap ? (
+                              <div className="text-sm text-slate-600 dark:text-slate-300" title={`${mitra.alamat_lengkap}, ${mitra.kecamatan}, ${mitra.kabupaten_kota}`}>
+                                {mitra.alamat_lengkap}, {mitra.kecamatan}, {mitra.kabupaten_kota}
+                              </div>
+                            ) : (
+                              <span className="text-xs text-slate-400 italic">Belum diisi</span>
+                            )}
+                          </td>
                           <td className="py-4 px-6">
-                            <div className="flex flex-wrap gap-1.5">
-                              {(mitra.posisi_list || []).length === 0 ? (
-                                <span className="text-xs text-slate-400 italic">Belum ada posisi</span>
+                            {mitra.nama_pimpinan ? (
+                              <div className="text-sm text-slate-600 dark:text-slate-300">
+                                {mitra.nama_pimpinan} <br/>
+                                <span className="text-xs text-slate-500">{mitra.kontak_mitra}</span>
+                              </div>
+                            ) : (
+                              <span className="text-xs text-slate-400 italic">Belum diisi</span>
+                            )}
+                          </td>
+                          <td className="py-4 px-6 text-center">
+                            <div className="flex justify-center" title={`Status: ${mitra.status_kerjasama || 'Belum Ada'}`}>
+                              {mitra.status_kerjasama && mitra.status_kerjasama !== 'Belum Ada' && mitra.status_kerjasama !== 'Proses Penjajakan (Siap MoU)' ? (
+                                <FileText className="w-5 h-5 text-emerald-500" />
                               ) : (
-                                (mitra.posisi_list || []).map(pos => (
-                                  <span key={pos._id} className="px-2 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-[10px] rounded-md font-semibold border border-slate-200 dark:border-slate-600">
-                                    {pos.nama_posisi}
-                                  </span>
-                                ))
+                                <XCircle className="w-5 h-5 text-slate-300" />
                               )}
                             </div>
                           </td>
-                          <td className="py-4 px-6 text-right">
-                            <div className="flex justify-end gap-2">
-                              <button onClick={() => { setMitraForm({ id: mitra._id, nama_instansi: mitra.nama_instansi, jenis_skema: mitra.jenis_skema === 'wirausaha' ? 'Wirausaha' : mitra.jenis_skema === 'Pemerintahan' ? 'Pemerintahan' : 'Corporate', alamat: mitra.alamat, deskripsi_mitra: mitra.deskripsi_mitra || "" }); setShowMitraModal(true); }} className="px-3 py-1.5 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">Edit</button>
-                              <button onClick={() => handleDeleteMitra(mitra._id)} className="px-3 py-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors">Hapus</button>
-                              <button onClick={() => handleOpenKelolaPosisi(mitra)} className="px-3 py-1.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition-colors">Kelola Posisi</button>
+                          <td className="py-4 px-6">
+                            <div className="flex justify-center gap-3">
+                              <button onClick={() => { setMitraForm({ id: mitra._id, nama_instansi: mitra.nama_instansi, kategori: mitra.kategori || "Pemerintahan & Desa (Sektor Publik)", deskripsi_singkat: mitra.deskripsi_singkat || "" }); setShowMitraModal(true); }} className="text-slate-400 hover:text-indigo-600 transition-colors" title="Edit Mitra">
+                                <Edit2 className="w-4 h-4" />
+                              </button>
+                              <button onClick={() => handleDeleteMitra(mitra._id)} className="text-slate-400 hover:text-red-600 transition-colors" title="Hapus Mitra">
+                                <Trash2 className="w-4 h-4" />
+                              </button>
                             </div>
                           </td>
                         </tr>
@@ -755,47 +815,19 @@ export default function MasterData() {
                   </div>
                 </div>
               )}
-            </div>
+            </>
           )}
 
-          {/* Tab 2: Kurikulum Konversi OBE */}
-          {activeTab === "kurikulum" && (
-            <div className="space-y-6">
+          {activeTab === "mentor" && (
+            <>
               <div className="flex justify-between items-center bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-6 rounded-2xl border border-white/60 dark:border-slate-700 shadow-sm">
                 <div>
-                  <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">Master Data Capaian Pembelajaran</h2>
-                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Kelola indikator penilaian logbook mahasiswa untuk konversi SKS Mata Kuliah.</p>
+                  <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">Data Mentor (Mitra Pendamping)</h2>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Kelola kontak mentor atau pendamping dari instansi KKL Plus.</p>
                 </div>
-                <div className="flex gap-3">
-                  <input type="file" id="import-excel" accept=".xlsx, .xls" className="hidden" onChange={handleImportExcel} />
-                  <label 
-                    htmlFor="import-excel"
-                    className="px-5 py-2.5 bg-sky-600 hover:bg-sky-700 text-white font-bold text-sm rounded-xl transition-all shadow-md shadow-sky-200/50 flex items-center gap-2 cursor-pointer"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
-                    Import Excel
-                  </label>
-                  <button 
-                    onClick={handleDownloadTemplate}
-                    className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-sm rounded-xl transition-all border border-slate-300 flex items-center gap-2"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                    Template
-                  </button>
-                  <button 
-                    onClick={handleExportExcel}
-                    className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl transition-all shadow-md shadow-emerald-200/50 flex items-center gap-2"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                    Export
-                  </button>
-                  <button 
-                    onClick={() => setShowAddMatkulModal(true)}
-                    className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl transition-all shadow-md shadow-indigo-200/50"
-                  >
-                    + Matakuliah
-                  </button>
-                </div>
+                <button onClick={() => { setMentorForm({ id: null, nidn: "", nama_lengkap: "", nomor_hp: "", email: "", lokasi: "", devisi: "" }); setShowAddMentorModal(true); }} className="px-5 py-2.5 bg-[#1398A5] hover:bg-teal-700 text-white font-bold text-sm rounded-xl transition-all shadow-md">
+                  + Tambah Mentor
+                </button>
               </div>
 
               <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-2xl border border-white/60 dark:border-slate-700 shadow-sm overflow-hidden">
@@ -803,166 +835,74 @@ export default function MasterData() {
                   <thead>
                     <tr className="bg-slate-50 dark:bg-slate-800/80 border-b border-white/60 dark:border-slate-700 text-slate-500 dark:text-slate-400 text-sm font-bold">
                       <th className="py-4 px-6 w-16 text-center">No</th>
-                      <th className="py-4 px-6">Mata Kuliah</th>
-                      <th className="py-4 px-6 w-24 text-center">SKS</th>
-                      <th className="py-4 px-6 w-32 text-center">Jml CPMK</th>
+                      <th className="py-4 px-6">Nama & Kontak</th>
+                      <th className="py-4 px-6">Instansi / Lokasi</th>
+                      <th className="py-4 px-6">Posisi / Devisi</th>
                       <th className="py-4 px-6 text-right">Aksi</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
-                    {allMatkuls.length === 0 ? (
-                      <tr><td colSpan="5" className="py-8 text-center text-slate-500 dark:text-slate-400">Belum ada data mata kuliah.</td></tr>
+                    {currentMentors.length === 0 ? (
+                      <tr><td colSpan="5" className="py-8 text-center text-slate-500 dark:text-slate-400">Belum ada data mentor.</td></tr>
                     ) : (
-                      allMatkuls.map((mk, index) => (
-                        <React.Fragment key={mk.matkulId}>
-                          <tr 
-                            onClick={() => setExpandedMatkulId(expandedMatkulId === mk.matkulId ? null : mk.matkulId)}
-                            className="hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors cursor-pointer group"
-                          >
-                            <td className="py-4 px-6 text-center text-slate-500 dark:text-slate-400 font-medium">
-                              {index + 1}
-                            </td>
-                            <td className="py-4 px-6">
-                              <div className="flex items-center gap-2">
-                                <span className="font-bold text-slate-800 dark:text-slate-100">{mk.nama}</span>
-                                <span className="text-[10px] font-bold bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-600">{mk.kode}</span>
-                              </div>
-                            </td>
-                            <td className="py-4 px-6 text-center font-bold text-indigo-600 dark:text-indigo-400">
-                              {mk.sks} SKS
-                            </td>
-                            <td className="py-4 px-6 text-center">
-                              <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-bold">
-                                {mk.cpmk ? mk.cpmk.length : 0}
-                              </span>
-                            </td>
-                            <td className="py-4 px-6 text-right" onClick={(e) => e.stopPropagation()}>
-                              <div className="flex justify-end items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button 
-                                  onClick={() => { 
-                                    setSelectedMatkul({ paketId: mk.paketId, matkulId: mk.matkulId, nama: mk.nama }); 
-                                    setMatkulForm({ 
-                                      kode: mk.kode || "", 
-                                      nama: mk.nama, 
-                                      sks: mk.sks,
-                                      cpmk: mk.cpmk ? JSON.parse(JSON.stringify(mk.cpmk)) : []
-                                    }); 
-                                    setShowEditMatkulModal(true); 
-                                  }}
-                                  className="px-3 py-1.5 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 dark:text-slate-300 rounded-lg transition-colors"
-                                >
-                                  Edit Matkul
-                                </button>
-                                <button 
-                                  onClick={() => handleDeleteMatkul(mk.paketId, mk.matkulId)}
-                                  className="px-3 py-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 rounded-lg transition-colors"
-                                >
-                                  Hapus
-                                </button>
-                                <button 
-                                  onClick={() => { setSelectedMatkul({ paketId: mk.paketId, matkulId: mk.matkulId, nama: mk.nama }); setShowAddCpmkModal(true); }}
-                                  className="px-3 py-1.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition-colors"
-                                >
-                                  + CPMK
-                                </button>
-                                <button className="px-2 text-slate-400">
-                                  <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 transition-transform ${expandedMatkulId === mk.matkulId ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                          
-                          {/* Accordion Content for CPMK */}
-                          {expandedMatkulId === mk.matkulId && (
-                            <tr className="bg-slate-50/50 dark:bg-slate-800/30 border-t-0">
-                              <td colSpan="5" className="p-0">
-                                <div className="p-6 border-b border-white/60 dark:border-slate-700 animate-in slide-in-from-top-2 fade-in duration-200">
-                                  <div className="flex justify-between items-center mb-4">
-                                    <h4 className="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider">
-                                      Daftar CPMK & Indikator Harian
-                                    </h4>
-                                  </div>
-                                  
-                                  {!mk.cpmk || mk.cpmk.length === 0 ? (
-                                    <div className="p-8 text-center border-2 border-dashed border-white/50 dark:border-slate-600 rounded-2xl">
-                                      <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Belum ada CPMK untuk mata kuliah ini.</p>
-                                    </div>
-                                  ) : (
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                                      {mk.cpmk.map((c, i) => (
-                                        <div key={c._id || i} className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-4 rounded-xl border border-slate-200 dark:border-slate-600 shadow-sm flex flex-col h-full hover:border-indigo-300 dark:hover:border-indigo-500 transition-colors group/card">
-                                          <div className="flex items-start gap-2 mb-3">
-                                            <div className="w-6 h-6 rounded bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
-                                              C{i+1}
-                                            </div>
-                                            <div className="flex-1">
-                                              <p className="text-sm text-slate-800 dark:text-slate-100 font-bold leading-snug transition-all">{c.nama_cpmk}</p>
-                                            </div>
-                                          </div>
-                                          
-                                          <div className="flex-1 pr-1 mb-3 space-y-2">
-                                            {!c.indikator || c.indikator.length === 0 ? (
-                                              <p className="text-xs text-slate-400 dark:text-slate-500 italic">Belum ada indikator.</p>
-                                            ) : (
-                                              c.indikator.map((ind, j) => (
-                                                <div key={j} className="flex justify-between items-start border-l-2 border-indigo-200 dark:border-indigo-800 pl-2 group/ind">
-                                                  <div className="flex items-start gap-1.5">
-                                                    <div className="w-1 h-1 rounded-full bg-indigo-400 dark:bg-indigo-500 mt-1.5 shrink-0" />
-                                                    <p className="text-[11px] text-slate-600 dark:text-slate-300 font-medium leading-relaxed">{ind}</p>
-                                                  </div>
-                                                  <button 
-                                                    onClick={(e) => { e.stopPropagation(); handleDeleteIndikator(mk.paketId, mk.matkulId, c._id, j); }}
-                                                    className="opacity-0 group-hover/ind:opacity-100 text-slate-300 hover:text-red-500 transition-opacity p-0.5"
-                                                    title="Hapus Indikator"
-                                                  >
-                                                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-                                                  </button>
-                                                </div>
-                                              ))
-                                            )}
-                                          </div>
-
-                                          <div className="pt-3 border-t border-slate-100 dark:border-slate-700 mt-auto flex flex-col gap-2">
-                                            <div className="flex justify-between gap-1">
-                                              <button 
-                                                onClick={(e) => { e.stopPropagation(); handleDeleteCpmk(mk.paketId, mk.matkulId, c._id); }}
-                                                className="px-2 py-1 text-[10px] font-bold text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
-                                              >
-                                                Hapus
-                                              </button>
-                                              <div className="flex gap-1">
-                                                <button 
-                                                  onClick={(e) => { e.stopPropagation(); handleGenerateAI(mk.paketId, mk.matkulId, c._id); }}
-                                                  disabled={generatingAIId === c._id}
-                                                  className="px-2 py-1 bg-amber-100 hover:bg-amber-200 text-amber-700 text-[10px] font-bold rounded transition-colors disabled:opacity-50"
-                                                >
-                                                  {generatingAIId === c._id ? "⏳..." : "✨ Saran AI"}
-                                                </button>
-                                                <button 
-                                                  onClick={(e) => { e.stopPropagation(); setSelectedCPMK({ paketId: mk.paketId, matkulId: mk.matkulId, cpmkId: c._id, nama_cpmk: c.nama_cpmk }); setShowAddIndikatorModal(true); }}
-                                                  className="px-2 py-1 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-900/40 dark:hover:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400 text-[10px] font-bold rounded transition-colors"
-                                                >
-                                                  + Indikator
-                                                </button>
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      ))}
-                                    </div>
-                                  )}
-                                </div>
-                              </td>
-                            </tr>
-                          )}
-                        </React.Fragment>
+                      currentMentors.map((m, index) => (
+                        <tr key={m._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors">
+                          <td className="py-4 px-6 text-center text-slate-500 font-medium">{indexOfFirstMentor + index + 1}</td>
+                          <td className="py-4 px-6">
+                            <div className="font-bold text-slate-800 dark:text-slate-100">{m.nama_lengkap}</div>
+                            <div className="text-xs text-slate-500">{m.email} {m.nomor_hp ? `| ${m.nomor_hp}` : ''}</div>
+                          </td>
+                          <td className="py-4 px-6 text-slate-600 dark:text-slate-300 font-medium">{m.lokasi || '-'}</td>
+                          <td className="py-4 px-6 text-slate-600 dark:text-slate-300 font-medium">{m.devisi || '-'}</td>
+                          <td className="py-4 px-6 text-right">
+                            <div className="flex justify-end gap-2">
+                              <button onClick={() => { setMentorForm({ id: m._id, nidn: m.nidn || "", nama_lengkap: m.nama_lengkap || "", nomor_hp: m.nomor_hp || "", email: m.email || "", lokasi: m.lokasi || "", devisi: m.devisi || "" }); setShowEditMentorModal(true); }} className="px-3 py-1.5 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 rounded-lg">Edit</button>
+                              <button onClick={() => handleDeleteMentor(m._id)} className="px-3 py-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 rounded-lg">Hapus</button>
+                            </div>
+                          </td>
+                        </tr>
                       ))
                     )}
                   </tbody>
                 </table>
               </div>
-            </div>
+              {/* Pagination Mentor */}
+              {totalPagesMentor > 1 && (
+                <div className="flex justify-between items-center pt-2">
+                  <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">
+                    Menampilkan {indexOfFirstMentor + 1} - {Math.min(indexOfLastMentor, mentors.length)} dari total {mentors.length} mentor
+                  </span>
+                  <div className="flex gap-2">
+                    <button 
+                      disabled={currentPageMentor === 1}
+                      onClick={() => setCurrentPageMentor(prev => prev - 1)}
+                      className="w-9 h-9 flex items-center justify-center bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl border border-white/60 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold rounded-lg disabled:opacity-50 transition-colors shadow-sm"
+                    >
+                      &lt;
+                    </button>
+                    {Array.from({ length: totalPagesMentor }).map((_, i) => (
+                      <button 
+                        key={i}
+                        onClick={() => setCurrentPageMentor(i + 1)}
+                        className={`w-9 h-9 flex items-center justify-center font-bold rounded-lg shadow-sm transition-colors border ${currentPageMentor === i + 1 ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl border-white/60 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300'}`}
+                      >
+                        {i + 1}
+                      </button>
+                    ))}
+                    <button 
+                      disabled={currentPageMentor === totalPagesMentor}
+                      onClick={() => setCurrentPageMentor(prev => prev + 1)}
+                      className="w-9 h-9 flex items-center justify-center bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl border border-white/60 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold rounded-lg disabled:opacity-50 transition-colors shadow-sm"
+                    >
+                      &gt;
+                    </button>
+                  </div>
+                </div>
+              )}
+            </>
           )}
+
+            </div>
         </>
       )}
 
@@ -1011,24 +951,22 @@ export default function MasterData() {
             <form onSubmit={handleMitraSubmit}>
               <div className="p-6 space-y-4">
                 <div>
-                  <label className="block text-sm font-bold text-slate-800 dark:text-slate-100 mb-2">Nama Instansi</label>
-                  <input required value={mitraForm.nama_instansi} onChange={(e) => setMitraForm({...mitraForm, nama_instansi: e.target.value})} type="text" placeholder="PT Contoh Sukses" className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-slate-50 dark:bg-slate-800/80" />
+                  <label className="block text-sm font-bold text-slate-800 dark:text-slate-100 mb-2">Nama Instansi / Mitra</label>
+                  <input required value={mitraForm.nama_instansi} onChange={(e) => setMitraForm({...mitraForm, nama_instansi: e.target.value})} type="text" placeholder="Contoh: PT Sukses Mandiri / Desa Maju" className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-slate-50 dark:bg-slate-800/80" />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-slate-800 dark:text-slate-100 mb-2">Jenis Skema</label>
-                  <select value={mitraForm.jenis_skema} onChange={(e) => setMitraForm({...mitraForm, jenis_skema: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-slate-50 dark:bg-slate-800/80 appearance-none">
-                    <option value="Corporate">Corporate / Perusahaan</option>
-                    <option value="Wirausaha">Wirausaha / BUMDes</option>
-                    <option value="Pemerintahan">Pemerintahan</option>
+                  <label className="block text-sm font-bold text-slate-800 dark:text-slate-100 mb-2">Kategori Sektor</label>
+                  <select value={mitraForm.kategori} onChange={(e) => setMitraForm({...mitraForm, kategori: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-slate-50 dark:bg-slate-800/80 appearance-none">
+                    <option value="Pemerintahan & Desa (Sektor Publik)">Pemerintahan & Desa (Sektor Publik)</option>
+                    <option value="Bisnis & Ekonomi Kerakyatan">Bisnis & Ekonomi Kerakyatan</option>
+                    <option value="Industri & Korporasi (Sektor Privat)">Industri & Korporasi (Sektor Privat)</option>
+                    <option value="Pendidikan, Sosial & Kesehatan">Pendidikan, Sosial & Kesehatan</option>
+                    <option value="Organisasi Kemasyarakatan">Organisasi Kemasyarakatan</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-slate-800 dark:text-slate-100 mb-2">Alamat Lengkap</label>
-                  <textarea required value={mitraForm.alamat} onChange={(e) => setMitraForm({...mitraForm, alamat: e.target.value})} rows="2" placeholder="Jl. Raya Makmur No 123..." className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-slate-50 dark:bg-slate-800/80"></textarea>
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-slate-800 dark:text-slate-100 mb-2">Deskripsi Mitra</label>
-                  <textarea value={mitraForm.deskripsi_mitra} onChange={(e) => setMitraForm({...mitraForm, deskripsi_mitra: e.target.value})} rows="3" placeholder="Tentang perusahaan..." className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-slate-50 dark:bg-slate-800/80"></textarea>
+                  <label className="block text-sm font-bold text-slate-800 dark:text-slate-100 mb-2">Deskripsi Singkat (Opsional)</label>
+                  <textarea value={mitraForm.deskripsi_singkat} onChange={(e) => setMitraForm({...mitraForm, deskripsi_singkat: e.target.value})} rows="3" placeholder="Tentang instansi/perusahaan ini secara singkat..." className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-slate-50 dark:bg-slate-800/80"></textarea>
                 </div>
               </div>
               <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/80 border-t border-white/50 dark:border-slate-600 flex justify-end gap-3">
@@ -1378,6 +1316,55 @@ export default function MasterData() {
               <button onClick={() => setShowPosisiFormModal(false)} className="px-5 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-200 rounded-xl transition-colors">Batal</button>
               <button type="submit" form="posisiForm" className="px-5 py-2.5 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-md transition-colors">Simpan Posisi</button>
             </div>
+          </div>
+        </div>
+      )}
+
+
+      {(showAddMentorModal || showEditMentorModal) && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/60 dark:border-slate-700 w-full max-w-lg overflow-hidden relative scale-in-95 duration-200">
+            <div className="p-8 border-b border-white/60 dark:border-slate-700">
+              <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100">
+                {showEditMentorModal ? 'Edit Mentor' : 'Tambah Mentor'}
+              </h3>
+            </div>
+            
+            <form onSubmit={(e) => handleMentorSubmit(e, showEditMentorModal)} className="p-8 bg-white/20 dark:bg-slate-900/20/50 space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">ID / Username</label>
+                <input required value={mentorForm.nidn} onChange={(e) => setMentorForm({...mentorForm, nidn: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1398A5]" placeholder="Masukkan ID atau username" />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Nama Lengkap</label>
+                <input required value={mentorForm.nama_lengkap} onChange={(e) => setMentorForm({...mentorForm, nama_lengkap: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1398A5]" placeholder="Nama Lengkap Mentor" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Instansi / Lokasi</label>
+                  <input required value={mentorForm.lokasi} onChange={(e) => setMentorForm({...mentorForm, lokasi: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1398A5]" placeholder="Contoh: PT Telkom" />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Posisi / Devisi</label>
+                  <input required value={mentorForm.devisi} onChange={(e) => setMentorForm({...mentorForm, devisi: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1398A5]" placeholder="Contoh: HRD" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Nomor HP</label>
+                  <input required value={mentorForm.nomor_hp} onChange={(e) => setMentorForm({...mentorForm, nomor_hp: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1398A5]" placeholder="0812..." />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Email</label>
+                  <input type="email" required value={mentorForm.email} onChange={(e) => setMentorForm({...mentorForm, email: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1398A5]" placeholder="Email Mentor" />
+                </div>
+              </div>
+              
+              <div className="flex gap-3 pt-4">
+                <button type="button" onClick={() => { setShowAddMentorModal(false); setShowEditMentorModal(false); }} className="flex-1 px-4 py-3 rounded-xl font-bold bg-white/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-all border border-slate-200 dark:border-slate-700 shadow-sm">Batal</button>
+                <button type="submit" className="flex-1 px-4 py-3 rounded-xl font-bold bg-[#1398A5] hover:bg-teal-700 text-white transition-all shadow-lg shadow-teal-500/30">Simpan Mentor</button>
+              </div>
+            </form>
           </div>
         </div>
       )}

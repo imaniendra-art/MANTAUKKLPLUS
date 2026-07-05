@@ -60,6 +60,10 @@ export async function POST(req) {
         return NextResponse.json({ message: 'Kelompok tidak ditemukan' }, { status: 404 });
       }
       
+      if (pokjaTarget.anggota.length >= 4) {
+        return NextResponse.json({ message: 'Kelompok sudah penuh (maksimal 5 orang termasuk ketua)' }, { status: 400 });
+      }
+      
       // Check if already joined
       const isAlreadyMember = pokjaTarget.anggota.find(a => a.user_id.toString() === user._id.toString());
       if (!isAlreadyMember) {
