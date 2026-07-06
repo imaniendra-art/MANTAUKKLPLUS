@@ -8,11 +8,13 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 export async function POST(req) {
   try {
-    const { pengajuan_id, deskripsi_kegiatan } = await req.json();
+    const { pengajuan_id, rencana_target, uraian_kegiatan, hasil_output, kendala_solusi } = await req.json();
 
-    if (!pengajuan_id || !deskripsi_kegiatan) {
+    if (!pengajuan_id || !rencana_target || !uraian_kegiatan || !hasil_output) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
+    
+    const deskripsi_kegiatan = `Rencana: ${rencana_target}\nUraian: ${uraian_kegiatan}\nHasil: ${hasil_output}\nKendala & Solusi: ${kendala_solusi || '-'}`;
 
     await dbConnect();
 

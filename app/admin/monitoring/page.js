@@ -78,9 +78,14 @@ function PokjaLogbookList({ pokjaId }) {
             
             <div className="flex-1">
               <p className="text-sm font-bold text-slate-800 dark:text-white mb-1">
-                {log.proker_id?.nama_proker || "Umum"}
+                {log.proker_id?.judul_proker || "Umum"}
               </p>
-              <p className="text-sm text-slate-700 dark:text-slate-300 mb-2 font-medium">{log.deskripsi_kegiatan}</p>
+              <div className="text-sm font-medium text-slate-700 dark:text-slate-300 leading-relaxed space-y-1 mb-2">
+                <p><strong>Rencana:</strong> {log.rencana_target}</p>
+                <p><strong>Uraian:</strong> {log.uraian_kegiatan}</p>
+                <p><strong>Hasil:</strong> {log.hasil_output}</p>
+                {log.kendala_solusi && <p><strong>Kendala/Solusi:</strong> {log.kendala_solusi}</p>}
+              </div>
             </div>
             
             {log.bukti_kegiatan && (

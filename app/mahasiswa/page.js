@@ -19,7 +19,7 @@ function MahasiswaDashboardContent() {
   const [namaPokja, setNamaPokja] = useState("");
   const [showMitraProfileModal, setShowMitraProfileModal] = useState(false);
   const [mitraProfileForm, setMitraProfileForm] = useState({
-    alamat_lengkap: "", kecamatan: "", kabupaten_kota: "", titik_koordinat: "",
+    alamat_lengkap: "", kecamatan: "", kabupaten_kota: "", titik_koordinat: "", link_maps: "",
     nama_pimpinan: "", kontak_mitra: "", status_kerjasama: "Belum Ada", kuota_maksimal: 5, fasilitas_khusus: ""
   });
   
@@ -203,7 +203,9 @@ function MahasiswaDashboardContent() {
               <div>
                 <h2 className="text-2xl font-black text-slate-800 dark:text-white flex items-center gap-2">
                   {pokja.nama_pokja} 
-                  <span className="text-sm px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full font-bold uppercase tracking-wider">{pokja.status_pokja.replace(/_/g, ' ')}</span>
+                  <span className="text-sm px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full font-bold uppercase tracking-wider">
+                    {pokja.status_pokja === 'disetujui_lppm' ? 'Persiapan' : pokja.status_pokja.replace(/_/g, ' ')}
+                  </span>
                 </h2>
                 <p className="text-slate-500 mt-1">Dosen Pembimbing: {pokja.dpl_id ? pokja.dpl_id.nama_lengkap : 'Belum ditentukan'}</p>
               </div>
@@ -222,29 +224,70 @@ function MahasiswaDashboardContent() {
               </div>
             )}
 
-            <div className="space-y-4">
-              <h3 className="font-bold text-slate-700 dark:text-slate-300">Lokasi Mitra KKL Plus</h3>
-              {pokja.mitra_id ? (
+            {pokja.status_pokja === 'draft' && !pokja.mitra_id && (
+              <div className="space-y-4">
+                <h3 className="font-bold text-slate-700 dark:text-slate-300">Lokasi Mitra KKL Plus</h3>
+                <div className="p-6 bg-white/20 dark:bg-slate-900/20 rounded-2xl border border-slate-200 border-dashed text-center">
+                  <p className="text-slate-500 mb-4">Lokasi instansi belum dipilih.</p>
+                  {isKetua && (
+                    <button onClick={() => router.push('/mahasiswa/pengajuan')} className="px-6 py-2 bg-indigo-600 text-white font-bold rounded-xl shadow-sm">Pilih Lokasi Mitra</button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Kelola Dokumen Section */}
+            {pokja.mitra_id && ['disetujui_lppm', 'berjalan', 'selesai'].includes(pokja.status_pokja) && (
+              <div className="mt-6">
+                <div className="flex items-center justify-between p-5 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-900/30 dark:to-blue-900/20 rounded-2xl border border-indigo-100 dark:border-indigo-800 shadow-sm">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center shadow-sm text-indigo-600">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-slate-800 dark:text-white">Pusat Dokumen KKL Plus</h3>
+                      <p className="text-sm text-slate-500">Kelola Surat Pengantar, LOA, dan Sertifikat di sini.</p>
+                    </div>
+                  </div>
+                  <button onClick={() => router.push('/mahasiswa/pengajuan')} className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-sm transition-colors whitespace-nowrap">
+                    Buka Dokumen
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {pokja.status_pokja === 'berjalan' && (
+              <div className="mt-6 flex gap-4">
+                <button onClick={() => router.push('/mahasiswa/proker')} className="flex-1 py-3 bg-emerald-600 text-white font-bold rounded-xl shadow-sm text-center">Rancang Proker</button>
+                <button onClick={() => router.push('/mahasiswa/logbook')} className="flex-1 py-3 bg-indigo-600 text-white font-bold rounded-xl shadow-sm text-center">Isi Logbook Harian</button>
+              </div>
+            )}
+
+            {/* Lokasi Mitra Section (muncul setelah status Berjalan) */}
+            {['berjalan', 'selesai'].includes(pokja.status_pokja) && (
+              <div className="space-y-4 mt-8">
+                <h3 className="font-bold text-slate-700 dark:text-slate-300">Lokasi Mitra KKL Plus</h3>
                 <div className="flex flex-col gap-4 p-5 bg-white/20 dark:bg-slate-900/20 rounded-2xl border border-slate-100">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-2xl"><Building className="w-4 h-4 inline-block mr-1.5 -mt-0.5" /></div>
                     <div className="flex-1">
                       <h4 className="font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                        {pokja.mitra_id.nama_instansi}
-                        {pokja.mitra_id.is_lengkap ? (
+                        {pokja.mitra_id?.nama_instansi}
+                        {pokja.mitra_id?.is_lengkap ? (
                           <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[10px] uppercase font-black tracking-wider rounded-md">Profil Lengkap</span>
                         ) : (
                           <span className="px-2 py-0.5 bg-amber-100 text-amber-700 text-[10px] uppercase font-black tracking-wider rounded-md">Profil Belum Lengkap</span>
                         )}
                       </h4>
-                      <p className="text-sm text-slate-500">{pokja.mitra_id.kategori}</p>
+                      <p className="text-sm text-slate-500">{pokja.mitra_id?.kategori}</p>
                     </div>
                   </div>
-                  {isKetua && !pokja.mitra_id.is_lengkap && ['berjalan', 'selesai'].includes(pokja.status_pokja) && (
+                  
+                  {isKetua && !pokja.mitra_id?.is_lengkap && (
                     <div className="mt-2 p-4 bg-indigo-50 border border-indigo-100 rounded-xl flex items-center justify-between">
                       <div>
                         <h5 className="font-bold text-indigo-900 text-sm">Lengkapi Profil Mitra</h5>
-                        <p className="text-xs text-indigo-700 mt-1">Anda wajib melengkapi detail lokasi instansi agar dapat disetujui oleh LPPM.</p>
+                        <p className="text-xs text-indigo-700 mt-1">Anda wajib melengkapi detail lokasi instansi untuk memulai KKL Plus.</p>
                       </div>
                       <button 
                         onClick={() => {
@@ -253,6 +296,7 @@ function MahasiswaDashboardContent() {
                             kecamatan: pokja.mitra_id.kecamatan || "",
                             kabupaten_kota: pokja.mitra_id.kabupaten_kota || "",
                             titik_koordinat: pokja.mitra_id.titik_koordinat || "",
+                            link_maps: pokja.mitra_id.link_maps || "",
                             nama_pimpinan: pokja.mitra_id.nama_pimpinan || "",
                             kontak_mitra: pokja.mitra_id.kontak_mitra || "",
                             status_kerjasama: pokja.mitra_id.status_kerjasama || "Belum Ada",
@@ -267,135 +311,90 @@ function MahasiswaDashboardContent() {
                       </button>
                     </div>
                   )}
-                  {pokja.mitra_id.is_lengkap && (
+                  {pokja.mitra_id?.is_lengkap && (
                     <div className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-                      <p><strong>Alamat:</strong> {pokja.mitra_id.alamat_lengkap}, Kec. {pokja.mitra_id.kecamatan}, {pokja.mitra_id.kabupaten_kota}</p>
-                      <p><strong>Kontak:</strong> {pokja.mitra_id.nama_pimpinan} ({pokja.mitra_id.kontak_mitra})</p>
+                      <div className="flex justify-between items-start mb-4">
+                        <div>
+                          <p><strong>Alamat:</strong> {pokja.mitra_id.alamat_lengkap}, Kec. {pokja.mitra_id.kecamatan}, {pokja.mitra_id.kabupaten_kota}</p>
+                          <p><strong>Kontak:</strong> {pokja.mitra_id.nama_pimpinan} ({pokja.mitra_id.kontak_mitra})</p>
+                        </div>
+                        {isKetua && (
+                          <button 
+                            onClick={() => {
+                              setMitraProfileForm({
+                                alamat_lengkap: pokja.mitra_id.alamat_lengkap || "",
+                                kecamatan: pokja.mitra_id.kecamatan || "",
+                                kabupaten_kota: pokja.mitra_id.kabupaten_kota || "",
+                                titik_koordinat: pokja.mitra_id.titik_koordinat || "",
+                                link_maps: pokja.mitra_id.link_maps || "",
+                                nama_pimpinan: pokja.mitra_id.nama_pimpinan || "",
+                                kontak_mitra: pokja.mitra_id.kontak_mitra || "",
+                                status_kerjasama: pokja.mitra_id.status_kerjasama || "Belum Ada",
+                                kuota_maksimal: pokja.mitra_id.kuota_maksimal || 5,
+                                fasilitas_khusus: pokja.mitra_id.fasilitas_khusus || ""
+                              });
+                              setShowMitraProfileModal(true);
+                            }}
+                            className="px-4 py-2 text-xs bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-lg shadow-sm border border-slate-200 dark:border-slate-600 transition-colors"
+                          >
+                            Edit Profil
+                          </button>
+                        )}
+                      </div>
+                      
+                      <div className="grid grid-cols-3 gap-4 mt-6 pt-4 border-t border-slate-100 dark:border-slate-700/50">
+                        <div className="text-center">
+                          <p className="font-bold text-xs mb-2">Foto Kantor Desa</p>
+                          {pokja.mitra_id.foto_kantor_desa ? (
+                            <img src={pokja.mitra_id.foto_kantor_desa} alt="Kantor Desa" className="w-full h-24 object-cover rounded-xl shadow-sm border border-slate-200 mb-2" />
+                          ) : (
+                            <div className="w-full h-24 bg-slate-100 dark:bg-slate-800 rounded-xl border border-dashed border-slate-300 flex items-center justify-center mb-2">
+                              <span className="text-[10px] text-slate-400">Belum ada foto</span>
+                            </div>
+                          )}
+                          {isKetua && (
+                            <label className="cursor-pointer text-[10px] bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded-lg font-bold">
+                              Upload
+                              <input type="file" className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, 'foto_kantor_desa')} />
+                            </label>
+                          )}
+                        </div>
+                        <div className="text-center">
+                          <p className="font-bold text-xs mb-2">Foto BUMDes</p>
+                          {pokja.mitra_id.foto_kantor_bumdes ? (
+                            <img src={pokja.mitra_id.foto_kantor_bumdes} alt="Kantor BUMDes" className="w-full h-24 object-cover rounded-xl shadow-sm border border-slate-200 mb-2" />
+                          ) : (
+                            <div className="w-full h-24 bg-slate-100 dark:bg-slate-800 rounded-xl border border-dashed border-slate-300 flex items-center justify-center mb-2">
+                              <span className="text-[10px] text-slate-400">Belum ada foto</span>
+                            </div>
+                          )}
+                          {isKetua && (
+                            <label className="cursor-pointer text-[10px] bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded-lg font-bold">
+                              Upload
+                              <input type="file" className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, 'foto_kantor_bumdes')} />
+                            </label>
+                          )}
+                        </div>
+                        <div className="text-center">
+                          <p className="font-bold text-xs mb-2">Logo Instansi</p>
+                          {pokja.mitra_id.logo_mitra ? (
+                            <img src={pokja.mitra_id.logo_mitra} alt="Logo" className="w-full h-24 object-contain rounded-xl shadow-sm border border-slate-200 mb-2 bg-white p-2" />
+                          ) : (
+                            <div className="w-full h-24 bg-slate-100 dark:bg-slate-800 rounded-xl border border-dashed border-slate-300 flex items-center justify-center mb-2">
+                              <span className="text-[10px] text-slate-400">Belum ada logo</span>
+                            </div>
+                          )}
+                          {isKetua && (
+                            <label className="cursor-pointer text-[10px] bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded-lg font-bold">
+                              Upload
+                              <input type="file" className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, 'logo_mitra')} />
+                            </label>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
-              ) : (
-                <div className="p-6 bg-white/20 dark:bg-slate-900/20 rounded-2xl border border-slate-200 border-dashed text-center">
-                  <p className="text-slate-500 mb-4">Lokasi instansi belum dipilih.</p>
-                  {isKetua && (
-                    <button onClick={() => router.push('/mahasiswa/pengajuan')} className="px-6 py-2 bg-indigo-600 text-white font-bold rounded-xl shadow-sm">Pilih Lokasi Mitra</button>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Brankas Dokumen Section */}
-            {pokja.mitra_id && ['berjalan', 'selesai'].includes(pokja.status_pokja) && (
-              <div className="space-y-4 mt-8">
-                <h3 className="font-bold text-slate-700 dark:text-slate-300">Brankas Dokumen POKJA</h3>
-                <div className="bg-white/40 dark:bg-slate-900/20 rounded-2xl border border-slate-100 p-2 space-y-2">
-                  
-                  {/* Surat Pengantar */}
-                  <div className="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 shadow-sm">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-sm text-slate-800 dark:text-white">Surat Pengantar Observasi</h4>
-                        <p className="text-xs text-slate-500">Otomatis dari sistem</p>
-                      </div>
-                    </div>
-                    <button onClick={() => window.open(`/mahasiswa/surat/pengantar/${pokja._id}`, '_blank')} className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-bold rounded-lg transition-colors whitespace-nowrap">Generate PDF</button>
-                  </div>
-
-                  {/* LOA */}
-                  <div className="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 shadow-sm">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-sm text-slate-800 dark:text-white">Surat Balasan (LOA)</h4>
-                        <p className="text-xs text-slate-500">Bukti diterima oleh Mitra</p>
-                      </div>
-                    </div>
-                    {pokja.file_surat_balasan ? (
-                      <div className="flex gap-2">
-                        <a href={pokja.file_surat_balasan} target="_blank" className="px-3 py-1.5 bg-emerald-50 text-emerald-600 text-xs font-bold rounded-lg transition-colors whitespace-nowrap">Lihat Dokumen</a>
-                        {isKetua && (
-                          <>
-                            <input type="file" id="upload-loa-ulang" className="hidden" accept=".pdf,.png,.jpg,.jpeg" onChange={(e) => handleFileUpload(e, 'loa')} />
-                            <label htmlFor="upload-loa-ulang" className="cursor-pointer px-3 py-1.5 bg-slate-100 text-slate-600 text-xs font-bold rounded-lg whitespace-nowrap">Upload Ulang</label>
-                          </>
-                        )}
-                      </div>
-                    ) : (
-                      isKetua ? (
-                        <>
-                          <input type="file" id="upload-loa" className="hidden" accept=".pdf,.png,.jpg,.jpeg" onChange={(e) => handleFileUpload(e, 'loa')} disabled={!pokja.mitra_id.is_lengkap} />
-                          <label htmlFor="upload-loa" className={`${!pokja.mitra_id.is_lengkap ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-indigo-700'} px-3 py-1.5 bg-indigo-600 text-white text-xs font-bold rounded-lg transition-colors whitespace-nowrap`} title={!pokja.mitra_id.is_lengkap ? "Lengkapi Profil Mitra terlebih dahulu" : ""}>Upload LOA</label>
-                        </>
-                      ) : (
-                        <span className="text-xs font-bold text-slate-400 whitespace-nowrap">Belum Diunggah</span>
-                      )
-                    )}
-                  </div>
-
-                  {/* SK Penugasan */}
-                  <div className="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 shadow-sm">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-sm text-slate-800 dark:text-white">Surat Tugas (SK)</h4>
-                        <p className="text-xs text-slate-500">Legalitas pelaksanaan KKL</p>
-                      </div>
-                    </div>
-                    {['disetujui_lppm', 'berjalan', 'selesai'].includes(pokja.status_pokja) ? (
-                      <button onClick={() => window.open(`/mahasiswa/surat/tugas/${pokja._id}`, '_blank')} className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-bold rounded-lg transition-colors whitespace-nowrap">Generate PDF</button>
-                    ) : (
-                      <span className="text-xs font-bold text-slate-400 whitespace-nowrap">Belum Tersedia</span>
-                    )}
-                  </div>
-
-                  {/* Sertifikat Akhir */}
-                  <div className="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 shadow-sm">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-sm text-slate-800 dark:text-white">Sertifikat Selesai</h4>
-                        <p className="text-xs text-slate-500">Dari instansi mitra</p>
-                      </div>
-                    </div>
-                    {pokja.file_surat_selesai ? (
-                      <div className="flex gap-2">
-                        <a href={pokja.file_surat_selesai} target="_blank" className="px-3 py-1.5 bg-emerald-50 text-emerald-600 text-xs font-bold rounded-lg transition-colors whitespace-nowrap">Lihat Dokumen</a>
-                        {isKetua && (
-                          <>
-                            <input type="file" id="upload-sertif-ulang" className="hidden" accept=".pdf,.png,.jpg,.jpeg" onChange={(e) => handleFileUpload(e, 'sertifikat')} />
-                            <label htmlFor="upload-sertif-ulang" className="cursor-pointer px-3 py-1.5 bg-slate-100 text-slate-600 text-xs font-bold rounded-lg whitespace-nowrap">Upload Ulang</label>
-                          </>
-                        )}
-                      </div>
-                    ) : (
-                       ['berjalan', 'selesai'].includes(pokja.status_pokja) && isKetua ? (
-                         <>
-                           <input type="file" id="upload-sertif" className="hidden" accept=".pdf,.png,.jpg,.jpeg" onChange={(e) => handleFileUpload(e, 'sertifikat')} />
-                           <label htmlFor="upload-sertif" className="cursor-pointer px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg transition-colors whitespace-nowrap">Upload Sertifikat</label>
-                         </>
-                       ) : (
-                         <span className="text-xs font-bold text-slate-400 whitespace-nowrap">Belum Tersedia</span>
-                       )
-                    )}
-                  </div>
-                  
-                </div>
-              </div>
-            )}
-
-            {pokja.status_pokja === 'berjalan' && (
-              <div className="mt-6 flex gap-4">
-                <button onClick={() => router.push('/mahasiswa/proker')} className="flex-1 py-3 bg-emerald-600 text-white font-bold rounded-xl shadow-sm text-center">Rancang Proker</button>
-                <button onClick={() => router.push('/mahasiswa/logbook')} className="flex-1 py-3 bg-indigo-600 text-white font-bold rounded-xl shadow-sm text-center">Isi Logbook Harian</button>
               </div>
             )}
           </div>
@@ -462,7 +461,7 @@ function MahasiswaDashboardContent() {
         {/* Mitra Profile Modal */}
         {showMitraProfileModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm overflow-y-auto">
-            <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl w-full max-w-3xl shadow-2xl my-8">
+            <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl w-full max-w-4xl shadow-2xl my-8">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-xl font-bold text-slate-800 dark:text-white">Lengkapi Profil Mitra</h3>
                 <button onClick={() => setShowMitraProfileModal(false)} className="text-slate-500 hover:text-red-500 text-2xl font-bold">&times;</button>
@@ -494,6 +493,17 @@ function MahasiswaDashboardContent() {
                     </div>
                   </div>
                   <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-2">Link Google Maps (Opsional)</label>
+                    <div className="flex gap-2">
+                      <input type="text" value={mitraProfileForm.link_maps} onChange={e => setMitraProfileForm({...mitraProfileForm, link_maps: e.target.value})} className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-indigo-500" placeholder="https://maps.app.goo.gl/..." />
+                      {mitraProfileForm.link_maps && (
+                        <a href={mitraProfileForm.link_maps.startsWith('http') ? mitraProfileForm.link_maps : `https://${mitraProfileForm.link_maps}`} target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-blue-100 text-blue-700 hover:bg-blue-200 font-bold rounded-xl whitespace-nowrap flex items-center justify-center">
+                          Buka Maps
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                  <div>
                     <label className="block text-sm font-bold text-slate-700 mb-2">Titik Koordinat (Opsional)</label>
                     <input type="text" value={mitraProfileForm.titik_koordinat} onChange={e => setMitraProfileForm({...mitraProfileForm, titik_koordinat: e.target.value})} className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-indigo-500" placeholder="-5.1333, 119.4166 (Dari Google Maps)" />
                   </div>
@@ -517,8 +527,8 @@ function MahasiswaDashboardContent() {
                 {/* Bagian Administrasi & Fasilitas */}
                 <div className="space-y-4">
                   <h4 className="font-bold text-slate-700 dark:text-slate-300 border-b pb-2">Administrasi & Kesepakatan</h4>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="md:col-span-1">
                       <label className="block text-sm font-bold text-slate-700 mb-2">Status Kerja Sama</label>
                       <select required value={mitraProfileForm.status_kerjasama} onChange={e => setMitraProfileForm({...mitraProfileForm, status_kerjasama: e.target.value})} className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-indigo-500 bg-white">
                         <option value="Belum Ada">Belum Ada MoU/MoA</option>
@@ -528,9 +538,9 @@ function MahasiswaDashboardContent() {
                         <option value="Implementation Arrangement (IA)">Implementation Arrangement (IA)</option>
                       </select>
                     </div>
-                    <div>
-                      <label className="block text-sm font-bold text-slate-700 mb-2">Kuota Mahasiswa Diterima</label>
-                      <input required type="number" min="1" max="10" value={mitraProfileForm.kuota_maksimal} onChange={e => setMitraProfileForm({...mitraProfileForm, kuota_maksimal: e.target.value})} className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-indigo-500" />
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-bold text-slate-700 mb-2 whitespace-nowrap">Kemampuan Penerimaan Kuota Mahasiswa KKL Plus / Semester</label>
+                      <input required type="number" min="1" max="100" value={mitraProfileForm.kuota_maksimal} onChange={e => setMitraProfileForm({...mitraProfileForm, kuota_maksimal: e.target.value})} className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-indigo-500" />
                     </div>
                   </div>
                   <div>

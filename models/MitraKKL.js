@@ -21,6 +21,7 @@ const MitraKKLSchema = new mongoose.Schema({
   kecamatan: { type: String, default: '' },
   kabupaten_kota: { type: String, default: '' },
   titik_koordinat: { type: String, default: '' },
+  link_maps: { type: String, default: '' },
   nama_pimpinan: { type: String, default: '' },
   kontak_mitra: { type: String, default: '' },
   status_kerjasama: { 
@@ -38,7 +39,16 @@ const MitraKKLSchema = new mongoose.Schema({
   fasilitas_khusus: { type: String, default: '' },
   
   // Status kelengkapan data
-  is_lengkap: { type: Boolean, default: false }
+  is_lengkap: { type: Boolean, default: false },
+  // Foto/Logo
+  foto_kantor_desa: { type: String, default: '' },
+  foto_kantor_bumdes: { type: String, default: '' },
+  logo_mitra: { type: String, default: '' },
+  
+  // Dokumen Kerjasama
+  file_mou: { type: String, default: '' },
+  file_moa: { type: String, default: '' },
+  file_ia: { type: String, default: '' }
 }, { timestamps: true });
 
 export default mongoose.models.MitraKKL || mongoose.model('MitraKKL', MitraKKLSchema);

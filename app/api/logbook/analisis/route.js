@@ -66,7 +66,7 @@ export async function GET(req) {
                 cpmkAchievements[achIndex].status = 'tercapai';
                 cpmkAchievements[achIndex].fulfilled_count += 1;
                 cpmkAchievements[achIndex].achieved_date = log.tanggal;
-                cpmkAchievements[achIndex].achieved_desc = log.deskripsi_kegiatan;
+                cpmkAchievements[achIndex].achieved_desc = `Rencana: ${log.rencana_target} | Uraian: ${log.uraian_kegiatan} | Hasil: ${log.hasil_output}`;
                 
                 // Cek apakah di-acc hari ini atau lognya hari ini
                 if (new Date(log.tanggal).toDateString() === today) {

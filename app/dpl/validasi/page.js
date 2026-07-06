@@ -1,22 +1,23 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { useSession } from "next-auth/react";
-import { Check, X } from "lucide-react";
+import { Check, X, Calendar, User, Briefcase, FileSignature, Loader2, Clock, History, ChevronDown, ClipboardList, CheckCircle2, Copy } from "lucide-react";
 
 export default function DplValidasi() {
   const { data: session } = useSession();
   const [logbooks, setLogbooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [toastMessage, setToastMessage] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [expandedCpmk, setExpandedCpmk] = useState({});
-
-  const toggleCpmk = (id) => {
-    setExpandedCpmk(prev => ({ ...prev, [id]: !prev[id] }));
-  };
+  const [selectedLogs, setSelectedLogs] = useState([]);
+  const [submitting, setSubmitting] = useState(false);
+  
   const [activeTab, setActiveTab] = useState('antrean'); // 'antrean' or 'histori'
+  const [viewMode, setViewMode] = useState('individu');
+  const [expandedPokja, setExpandedPokja] = useState(null);
+  const [expandedSubGroup, setExpandedSubGroup] = useState(null);
+  const [lastGeneratedLink, setLastGeneratedLink] = useState(null);
 
   const fetchData = useCallback(async () => {
     if (!session?.user?.id) return;
@@ -33,32 +34,80 @@ export default function DplValidasi() {
   }, [session]);
 
   useEffect(() => {
-    const load = async () => {
-      await fetchData();
-    };
-    load();
+    fetchData();
   }, [fetchData]);
+
+  // Reset selection when tab or view mode changes
+  useEffect(() => {
+    setSelectedLogs([]);
+  }, [activeTab, viewMode]);
 
   const showToast = (msg) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(""), 3000);
   };
 
-  const handleValidasi = async (id, newStatus) => {
+  const handleBulkValidasi = async () => {
+    if (selectedLogs.length === 0) return;
+    setSubmitting(true);
     try {
-      const res = await fetch('/api/logbook', {
-        method: 'PATCH',
+      // Ambil salah satu logbook untuk pokja_id
+      const firstLog = logbooks.find(l => l._id === selectedLogs[0]);
+      
+      const payload = { 
+        ids: selectedLogs, 
+        dpl_id: session.user.id,
+        pokja_id: firstLog?.pokja_id?._id,
+        logbook_ids: selectedLogs
+      };
+      
+      const res = await fetch('/api/magic-link', {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, status_validasi: newStatus })
+        body: JSON.stringify(payload)
       });
-      if (res.ok) {
-        showToast(newStatus === 'divalidasi_dpl' ? "CPMK Akademik Berhasil Divalidasi!" : "Diminta revisi!");
+      const data = await res.json();
+      
+      if (res.ok && data.token) {
+        showToast(`Tautan berhasil dibuat! Membuka WhatsApp...`);
+        setSelectedLogs([]);
         fetchData();
+        
+        // Buka WA
+        const baseUrl = window.location.origin;
+        const magicUrl = `${baseUrl}/v/${data.token}`;
+        setLastGeneratedLink(magicUrl);
+        const waText = encodeURIComponent(`Halo Bapak/Ibu Kepala Desa / Mentor,\n\nBerikut adalah tautan untuk mereview dan menyetujui kegiatan KKL Plus mahasiswa minggu ini:\n\n${magicUrl}\n\nTautan ini bisa dibuka langsung tanpa perlu login. Terima kasih!`);
+        window.open(`https://wa.me/?text=${waText}`, '_blank');
+        
       } else {
-        alert("Gagal memvalidasi");
+        alert("Gagal membuat tautan validasi");
       }
     } catch (error) {
       alert("Terjadi kesalahan sistem");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const toggleSelectLog = (id) => {
+    setSelectedLogs(prev => 
+      prev.includes(id) ? prev.filter(l => l !== id) : [...prev, id]
+    );
+  };
+
+  const handleSelectSubGroup = (logs) => {
+    logs = logs.filter(l => l.status_validasi === 'menunggu_dpl' || l.status_validasi === 'menunggu_mentor');
+    if (logs.length === 0) return;
+    const groupLogIds = logs.map(l => l._id);
+    const allSelected = groupLogIds.every(id => selectedLogs.includes(id));
+    if (allSelected) {
+      setSelectedLogs(prev => prev.filter(id => !groupLogIds.includes(id)));
+    } else {
+      setSelectedLogs(prev => {
+        const newSet = new Set([...prev, ...groupLogIds]);
+        return Array.from(newSet);
+      });
     }
   };
 
@@ -66,25 +115,73 @@ export default function DplValidasi() {
     try {
       const arr = dataUrl.split(',');
       const mimeMatch = arr[0].match(/:(.*?);/);
-      if (!mimeMatch) {
-        window.open(dataUrl, '_blank');
-        return;
-      }
+      if (!mimeMatch) return window.open(dataUrl, '_blank');
       const mime = mimeMatch[1];
       const bstr = atob(arr[1]);
       let n = bstr.length;
       const u8arr = new Uint8Array(n);
-      while (n--) {
-        u8arr[n] = bstr.charCodeAt(n);
-      }
+      while (n--) u8arr[n] = bstr.charCodeAt(n);
       const blob = new Blob([u8arr], { type: mime });
       const url = URL.createObjectURL(blob);
       window.open(url, '_blank');
     } catch (e) {
-      console.error("Gagal membuka file:", e);
       window.open(dataUrl, '_blank');
     }
   };
+
+  // -------------------------------------------------------------
+  // Data Grouping Logic
+  // -------------------------------------------------------------
+  const filteredLogs = useMemo(() => {
+    return logbooks.filter(log => {
+      // Filter tipe (individu vs pokja)
+      const typeMatches = log.tipe_logbook === viewMode;
+      
+      // Filter status
+      const statusMatches = activeTab === 'antrean' 
+        ? log.status_validasi === 'menunggu_dpl' 
+        : log.status_validasi !== 'menunggu_dpl';
+
+      return typeMatches && statusMatches;
+    });
+  }, [logbooks, activeTab, viewMode]);
+
+  const groupedByPokja = useMemo(() => {
+    const pokjaGroups = {};
+    filteredLogs.forEach(log => {
+      const pokjaId = log.pokja_id?._id || 'unknown';
+      const pokjaName = log.pokja_id?.nama_pokja || 'Lainnya';
+      
+      if (!pokjaGroups[pokjaId]) {
+        pokjaGroups[pokjaId] = {
+          name: pokjaName,
+          subGroups: {}
+        };
+      }
+      
+      let subGroupKey = 'Lainnya';
+      if (viewMode === 'individu') {
+        subGroupKey = log.mahasiswa_id?.nama_lengkap || 'Anonim';
+      } else {
+        subGroupKey = log.proker_id?.judul_proker || 'Proker Umum';
+      }
+
+      if (!pokjaGroups[pokjaId].subGroups[subGroupKey]) {
+        pokjaGroups[pokjaId].subGroups[subGroupKey] = [];
+      }
+      pokjaGroups[pokjaId].subGroups[subGroupKey].push(log);
+    });
+    
+    return Object.entries(pokjaGroups).map(([pokjaId, data]) => ({
+      pokjaId,
+      pokjaName: data.name,
+      subGroups: Object.entries(data.subGroups).map(([name, logs]) => ({
+        name,
+        logs
+      }))
+    }));
+  }, [filteredLogs, viewMode]);
+
 
   return (
     <DashboardLayout title="Pantau Kegiatan Mahasiswa (DPL)">
@@ -95,179 +192,319 @@ export default function DplValidasi() {
       )}
 
       {loading ? (
-        <div className="text-center py-20 text-slate-500 dark:text-slate-400 font-bold animate-pulse">Memuat antrean logbook...</div>
+        <div className="text-center py-20 flex items-center justify-center gap-3 text-slate-500 dark:text-slate-400 font-bold">
+          <Loader2 className="w-6 h-6 animate-spin" /> Memuat data...
+        </div>
       ) : (
-        <div className="space-y-6">
-      <div className="flex space-x-1 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl shadow-sm p-1.5 rounded-xl w-max border border-white/60 dark:border-slate-700">
-        <button
-          className={`px-6 py-2.5 text-sm font-bold rounded-lg transition-all ${
-            activeTab === 'antrean' 
-              ? 'bg-slate-100 dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' 
-              : 'text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400'
-          }`}
-          onClick={() => setActiveTab('antrean')}
-        >
-          ⏳ Perlu Perhatian
-        </button>
-        <button
-          className={`px-6 py-2.5 text-sm font-bold rounded-lg transition-all ${
-            activeTab === 'histori' 
-              ? 'bg-slate-100 dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' 
-              : 'text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400'
-          }`}
-          onClick={() => setActiveTab('histori')}
-        >
-          📭 Riwayat (Tervalidasi)
-        </button>
-      </div>
+        <div className="space-y-6 pb-28">
+          
+          {/* Top Control Bar */}
+          <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl shadow-sm rounded-2xl border border-white/60 dark:border-slate-700 p-4 md:p-6 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6">
+            
+            <div className="flex flex-col gap-1 w-full xl:w-auto">
+              <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                Kurasi Logbook
+              </h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Pilih aktivitas Individu atau POKJA untuk Anda *review*.</p>
+            </div>
 
-          {/* Header Card */}
-          <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl shadow-sm rounded-2xl border border-white/60 dark:border-slate-700 p-6">
-            <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">Riwayat & Pemantauan Logbook Mahasiswa</h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium">Pantau kegiatan harian mahasiswa bimbingan Anda. Ingatkan Mentor jika mahasiswa kurang mendapatkan eksposur yang relevan dengan target CPMK.</p>
+            <div className="flex flex-wrap items-center gap-4 w-full xl:w-auto">
+              {/* Type Switcher */}
+              <div className="flex bg-slate-100 dark:bg-slate-900 rounded-xl p-1 border border-slate-200 dark:border-slate-700/50">
+                <button
+                  className={`px-5 py-2 text-sm font-bold rounded-lg transition-all flex items-center gap-2 ${
+                    viewMode === 'individu' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                  }`}
+                  onClick={() => setViewMode('individu')}
+                >
+                  <User className="w-4 h-4" /> Per Mahasiswa
+                </button>
+                <button
+                  className={`px-5 py-2 text-sm font-bold rounded-lg transition-all flex items-center gap-2 ${
+                    viewMode === 'pokja' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                  }`}
+                  onClick={() => setViewMode('pokja')}
+                >
+                  <Briefcase className="w-4 h-4" /> Per Proker
+                </button>
+              </div>
+
+              <div className="w-px h-8 bg-slate-300 dark:bg-slate-700 hidden sm:block"></div>
+
+              {/* Status Switcher */}
+              <div className="flex bg-slate-100 dark:bg-slate-900 rounded-xl p-1 border border-slate-200 dark:border-slate-700/50">
+                <button
+                  className={`px-5 py-2 text-sm font-bold rounded-lg transition-all flex items-center gap-2 ${
+                    activeTab === 'antrean' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                  }`}
+                  onClick={() => setActiveTab('antrean')}
+                >
+                  <Clock className="w-4 h-4" /> Perlu Perhatian
+                </button>
+                <button
+                  className={`px-5 py-2 text-sm font-bold rounded-lg transition-all flex items-center gap-2 ${
+                    activeTab === 'histori' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                  }`}
+                  onClick={() => setActiveTab('histori')}
+                >
+                  <History className="w-4 h-4" /> Riwayat
+                </button>
+              </div>
+            </div>
           </div>
 
-          {/* Table Card */}
-          <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl shadow-sm rounded-2xl border border-white/60 dark:border-slate-700 overflow-hidden flex flex-col">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse table-fixed">
-                <thead>
-                  <tr className="bg-slate-50 dark:bg-slate-800 shadow-sm border-b border-white/60 dark:border-slate-700 text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">
-                    <th className="py-4 px-6 whitespace-nowrap w-[20%]">Mahasiswa & Tgl</th>
-                    <th className="py-4 px-6 w-[55%]">Deskripsi Kegiatan</th>
-                    <th className="py-4 px-6 text-right w-[25%]">Status & Aksi</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/[0.04]">
-                  {logbooks.filter(log => activeTab === 'antrean' ? log.status_validasi === 'menunggu_mentor' : log.status_validasi !== 'menunggu_mentor').length === 0 ? (
-                    <tr>
-                      <td colSpan="4" className="py-12 text-center text-slate-500 dark:text-slate-400 font-medium">
-                        <div className="text-4xl mb-3">{activeTab === 'antrean' ? '📚' : '📭'}</div>
-                        {activeTab === 'antrean' ? 'Semua logbook sudah divalidasi oleh Mentor.' : 'Belum ada riwayat logbook yang divalidasi.'}
-                      </td>
-                    </tr>
-                  ) : (
-                    logbooks.filter(log => activeTab === 'antrean' ? log.status_validasi === 'menunggu_mentor' : log.status_validasi !== 'menunggu_mentor').map((log) => (
-                      <React.Fragment key={log._id}>
-                        <tr className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
-                          <td className="py-4 px-6 align-top">
-                            <p className="font-bold text-sm text-slate-800 dark:text-slate-100">{log.mahasiswa_id?.nama_lengkap}</p>
-                            <p className="text-xs font-semibold text-slate-500 mt-1 bg-slate-100 dark:bg-slate-800 w-fit px-2 py-1 rounded-md">{new Date(log.tanggal).toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}</p>
-                          </td>
-                          <td className="py-4 px-6 align-top">
-                            <p className="text-sm font-medium text-slate-700 dark:text-slate-300 leading-relaxed">{log.deskripsi_kegiatan}</p>
-                          </td>
-                          <td className="py-4 px-6 align-top text-right">
-                            <div className="flex flex-col items-end gap-3">
-                              {/* Action Buttons */}
-                              <div className="flex flex-wrap justify-end gap-2">
-                                {log.bukti_kegiatan && (
-                                  <button onClick={() => handleViewFile(log.bukti_kegiatan)} className="inline-flex items-center gap-1.5 text-[11px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition-colors whitespace-nowrap shadow-sm cursor-pointer">
-                                    <span>🖼️</span> Bukti
-                                  </button>
-                                )}
-                                <button 
-                                  onClick={() => toggleCpmk(log._id)}
-                                  className="inline-flex items-center gap-1.5 text-[11px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 px-3 py-1.5 rounded-lg hover:bg-indigo-100 transition-colors whitespace-nowrap shadow-sm cursor-pointer"
-                                >
-                                  <span>🎯</span> Capaian
-                                </button>
-                              </div>
+          {/* Kanban / Grid Board */}
+          {groupedByPokja.length === 0 ? (
+            <div className="py-20 text-center text-slate-500 dark:text-slate-400 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-3xl border border-white/60 dark:border-slate-700">
+              <div className="text-5xl mb-4 opacity-50">📂</div>
+              <p className="font-bold text-lg">Tidak ada logbook di mode ini.</p>
+              <p className="text-sm mt-1">Semua aktivitas sudah tervalidasi atau belum ada yang disubmit.</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {groupedByPokja.map(pokja => (
+                <div key={pokja.pokjaId} className="bg-white/70 dark:bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-white/60 dark:border-slate-800 shadow-sm overflow-hidden transition-all">
+                  
+                  {/* POKJA HEADER */}
+                  <div 
+                    className="px-6 py-5 flex items-center justify-between cursor-pointer hover:bg-white dark:hover:bg-slate-800/80 transition-colors"
+                    onClick={() => setExpandedPokja(expandedPokja === pokja.pokjaId ? null : pokja.pokjaId)}
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                        <Briefcase className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <h3 className="font-black text-slate-800 dark:text-white text-lg lg:text-xl">{pokja.pokjaName}</h3>
+                        <p className="text-sm text-slate-500 font-medium mt-0.5">
+                          {pokja.subGroups.length} {viewMode === 'individu' ? 'Mahasiswa' : 'Proker'} aktif
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <ChevronDown className={`w-6 h-6 text-slate-400 transition-transform duration-300 ${expandedPokja === pokja.pokjaId ? 'rotate-180' : ''}`} />
+                    </div>
+                  </div>
 
-                              {/* Validation Status / Actions */}
-                              {log.status_validasi === 'menunggu_mentor' && (
-                                <div className="flex flex-col items-end gap-2 mt-1">
-                                  <span className="text-xs font-bold text-slate-600 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200 inline-flex items-center gap-1.5 shadow-sm">
-                                    <span>⏳</span> Menunggu Mentor
-                                  </span>
-                                  <div className="flex flex-col xl:flex-row gap-2 mt-1">
-                                    <a 
-                                      href={`https://wa.me/?text=Halo%20Bapak/Ibu%20Mentor,%20mohon%20bantuannya%20untuk%20memvalidasi%20logbook%20magang%20atas%20nama%20${log.mahasiswa_id?.nama_lengkap}.%20Terima%20kasih!`} 
-                                      target="_blank" 
-                                      rel="noreferrer"
-                                      className="text-[11px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3 py-1.5 rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm"
-                                    >
-                                      <span>💬</span> WA
-                                    </a>
-                                    <button 
-                                      onClick={() => handleValidasi(log._id, 'divalidasi_mentor')}
-                                      className="text-[11px] font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 px-3 py-1.5 rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm"
-                                    >
-                                      <span><Check className="w-4 h-4 inline-block mr-1.5 -mt-0.5" /></span> Bantu Validasi
-                                    </button>
-                                  </div>
-                                </div>
-                              )}
-
-                              {log.status_validasi === 'divalidasi_mentor' && (
-                                <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200 inline-flex items-center gap-1.5 shadow-sm">
-                                  <span><Check className="w-4 h-4 inline-block mr-1.5 -mt-0.5" /></span> Divalidasi Lapangan
-                                </span>
-                              )}
-
-                              {log.status_validasi === 'revisi' && (
-                                <span className="text-xs font-bold text-rose-600 bg-rose-50 px-3 py-1.5 rounded-lg border border-rose-200 shadow-sm inline-flex items-center gap-1.5">
-                                  <span><X className="w-4 h-4 inline-block mr-1.5 -mt-0.5" /></span> Diminta Revisi
-                                </span>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
+                  {/* POKJA CONTENT */}
+                  {expandedPokja === pokja.pokjaId && (
+                    <div className="border-t border-slate-200 dark:border-slate-700 p-4 md:p-6 bg-slate-50/50 dark:bg-slate-900/20 space-y-4">
+                      {pokja.subGroups.map(subGroup => {
+                        const subGroupId = `${pokja.pokjaId}-${subGroup.name}`;
+                        const isSubExpanded = expandedSubGroup === subGroupId;
+                        const unvalidatedCount = subGroup.logs.filter(l => l.status_validasi === 'menunggu_dpl').length;
                         
-                        {/* Expandable CPMK Row */}
-                        {expandedCpmk[log._id] && (
-                          <tr className="border-b border-slate-100 dark:border-slate-700/50">
-                            <td colSpan="3" className="px-6 pb-5 pt-0">
-                              <div className="animate-in fade-in slide-in-from-top-2 duration-200 w-full">
-                                {log.matched_indicators && log.matched_indicators.length > 0 ? (
-                                  <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 border border-white/60 dark:border-slate-700">
-                                    <p className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                                      <span>🎯</span> {log.matched_indicators.length} Target CPMK Terpenuhi
-                                    </p>
-                                    <div className="space-y-3">
-                                      {log.matched_indicators.map((ind, idx) => (
-                                        <div key={idx} className="flex gap-2.5 items-start">
-                                          <div className="text-amber-400 text-xs mt-0.5 shrink-0">⭐</div>
-                                          <div>
-                                            <p className="text-[11px] font-bold text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-900 px-2 py-1 rounded shadow-sm inline-block mb-1 border border-slate-100 dark:border-slate-700">{ind.nama_cpmk}</p>
-                                            <p className="text-xs text-slate-600 dark:text-slate-400 font-medium leading-relaxed">{ind.indikator}</p>
-                                            {ind.alasan && (
-                                              <div className="mt-1.5 p-2 bg-indigo-100/50 dark:bg-indigo-900/30 rounded border border-indigo-200/50 dark:border-indigo-800/50">
-                                                <p className="text-xs text-indigo-900 dark:text-indigo-200 leading-relaxed">
-                                                  <span className="font-bold text-indigo-700 dark:text-indigo-400 mr-1">Analisis Kegiatan:</span>
-                                                  {ind.alasan}
-                                                </p>
-                                              </div>
+                        return (
+                          <div key={subGroup.name} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm transition-all hover:shadow-md">
+                            
+                            {/* SUBGROUP HEADER */}
+                            <div 
+                              className="px-5 py-4 flex items-center justify-between cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+                              onClick={() => setExpandedSubGroup(isSubExpanded ? null : subGroupId)}
+                            >
+                              <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                                  {viewMode === 'individu' ? <User className="w-5 h-5" /> : <ClipboardList className="w-5 h-5" />}
+                                </div>
+                                <div>
+                                  <h4 className="font-bold text-slate-700 dark:text-slate-100 text-base">{subGroup.name}</h4>
+                                  {unvalidatedCount > 0 && activeTab === 'antrean' && (
+                                    <span className="inline-block mt-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[10px] font-bold px-2.5 py-0.5 rounded-md border border-amber-200 dark:border-amber-800/50">
+                                      {unvalidatedCount} menunggu validasi
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                              <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${isSubExpanded ? 'rotate-180' : ''}`} />
+                            </div>
+
+                            {/* LOGS GRID */}
+                            {isSubExpanded && (
+                              <div className="p-4 md:p-6 border-t border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
+                                
+                                <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                                  <span className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                                    <FileSignature className="w-4 h-4 text-indigo-500" />
+                                    Total {subGroup.logs.length} Logbook
+                                  </span>
+                                  {subGroup.logs.some(l => l.status_validasi === 'menunggu_dpl' || l.status_validasi === 'menunggu_mentor') && (
+                                    <button 
+                                      onClick={() => handleSelectSubGroup(subGroup.logs)}
+                                      className="text-xs font-bold px-4 py-2 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 rounded-lg border border-indigo-200 dark:border-indigo-800/50 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors flex items-center justify-center gap-2"
+                                    >
+                                      <CheckCircle2 className="w-3.5 h-3.5" /> Pilih Semua di Grup Ini
+                                    </button>
+                                  )}
+                                </div>
+
+                                <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
+                                  {subGroup.logs.map(log => {
+                                    const isSelected = selectedLogs.includes(log._id);
+                                    return (
+                                      <div 
+                                        key={log._id} 
+                                        className={`bg-white dark:bg-slate-800 rounded-2xl p-5 shadow-sm border transition-all ${
+                                          isSelected ? 'border-indigo-400 dark:border-indigo-500 ring-2 ring-indigo-400/20 dark:ring-indigo-500/20 shadow-md' : 'border-slate-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-600'
+                                        }`}
+                                      >
+                                        <div className="flex justify-between items-start mb-4 gap-3">
+                                          <div className="flex items-start gap-3">
+                                            {(log.status_validasi === 'menunggu_dpl' || log.status_validasi === 'menunggu_mentor') && (
+                                              <input 
+                                                type="checkbox" 
+                                                className="w-5 h-5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-600 mt-0.5 cursor-pointer"
+                                                checked={isSelected}
+                                                onChange={() => toggleSelectLog(log._id)}
+                                              />
                                             )}
+                                            <div>
+                                              <p className="text-sm font-black text-slate-700 dark:text-slate-200 flex items-center gap-2">
+                                                <Calendar className="w-4 h-4 text-indigo-500" /> 
+                                                {new Date(log.tanggal).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                                              </p>
+                                            </div>
+                                          </div>
+                                          
+                                          <div className="flex items-center gap-2 shrink-0">
+                                            {log.bukti_kegiatan && (
+                                              <button 
+                                                onClick={(e) => { e.stopPropagation(); handleViewFile(log.bukti_kegiatan); }} 
+                                                className="text-[10px] font-bold text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 px-2 py-1 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors border border-blue-200 dark:border-blue-800/50 flex items-center gap-1"
+                                                title="Lihat Bukti Kegiatan"
+                                              >
+                                                🖼️ Bukti
+                                              </button>
+                                            )}
+                                            {log.status_validasi === 'menunggu_dpl' && <span className="px-2 py-1 bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 text-[10px] font-bold rounded-md border border-amber-200 dark:border-amber-800/50">Menunggu DPL</span>}
+                                            {log.status_validasi === 'menunggu_mentor' && <span className="px-2 py-1 bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 text-[10px] font-bold rounded-md border border-indigo-200 dark:border-indigo-800/50 animate-pulse">Di Mentor</span>}
+                                            {log.status_validasi === 'selesai' && <span className="px-2 py-1 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 text-[10px] font-bold rounded-md border border-emerald-200 dark:border-emerald-800/50">Selesai</span>}
                                           </div>
                                         </div>
-                                      ))}
-                                    </div>
-                                  </div>
-                                ) : (
-                                  <div className="bg-amber-50 dark:bg-amber-900/10 rounded-xl p-3.5 border border-amber-200 dark:border-amber-800/50 flex gap-2 items-start">
-                                    <span className="text-amber-500">💡</span>
-                                    <div>
-                                      <p className="text-[10px] font-bold text-amber-700 dark:text-amber-500 uppercase tracking-wider mb-0.5">
-                                        Tidak Memenuhi Target CPMK
-                                      </p>
-                                      <p className="text-[11px] text-amber-600 dark:text-amber-400/80 leading-relaxed mt-1">Kegiatan ini bersifat rutinitas. Mohon arahkan mahasiswa untuk melakukan variasi tugas lain agar target KKL Plus tercapai.</p>
-                                    </div>
-                                  </div>
-                                )}
+
+                                        <div className="space-y-2 mb-2 bg-slate-50/50 dark:bg-slate-900/20 p-4 rounded-xl border border-slate-100 dark:border-slate-800">
+                                          <p className="text-sm text-slate-700 dark:text-slate-300">
+                                            <span className="font-bold text-indigo-600 dark:text-indigo-400 mr-2">Rencana Target:</span> 
+                                            {log.rencana_target}
+                                          </p>
+                                          <p className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap">
+                                            <span className="font-bold text-indigo-600 dark:text-indigo-400 mr-2">Uraian Kegiatan:</span> 
+                                            {log.uraian_kegiatan}
+                                          </p>
+                                          <p className="text-sm text-emerald-700 dark:text-emerald-400 font-medium">
+                                            <span className="font-bold text-emerald-600 dark:text-emerald-500 mr-2">Hasil / Output:</span> 
+                                            {log.hasil_output}
+                                          </p>
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
                               </div>
-                            </td>
-                          </tr>
-                        )}
-                      </React.Fragment>
-                    ))
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
                   )}
-                </tbody>
-              </table>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Sticky Action Bar */}
+      {selectedLogs.length > 0 && (
+        <div className="fixed bottom-0 left-0 right-0 lg:left-64 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] p-4 sm:p-5 transform transition-transform duration-300 animate-in slide-in-from-bottom-full">
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-black">
+                {selectedLogs.length}
+              </div>
+              <div>
+                <p className="font-bold text-slate-800 dark:text-slate-100 text-sm">Kegiatan Terpilih</p>
+                <p className="text-xs text-slate-500 font-medium">Langkah selanjutnya adalah meminta validasi Kepala Desa.</p>
+              </div>
+            </div>
+            
+            <div className="flex gap-3 w-full sm:w-auto">
+              <button 
+                onClick={() => setSelectedLogs([])}
+                className="px-5 py-3 font-bold text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
+              >
+                Batal
+              </button>
+              <button 
+                onClick={handleBulkValidasi}
+                disabled={submitting}
+                className="flex-1 sm:flex-none px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                Kirim via WhatsApp
+              </button>
             </div>
           </div>
         </div>
       )}
+
+      {/* CSS for custom scrollbar hidden globally if not configured in tailwind */}
+      <style jsx global>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background-color: rgba(156, 163, 175, 0.3);
+          border-radius: 10px;
+        }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+          background-color: rgba(75, 85, 99, 0.4);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background-color: rgba(156, 163, 175, 0.5);
+        }
+      `}</style>
+    
+      {lastGeneratedLink && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 md:p-8 max-w-lg w-full shadow-2xl border border-slate-200 dark:border-slate-700 animate-in fade-in zoom-in-95 duration-200">
+            <div className="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-5 mx-auto">
+              <CheckCircle2 className="w-6 h-6" />
+            </div>
+            <h3 className="text-xl font-black text-slate-800 dark:text-white text-center mb-2">Tautan Berhasil Dibuat!</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400 text-center mb-6">WhatsApp Anda seharusnya sudah terbuka otomatis. Jika tidak, Anda bisa menyalin tautan di bawah ini dan mengirimkannya secara manual ke Mentor.</p>
+            
+            <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 p-3 rounded-xl border border-slate-200 dark:border-slate-700 mb-6">
+              <input 
+                type="text" 
+                readOnly 
+                value={lastGeneratedLink} 
+                className="bg-transparent border-none focus:ring-0 text-sm font-medium text-slate-700 dark:text-slate-300 w-full outline-none"
+              />
+              <button 
+                onClick={() => {
+                  navigator.clipboard.writeText(lastGeneratedLink);
+                  showToast('Tautan disalin ke clipboard!');
+                }}
+                className="shrink-0 p-2 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors text-slate-600 dark:text-slate-400"
+                title="Salin Tautan"
+              >
+                <Copy className="w-4 h-4" />
+              </button>
+            </div>
+            
+            <button 
+              onClick={() => setLastGeneratedLink(null)}
+              className="w-full py-3.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+            >
+              Tutup
+            </button>
+          </div>
+        </div>
+      )}
+
     </DashboardLayout>
   );
 }

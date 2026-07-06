@@ -25,9 +25,20 @@ const LogbookSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
-  deskripsi_kegiatan: {
+  rencana_target: {
     type: String,
     required: true,
+  },
+  uraian_kegiatan: {
+    type: String,
+    required: true,
+  },
+  hasil_output: {
+    type: String,
+    required: true,
+  },
+  kendala_solusi: {
+    type: String,
   },
   bukti_kegiatan: { // untuk foto
     type: String,
@@ -37,8 +48,8 @@ const LogbookSchema = new mongoose.Schema({
   },
   status_validasi: {
     type: String,
-    enum: ['menunggu_mentor', 'divalidasi_mentor', 'divalidasi_dpl', 'revisi'],
-    default: 'menunggu_mentor',
+    enum: ['menunggu_dpl', 'menunggu_mentor', 'divalidasi_mentor', 'divalidasi_dpl', 'revisi', 'selesai'],
+    default: 'menunggu_dpl',
   },
   catatan_revisi: {
     type: String,

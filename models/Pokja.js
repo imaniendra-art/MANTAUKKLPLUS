@@ -21,6 +21,7 @@ const PokjaSchema = new mongoose.Schema({
   catatan_lppm: { type: String, default: '' },
   tanggal_mulai: { type: Date, required: false },
   tanggal_selesai: { type: Date, required: false },
+  judul_proker: { type: String, default: '' },
   is_laporan_unlocked: { type: Boolean, default: false },
   
   // Dokumen Kelompok (Brankas Dokumen)

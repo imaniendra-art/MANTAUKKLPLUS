@@ -14,9 +14,13 @@ export async function GET(req) {
     const role = searchParams.get('role');
     const userId = searchParams.get('userId'); 
     
-    // Mahasiswa: Tarik logbook berdasarkan mhsId (individu) atau pokjaId (pokja)
-    if (mhsId && tipe === 'individu') {
-      const logs = await Logbook.find({ mahasiswa_id: mhsId, tipe_logbook: 'individu' }).sort({ tanggal: -1, createdAt: -1 });
+    if (mhsId) {
+      const query = { mahasiswa_id: mhsId };
+      if (tipe) query.tipe_logbook = tipe;
+      
+      const logs = await Logbook.find(query)
+        .populate({ path: 'proker_id', select: 'judul_proker' })
+        .sort({ tanggal: -1, createdAt: -1 });
       return NextResponse.json(logs);
     }
 
@@ -105,8 +109,20 @@ export async function PATCH(req) {
   await dbConnect();
   try {
     const data = await req.json();
-    const { id, status_validasi, catatan_revisi, deskripsi_kegiatan, bukti_link, bukti_kegiatan } = data;
+    const { id, status_validasi, catatan_revisi, rencana_target, uraian_kegiatan, hasil_output, kendala_solusi, bukti_link, bukti_kegiatan, ids } = data;
     
+    // Bulk Update
+    if (ids && Array.isArray(ids) && ids.length > 0) {
+      if (!status_validasi) {
+        return NextResponse.json({ error: "Missing status_validasi for bulk update" }, { status: 400 });
+      }
+      const updated = await Logbook.updateMany(
+        { _id: { $in: ids } },
+        { $set: { status_validasi } }
+      );
+      return NextResponse.json({ success: true, count: updated.modifiedCount });
+    }
+
     if (!id) {
       return NextResponse.json({ error: "Missing Logbook ID" }, { status: 400 });
     }
@@ -114,7 +130,10 @@ export async function PATCH(req) {
     let updateData = {};
     if (status_validasi) updateData.status_validasi = status_validasi;
     if (catatan_revisi !== undefined) updateData.catatan_revisi = catatan_revisi;
-    if (deskripsi_kegiatan) updateData.deskripsi_kegiatan = deskripsi_kegiatan;
+    if (rencana_target) updateData.rencana_target = rencana_target;
+    if (uraian_kegiatan) updateData.uraian_kegiatan = uraian_kegiatan;
+    if (hasil_output) updateData.hasil_output = hasil_output;
+    if (kendala_solusi !== undefined) updateData.kendala_solusi = kendala_solusi;
     if (bukti_link !== undefined) updateData.bukti_link = bukti_link;
     if (bukti_kegiatan) updateData.bukti_kegiatan = bukti_kegiatan;
     

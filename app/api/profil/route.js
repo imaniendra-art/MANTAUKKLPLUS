@@ -14,15 +14,25 @@ export async function PATCH(req) {
       return NextResponse.json({ error: "Tidak sah, silakan login" }, { status: 401 });
     }
 
-    const { oldPassword, newPassword } = await req.json();
-
-    if (!oldPassword || !newPassword) {
-      return NextResponse.json({ error: "Password lama dan password baru wajib diisi" }, { status: 400 });
-    }
+    const body = await req.json();
+    const { action } = body;
 
     const user = await User.findById(session.user.id);
     if (!user) {
       return NextResponse.json({ error: "Pengguna tidak ditemukan" }, { status: 404 });
+    }
+
+    if (action === "update_konsentrasi") {
+      const { konsentrasi } = body;
+      user.konsentrasi = konsentrasi;
+      await user.save();
+      return NextResponse.json({ message: "Konsentrasi berhasil diperbarui" });
+    }
+
+    // Default: update password
+    const { oldPassword, newPassword } = body;
+    if (!oldPassword || !newPassword) {
+      return NextResponse.json({ error: "Password lama dan password baru wajib diisi" }, { status: 400 });
     }
 
     const isMatch = await bcrypt.compare(oldPassword, user.password);

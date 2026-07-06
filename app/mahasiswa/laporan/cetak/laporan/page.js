@@ -295,7 +295,12 @@ export default function CetakLaporan() {
                     <tr key={log._id}>
                       <td className="border border-slate-800 p-2 text-center align-top">{idx + 1}</td>
                       <td className="border border-slate-800 p-2 text-center align-top">{new Date(log.tanggal).toLocaleDateString('id-ID')}</td>
-                      <td className="border border-slate-800 p-2 text-left whitespace-pre-wrap">{log.deskripsi_kegiatan}</td>
+                      <td className="border border-slate-800 p-2 text-left whitespace-pre-wrap text-xs">
+                        <strong>Rencana:</strong> {log.rencana_target}<br/>
+                        <strong>Uraian:</strong> {log.uraian_kegiatan}<br/>
+                        <strong>Hasil:</strong> {log.hasil_output}<br/>
+                        {log.kendala_solusi && <><strong>Kendala:</strong> {log.kendala_solusi}</>}
+                      </td>
                     </tr>
                   ))}
                 </tbody>

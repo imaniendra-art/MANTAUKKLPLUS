@@ -15,8 +15,10 @@ export default function ProfilPage() {
     newPassword: "",
     confirmPassword: ""
   });
+  const [konsentrasi, setKonsentrasi] = useState(session?.user?.konsentrasi || "");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
+  const [messageKonsentrasi, setMessageKonsentrasi] = useState(null);
 
   const role = session?.user?.role;
   let dashboardPath = "/";
@@ -64,6 +66,29 @@ export default function ProfilPage() {
     }
   };
 
+  const handleKonsentrasiSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessageKonsentrasi(null);
+    try {
+      const res = await fetch("/api/profil", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "update_konsentrasi", konsentrasi })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setMessageKonsentrasi({ type: "error", text: data.error || "Gagal memperbarui konsentrasi." });
+      } else {
+        setMessageKonsentrasi({ type: "success", text: "Konsentrasi berhasil diperbarui!" });
+      }
+    } catch (error) {
+      setMessageKonsentrasi({ type: "error", text: "Terjadi kesalahan sistem." });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <DashboardLayout title="Pengaturan Profil" backPath={dashboardPath}>
       <div className="max-w-2xl mx-auto space-y-8 animate-in fade-in duration-500">
@@ -96,6 +121,51 @@ export default function ProfilPage() {
                 </div>
               )}
             </div>
+            
+            {role === 'mahasiswa' && (
+              <div className="bg-white/40 dark:bg-slate-900/20 p-6 rounded-3xl border border-white/60 dark:border-slate-700 shadow-inner mb-8">
+                <div className="mb-6">
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <span className="text-[#1398A5]">🎓</span> Konsentrasi Studi
+                  </h3>
+                  <p className="text-sm text-slate-500 mt-1">Lengkapi konsentrasi studi Anda untuk informasi POKJA.</p>
+                </div>
+                
+                {messageKonsentrasi && (
+                  <div className={`p-4 rounded-xl mb-6 font-bold text-sm flex items-center gap-2 ${messageKonsentrasi.type === 'error' ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'}`}>
+                    {messageKonsentrasi.type === 'error' ? '⚠️ ' : '✅ '}{messageKonsentrasi.text}
+                  </div>
+                )}
+                
+                <form onSubmit={handleKonsentrasiSubmit} className="space-y-5">
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Pilih/Ketik Konsentrasi</label>
+                    <input 
+                      type="text" 
+                      required
+                      value={konsentrasi}
+                      onChange={(e) => setKonsentrasi(e.target.value)}
+                      className="w-full px-5 py-3.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white/60 dark:bg-slate-800/60 backdrop-blur-md text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1398A5] transition-all font-medium placeholder-slate-400"
+                      placeholder="Misal: Manajemen Keuangan"
+                    />
+                  </div>
+                  <div className="pt-2">
+                    <button 
+                      type="submit" 
+                      disabled={loading}
+                      className="w-full sm:w-auto px-8 py-3.5 bg-[#1398A5] hover:bg-teal-700 text-white font-bold rounded-xl shadow-lg shadow-teal-500/30 hover:shadow-teal-500/40 hover:-translate-y-0.5 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                    >
+                      {loading ? 'Menyimpan...' : (
+                        <>
+                          <Check className="w-5 h-5" />
+                          Simpan Konsentrasi
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
             
             <div className="bg-white/40 dark:bg-slate-900/20 p-6 rounded-3xl border border-white/60 dark:border-slate-700 shadow-inner">
               <div className="mb-6">

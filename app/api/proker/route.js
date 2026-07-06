@@ -7,10 +7,10 @@ export async function POST(req) {
   await dbConnect();
   try {
     const payload = await req.json();
-    const { pokja_id, judul_proker, deskripsi, target_dampak } = payload;
+    const { pokja_id, judul_proker, deskripsi, target_dampak, jenis_proker, pic_id, tanggal_mulai, tanggal_selesai } = payload;
 
-    if (!pokja_id || !judul_proker) {
-      return NextResponse.json({ error: "Pokja ID dan Judul wajib diisi" }, { status: 400 });
+    if (!pokja_id || !judul_proker || !jenis_proker || !pic_id || !tanggal_mulai || !tanggal_selesai) {
+      return NextResponse.json({ error: "Pokja ID, Judul, Jenis, PIC, dan Tanggal wajib diisi" }, { status: 400 });
     }
 
     const proker = await Proker.create({
@@ -18,6 +18,11 @@ export async function POST(req) {
       judul_proker,
       deskripsi,
       target_dampak,
+      jenis_proker,
+      pic_id,
+      tanggal_mulai,
+      tanggal_selesai,
+      status_pelaksanaan: 'Belum Dimulai',
       status: 'usulan'
     });
     
@@ -35,7 +40,9 @@ export async function GET(req) {
     const dplId = searchParams.get('dplId');
     
     if (pokjaId) {
-      const proker = await Proker.find({ pokja_id: pokjaId }).sort({ createdAt: -1 });
+      const proker = await Proker.find({ pokja_id: pokjaId })
+        .populate('pic_id', 'nama_lengkap')
+        .sort({ createdAt: -1 });
       return NextResponse.json(proker);
     }
 
@@ -50,6 +57,7 @@ export async function GET(req) {
           select: 'nama_pokja ketua_id',
           populate: { path: 'ketua_id', select: 'nama_lengkap' }
         })
+        .populate('pic_id', 'nama_lengkap')
         .sort({ createdAt: -1 });
       return NextResponse.json(prokers);
     }
@@ -64,13 +72,28 @@ export async function PATCH(req) {
   await dbConnect();
   try {
     const data = await req.json();
-    const { id, status, catatan_revisi } = data;
+    const { id, status, catatan_revisi, status_pelaksanaan, judul_proker, deskripsi, target_dampak, jenis_proker, pic_id, tanggal_mulai, tanggal_selesai } = data;
     
     if (!id) return NextResponse.json({ error: "ID wajib diisi" }, { status: 400 });
 
     const updatePayload = {};
     if (status) updatePayload.status = status;
     if (catatan_revisi !== undefined) updatePayload.catatan_revisi = catatan_revisi;
+    if (status_pelaksanaan) updatePayload.status_pelaksanaan = status_pelaksanaan;
+    if (judul_proker) updatePayload.judul_proker = judul_proker;
+    if (deskripsi) updatePayload.deskripsi = deskripsi;
+    if (target_dampak) updatePayload.target_dampak = target_dampak;
+    if (jenis_proker) updatePayload.jenis_proker = jenis_proker;
+    if (pic_id) updatePayload.pic_id = pic_id;
+    if (tanggal_mulai) updatePayload.tanggal_mulai = tanggal_mulai;
+    if (tanggal_selesai) updatePayload.tanggal_selesai = tanggal_selesai;
+
+    // Jika mahasiswa mengedit isi proker (ditandai dengan adanya field judul_proker dll), 
+    // maka kembalikan statusnya ke 'usulan' agar direview ulang oleh DPL.
+    // (DPL tidak mengirimkan judul_proker saat melakukan review)
+    if (judul_proker || deskripsi || target_dampak) {
+      updatePayload.status = 'usulan';
+    }
 
     const updated = await Proker.findByIdAndUpdate(
       id,
@@ -79,6 +102,21 @@ export async function PATCH(req) {
     );
     
     return NextResponse.json(updated);
+  } catch (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
+export async function DELETE(req) {
+  await dbConnect();
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get('id');
+
+    if (!id) return NextResponse.json({ error: "ID wajib diisi" }, { status: 400 });
+
+    await Proker.findByIdAndDelete(id);
+    return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { useSession } from "next-auth/react";
-import { FileSignature } from "lucide-react";
+import { FileSignature, User, Briefcase } from "lucide-react";
 
 export default function LogbookPage() {
   const { data: session } = useSession();
@@ -13,9 +13,8 @@ export default function LogbookPage() {
   const [logbooks, setLogbooks] = useState([]);
   const [loading, setLoading] = useState(true);
   
-  // Tipe Logbook Tab
-  const [activeTab, setActiveTab] = useState('individu'); // individu atau pokja
-
+  const [activeTab, setActiveTab] = useState('individu'); // 'individu' or 'pokja'
+  
   const getTodayLocal = () => {
     if (typeof window === 'undefined') return "";
     const today = new Date();
@@ -24,9 +23,12 @@ export default function LogbookPage() {
   };
   
   const [tanggal, setTanggal] = useState("");
-  const [deskripsi, setDeskripsi] = useState("");
+  const [rencanaTarget, setRencanaTarget] = useState("");
+  const [uraianKegiatan, setUraianKegiatan] = useState("");
+  const [hasilOutput, setHasilOutput] = useState("");
+  const [kendalaSolusi, setKendalaSolusi] = useState("");
   const [buktiFoto, setBuktiFoto] = useState("");
-  const [prokerId, setProkerId] = useState(""); // Hanya untuk tipe pokja
+  const [prokerId, setProkerId] = useState(""); 
   
   const [submitting, setSubmitting] = useState(false);
 
@@ -48,14 +50,8 @@ export default function LogbookPage() {
         const resProker = await fetch(`/api/proker?pokjaId=${dataP._id}`);
         setProkers(await resProker.json());
 
-        // Fetch Logbooks berdasarkan tab (individu = mhsId, pokja = pokjaId)
-        let url = `/api/logbook?tipe=${activeTab}`;
-        if (activeTab === 'individu') {
-          url += `&mhsId=${session.user.id}`;
-        } else {
-          url += `&pokjaId=${dataP._id}`;
-        }
-        const resL = await fetch(url);
+        // Fetch Logbooks (semua tipe yang di-assign ke user ini)
+        const resL = await fetch(`/api/logbook?mhsId=${session.user.id}`);
         const dataL = await resL.json();
         setLogbooks(Array.isArray(dataL) ? dataL : []);
       }
@@ -64,11 +60,17 @@ export default function LogbookPage() {
     } finally {
       setLoading(false);
     }
-  }, [session, activeTab]);
+  }, [session]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  // Handle Tab Switch
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    setProkerId(""); // reset proker selection
+  };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -92,13 +94,19 @@ export default function LogbookPage() {
     e.preventDefault();
     if (!pokja || pokja.status_pokja !== 'berjalan') return;
     
-    if (deskripsi.trim().split(/\s+/).length < 10) {
-      alert("Deskripsi kegiatan terlalu singkat. Mohon tuliskan minimal 10 kata.");
+    if (rencanaTarget.trim().length < 5 || uraianKegiatan.trim().length < 10 || hasilOutput.trim().length < 5) {
+      alert("Mohon isi Rencana, Uraian, dan Hasil dengan detail yang cukup.");
       return;
     }
     
     if (!buktiFoto) {
       alert("Wajib mengunggah file bukti kegiatan nyata di lapangan.");
+      return;
+    }
+    
+    // Validasi untuk tipe pokja
+    if (activeTab === 'pokja' && !prokerId) {
+      alert("Pilih Program Kerja terlebih dahulu!");
       return;
     }
     
@@ -108,13 +116,16 @@ export default function LogbookPage() {
       const payload = {
         pokja_id: pokja._id,
         mahasiswa_id: session.user.id,
-        tipe_logbook: activeTab,
+        tipe_logbook: activeTab, // 'individu' atau 'pokja'
         tanggal,
-        deskripsi_kegiatan: deskripsi,
+        rencana_target: rencanaTarget,
+        uraian_kegiatan: uraianKegiatan,
+        hasil_output: hasilOutput,
+        kendala_solusi: kendalaSolusi,
         bukti_kegiatan: buktiFoto
       };
 
-      if (activeTab === 'pokja' && prokerId) {
+      if (prokerId) {
         payload.proker_id = prokerId;
       }
 
@@ -126,7 +137,10 @@ export default function LogbookPage() {
 
       if (res.ok) {
         setTanggal(getTodayLocal());
-        setDeskripsi("");
+        setRencanaTarget("");
+        setUraianKegiatan("");
+        setHasilOutput("");
+        setKendalaSolusi("");
         setBuktiFoto("");
         setProkerId("");
         
@@ -163,10 +177,27 @@ export default function LogbookPage() {
     }
   };
 
-  const isKetua = pokja?.ketua_id?._id === session?.user?.id || pokja?.ketua_id === session?.user?.id;
+  // Logic untuk proker dropdown
+  const filteredProkers = useMemo(() => {
+    if (!pokja || !session?.user?.id) return [];
+    
+    // The schema specifies ketua_id as a reference. Let's compare id.
+    const isKetua = pokja.ketua_id?._id === session.user.id || pokja.ketua_id === session.user.id;
+    
+    return prokers.filter(p => {
+      const isPIC = p.pic_id?._id === session.user.id || p.pic_id === session.user.id;
+      if (p.jenis_proker === 'Utama') {
+        return isKetua;
+      } else {
+        return isPIC;
+      }
+    });
+  }, [prokers, pokja, session]);
+
+  const displayedLogbooks = logbooks.filter(log => log.tipe_logbook === activeTab);
 
   return (
-    <DashboardLayout title="Logbook KKL Plus">
+    <DashboardLayout title="Logbook Harian Mahasiswa">
       
       {loading ? (
         <div className="text-center py-20 text-slate-500 font-bold animate-pulse">Memuat data logbook...</div>
@@ -185,53 +216,93 @@ export default function LogbookPage() {
           
           <div className="lg:col-span-5 flex flex-col gap-6">
             
-            <div className="flex bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-2xl p-1 border border-white/60 dark:border-slate-700">
-              <button 
-                onClick={() => setActiveTab('individu')}
-                className={`flex-1 py-3 text-sm font-bold rounded-xl transition-colors ${activeTab === 'individu' ? 'bg-indigo-600 text-white' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700'}`}
+            {/* Tabs Selector */}
+            <div className="flex bg-slate-100 dark:bg-slate-900 rounded-xl p-1 border border-slate-200 dark:border-slate-700/50 w-full">
+              <button
+                className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-2 ${
+                  activeTab === 'individu' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                }`}
+                onClick={() => handleTabChange('individu')}
               >
-                Logbook Individu
+                <User className="w-4 h-4" /> Logbook Personal
               </button>
-              <button 
-                onClick={() => setActiveTab('pokja')}
-                className={`flex-1 py-3 text-sm font-bold rounded-xl transition-colors ${activeTab === 'pokja' ? 'bg-indigo-600 text-white' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700'}`}
+              <button
+                className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-2 ${
+                  activeTab === 'pokja' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                }`}
+                onClick={() => handleTabChange('pokja')}
               >
-                Logbook POKJA
+                <Briefcase className="w-4 h-4" /> Logbook Proker
               </button>
             </div>
 
             {/* Form Pengisian */}
-            {activeTab === 'individu' || (activeTab === 'pokja' && isKetua) ? (
-              <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-3xl border border-white/60 dark:border-slate-700 shadow-sm overflow-hidden sticky top-28">
-                <div className="p-6 border-b border-slate-100 dark:border-slate-700 bg-indigo-50/30 dark:bg-indigo-900/10">
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                    Tulis Logbook {activeTab === 'pokja' ? 'Kelompok' : 'Harian'}
-                  </h3>
-                  <p className="text-xs text-slate-500 font-medium mt-1">
-                    Isi berdasarkan aktivitas rill di {pokja.mitra_id?.nama_instansi}.
-                  </p>
+            <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-3xl border border-white/60 dark:border-slate-700 shadow-sm overflow-hidden sticky top-28">
+              <div className="p-6 border-b border-slate-100 dark:border-slate-700 bg-indigo-50/30 dark:bg-indigo-900/10">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                  Tulis Logbook {activeTab === 'individu' ? 'Personal' : 'Proker'}
+                </h3>
+                <p className="text-xs text-slate-500 font-medium mt-1">
+                  {activeTab === 'individu' 
+                    ? `Ceritakan aktivitas dan kehadiran Anda secara personal di ${pokja.mitra_id?.nama_instansi}.` 
+                    : `Laporkan progress dan capaian kumulatif Proker yang menjadi tanggung jawab Anda.`}
+                </p>
+              </div>
+              
+              {activeTab === 'pokja' && filteredProkers.length === 0 ? (
+                <div className="p-10 text-center">
+                  <div className="text-4xl mb-4">🚫</div>
+                  <p className="font-bold text-slate-700 dark:text-slate-300 mb-1">Akses Dibatasi</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Anda bukan Ketua (Proker Utama) maupun PIC (Proker Pendukung) yang berhak mengisi form Proker.</p>
                 </div>
+              ) : (
                 <form onSubmit={handleSubmit} className="p-6 space-y-5">
                   <div>
                     <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Tanggal Kegiatan</label>
                     <input required value={tanggal} onChange={(e) => setTanggal(e.target.value)} type="date" className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/20 dark:bg-slate-900/20" />
                   </div>
                   
-                  {activeTab === 'pokja' && (
+                  {activeTab === 'pokja' ? (
                     <div>
-                      <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Program Kerja Terkait</label>
+                      <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Pilih Program Kerja <span className="text-red-500">*</span></label>
+                      <select required value={prokerId} onChange={(e) => setProkerId(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/20 dark:bg-slate-900/20">
+                        <option value="">-- Pilih Proker --</option>
+                        {filteredProkers.map(p => (
+                          <option key={p._id} value={p._id}>
+                            {p.judul_proker} {p.jenis_proker === 'Utama' ? '— (🌟 Utama)' : '— (Pendukung)'}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  ) : (
+                    <div>
+                      <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Program Kerja Terkait (Opsional)</label>
                       <select value={prokerId} onChange={(e) => setProkerId(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/20 dark:bg-slate-900/20">
-                        <option value="">-- Pilih Proker (Opsional) --</option>
+                        <option value="">-- Tidak Terkait Proker Khusus --</option>
                         {prokers.map(p => (
-                          <option key={p._id} value={p._id}>{p.nama_proker}</option>
+                          <option key={p._id} value={p._id}>
+                            {p.judul_proker} {p.jenis_proker === 'Utama' ? '— (🌟 Utama)' : '— (Pendukung)'}
+                          </option>
                         ))}
                       </select>
                     </div>
                   )}
 
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Deskripsi Kegiatan</label>
-                    <textarea required minLength="50" value={deskripsi} onChange={(e) => setDeskripsi(e.target.value)} rows="5" className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/20 dark:bg-slate-900/20 text-sm"></textarea>
+                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Rencana/Target Hari Ini <span className="text-red-500">*</span></label>
+                    <input required value={rencanaTarget} onChange={(e) => setRencanaTarget(e.target.value)} type="text" placeholder="Cth: Mengadakan observasi ke balai desa" className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/20 dark:bg-slate-900/20 text-sm" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Uraian Kegiatan <span className="text-red-500">*</span></label>
+                    <textarea required minLength="20" value={uraianKegiatan} onChange={(e) => setUraianKegiatan(e.target.value)} rows="3" placeholder="Ceritakan detail apa saja yang dilakukan..." className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/20 dark:bg-slate-900/20 text-sm"></textarea>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Hasil/Output <span className="text-red-500">*</span></label>
+                    <input required value={hasilOutput} onChange={(e) => setHasilOutput(e.target.value)} type="text" placeholder="Cth: Mendapat data monografi desa" className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/20 dark:bg-slate-900/20 text-sm" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Kendala & Solusi (Opsional)</label>
+                    <textarea value={kendalaSolusi} onChange={(e) => setKendalaSolusi(e.target.value)} rows="2" placeholder="Jika ada kendala, bagaimana mengatasinya?" className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/20 dark:bg-slate-900/20 text-sm"></textarea>
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Upload Bukti Foto <span className="text-red-500">*</span></label>
@@ -245,49 +316,52 @@ export default function LogbookPage() {
                     {submitting ? 'Menyimpan...' : 'Simpan Logbook'}
                   </button>
                 </form>
-              </div>
-            ) : (
-              <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-8 rounded-3xl border border-white/60 dark:border-slate-700 text-center">
-                <p className="text-slate-500">Hanya Ketua POKJA yang dapat mengisi Logbook Kelompok.</p>
-              </div>
-            )}
+              )}
+            </div>
           </div>
 
           {/* KANAN: Riwayat Logbook */}
           <div className="lg:col-span-7 space-y-6">
-            <h3 className="text-xl font-bold text-slate-800 dark:text-white">Riwayat Logbook {activeTab === 'pokja' ? 'POKJA' : 'Individu'}</h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-xl font-bold text-slate-800 dark:text-white">Riwayat {activeTab === 'individu' ? 'Personal' : 'Proker'}</h3>
+              <span className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-3 py-1 rounded-full text-xs font-bold shadow-sm">
+                Total: {displayedLogbooks.length}
+              </span>
+            </div>
             
-            {logbooks.length === 0 ? (
+            {displayedLogbooks.length === 0 ? (
               <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-10 rounded-3xl border border-white/60 dark:border-slate-700 shadow-sm text-center">
                 <div className="text-4xl mb-4"><FileSignature className="w-4 h-4 inline-block mr-1.5 -mt-0.5" /></div>
-                <p className="text-slate-500 font-medium">Belum ada riwayat logbook.</p>
+                <p className="text-slate-500 font-medium">Belum ada riwayat logbook di kategori ini.</p>
               </div>
             ) : (
               <div className="space-y-4">
-                {logbooks.map(log => (
-                  <div key={log._id} className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-6 rounded-2xl border border-white/60 dark:border-slate-700 shadow-sm">
+                {displayedLogbooks.map(log => (
+                  <div key={log._id} className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-6 rounded-2xl border border-white/60 dark:border-slate-700 shadow-sm transition-all hover:shadow-md">
                     <div className="flex justify-between items-start gap-4 mb-3">
                       <div>
                         <p className="text-sm font-bold text-slate-800 dark:text-white">{new Date(log.tanggal).toLocaleDateString('id-ID', { weekday: 'long', month: 'short', year: 'numeric' })}</p>
-                        {activeTab === 'pokja' && log.proker_id && (
-                          <p className="text-xs font-bold text-indigo-600 dark:text-indigo-400 mt-1">Proker: {log.proker_id.nama_proker}</p>
-                        )}
-                        {activeTab === 'pokja' && (
-                          <p className="text-xs text-slate-500 mt-1">Oleh: {log.mahasiswa_id?.nama_lengkap}</p>
+                        {log.proker_id && (
+                          <p className="text-xs font-bold text-indigo-600 dark:text-indigo-400 mt-1">Proker: {log.proker_id.judul_proker}</p>
                         )}
                       </div>
                       
                       <div className="flex items-center gap-2">
                         {log.bukti_kegiatan && (
-                          <button onClick={() => handleViewFile(log.bukti_kegiatan)} className="text-[11px] font-bold text-blue-700 bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-200">
+                          <button onClick={() => handleViewFile(log.bukti_kegiatan)} className="text-[11px] font-bold text-blue-700 bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-200 hover:bg-blue-100">
                             🖼️ Bukti
                           </button>
                         )}
-                        <span className="px-2 py-1 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-[10px] font-bold rounded-md uppercase tracking-wider">{log.status_validasi}</span>
+                        <span className="px-2 py-1 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-[10px] font-bold rounded-md uppercase tracking-wider">{log.status_validasi.replace('_', ' ')}</span>
                       </div>
                     </div>
 
-                    <p className="text-slate-700 dark:text-slate-300 text-sm mt-4 leading-relaxed">{log.deskripsi_kegiatan}</p>
+                    <div className="text-slate-700 dark:text-slate-300 text-sm mt-4 leading-relaxed space-y-1">
+                      <p><strong>Rencana:</strong> {log.rencana_target}</p>
+                      <p><strong>Uraian:</strong> {log.uraian_kegiatan}</p>
+                      <p><strong>Hasil:</strong> {log.hasil_output}</p>
+                      {log.kendala_solusi && <p><strong>Kendala/Solusi:</strong> {log.kendala_solusi}</p>}
+                    </div>
                   </div>
                 ))}
               </div>

@@ -57,8 +57,10 @@ export async function GET(req) {
     
     if (isAdmin === 'true') {
       const status = searchParams.get('status') || 'menunggu_persetujuan_lppm';
-      const pokjas = await Pokja.find({ status_pokja: status })
-        .populate({ path: 'ketua_id', select: 'nama_lengkap nim_nidn program_studi' })
+      const statusArray = status.includes(',') ? status.split(',') : [status];
+      const pokjas = await Pokja.find({ status_pokja: { $in: statusArray } })
+        .populate({ path: 'ketua_id', select: 'nama_lengkap nim_nidn program_studi konsentrasi' })
+        .populate({ path: 'anggota.user_id', select: 'nama_lengkap nim_nidn program_studi konsentrasi' })
         .populate({ path: 'dpl_id', select: 'nama_lengkap' })
         .populate({ path: 'mitra_id', select: 'nama_instansi' })
         .sort({ createdAt: -1 });

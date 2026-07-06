@@ -17,6 +17,7 @@ export default function MentorValidasi() {
   const [rejectReason, setRejectReason] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [expandedCpmk, setExpandedCpmk] = useState({});
+  const [selectedLogs, setSelectedLogs] = useState([]);
 
   const toggleCpmk = (id) => {
     setExpandedCpmk(prev => ({ ...prev, [id]: !prev[id] }));
@@ -43,6 +44,11 @@ export default function MentorValidasi() {
       setLoading(false);
     }
   }, [session]);
+
+  // Reset selection when tab changes
+  useEffect(() => {
+    setSelectedLogs([]);
+  }, [activeTab]);
 
   useEffect(() => {
     const load = async () => {
@@ -85,6 +91,45 @@ export default function MentorValidasi() {
       alert("Terjadi kesalahan sistem");
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleBulkValidasi = async () => {
+    if (selectedLogs.length === 0) return;
+    setSubmitting(true);
+    try {
+      const payload = { ids: selectedLogs, status_validasi: 'divalidasi_mentor' };
+      const res = await fetch('/api/logbook', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        showToast(`${selectedLogs.length} Logbook Berhasil Divalidasi!`);
+        setSelectedLogs([]);
+        fetchData();
+      } else {
+        alert("Gagal memvalidasi logbook terpilih");
+      }
+    } catch (error) {
+      alert("Terjadi kesalahan sistem");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const toggleSelectLog = (id) => {
+    setSelectedLogs(prev => 
+      prev.includes(id) ? prev.filter(l => l !== id) : [...prev, id]
+    );
+  };
+
+  const handleSelectAll = (e) => {
+    if (e.target.checked) {
+      const antreanIds = logbooks.filter(l => l.status_validasi === 'menunggu_mentor').map(l => l._id);
+      setSelectedLogs(antreanIds);
+    } else {
+      setSelectedLogs([]);
     }
   };
 
@@ -154,9 +199,20 @@ export default function MentorValidasi() {
       </div>
 
           {/* Header Card */}
-          <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl shadow-sm rounded-2xl border border-white/60 dark:border-slate-700 p-6">
-            <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">Validasi Logbook Harian</h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Verifikasi secara faktual apakah deskripsi kegiatan mahasiswa benar-benar dilakukan di instansi Anda.</p>
+          <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl shadow-sm rounded-2xl border border-white/60 dark:border-slate-700 p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+              <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">Validasi Logbook Harian</h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Verifikasi secara faktual apakah deskripsi kegiatan mahasiswa benar-benar dilakukan di instansi Anda.</p>
+            </div>
+            {activeTab === 'antrean' && selectedLogs.length > 0 && (
+              <button 
+                onClick={handleBulkValidasi}
+                disabled={submitting}
+                className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-50 flex items-center gap-2 whitespace-nowrap"
+              >
+                <Check className="w-5 h-5" /> Setujui {selectedLogs.length} Terpilih
+              </button>
+            )}
           </div>
 
           {/* Table Card */}
@@ -165,6 +221,16 @@ export default function MentorValidasi() {
               <table className="w-full text-left border-collapse table-fixed">
                 <thead>
                   <tr className="bg-slate-50 dark:bg-slate-800 shadow-sm border-b border-white/60 dark:border-slate-700 text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">
+                    {activeTab === 'antrean' && (
+                      <th className="py-4 px-4 w-12 text-center">
+                        <input 
+                          type="checkbox" 
+                          className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-600"
+                          onChange={handleSelectAll}
+                          checked={selectedLogs.length > 0 && selectedLogs.length === logbooks.filter(l => l.status_validasi === 'menunggu_mentor').length}
+                        />
+                      </th>
+                    )}
                     <th className="py-4 px-6 whitespace-nowrap w-[20%]">Mahasiswa & Tgl</th>
                     <th className="py-4 px-6 w-[55%]">Deskripsi Kegiatan</th>
                     <th className="py-4 px-6 text-right w-[25%]">Aksi</th>
@@ -173,7 +239,7 @@ export default function MentorValidasi() {
                 <tbody className="divide-y divide-white/[0.04]">
                   {logbooks.filter(log => activeTab === 'antrean' ? log.status_validasi === 'menunggu_mentor' : log.status_validasi !== 'menunggu_mentor').length === 0 ? (
                     <tr>
-                      <td colSpan="3" className="py-12 text-center text-slate-500 dark:text-slate-400 font-medium">
+                      <td colSpan={activeTab === 'antrean' ? "4" : "3"} className="py-12 text-center text-slate-500 dark:text-slate-400 font-medium">
                         <div className="text-4xl mb-3">{activeTab === 'antrean' ? '🎉' : '📭'}</div>
                         {activeTab === 'antrean' ? 'Tidak ada logbook menunggu validasi lapangan Anda.' : 'Belum ada riwayat logbook yang Anda validasi/revisi.'}
                       </td>
@@ -182,12 +248,27 @@ export default function MentorValidasi() {
                     logbooks.filter(log => activeTab === 'antrean' ? log.status_validasi === 'menunggu_mentor' : log.status_validasi !== 'menunggu_mentor').map((log) => (
                       <React.Fragment key={log._id}>
                         <tr className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
+                          {activeTab === 'antrean' && (
+                            <td className="py-4 px-4 text-center align-top">
+                              <input 
+                                type="checkbox" 
+                                className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-600 mt-1"
+                                checked={selectedLogs.includes(log._id)}
+                                onChange={() => toggleSelectLog(log._id)}
+                              />
+                            </td>
+                          )}
                           <td className="py-4 px-6 align-top">
                             <p className="font-bold text-sm text-slate-800 dark:text-slate-100">{log.mahasiswa_id?.nama_lengkap}</p>
                             <p className="text-xs font-semibold text-slate-500 mt-1 bg-slate-100 dark:bg-slate-800 w-fit px-2 py-1 rounded-md">{new Date(log.tanggal).toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}</p>
                           </td>
                           <td className="py-4 px-6 align-top">
-                            <p className="text-sm font-medium text-slate-700 dark:text-slate-300 leading-relaxed">{log.deskripsi_kegiatan}</p>
+                            <div className="text-sm font-medium text-slate-700 dark:text-slate-300 leading-relaxed space-y-1">
+                              <p><strong>Rencana:</strong> {log.rencana_target}</p>
+                              <p><strong>Uraian:</strong> {log.uraian_kegiatan}</p>
+                              <p><strong>Hasil:</strong> {log.hasil_output}</p>
+                              {log.kendala_solusi && <p><strong>Kendala/Solusi:</strong> {log.kendala_solusi}</p>}
+                            </div>
                           </td>
                           <td className="py-4 px-6 align-top text-right">
                             <div className="flex flex-col items-end gap-3">
@@ -241,7 +322,7 @@ export default function MentorValidasi() {
                         {/* Expandable CPMK Row */}
                         {expandedCpmk[log._id] && (
                           <tr className="border-b border-slate-100 dark:border-slate-700/50">
-                            <td colSpan="3" className="px-6 pb-5 pt-0">
+                            <td colSpan={activeTab === 'antrean' ? "4" : "3"} className="px-6 pb-5 pt-0">
                               <div className="animate-in fade-in slide-in-from-top-2 duration-200 w-full">
                                 {log.matched_indicators && log.matched_indicators.length > 0 ? (
                                   <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 border border-white/60 dark:border-slate-700">

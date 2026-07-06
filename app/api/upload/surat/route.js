@@ -31,20 +31,41 @@ export async function POST(req) {
     await dbConnect();
 
     const updatePayload = {};
-    if (documentType === 'loa') {
-      updatePayload.file_surat_balasan = fileUrl;
-      updatePayload.status_pokja = 'menunggu_persetujuan_lppm'; // Auto update status
-    } else if (documentType === 'sertifikat') {
-      updatePayload.file_surat_selesai = fileUrl;
+    let updatedData = null;
+
+    if (['mou', 'moa', 'ia', 'foto_kantor_desa', 'foto_kantor_bumdes', 'logo_mitra'].includes(documentType)) {
+      const pokja = await Pokja.findById(pokjaId);
+      if (pokja && pokja.mitra_id) {
+        import('@/models/MitraKKL');
+        const MitraKKL = (await import('@/models/MitraKKL')).default;
+        
+        const mitraUpdate = {};
+        if (documentType === 'mou') mitraUpdate.file_mou = fileUrl;
+        if (documentType === 'moa') mitraUpdate.file_moa = fileUrl;
+        if (documentType === 'ia') mitraUpdate.file_ia = fileUrl;
+        if (documentType === 'foto_kantor_desa') mitraUpdate.foto_kantor_desa = fileUrl;
+        if (documentType === 'foto_kantor_bumdes') mitraUpdate.foto_kantor_bumdes = fileUrl;
+        if (documentType === 'logo_mitra') mitraUpdate.logo_mitra = fileUrl;
+        
+        updatedData = await MitraKKL.findByIdAndUpdate(pokja.mitra_id, { $set: mitraUpdate }, { new: true });
+      }
+    } else {
+      if (documentType === 'loa') {
+        updatePayload.file_surat_balasan = fileUrl;
+      } else if (documentType === 'sertifikat') {
+        updatePayload.file_surat_selesai = fileUrl;
+      } else if (documentType === 'sk') {
+        updatePayload.file_surat_tugas = fileUrl;
+      }
+
+      updatedData = await Pokja.findByIdAndUpdate(
+        pokjaId,
+        { $set: updatePayload },
+        { new: true }
+      );
     }
 
-    const updatedPokja = await Pokja.findByIdAndUpdate(
-      pokjaId,
-      { $set: updatePayload },
-      { new: true }
-    );
-
-    return NextResponse.json({ success: true, fileUrl, pokja: updatedPokja });
+    return NextResponse.json({ success: true, fileUrl, data: updatedData });
 
   } catch (error) {
     console.error("Upload error:", error);

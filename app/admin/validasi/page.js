@@ -1,23 +1,26 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
-import { Check } from "lucide-react";
+import { Check, UserCircle, Info } from "lucide-react";
 
 export default function ValidasiPokja() {
   const [activeTab, setActiveTab] = useState('menunggu_persetujuan_lppm');
   const [pokjas, setPokjas] = useState([]);
   const [dpls, setDpls] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [expandedRow, setExpandedRow] = useState(null);
   
   // Modal State Validasi
   const [showModal, setShowModal] = useState(false);
   const [selectedPokja, setSelectedPokja] = useState(null);
   const [selectedDplId, setSelectedDplId] = useState("");
   
-  // Modal State Penolakan
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
+
+  // Modal State Dokumen
+  const [showDokumenModal, setShowDokumenModal] = useState(false);
 
   const [submitting, setSubmitting] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -60,6 +63,51 @@ export default function ValidasiPokja() {
     setSelectedPokja(p);
     setRejectReason("Kelompok ditolak karena mitra KKL Plus tidak relevan.");
     setShowRejectModal(true);
+  };
+
+  const handleKelolaDokumen = (p) => {
+    setSelectedPokja(p);
+    setShowDokumenModal(true);
+  };
+
+  const handleAdminUpload = async (e, documentType) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Ukuran file maksimal 5MB");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('pokjaId', selectedPokja._id);
+    formData.append('documentType', documentType);
+
+    setSubmitting(true);
+    try {
+      const res = await fetch('/api/upload/surat', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (res.ok) {
+        showToast("✅ Dokumen berhasil diunggah!");
+        fetchData(activeTab);
+        // Update selectedPokja local state
+        const updatedPokja = await (await fetch(`/api/pokja?admin=true&status=${activeTab}`)).json();
+        const fresh = updatedPokja.find(p => p._id === selectedPokja._id);
+        if (fresh) setSelectedPokja(fresh);
+      } else {
+        const err = await res.json();
+        alert(err.error || "Gagal mengunggah dokumen");
+      }
+    } catch (err) {
+      console.error("Upload error:", err);
+      alert("Terjadi kesalahan saat mengunggah dokumen.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -149,13 +197,13 @@ export default function ValidasiPokja() {
         </button>
         <button
           className={`px-6 py-2.5 text-sm font-bold rounded-lg transition-all ${
-            activeTab === 'disetujui_lppm' 
+            activeTab === 'disetujui_lppm,berjalan,selesai' 
               ? 'bg-[#1398A5] text-amber-300 shadow-sm' 
               : 'text-slate-500 hover:text-[#1398A5] dark:text-slate-400 dark:hover:text-teal-400'
           }`}
-          onClick={() => setActiveTab('disetujui_lppm')}
+          onClick={() => setActiveTab('disetujui_lppm,berjalan,selesai')}
         >
-          Data Divalidasi
+          Semua POKJA Aktif
         </button>
       </div>
 
@@ -174,7 +222,7 @@ export default function ValidasiPokja() {
                     <th className="py-4 px-4 text-left">Nama Kelompok</th>
                     <th className="py-4 px-4 text-left">Ketua</th>
                     <th className="py-4 px-4 text-left">Mitra Tujuan</th>
-                    {activeTab === 'disetujui_lppm' && <th className="py-4 px-4 text-left">DPL</th>}
+                    {activeTab !== 'menunggu_persetujuan_lppm' && <th className="py-4 px-4 text-left">DPL</th>}
                     <th className="py-4 px-4 text-center">Aksi</th>
                   </tr>
                 </thead>
@@ -195,12 +243,19 @@ export default function ValidasiPokja() {
                     </tr>
                   ) : (
                     pokjas.map((p, index) => {
+                      const isExpanded = expandedRow === p._id;
                       return (
-                      <tr key={p._id} className="hover:bg-white/50 dark:hover:bg-slate-700/60 transition-colors text-sm">
+                      <React.Fragment key={p._id}>
+                      <tr 
+                        className="hover:bg-white/50 dark:hover:bg-slate-700/60 transition-colors text-sm cursor-pointer"
+                        onClick={() => setExpandedRow(isExpanded ? null : p._id)}
+                      >
                         <td className="py-4 px-4 text-center font-medium text-slate-500 dark:text-slate-400">{index + 1}</td>
                         <td className="py-4 px-4">
                           <p className="font-bold text-slate-800 dark:text-slate-100">{p.nama_pokja}</p>
-                          <p className="text-xs text-slate-500">{p.anggota?.length || 0} Anggota</p>
+                          <p className="text-xs text-slate-500 font-medium">
+                            {p.anggota?.length || 0} Anggota <span className="text-indigo-500">{isExpanded ? "(Tutup)" : "(Lihat)"}</span>
+                          </p>
                         </td>
                         <td className="py-4 px-4">
                           <p className="font-bold text-slate-800 dark:text-slate-100">{p.ketua_id?.nama_lengkap}</p>
@@ -209,7 +264,7 @@ export default function ValidasiPokja() {
                         <td className="py-4 px-4">
                           <p className="font-semibold text-slate-700 dark:text-slate-200">{p.mitra_id?.nama_instansi || 'Belum Memilih Mitra'}</p>
                         </td>
-                        {activeTab === 'disetujui_lppm' && (
+                        {activeTab !== 'menunggu_persetujuan_lppm' && (
                           <td className="py-4 px-4">
                             <p className="font-bold text-indigo-600 dark:text-indigo-400">{p.dpl_id?.nama_lengkap || '-'}</p>
                           </td>
@@ -231,10 +286,51 @@ export default function ValidasiPokja() {
                               </button>
                             </div>
                           ) : (
-                            <span className="text-emerald-500 font-bold">Disetujui</span>
+                            <div className="flex justify-center gap-2 items-center">
+                              <span className="text-emerald-500 font-bold text-xs uppercase hidden md:inline">
+                                {p.status_pokja === 'disetujui_lppm' ? 'Persiapan' : p.status_pokja.replace('_', ' ')}
+                              </span>
+                              <button 
+                                onClick={(e) => { e.stopPropagation(); handleKelolaDokumen(p); }}
+                                className="px-3 py-1.5 bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-600 hover:text-white font-bold text-xs rounded-lg transition-colors whitespace-nowrap"
+                              >
+                                Kelola Dokumen
+                              </button>
+                            </div>
                           )}
                         </td>
                       </tr>
+                      {isExpanded && (
+                        <tr className="bg-slate-50/50 dark:bg-slate-800/30">
+                          <td colSpan={6} className="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
+                            <div className="p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                              <h5 className="font-bold text-sm text-slate-800 dark:text-white mb-3 flex items-center gap-2">
+                                <UserCircle className="w-4 h-4 text-indigo-500" /> Detail Anggota Kelompok
+                              </h5>
+                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {/* Ketua */}
+                                <div className="p-3 bg-indigo-50/50 dark:bg-indigo-900/10 rounded-lg border border-indigo-100 dark:border-indigo-800/50">
+                                  <span className="text-[10px] uppercase font-bold text-indigo-500 mb-1 block">Ketua POKJA</span>
+                                  <p className="font-bold text-slate-700 dark:text-slate-200 text-sm">{p.ketua_id?.nama_lengkap}</p>
+                                  <p className="text-xs text-slate-500 mt-0.5">{p.ketua_id?.nim_nidn}</p>
+                                  <p className="text-[11px] text-slate-400 mt-1">{p.ketua_id?.program_studi || "-"} • {p.ketua_id?.konsentrasi || "Belum ada konsentrasi"}</p>
+                                </div>
+                                
+                                {/* Anggota */}
+                                {p.anggota?.map((anggota, i) => (
+                                  <div key={i} className="p-3 bg-slate-50 dark:bg-slate-700/50 rounded-lg border border-slate-100 dark:border-slate-600/50">
+                                    <span className="text-[10px] uppercase font-bold text-slate-500 mb-1 block">Anggota</span>
+                                    <p className="font-bold text-slate-700 dark:text-slate-200 text-sm">{anggota.user_id?.nama_lengkap}</p>
+                                    <p className="text-xs text-slate-500 mt-0.5">{anggota.user_id?.nim_nidn}</p>
+                                    <p className="text-[11px] text-slate-400 mt-1">{anggota.user_id?.program_studi || "-"} • {anggota.user_id?.konsentrasi || "Belum ada konsentrasi"}</p>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                      </React.Fragment>
                       );
                     })
                   )}
@@ -298,6 +394,132 @@ export default function ValidasiPokja() {
           </div>
         </div>
       )}
+      {/* Modal Kelola Dokumen */}
+      {showDokumenModal && selectedPokja && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
+          <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-3xl p-6 w-full max-w-4xl shadow-2xl my-8">
+            <h3 className="text-2xl font-black text-slate-800 dark:text-white mb-6">Kelola Dokumen - {selectedPokja.nama_pokja}</h3>
+            
+            <div className="space-y-6">
+              {/* Dokumen Pokja */}
+              <div>
+                <h4 className="font-bold text-slate-700 dark:text-slate-300 mb-3 border-b border-slate-200 dark:border-slate-700 pb-2">Dokumen POKJA (Khusus Kelompok Ini)</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Surat Pengantar */}
+                  <div className="bg-white/60 dark:bg-slate-900/40 p-4 rounded-xl border border-slate-100 flex justify-between items-center">
+                    <div>
+                      <p className="font-bold text-sm text-slate-800 dark:text-white">Surat Pengantar</p>
+                      <p className="text-xs text-slate-500">Otomatis dari sistem</p>
+                    </div>
+                    <button onClick={() => window.open(`/mahasiswa/surat/pengantar/${selectedPokja._id}`, '_blank')} className="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-lg hover:bg-blue-200">Buka PDF</button>
+                  </div>
+                  {/* SK Tugas */}
+                  <div className="bg-white/60 dark:bg-slate-900/40 p-4 rounded-xl border border-slate-100 flex justify-between items-center">
+                    <div>
+                      <p className="font-bold text-sm text-slate-800 dark:text-white">Surat Tugas (SK)</p>
+                      <p className="text-xs text-slate-500">Legalitas kelompok</p>
+                    </div>
+                    <div className="flex gap-2">
+                      {selectedPokja.file_surat_tugas && <a href={selectedPokja.file_surat_tugas} target="_blank" className="px-3 py-1 bg-indigo-100 text-indigo-700 text-xs font-bold rounded-lg hover:bg-indigo-200">Lihat</a>}
+                      <label className="cursor-pointer px-3 py-1 bg-slate-200 text-slate-700 hover:bg-slate-300 text-xs font-bold rounded-lg relative overflow-hidden">
+                        <span className={submitting ? "opacity-0" : ""}>Upload</span>
+                        <input type="file" className="hidden" accept=".pdf" onChange={(e) => handleAdminUpload(e, 'sk')} disabled={submitting} />
+                        {submitting && <div className="absolute inset-0 flex items-center justify-center"><div className="w-4 h-4 border-2 border-slate-700 border-t-transparent rounded-full animate-spin"></div></div>}
+                      </label>
+                    </div>
+                  </div>
+                  {/* LOA */}
+                  <div className="bg-white/60 dark:bg-slate-900/40 p-4 rounded-xl border border-slate-100 flex justify-between items-center">
+                    <div>
+                      <p className="font-bold text-sm text-slate-800 dark:text-white">Surat Balasan (LOA)</p>
+                      <p className="text-xs text-slate-500">Bukti diterima mitra</p>
+                    </div>
+                    <div className="flex gap-2">
+                      {selectedPokja.file_surat_balasan && <a href={selectedPokja.file_surat_balasan} target="_blank" className="px-3 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded-lg hover:bg-amber-200">Lihat</a>}
+                      <label className="cursor-pointer px-3 py-1 bg-slate-200 text-slate-700 hover:bg-slate-300 text-xs font-bold rounded-lg relative overflow-hidden">
+                        <span className={submitting ? "opacity-0" : ""}>Upload</span>
+                        <input type="file" className="hidden" accept=".pdf" onChange={(e) => handleAdminUpload(e, 'loa')} disabled={submitting} />
+                        {submitting && <div className="absolute inset-0 flex items-center justify-center"><div className="w-4 h-4 border-2 border-slate-700 border-t-transparent rounded-full animate-spin"></div></div>}
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Dokumen Mitra */}
+              <div>
+                <h4 className="font-bold text-slate-700 dark:text-slate-300 mb-3 border-b border-slate-200 dark:border-slate-700 pb-2">Dokumen Mitra ({selectedPokja.mitra_id?.nama_instansi})</h4>
+                
+                <div className="bg-sky-50 dark:bg-sky-900/20 border border-sky-100 dark:border-sky-800 p-4 rounded-xl mb-4">
+                  <div className="flex gap-2">
+                    <Info className="w-5 h-5 text-sky-600 shrink-0" />
+                    <div className="text-sm text-sky-800 dark:text-sky-200">
+                      <p className="font-bold mb-1">Panduan Status Kerja Sama Mitra:</p>
+                      <ul className="list-disc pl-4 space-y-1 text-xs">
+                        <li><strong>Belum Ada / Penjajakan:</strong> Peluang DPL & LPPM untuk membuka kerja sama baru selama masa KKL Plus.</li>
+                        <li><strong>MOU (Memorandum of Understanding):</strong> Payung kerja sama umum (tingkat Universitas). Harus ditindaklanjuti dengan MOA/IA.</li>
+                        <li><strong>MOA (Memorandum of Agreement):</strong> Kesepakatan spesifik (tingkat Fakultas). Membutuhkan IA sebagai bukti pelaksanaan riil.</li>
+                        <li><strong>IA (Implementation Arrangement):</strong> Bukti implementasi nyata bahwa mahasiswa KKL telah beraktivitas. Sangat penting untuk <strong>IKU & Akreditasi!</strong></li>
+                      </ul>
+                      <p className="mt-2 text-xs italic text-sky-700 dark:text-sky-300">Catatan: Jika dokumen diunggah ke sini, status mitra akan terekam selamanya di database dan berlaku untuk kelompok KKL angkatan berikutnya.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {/* MOU */}
+                  <div className="bg-white/60 dark:bg-slate-900/40 p-4 rounded-xl border border-slate-100">
+                    <p className="font-bold text-sm text-slate-800 dark:text-white mb-2">MOU</p>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedPokja.mitra_id?.file_mou && <a href={selectedPokja.mitra_id.file_mou} target="_blank" className="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-bold rounded-lg hover:bg-purple-200">Lihat MOU</a>}
+                      <label className="cursor-pointer px-3 py-1 bg-slate-200 text-slate-700 hover:bg-slate-300 text-xs font-bold rounded-lg relative overflow-hidden flex-1 text-center">
+                        <span className={submitting ? "opacity-0" : ""}>Upload MOU</span>
+                        <input type="file" className="hidden" accept=".pdf" onChange={(e) => handleAdminUpload(e, 'mou')} disabled={submitting} />
+                        {submitting && <div className="absolute inset-0 flex items-center justify-center"><div className="w-4 h-4 border-2 border-slate-700 border-t-transparent rounded-full animate-spin"></div></div>}
+                      </label>
+                    </div>
+                  </div>
+                  {/* MOA */}
+                  <div className="bg-white/60 dark:bg-slate-900/40 p-4 rounded-xl border border-slate-100">
+                    <p className="font-bold text-sm text-slate-800 dark:text-white mb-2">MOA</p>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedPokja.mitra_id?.file_moa && <a href={selectedPokja.mitra_id.file_moa} target="_blank" className="px-3 py-1 bg-pink-100 text-pink-700 text-xs font-bold rounded-lg hover:bg-pink-200">Lihat MOA</a>}
+                      <label className="cursor-pointer px-3 py-1 bg-slate-200 text-slate-700 hover:bg-slate-300 text-xs font-bold rounded-lg relative overflow-hidden flex-1 text-center">
+                        <span className={submitting ? "opacity-0" : ""}>Upload MOA</span>
+                        <input type="file" className="hidden" accept=".pdf" onChange={(e) => handleAdminUpload(e, 'moa')} disabled={submitting} />
+                        {submitting && <div className="absolute inset-0 flex items-center justify-center"><div className="w-4 h-4 border-2 border-slate-700 border-t-transparent rounded-full animate-spin"></div></div>}
+                      </label>
+                    </div>
+                  </div>
+                  {/* IA */}
+                  <div className="bg-white/60 dark:bg-slate-900/40 p-4 rounded-xl border border-slate-100">
+                    <p className="font-bold text-sm text-slate-800 dark:text-white mb-2">IA</p>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedPokja.mitra_id?.file_ia && <a href={selectedPokja.mitra_id.file_ia} target="_blank" className="px-3 py-1 bg-rose-100 text-rose-700 text-xs font-bold rounded-lg hover:bg-rose-200">Lihat IA</a>}
+                      <label className="cursor-pointer px-3 py-1 bg-slate-200 text-slate-700 hover:bg-slate-300 text-xs font-bold rounded-lg relative overflow-hidden flex-1 text-center">
+                        <span className={submitting ? "opacity-0" : ""}>Upload IA</span>
+                        <input type="file" className="hidden" accept=".pdf" onChange={(e) => handleAdminUpload(e, 'ia')} disabled={submitting} />
+                        {submitting && <div className="absolute inset-0 flex items-center justify-center"><div className="w-4 h-4 border-2 border-slate-700 border-t-transparent rounded-full animate-spin"></div></div>}
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 flex justify-end">
+              <button 
+                type="button" 
+                onClick={() => setShowDokumenModal(false)}
+                className="px-6 py-2.5 bg-slate-100 text-slate-600 hover:bg-slate-200 font-bold rounded-xl transition-colors"
+              >
+                Tutup Panel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </DashboardLayout>
   );
 }

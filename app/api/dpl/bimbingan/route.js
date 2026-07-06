@@ -7,6 +7,7 @@ import MitraKKL from '@/models/MitraKKL';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import bcrypt from 'bcryptjs';
+import Proker from '@/models/Proker';
 
 export async function GET(req) {
   await dbConnect();
@@ -20,11 +21,23 @@ export async function GET(req) {
       dpl_id: session.user.id, 
       status_pokja: { $in: ['disetujui_lppm', 'berjalan', 'selesai'] }
     })
-      .populate('ketua_id', 'nama_lengkap nim_nidn nomor_hp email program_studi')
-      .populate('anggota.user_id', 'nama_lengkap nim_nidn nomor_hp email program_studi')
+      .populate('ketua_id', 'nama_lengkap nim_nidn nomor_hp email program_studi konsentrasi')
+      .populate('anggota.user_id', 'nama_lengkap nim_nidn nomor_hp email program_studi konsentrasi')
       .populate('mitra_id')
       .populate('mentor_id', 'nama_lengkap nomor_hp email')
-      .sort({ updatedAt: -1 });
+      .sort({ updatedAt: -1 })
+      .lean();
+
+    // Attach proker approval status
+    for (let pokja of bimbinganList) {
+      const prokers = await Proker.find({ pokja_id: pokja._id }).lean();
+      pokja.total_proker = prokers.length;
+      if (prokers.length > 0) {
+        pokja.all_proker_approved = prokers.every(p => p.status === 'disetujui_dpl');
+      } else {
+        pokja.all_proker_approved = false;
+      }
+    }
 
     return NextResponse.json(bimbinganList);
   } catch (error) {
