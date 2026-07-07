@@ -69,16 +69,15 @@ export default function DplValidasi() {
       const data = await res.json();
       
       if (res.ok && data.token) {
-        showToast(`Tautan berhasil dibuat! Membuka WhatsApp...`);
+        showToast(`Tautan berhasil dibuat!`);
         setSelectedLogs([]);
         fetchData();
         
-        // Buka WA
+        // Modal salin link
         const baseUrl = window.location.origin;
         const magicUrl = `${baseUrl}/v/${data.token}`;
         setLastGeneratedLink(magicUrl);
-        const waText = encodeURIComponent(`Halo Bapak/Ibu Kepala Desa / Mentor,\n\nBerikut adalah tautan untuk mereview dan menyetujui kegiatan KKL Plus mahasiswa minggu ini:\n\n${magicUrl}\n\nTautan ini bisa dibuka langsung tanpa perlu login. Terima kasih!`);
-        window.open(`https://wa.me/?text=${waText}`, '_blank');
+
         
       } else {
         alert("Gagal membuat tautan validasi");
@@ -90,7 +89,75 @@ export default function DplValidasi() {
     }
   };
 
-  const toggleSelectLog = (id) => {
+  
+  const handleCopyLinkMentor = async (logs) => {
+    const targetLogs = logs.filter(l => l.status_validasi === 'menunggu_mentor');
+    const targetIds = targetLogs.map(l => l._id);
+    if (targetIds.length === 0) return;
+    
+    setSubmitting(true);
+    try {
+      const firstLog = targetLogs[0];
+      const payload = { 
+        ids: targetIds, 
+        dpl_id: session.user.id,
+        pokja_id: firstLog?.pokja_id?._id || firstLog?.pokja_id,
+        logbook_ids: targetIds
+      };
+      
+      const res = await fetch('/api/magic-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      
+      if (res.ok && data.token) {
+        const baseUrl = window.location.origin;
+        const magicUrl = `${baseUrl}/v/${data.token}`;
+        navigator.clipboard.writeText(magicUrl);
+        showToast('Tautan disalin ke clipboard!');
+      } else {
+        alert("Gagal membuat tautan validasi");
+      }
+    } catch (error) {
+      alert("Terjadi kesalahan sistem");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleForceValidate = async (logs) => {
+    const targetLogs = logs.filter(l => l.status_validasi === 'menunggu_mentor').map(l => l._id);
+    if (targetLogs.length === 0) return;
+
+    if (!confirm(`Anda yakin ingin memvalidasi ${targetLogs.length} logbook secara langsung (menggantikan Mentor)?`)) return;
+
+    setSubmitting(true);
+    try {
+      const res = await fetch('/api/logbook', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ids: targetLogs,
+          status_validasi: 'selesai'
+        })
+      });
+      
+      if (res.ok) {
+        showToast(`${targetLogs.length} Logbook berhasil divalidasi!`);
+        fetchData();
+      } else {
+        alert("Gagal memvalidasi logbook");
+      }
+    } catch (error) {
+      alert("Terjadi kesalahan sistem");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+const toggleSelectLog = (id) => {
     setSelectedLogs(prev => 
       prev.includes(id) ? prev.filter(l => l !== id) : [...prev, id]
     );
@@ -327,13 +394,32 @@ export default function DplValidasi() {
                                     <FileSignature className="w-4 h-4 text-indigo-500" />
                                     Total {subGroup.logs.length} Logbook
                                   </span>
-                                  {subGroup.logs.some(l => l.status_validasi === 'menunggu_dpl' || l.status_validasi === 'menunggu_mentor') && (
+                                  {activeTab === 'antrean' && subGroup.logs.some(l => l.status_validasi === 'menunggu_dpl') && (
                                     <button 
                                       onClick={() => handleSelectSubGroup(subGroup.logs)}
                                       className="text-xs font-bold px-4 py-2 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 rounded-lg border border-indigo-200 dark:border-indigo-800/50 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors flex items-center justify-center gap-2"
                                     >
                                       <CheckCircle2 className="w-3.5 h-3.5" /> Pilih Semua di Grup Ini
                                     </button>
+                                  )}
+                                  
+                                  {activeTab === 'histori' && subGroup.logs.some(l => l.status_validasi === 'menunggu_mentor') && (
+                                    <div className="flex gap-2">
+                                      <button 
+                                        onClick={() => handleCopyLinkMentor(subGroup.logs)}
+                                        disabled={submitting}
+                                        className="text-xs font-bold px-4 py-2 bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors flex items-center justify-center gap-2"
+                                      >
+                                        <Copy className="w-3.5 h-3.5" /> Copy Link
+                                      </button>
+                                      <button 
+                                        onClick={() => handleForceValidate(subGroup.logs)}
+                                        disabled={submitting}
+                                        className="text-xs font-bold px-4 py-2 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 rounded-lg border border-emerald-200 dark:border-emerald-800/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-colors flex items-center justify-center gap-2"
+                                      >
+                                        <Check className="w-3.5 h-3.5" /> Bantu Validasi
+                                      </button>
+                                    </div>
                                   )}
                                 </div>
 
@@ -349,7 +435,7 @@ export default function DplValidasi() {
                                       >
                                         <div className="flex justify-between items-start mb-4 gap-3">
                                           <div className="flex items-start gap-3">
-                                            {(log.status_validasi === 'menunggu_dpl' || log.status_validasi === 'menunggu_mentor') && (
+                                            {activeTab === 'antrean' && log.status_validasi === 'menunggu_dpl' && (
                                               <input 
                                                 type="checkbox" 
                                                 className="w-5 h-5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-600 mt-0.5 cursor-pointer"
@@ -474,7 +560,7 @@ export default function DplValidasi() {
               <CheckCircle2 className="w-6 h-6" />
             </div>
             <h3 className="text-xl font-black text-slate-800 dark:text-white text-center mb-2">Tautan Berhasil Dibuat!</h3>
-            <p className="text-sm text-slate-500 dark:text-slate-400 text-center mb-6">WhatsApp Anda seharusnya sudah terbuka otomatis. Jika tidak, Anda bisa menyalin tautan di bawah ini dan mengirimkannya secara manual ke Mentor.</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400 text-center mb-6">Silakan salin tautan (link) di bawah ini lalu kirimkan ke WhatsApp Mentor untuk divalidasi atau disetujui.</p>
             
             <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 p-3 rounded-xl border border-slate-200 dark:border-slate-700 mb-6">
               <input 
