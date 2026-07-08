@@ -7,7 +7,7 @@ import { Check, FileSignature, GraduationCap, Briefcase, Bell, AlertTriangle, Cl
 
 export default function DPLDashboard() {
   const { data: session } = useSession();
-  const [stats, setStats] = useState({ prokerMenungguValidasi: 0, pokjaBelumIA: 0 });
+  const [stats, setStats] = useState({ prokerMenungguValidasi: 0, pokjaBelumIA: 0, laporanMenungguValidasi: 0 });
   const [pendingPokjas, setPendingPokjas] = useState([]);
   const [activePokjas, setActivePokjas] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -16,10 +16,12 @@ export default function DPLDashboard() {
     if (session?.user?.id) {
       Promise.all([
         fetch(`/api/pokja?dplId=${session.user.id}`).then(r => r.json()),
-        fetch(`/api/logbook?role=dpl&userId=${session.user.id}`).then(r => r.json())
-      ]).then(([pokjasList, logs]) => {
+        fetch(`/api/logbook?role=dpl&userId=${session.user.id}`).then(r => r.json()),
+        fetch(`/api/laporan-akhir?role=dpl&dplId=${session.user.id}`).then(r => r.json())
+      ]).then(([pokjasList, logs, laporans]) => {
         let pokjaBelumIA = 0;
         let prokerMenungguValidasi = 0;
+        let laporanMenungguValidasi = 0;
 
         if (Array.isArray(pokjasList)) {
           const activeList = pokjasList.filter(p => p.status_pokja === 'berjalan' || p.status_pokja === 'selesai');
@@ -32,7 +34,11 @@ export default function DPLDashboard() {
           prokerMenungguValidasi = logs.filter(l => l.status_validasi === 'menunggu_dpl').length;
         }
 
-        setStats({ prokerMenungguValidasi, pokjaBelumIA });
+        if (Array.isArray(laporans)) {
+          laporanMenungguValidasi = laporans.filter(l => l.status === 'submitted').length;
+        }
+
+        setStats({ prokerMenungguValidasi, pokjaBelumIA, laporanMenungguValidasi });
         setLoading(false);
       }).catch((err) => {
         console.error(err);
@@ -151,6 +157,31 @@ export default function DPLDashboard() {
                   className="w-full sm:w-auto px-6 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl shadow-sm transition-all shrink-0 whitespace-nowrap"
                 >
                   Validasi Sekarang
+                </button>
+              </div>
+            )}
+
+            {/* Notifikasi Laporan Akhir */}
+            {stats.laporanMenungguValidasi > 0 && (
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl transition-all hover:shadow-md">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-purple-50 dark:bg-purple-900/40 flex items-center justify-center text-purple-600 dark:text-purple-400 shrink-0">
+                    <FileSignature className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <h4 className="font-bold text-slate-800 dark:text-white text-lg">Validasi Laporan Akhir</h4>
+                    </div>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                      Terdapat <strong>{stats.laporanMenungguValidasi}</strong> Laporan Akhir (Individu/Kelompok) yang telah diajukan dan menunggu validasi Anda.
+                    </p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => window.location.href = '/dpl/validasi-laporan'}
+                  className="w-full sm:w-auto px-6 py-2.5 bg-purple-500 hover:bg-purple-600 text-white font-bold rounded-xl shadow-sm transition-all shrink-0 whitespace-nowrap"
+                >
+                  Periksa Laporan
                 </button>
               </div>
             )}

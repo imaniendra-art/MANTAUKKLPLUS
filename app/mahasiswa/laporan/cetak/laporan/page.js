@@ -9,8 +9,18 @@ export default function CetakLaporan() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
     const mhsId = params.get('mhsId') || session?.user?.id;
-    if (mhsId) {
+    
+    if (id) {
+      fetch(`/api/laporan-akhir?id=${id}`)
+        .then(res => res.json())
+        .then(d => {
+          if (d.laporan && d.pengajuan) {
+            setData(d);
+          }
+        });
+    } else if (mhsId) {
       fetch(`/api/laporan-akhir?mhsId=${mhsId}`)
         .then(res => res.json())
         .then(d => {
@@ -68,7 +78,7 @@ export default function CetakLaporan() {
           {/* HEADER (Top) */}
           <div className="space-y-2 w-full pt-4">
             <h1 className="text-2xl md:text-3xl font-bold uppercase tracking-wide leading-relaxed">
-              LAPORAN AKHIR<br />
+              LAPORAN AKHIR {laporan.tipe_laporan === 'pokja' ? 'KELOMPOK' : 'INDIVIDU'}<br />
               KEGIATAN MAGANG BERDAMPAK<br />
               DI PERUSAHAAN {mitra}
             </h1>
@@ -95,8 +105,55 @@ export default function CetakLaporan() {
           </div>
         </div>
 
+        {/* LEMBAR PENGESAHAN */}
+        <div className="page-break" style={{ pageBreakBefore: 'always' }}></div>
+        <div className="p-[3cm] min-h-[29.7cm] print:min-h-0 text-justify leading-relaxed print:p-0 flex flex-col justify-center">
+          <h2 className="text-center font-bold text-xl mb-8">LEMBAR PENGESAHAN</h2>
+          <p className="mb-4">Laporan Akhir {laporan.tipe_laporan === 'pokja' ? 'Kelompok' : 'Individu'} Kegiatan Magang Berdampak (KKL Plus) ini disusun oleh:</p>
+          <table className="w-full mb-8">
+            <tbody>
+              <tr><td className="w-48 font-bold">Nama</td><td className="w-4">:</td><td className="uppercase">{mhs.nama_lengkap}</td></tr>
+              <tr><td className="font-bold">NIM/NIDN</td><td>:</td><td>{mhs.nim_nidn}</td></tr>
+              <tr><td className="font-bold">Program Studi</td><td>:</td><td className="uppercase">{mhs.program_studi || 'Manajemen'}</td></tr>
+              <tr><td className="font-bold">Tempat KKL Plus</td><td>:</td><td className="uppercase">{mitra}</td></tr>
+              <tr><td className="font-bold">Waktu Pelaksanaan</td><td>:</td><td>{new Date(pengajuan.tanggal_mulai).toLocaleDateString('id-ID')} s.d. {new Date(pengajuan.tanggal_selesai).toLocaleDateString('id-ID')}</td></tr>
+            </tbody>
+          </table>
+          <p className="mb-12">Telah diperiksa dan disahkan sebagai syarat kelulusan mata kuliah KKL Plus pada Program Studi Manajemen STIMI YAPMI Makassar.</p>
+          
+          <div className="flex justify-between items-end mt-16 text-center">
+            <div className="flex flex-col items-center">
+              <p className="mb-24">Menyetujui,<br/>Mentor (Pembimbing Lapangan)</p>
+              <p className="font-bold underline uppercase">{pengajuan.mentor_nama || '_________________________'}</p>
+              <p>{pengajuan.mentor_jabatan || 'Instansi/Perusahaan'}</p>
+            </div>
+            <div className="flex flex-col items-center">
+              <p className="mb-24">Mengesahkan,<br/>Dosen Pembimbing Lapangan (DPL)</p>
+              <p className="font-bold underline uppercase">{pengajuan.dpl_id?.nama_lengkap || '_________________________'}</p>
+              <p>NIDN: {pengajuan.dpl_id?.nim_nidn || '__________________'}</p>
+            </div>
+          </div>
+        </div>
+
         {/* PAGE BREAK */}
         <div className="page-break" style={{ pageBreakBefore: 'always' }}></div>
+
+        {/* KATA PENGANTAR */}
+        {laporan.kata_pengantar && (
+          <>
+            <div className="p-[3cm] min-h-[29.7cm] print:min-h-0 text-justify leading-relaxed print:p-0 flex flex-col pt-12">
+              <h2 className="text-center font-bold text-xl mb-8">KATA PENGANTAR</h2>
+              <div className="whitespace-pre-wrap">{laporan.kata_pengantar}</div>
+              <div className="flex justify-end mt-16 text-center">
+                <div className="flex flex-col items-center">
+                  <p className="mb-24">Makassar, ............................<br/>Penulis,</p>
+                  <p className="font-bold underline uppercase">{mhs.nama_lengkap}</p>
+                </div>
+              </div>
+            </div>
+            <div className="page-break" style={{ pageBreakBefore: 'always' }}></div>
+          </>
+        )}
 
         {/* DAFTAR ISI */}
         <div className="p-[3cm] min-h-[29.7cm] print:min-h-0 text-justify leading-relaxed print:p-0">
@@ -104,6 +161,7 @@ export default function CetakLaporan() {
           
           <div className="space-y-1 text-lg">
             <div className="font-bold">HALAMAN JUDUL</div>
+            {laporan.kata_pengantar && <div className="font-bold">KATA PENGANTAR</div>}
             <div className="font-bold">DAFTAR ISI</div>
             
             <div className="font-bold pt-4">BAB I PENDAHULUAN</div>
@@ -111,28 +169,23 @@ export default function CetakLaporan() {
               <div key={sec.id} className="pl-6">{sec.title}</div>
             ))}
 
-            <div className="font-bold pt-4">BAB II PROFIL PERUSAHAAN</div>
-            {safeParse(laporan.bab2_profil).map(sec => (
+            <div className="font-bold pt-4">BAB II METODE KKLP KERJA</div>
+            {safeParse(laporan.bab2_metode).map(sec => (
               <div key={sec.id} className="pl-6">{sec.title}</div>
             ))}
 
-            <div className="font-bold pt-4">BAB III AKTIVITAS MAGANG</div>
-            {safeParse(laporan.bab3_aktivitas).map(sec => (
+            <div className="font-bold pt-4">BAB III PROFIL PERUSAHAAN</div>
+            {safeParse(laporan.bab3_profil).map(sec => (
               <div key={sec.id} className="pl-6">{sec.title}</div>
             ))}
 
-            <div className="font-bold pt-4">BAB IV PERMASALAHAN & PEMBAHASAN</div>
-            {safeParse(laporan.bab4_permasalahan).map(sec => (
+            <div className="font-bold pt-4">BAB IV HASIL DAN PEMBAHASAN</div>
+            {safeParse(laporan.bab4_hasil).map(sec => (
               <div key={sec.id} className="pl-6">{sec.title}</div>
             ))}
 
-            <div className="font-bold pt-4">BAB V KESIMPULAN & REKOMENDASI</div>
-            {safeParse(laporan.bab5_kesimpulan).map(sec => (
-              <div key={sec.id} className="pl-6">{sec.title}</div>
-            ))}
-
-            <div className="font-bold pt-4">BAB VI REFLEKSI DIRI</div>
-            {safeParse(laporan.bab6_refleksi).map(sec => (
+            <div className="font-bold pt-4">BAB V PENUTUP</div>
+            {safeParse(laporan.bab5_penutup).map(sec => (
               <div key={sec.id} className="pl-6">{sec.title}</div>
             ))}
 
@@ -172,26 +225,27 @@ export default function CetakLaporan() {
           </section>
 
           <section className="pt-8">
-            <h2 className="text-center font-bold text-xl mb-6">BAB II<br/>PROFIL PERUSAHAAN</h2>
+            <h2 className="text-center font-bold text-xl mb-6">BAB II<br/>METODE KKLP KERJA</h2>
             <div className="space-y-4">
-              {safeParse(laporan.bab2_profil).map(sec => (
+              {safeParse(laporan.bab2_metode).map(sec => (
                 <div key={sec.id}>
                   <h3 className="font-bold text-lg mb-2">{sec.title}</h3>
-                  <div className="whitespace-pre-wrap pl-6">{sec.content}</div>
-                  {sec.id === '2_3' && laporan.file_struktur_organisasi && (
-                    <div className="mt-4 pl-6">
-                      <img src={laporan.file_struktur_organisasi} alt="Struktur Organisasi" className="max-w-full h-auto border border-slate-200 p-2" />
+                  {sec.id === '2_2' && laporan.file_struktur_organisasi && (
+                    <div className="mt-4 mb-6 pl-6 flex flex-col items-center">
+                      <img src={laporan.file_struktur_organisasi} alt="Struktur Organisasi" className="max-w-full h-auto border border-slate-200 p-2 mb-2" />
+                      <p className="text-sm italic font-medium">Gambar Struktur Organisasi {mitra}</p>
                     </div>
                   )}
+                  <div className="whitespace-pre-wrap pl-6">{sec.content}</div>
                 </div>
               ))}
             </div>
           </section>
 
           <section className="pt-8">
-            <h2 className="text-center font-bold text-xl mb-6">BAB III<br/>AKTIVITAS MAGANG</h2>
+            <h2 className="text-center font-bold text-xl mb-6">BAB III<br/>PROFIL PERUSAHAAN</h2>
             <div className="space-y-4">
-              {safeParse(laporan.bab3_aktivitas).map(sec => (
+              {safeParse(laporan.bab3_profil).map(sec => (
                 <div key={sec.id}>
                   <h3 className="font-bold text-lg mb-2">{sec.title}</h3>
                   <div className="whitespace-pre-wrap pl-6">{sec.content}</div>
@@ -201,9 +255,9 @@ export default function CetakLaporan() {
           </section>
 
           <section className="pt-8">
-            <h2 className="text-center font-bold text-xl mb-6">BAB IV<br/>PERMASALAHAN & PEMBAHASAN</h2>
+            <h2 className="text-center font-bold text-xl mb-6">BAB IV<br/>HASIL DAN PEMBAHASAN</h2>
             <div className="space-y-4">
-              {safeParse(laporan.bab4_permasalahan).map(sec => (
+              {safeParse(laporan.bab4_hasil).map(sec => (
                 <div key={sec.id}>
                   <h3 className="font-bold text-lg mb-2">{sec.title}</h3>
                   <div className="whitespace-pre-wrap pl-6">{sec.content}</div>
@@ -213,21 +267,9 @@ export default function CetakLaporan() {
           </section>
 
           <section className="pt-8">
-            <h2 className="text-center font-bold text-xl mb-6">BAB V<br/>KESIMPULAN & REKOMENDASI</h2>
+            <h2 className="text-center font-bold text-xl mb-6">BAB V<br/>PENUTUP</h2>
             <div className="space-y-4">
-              {safeParse(laporan.bab5_kesimpulan).map(sec => (
-                <div key={sec.id}>
-                  <h3 className="font-bold text-lg mb-2">{sec.title}</h3>
-                  <div className="whitespace-pre-wrap pl-6">{sec.content}</div>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <section className="pt-8">
-            <h2 className="text-center font-bold text-xl mb-6">BAB VI<br/>REFLEKSI DIRI</h2>
-            <div className="space-y-4">
-              {safeParse(laporan.bab6_refleksi).map(sec => (
+              {safeParse(laporan.bab5_penutup).map(sec => (
                 <div key={sec.id}>
                   <h3 className="font-bold text-lg mb-2">{sec.title}</h3>
                   <div className="whitespace-pre-wrap pl-6">{sec.content}</div>
@@ -315,7 +357,10 @@ export default function CetakLaporan() {
                 {logbooks.filter(log => log.bukti_kegiatan).map((log, idx) => (
                   <div key={log._id} className="border border-slate-300 p-2 rounded break-inside-avoid">
                     <img src={log.bukti_kegiatan} className="w-full h-auto aspect-square object-cover" alt={`Dokumentasi ${idx+1}`} />
-                    <div className="text-center text-xs mt-2 text-slate-600">
+                    <div className="text-center text-xs mt-2 text-slate-800 font-medium">
+                      {log.keterangan_bukti || 'Dokumentasi Kegiatan'}
+                    </div>
+                    <div className="text-center text-[10px] mt-1 text-slate-500">
                       Tanggal: {new Date(log.tanggal).toLocaleDateString('id-ID')}
                     </div>
                   </div>

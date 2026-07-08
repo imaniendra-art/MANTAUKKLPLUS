@@ -3,6 +3,32 @@ import dbConnect from '@/lib/db';
 import Pokja from '@/models/Pokja';
 import User from '@/models/User';
 import MitraKKL from '@/models/MitraKKL';
+import { generatePresignedUrl } from '@/lib/minio';
+
+async function processPokjaUrls(pokjaDoc) {
+  if (!pokjaDoc) return pokjaDoc;
+  
+  // Konversi ke plain object
+  const pokja = pokjaDoc.toObject ? pokjaDoc.toObject() : pokjaDoc;
+  
+  // Proses URL Pokja
+  if (pokja.file_surat_pengantar) pokja.file_surat_pengantar = await generatePresignedUrl(pokja.file_surat_pengantar);
+  if (pokja.file_surat_balasan) pokja.file_surat_balasan = await generatePresignedUrl(pokja.file_surat_balasan);
+  if (pokja.file_surat_tugas) pokja.file_surat_tugas = await generatePresignedUrl(pokja.file_surat_tugas);
+  if (pokja.file_surat_selesai) pokja.file_surat_selesai = await generatePresignedUrl(pokja.file_surat_selesai);
+  
+  // Proses URL Mitra
+  if (pokja.mitra_id && typeof pokja.mitra_id === 'object') {
+    if (pokja.mitra_id.foto_kantor_desa) pokja.mitra_id.foto_kantor_desa = await generatePresignedUrl(pokja.mitra_id.foto_kantor_desa);
+    if (pokja.mitra_id.foto_kantor_bumdes) pokja.mitra_id.foto_kantor_bumdes = await generatePresignedUrl(pokja.mitra_id.foto_kantor_bumdes);
+    if (pokja.mitra_id.logo_mitra) pokja.mitra_id.logo_mitra = await generatePresignedUrl(pokja.mitra_id.logo_mitra);
+    if (pokja.mitra_id.file_mou) pokja.mitra_id.file_mou = await generatePresignedUrl(pokja.mitra_id.file_mou);
+    if (pokja.mitra_id.file_moa) pokja.mitra_id.file_moa = await generatePresignedUrl(pokja.mitra_id.file_moa);
+    if (pokja.mitra_id.file_ia) pokja.mitra_id.file_ia = await generatePresignedUrl(pokja.mitra_id.file_ia);
+  }
+  
+  return pokja;
+}
 
 export async function POST(req) {
   await dbConnect();
@@ -52,7 +78,12 @@ export async function GET(req) {
         .populate({ path: 'dpl_id', select: 'nama_lengkap nomor_hp' })
         .populate({ path: 'mentor_id', select: 'nama_lengkap nomor_hp' })
         .populate('mitra_id');
-      return NextResponse.json(pokja || null);
+        
+      if (pokja) {
+        const processed = await processPokjaUrls(pokja);
+        return NextResponse.json(processed);
+      }
+      return NextResponse.json(null);
     }
     
     if (isAdmin === 'true') {
@@ -62,9 +93,11 @@ export async function GET(req) {
         .populate({ path: 'ketua_id', select: 'nama_lengkap nim_nidn program_studi konsentrasi' })
         .populate({ path: 'anggota.user_id', select: 'nama_lengkap nim_nidn program_studi konsentrasi' })
         .populate({ path: 'dpl_id', select: 'nama_lengkap' })
-        .populate({ path: 'mitra_id', select: 'nama_instansi' })
+        .populate({ path: 'mitra_id', select: 'nama_instansi' }) // we might not need all fields here, but let's process it safely
         .sort({ createdAt: -1 });
-      return NextResponse.json(pokjas);
+        
+      const processed = await Promise.all(pokjas.map(p => processPokjaUrls(p)));
+      return NextResponse.json(processed);
     }
     
     if (mhsId) {
@@ -80,7 +113,12 @@ export async function GET(req) {
       .populate({ path: 'dpl_id', select: 'nama_lengkap nomor_hp' })
       .populate('mitra_id')
       .sort({ createdAt: -1 });
-      return NextResponse.json(pokja || null);
+      
+      if (pokja) {
+        const processed = await processPokjaUrls(pokja);
+        return NextResponse.json(processed);
+      }
+      return NextResponse.json(null);
     }
     
     if (dplId) {
@@ -88,7 +126,9 @@ export async function GET(req) {
         .populate({ path: 'ketua_id', select: 'nama_lengkap nim_nidn' })
         .populate('mitra_id')
         .sort({ createdAt: -1 });
-      return NextResponse.json(pokjas);
+        
+      const processed = await Promise.all(pokjas.map(p => processPokjaUrls(p)));
+      return NextResponse.json(processed);
     }
     
     return NextResponse.json({ error: "Missing parameters" }, { status: 400 });

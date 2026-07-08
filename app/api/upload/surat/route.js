@@ -1,15 +1,14 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
 import dbConnect from '@/lib/db';
 import Pokja from '@/models/Pokja';
+import { uploadToMinio } from '@/lib/minio';
 
 export async function POST(req) {
   try {
     const formData = await req.formData();
     const file = formData.get('file');
     const pokjaId = formData.get('pokjaId');
-    const documentType = formData.get('documentType'); // 'loa' atau 'sertifikat'
+    const documentType = formData.get('documentType'); // 'loa', 'mou', 'foto_kantor_desa', dll
 
     if (!file || !pokjaId || !documentType) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -17,16 +16,8 @@ export async function POST(req) {
 
     const buffer = Buffer.from(await file.arrayBuffer());
     const fileName = `${pokjaId}_${documentType}_${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'surat');
-    
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
 
-    const filePath = path.join(uploadDir, fileName);
-    fs.writeFileSync(filePath, buffer);
-
-    const fileUrl = `/uploads/surat/${fileName}`;
+    const fileUrl = await uploadToMinio(buffer, fileName, file.type);
 
     await dbConnect();
 

@@ -222,7 +222,7 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
         <BackgroundScene />
 
         {/* Sticky Header */}
-        <header className="sticky top-0 z-50 backdrop-blur-2xl bg-gradient-to-b from-[#D4AF37]/30 to-transparent">
+        <header className="sticky top-0 z-50 backdrop-blur-2xl bg-white/10 dark:bg-slate-900/10 border-b border-slate-200/50 dark:border-slate-800/50">
           <div className="w-full px-8 lg:px-[5cm] py-4 flex items-center justify-between">
             <div className="flex items-center gap-4">
               <button

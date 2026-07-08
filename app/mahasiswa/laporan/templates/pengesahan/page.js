@@ -8,8 +8,20 @@ export default function CetakPengesahan() {
   const [data, setData] = useState(null);
 
   useEffect(() => {
-    if (session?.user?.id) {
-      fetch(`/api/laporan-akhir?mhsId=${session.user.id}`)
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    const mhsId = params.get('mhsId') || session?.user?.id;
+
+    if (id) {
+      fetch(`/api/laporan-akhir?id=${id}`)
+        .then(res => res.json())
+        .then(d => {
+          if (d.laporan && d.pengajuan) {
+            setData(d);
+          }
+        });
+    } else if (mhsId) {
+      fetch(`/api/laporan-akhir?mhsId=${mhsId}`)
         .then(res => res.json())
         .then(d => {
           if (d.laporan && d.pengajuan) {
@@ -36,7 +48,7 @@ export default function CetakPengesahan() {
       <div className="max-w-[21cm] mx-auto bg-white shadow-2xl print:shadow-none print:max-w-none">
         <div className="p-[3cm] min-h-[29.7cm] print:p-[2.5cm]">
           <h2 className="text-center font-bold text-xl uppercase mb-12">
-            PENGESAHAN LAPORAN KEGIATAN MAGANG BERDAMPAK
+            PENGESAHAN LAPORAN {data.laporan?.tipe_laporan === 'pokja' ? 'KELOMPOK' : 'INDIVIDU'}<br/>KEGIATAN MAGANG BERDAMPAK
           </h2>
           
           <div className="text-justify leading-relaxed space-y-4 mb-12">

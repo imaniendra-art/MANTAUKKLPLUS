@@ -3,6 +3,20 @@ import dbConnect from '@/lib/db';
 import Logbook from '@/models/Logbook';
 import Pokja from '@/models/Pokja';
 import User from '@/models/User'; 
+import { generatePresignedUrl } from '@/lib/minio';
+
+async function processLogbookUrls(logbookDoc) {
+  if (!logbookDoc) return logbookDoc;
+  const logbook = logbookDoc.toObject ? logbookDoc.toObject() : logbookDoc;
+  if (logbook.bukti_kegiatan) {
+    logbook.bukti_kegiatan = await generatePresignedUrl(logbook.bukti_kegiatan);
+  }
+  return logbook;
+}
+
+async function processLogbookArray(logs) {
+  return await Promise.all(logs.map(l => processLogbookUrls(l)));
+}
 
 export async function GET(req) {
   await dbConnect();
@@ -14,21 +28,40 @@ export async function GET(req) {
     const role = searchParams.get('role');
     const userId = searchParams.get('userId'); 
     
+    const pageStr = searchParams.get('page');
+    const limitStr = searchParams.get('limit');
+    
     if (mhsId) {
       const query = { mahasiswa_id: mhsId };
       if (tipe) query.tipe_logbook = tipe;
       
-      const logs = await Logbook.find(query)
+      let dbQuery = Logbook.find(query)
         .populate({ path: 'proker_id', select: 'judul_proker' })
         .sort({ tanggal: -1, createdAt: -1 });
-      return NextResponse.json(logs);
+
+      if (pageStr && limitStr) {
+        const page = parseInt(pageStr) || 1;
+        const limit = parseInt(limitStr) || 10;
+        const total = await Logbook.countDocuments(query);
+        const logs = await dbQuery.skip((page - 1) * limit).limit(limit);
+        const processedLogs = await processLogbookArray(logs);
+        return NextResponse.json({
+          data: processedLogs,
+          pagination: { total, page, limit, totalPages: Math.ceil(total / limit) }
+        });
+      } else {
+        const logs = await dbQuery;
+        const processedLogs = await processLogbookArray(logs);
+        return NextResponse.json(processedLogs);
+      }
     }
 
     if (pokjaId && tipe === 'pokja') {
       const logs = await Logbook.find({ pokja_id: pokjaId, tipe_logbook: 'pokja' })
         .populate({ path: 'proker_id', select: 'judul_proker' })
         .sort({ tanggal: -1, createdAt: -1 });
-      return NextResponse.json(logs);
+      const processedLogs = await processLogbookArray(logs);
+      return NextResponse.json(processedLogs);
     }
 
     // LPPM: Tarik seluruh logbook untuk monitoring
@@ -37,7 +70,8 @@ export async function GET(req) {
         .populate({ path: 'mahasiswa_id', select: 'nama_lengkap nim_nidn program_studi' })
         .populate({ path: 'pokja_id', select: 'nama_pokja', populate: { path: 'mitra_id' } })
         .sort({ tanggal: -1 });
-      return NextResponse.json(logs);
+      const processedLogs = await processLogbookArray(logs);
+      return NextResponse.json(processedLogs);
     }
 
     // Mentor: Tarik semua logbook (individu & pokja) yang menunggu validasi mentor
@@ -53,7 +87,8 @@ export async function GET(req) {
         .populate({ path: 'pokja_id', select: 'nama_pokja' })
         .populate({ path: 'proker_id', select: 'judul_proker' })
         .sort({ tanggal: 1 });
-      return NextResponse.json(logs);
+      const processedLogs = await processLogbookArray(logs);
+      return NextResponse.json(processedLogs);
     }
 
     // Mentor Histori
@@ -69,7 +104,8 @@ export async function GET(req) {
         .populate({ path: 'pokja_id', select: 'nama_pokja' })
         .populate({ path: 'proker_id', select: 'judul_proker' })
         .sort({ tanggal: -1 });
-      return NextResponse.json(logs);
+      const processedLogs = await processLogbookArray(logs);
+      return NextResponse.json(processedLogs);
     }
 
     // DPL: Tarik logbook
@@ -85,7 +121,8 @@ export async function GET(req) {
       .populate({ path: 'proker_id', select: 'judul_proker' })
       .sort({ tanggal: 1 });
 
-      return NextResponse.json(logs);
+      const processedLogs = await processLogbookArray(logs);
+      return NextResponse.json(processedLogs);
     }
     
     return NextResponse.json({ error: "Invalid parameters" }, { status: 400 });
@@ -109,7 +146,7 @@ export async function PATCH(req) {
   await dbConnect();
   try {
     const data = await req.json();
-    const { id, status_validasi, catatan_revisi, rencana_target, uraian_kegiatan, hasil_output, kendala_solusi, bukti_link, bukti_kegiatan, ids } = data;
+    const { id, status_validasi, catatan_revisi, rencana_target, uraian_kegiatan, hasil_output, kendala_solusi, bukti_link, bukti_kegiatan, keterangan_bukti, ids } = data;
     
     // Bulk Update
     if (ids && Array.isArray(ids) && ids.length > 0) {
@@ -136,6 +173,7 @@ export async function PATCH(req) {
     if (kendala_solusi !== undefined) updateData.kendala_solusi = kendala_solusi;
     if (bukti_link !== undefined) updateData.bukti_link = bukti_link;
     if (bukti_kegiatan) updateData.bukti_kegiatan = bukti_kegiatan;
+    if (keterangan_bukti !== undefined) updateData.keterangan_bukti = keterangan_bukti;
     
     const updated = await Logbook.findByIdAndUpdate(
       id,

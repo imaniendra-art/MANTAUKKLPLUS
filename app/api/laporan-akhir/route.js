@@ -2,6 +2,27 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import Pokja from '@/models/Pokja';
 import LaporanAkhir from '@/models/LaporanAkhir';
+import Logbook from '@/models/Logbook';
+import { generatePresignedUrl } from '@/lib/minio';
+
+async function processLaporanUrls(laporanDoc) {
+  if (!laporanDoc) return laporanDoc;
+  const laporan = laporanDoc.toObject ? laporanDoc.toObject() : laporanDoc;
+  
+  const fileFields = ['file_laporan', 'file_pengantar', 'file_penerimaan', 'file_keterangan', 'file_struktur_organisasi'];
+  
+  for (const field of fileFields) {
+    if (laporan[field]) {
+      laporan[field] = await generatePresignedUrl(laporan[field]);
+    }
+  }
+  
+  return laporan;
+}
+
+async function processLaporanArray(laporans) {
+  return await Promise.all(laporans.map(l => processLaporanUrls(l)));
+}
 
 export async function GET(request) {
   await dbConnect();
@@ -12,6 +33,35 @@ export async function GET(request) {
     const dplId = searchParams.get('dplId');
     const pokjaId = searchParams.get('pokjaId');
     const tipe = searchParams.get('tipe'); // 'individu' or 'pokja'
+    const laporanId = searchParams.get('id');
+
+    // Jika dipanggil langsung menggunakan ID Laporan Akhir (misal untuk cetak PDF)
+    if (laporanId) {
+      let laporan = await LaporanAkhir.findById(laporanId)
+        .populate({ path: 'mahasiswa_id', select: 'nama_lengkap nim_nidn program_studi' })
+        .populate({ path: 'pokja_id', select: 'nama_pokja mitra_id dpl_id ketua_id anggota mentor_nama mentor_jabatan tanggal_mulai tanggal_selesai detail_tempat', populate: { path: 'mitra_id' } });
+      
+      if (!laporan) {
+        return NextResponse.json({ error: "Laporan not found" }, { status: 404 });
+      }
+
+      // Populate DPL and Ketua from Pokja if needed by print template
+      await Pokja.populate(laporan.pokja_id, [
+        { path: 'dpl_id', select: 'nama_lengkap nim_nidn' },
+        { path: 'ketua_id', select: 'nama_lengkap nim_nidn program_studi' },
+        { path: 'anggota.user_id', select: 'nama_lengkap nim_nidn program_studi' }
+      ]);
+
+      const processed = await processLaporanUrls(laporan);
+      
+      // Ambil logbooks jika ini laporan individu
+      let logbooks = [];
+      if (laporan.tipe_laporan === 'individu' && laporan.mahasiswa_id) {
+        logbooks = await Logbook.find({ mahasiswa_id: laporan.mahasiswa_id._id, status: 'disetujui' }).sort({ tanggal: 1 });
+      }
+
+      return NextResponse.json({ laporan: processed, pengajuan: laporan.pokja_id, logbooks });
+    }
 
     // Jika dipanggil oleh DPL
     if (role === 'dpl' && dplId) {
@@ -26,7 +76,8 @@ export async function GET(request) {
       .populate({ path: 'pokja_id', select: 'nama_pokja mitra_id', populate: { path: 'mitra_id' } })
       .sort({ updatedAt: -1 });
 
-      return NextResponse.json(laporans);
+      const processed = await processLaporanArray(laporans);
+      return NextResponse.json(processed);
     }
 
     // Ambil laporan by pokjaId & tipe
@@ -39,7 +90,63 @@ export async function GET(request) {
         .populate({ path: 'pokja_id', select: 'nama_pokja mitra_id', populate: { path: 'mitra_id' } });
       
       // Jika belum ada draft, kita return null saja, UI yang handle
-      return NextResponse.json(laporan || null);
+      if (laporan) {
+        const processed = await processLaporanUrls(laporan);
+        return NextResponse.json(processed);
+      }
+      return NextResponse.json(null);
+    }
+
+    // Fallback: Jika dipanggil oleh mahasiswa (hanya mengirimkan mhsId)
+    if (mhsId && !pokjaId) {
+      // 1. Ambil pokja tempat mahasiswa tergabung sebagai 'pengajuan'
+      const pokja = await Pokja.findOne({ $or: [{ 'anggota.user_id': mhsId }, { ketua_id: mhsId }] })
+        .populate('mitra_id')
+        .populate({ path: 'anggota.user_id', select: 'nama_lengkap nim_nidn program_studi' })
+        .populate({ path: 'dpl_id', select: 'nama_lengkap nim_nidn' })
+        .populate({ path: 'ketua_id', select: 'nama_lengkap nim_nidn program_studi' });
+
+      if (!pokja) {
+        return NextResponse.json({ error: "Mahasiswa belum tergabung dalam Pokja / Pengajuan tidak ditemukan" }, { status: 404 });
+      }
+
+      // Supaya backward compatible dengan komponen frontend lama yang menggunakan `pengajuan.is_laporan_unlocked`
+      const pengajuan = pokja.toObject ? pokja.toObject() : pokja;
+      
+      // Inject mahasiswa_id untuk frontend
+      const mhsAnggota = pengajuan.anggota.find(m => m.user_id && m.user_id._id.toString() === mhsId);
+      if (mhsAnggota) {
+        pengajuan.mahasiswa_id = mhsAnggota.user_id;
+      } else if (pengajuan.ketua_id && pengajuan.ketua_id._id.toString() === mhsId) {
+        pengajuan.mahasiswa_id = pengajuan.ketua_id;
+      }
+
+      // 3. Ambil laporan individu
+      let laporan_individu = await LaporanAkhir.findOne({ 
+        pokja_id: pokja._id, 
+        tipe_laporan: 'individu', 
+        mahasiswa_id: mhsId 
+      }).populate({ path: 'pokja_id', select: 'nama_pokja mitra_id', populate: { path: 'mitra_id' } });
+
+      // 4. Ambil laporan kelompok
+      let laporan_kelompok = await LaporanAkhir.findOne({ 
+        pokja_id: pokja._id, 
+        tipe_laporan: 'pokja'
+      }).populate({ path: 'pokja_id', select: 'nama_pokja mitra_id', populate: { path: 'mitra_id' } });
+
+      const processed_individu = await processLaporanUrls(laporan_individu);
+      const processed_kelompok = await processLaporanUrls(laporan_kelompok);
+
+      // 5. Ambil logbook yang sudah disetujui (untuk mahasiswa ybs)
+      const logbooks = await Logbook.find({ mahasiswa_id: mhsId, status: 'disetujui' }).sort({ tanggal: 1 });
+
+      return NextResponse.json({
+        laporan: processed_individu, // Keep backward compatibility
+        laporan_individu: processed_individu,
+        laporan_kelompok: processed_kelompok,
+        pengajuan,
+        logbooks
+      });
     }
 
     return NextResponse.json({ error: "Missing parameters" }, { status: 400 });
@@ -57,50 +164,76 @@ export async function POST(request) {
       pokja_id,
       tipe_laporan,
       mahasiswa_id, 
+      kata_pengantar,
       bab1_pendahuluan, 
-      bab2_profil, 
-      bab3_aktivitas, 
-      bab4_permasalahan, 
-      bab5_kesimpulan, 
-      bab6_refleksi,
+      bab2_metode, 
+      bab3_profil, 
+      bab4_hasil, 
+      bab5_penutup, 
+      file_pengantar,
+      file_penerimaan,
+      file_keterangan,
+      file_struktur_organisasi,
       file_laporan,
       status
     } = data;
 
-    if (!pokja_id || !tipe_laporan) {
+    let final_pokja_id = pokja_id;
+    let final_tipe = tipe_laporan;
+    let final_mhs_id = mahasiswa_id;
+
+    if (!final_pokja_id && data.mhsId) {
+      const pokja = await Pokja.findOne({ $or: [{ 'anggota.user_id': data.mhsId }, { ketua_id: data.mhsId }] });
+      if (!pokja) {
+        return NextResponse.json({ error: "Mahasiswa belum tergabung dalam Pokja" }, { status: 404 });
+      }
+      final_pokja_id = pokja._id;
+      final_tipe = data.tipe_laporan || 'individu';
+      final_mhs_id = data.mhsId;
+    }
+
+    if (!final_pokja_id || !final_tipe) {
       return NextResponse.json({ error: "Missing pokja_id or tipe_laporan" }, { status: 400 });
     }
 
-    let query = { pokja_id, tipe_laporan };
-    if (tipe_laporan === 'individu') {
-      query.mahasiswa_id = mahasiswa_id;
+    let query = { pokja_id: final_pokja_id, tipe_laporan: final_tipe };
+    if (final_tipe === 'individu') {
+      query.mahasiswa_id = final_mhs_id;
     }
 
     let laporan = await LaporanAkhir.findOne(query);
     
     if (laporan) {
       // Update
+      laporan.kata_pengantar = kata_pengantar ?? laporan.kata_pengantar;
       laporan.bab1_pendahuluan = bab1_pendahuluan ?? laporan.bab1_pendahuluan;
-      laporan.bab2_profil = bab2_profil ?? laporan.bab2_profil;
-      laporan.bab3_aktivitas = bab3_aktivitas ?? laporan.bab3_aktivitas;
-      laporan.bab4_permasalahan = bab4_permasalahan ?? laporan.bab4_permasalahan;
-      laporan.bab5_kesimpulan = bab5_kesimpulan ?? laporan.bab5_kesimpulan;
-      laporan.bab6_refleksi = bab6_refleksi ?? laporan.bab6_refleksi;
+      laporan.bab2_metode = bab2_metode ?? laporan.bab2_metode;
+      laporan.bab3_profil = bab3_profil ?? laporan.bab3_profil;
+      laporan.bab4_hasil = bab4_hasil ?? laporan.bab4_hasil;
+      laporan.bab5_penutup = bab5_penutup ?? laporan.bab5_penutup;
+      laporan.file_pengantar = file_pengantar ?? laporan.file_pengantar;
+      laporan.file_penerimaan = file_penerimaan ?? laporan.file_penerimaan;
+      laporan.file_keterangan = file_keterangan ?? laporan.file_keterangan;
+      laporan.file_struktur_organisasi = file_struktur_organisasi ?? laporan.file_struktur_organisasi;
       laporan.file_laporan = file_laporan ?? laporan.file_laporan;
       laporan.status = status ?? laporan.status;
       await laporan.save();
     } else {
       // Create
       laporan = await LaporanAkhir.create({
-        pokja_id,
-        tipe_laporan,
-        mahasiswa_id: tipe_laporan === 'individu' ? mahasiswa_id : undefined,
+        pokja_id: final_pokja_id,
+        tipe_laporan: final_tipe,
+        mahasiswa_id: final_tipe === 'individu' ? final_mhs_id : undefined,
+        kata_pengantar,
         bab1_pendahuluan,
-        bab2_profil,
-        bab3_aktivitas,
-        bab4_permasalahan,
-        bab5_kesimpulan,
-        bab6_refleksi,
+        bab2_metode,
+        bab3_profil,
+        bab4_hasil,
+        bab5_penutup,
+        file_pengantar,
+        file_penerimaan,
+        file_keterangan,
+        file_struktur_organisasi,
         file_laporan,
         status: status || 'draft'
       });

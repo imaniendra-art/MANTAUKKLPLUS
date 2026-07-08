@@ -10,41 +10,53 @@ export default function CetakPengantar() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (session?.user?.id) {
-      const urlParams = new URLSearchParams(window.location.search);
-      const posisiId = urlParams.get('posisiId');
-      const pengajuanId = urlParams.get('pengajuanId');
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get('id');
+    const posisiId = urlParams.get('posisiId');
+    const pengajuanId = urlParams.get('pengajuanId');
+    const mhsId = urlParams.get('mhsId') || session?.user?.id;
 
-      if (pengajuanId) {
-        // Jika ada pengajuanId (dari dashboard admin / mhs yang sudah disetujui)
-        fetch(`/api/pengajuan?pengajuanId=${pengajuanId}`)
-          .then(res => res.json())
-          .then(d => {
-            if (d) setData({ pengajuan: d });
-            setLoading(false);
-          })
-          .catch(() => setLoading(false));
-      } else if (posisiId) {
-        // Fetch specific posisi data for preview during application
-        fetch(`/api/posisi?posisiId=${posisiId}`)
-          .then(res => res.json())
-          .then(d => {
-            setPosisiData(d);
-            setLoading(false);
-          })
-          .catch(() => setLoading(false));
-      } else {
-        // Fetch existing pengajuan data for after application (fallback)
-        fetch(`/api/laporan-akhir?mhsId=${session.user.id}`)
-          .then(res => res.json())
-          .then(d => {
-            if (d.laporan && d.pengajuan) {
-              setData(d);
-            }
-            setLoading(false);
-          })
-          .catch(() => setLoading(false));
-      }
+    if (id) {
+      fetch(`/api/laporan-akhir?id=${id}`)
+        .then(res => res.json())
+        .then(d => {
+          if (d.laporan && d.pengajuan) {
+            setData(d);
+          }
+          setLoading(false);
+        })
+        .catch(() => setLoading(false));
+    } else if (pengajuanId) {
+      // Jika ada pengajuanId (dari dashboard admin / mhs yang sudah disetujui)
+      fetch(`/api/pengajuan?pengajuanId=${pengajuanId}`)
+        .then(res => res.json())
+        .then(d => {
+          if (d) setData({ pengajuan: d });
+          setLoading(false);
+        })
+        .catch(() => setLoading(false));
+    } else if (posisiId) {
+      // Fetch specific posisi data for preview during application
+      fetch(`/api/posisi?posisiId=${posisiId}`)
+        .then(res => res.json())
+        .then(d => {
+          setPosisiData(d);
+          setLoading(false);
+        })
+        .catch(() => setLoading(false));
+    } else if (mhsId) {
+      // Fetch existing pengajuan data for after application (fallback)
+      fetch(`/api/laporan-akhir?mhsId=${mhsId}`)
+        .then(res => res.json())
+        .then(d => {
+          if (d.laporan && d.pengajuan) {
+            setData(d);
+          }
+          setLoading(false);
+        })
+        .catch(() => setLoading(false));
+    } else {
+      setLoading(false);
     }
   }, [session]);
 

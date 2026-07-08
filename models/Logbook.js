@@ -43,6 +43,10 @@ const LogbookSchema = new mongoose.Schema({
   bukti_kegiatan: { // untuk foto
     type: String,
   },
+  keterangan_bukti: {
+    type: String,
+    default: "",
+  },
   bukti_link: { // untuk link (gdrive, figma, dll)
     type: String,
   },

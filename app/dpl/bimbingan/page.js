@@ -149,14 +149,15 @@ export default function DaftarBimbinganPage() {
     }
   };
 
-  const handleUploadLegal = async (e, type, mitraId) => {
+  const handleUploadLegal = async (e, type, mitraId, pokjaId) => {
     const file = e.target.files[0];
     if (!file) return;
 
     setIsUploading(true);
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('type', type);
+    formData.append('documentType', type);
+    formData.append('pokjaId', pokjaId);
 
     try {
       const res = await fetch('/api/upload/surat', {
@@ -165,17 +166,17 @@ export default function DaftarBimbinganPage() {
       });
       const data = await res.json();
       
-      if (res.ok && data.url) {
+      if (res.ok && data.fileUrl) {
         const updatePayload = { id: mitraId };
         let newStatus = '';
         if (type === 'mou') {
-          updatePayload.file_mou = data.url;
+          updatePayload.file_mou = data.fileUrl;
           newStatus = 'Memorandum of Understanding (MoU)';
         } else if (type === 'moa') {
-          updatePayload.file_moa = data.url;
+          updatePayload.file_moa = data.fileUrl;
           newStatus = 'Memorandum of Agreement (MoA)';
         } else if (type === 'ia') {
-          updatePayload.file_ia = data.url;
+          updatePayload.file_ia = data.fileUrl;
           newStatus = 'Implementation Arrangement (IA)';
         }
         
@@ -263,24 +264,24 @@ export default function DaftarBimbinganPage() {
     }
   };
 
-  const renderDocButtons = (type, url, label, mitraId) => {
+  const renderDocButtons = (type, url, label, mitraId, pokjaId) => {
     if (url) {
       return (
-        <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
-          <a href={url} target="_blank" rel="noopener noreferrer" className="text-[9px] font-bold px-2 py-1.5 rounded-md border border-emerald-200 bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400 dark:border-emerald-500/30 hover:bg-emerald-200 dark:hover:bg-emerald-500/30 transition-colors flex items-center gap-1.5">
-            <Eye className="w-3 h-3" /> Lihat {label}
+        <div className="flex items-center" onClick={e => e.stopPropagation()}>
+          <a href={url} target="_blank" rel="noopener noreferrer" className="text-[9px] font-bold px-2 py-1.5 rounded-l-md border border-r-0 border-emerald-200 bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400 dark:border-emerald-500/30 hover:bg-emerald-200 dark:hover:bg-emerald-500/30 transition-colors flex items-center gap-1">
+            <Eye className="w-3 h-3" /> {label}
           </a>
-          <label className={`text-[9px] font-bold px-2 py-1.5 rounded-md border border-slate-200 bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 transition-colors flex items-center gap-1.5 ${isUploading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700'}`}>
-            <RefreshCcw className="w-3 h-3" /> Ulang
-            <input type="file" className="hidden" accept=".pdf" onChange={(e) => handleUploadLegal(e, type, mitraId)} disabled={isUploading} />
+          <label className={`text-[9px] font-bold px-2 py-1.5 rounded-r-md border border-slate-200 bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 transition-colors flex items-center gap-1 ${isUploading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700'}`}>
+            <RefreshCcw className="w-3 h-3" />
+            <input type="file" className="hidden" accept=".pdf" onChange={(e) => handleUploadLegal(e, type, mitraId, pokjaId)} disabled={isUploading} />
           </label>
         </div>
       );
     }
     return (
-      <label className={`text-[9px] font-bold px-2 py-1.5 rounded-md border border-slate-200 bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 transition-colors flex items-center gap-1.5 ${isUploading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700'}`} onClick={e => e.stopPropagation()}>
-        <Upload className="w-3 h-3" /> Upload {label}
-        <input type="file" className="hidden" accept=".pdf" onChange={(e) => handleUploadLegal(e, type, mitraId)} disabled={isUploading} />
+      <label className={`text-[9px] font-bold px-2 py-1.5 rounded-md border border-slate-200 bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 transition-colors flex items-center gap-1 ${isUploading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700'}`} onClick={e => e.stopPropagation()}>
+        <Upload className="w-3 h-3" /> {label}
+        <input type="file" className="hidden" accept=".pdf" onChange={(e) => handleUploadLegal(e, type, mitraId, pokjaId)} disabled={isUploading} />
       </label>
     );
   };
@@ -290,13 +291,13 @@ export default function DaftarBimbinganPage() {
       <div className="space-y-6">
         
         <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-6 rounded-2xl border border-blue-200/50 dark:border-blue-800/50 shadow-sm flex items-start gap-4 mb-6">
-          <div className="w-12 h-12 rounded-full bg-blue-500/20 text-blue-500 dark:text-blue-400 flex items-center justify-center text-2xl shrink-0">
-            ℹ️
+          <div className="w-12 h-12 rounded-full bg-blue-500/20 text-blue-500 dark:text-blue-400 flex items-center justify-center shrink-0">
+            <Info className="w-6 h-6" />
           </div>
           <div>
-            <h4 className="font-bold text-slate-800 dark:text-slate-100 text-lg">Informasi Penyerahan</h4>
-            <p className="text-sm text-slate-600 dark:text-slate-300 mt-1 leading-relaxed max-w-4xl">
-              Berikut adalah daftar Kelompok Kerja (POKJA) KKL Plus di bawah bimbingan Anda. Mohon pastikan dua hal utama: <strong>(1) Tugaskan Mentor Lapangan & Konfirmasi Penyerahan</strong> setelah serah terima di instansi, dan <strong>(2) Review & Setujui Program Kerja (Proker)</strong> yang diusulkan oleh mahasiswa agar mereka dapat melaksanakan kegiatannya secara terarah.
+            <h4 className="font-bold text-slate-800 dark:text-slate-100 text-lg">Informasi Penyerahan & Bimbingan</h4>
+            <p className="text-sm text-slate-600 dark:text-slate-300 mt-1 leading-relaxed max-w-5xl">
+              Berikut adalah daftar Kelompok Kerja (POKJA) KKL Plus di bawah bimbingan Anda. Mohon pastikan tiga hal utama: <strong>(1) Tugaskan Mentor Lapangan & Konfirmasi Penyerahan</strong> setelah serah terima di instansi, <strong>(2) Lengkapi & Update berkas kerjasama (MoU, MoA, IA)</strong> dengan pihak mitra, dan <strong>(3) Review & Setujui Program Kerja (Proker)</strong> yang diusulkan oleh mahasiswa agar mereka dapat melaksanakan kegiatannya secara terarah.
             </p>
           </div>
         </div>
@@ -318,6 +319,7 @@ export default function DaftarBimbinganPage() {
                   <tr>
                     <th className="px-6 py-4">Kelompok Kerja</th>
                     <th className="px-6 py-4">Lokasi KKL Plus</th>
+                    <th className="px-6 py-4">Doc. Kerjasama</th>
                     <th className="px-6 py-4">Mentor Lapangan</th>
                     <th className="px-6 py-4">Rancangan Proker</th>
                     <th className="px-6 py-4 text-center">Status / Aksi</th>
@@ -360,24 +362,41 @@ export default function DaftarBimbinganPage() {
                                 <MapPin className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
                                 <span className="font-medium line-clamp-2 leading-relaxed">{lokasi}</span>
                               </div>
-                              {item.mitra_id?.status_kerjasama && (
-                                <div className="mt-2 space-y-2">
-                                  <div 
-                                    className="flex items-center gap-1 text-[10px] bg-sky-50 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300 w-fit px-2 py-1 rounded-md border border-sky-100 dark:border-sky-800/50 cursor-pointer hover:bg-sky-100 transition-colors"
-                                    onClick={(e) => { e.stopPropagation(); setShowStatusInfo(true); }}
-                                  >
-                                    <Info className="w-3 h-3" />
-                                    <span className="font-bold">Status: {item.mitra_id.status_kerjasama.split('(')[0].trim()}</span>
-                                  </div>
-                                  
-                                  <div className="flex flex-wrap items-center gap-1.5 mt-2" onClick={e => e.stopPropagation()}>
-                                    {renderDocButtons('mou', item.mitra_id.file_mou, 'MoU', item.mitra_id._id)}
-                                    {renderDocButtons('moa', item.mitra_id.file_moa, 'MoA', item.mitra_id._id)}
-                                    {renderDocButtons('ia', item.mitra_id.file_ia, 'IA', item.mitra_id._id)}
-                                  </div>
-                                </div>
-                              )}
                             </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            {item.mitra_id?.status_kerjasama ? (
+                              <div className="flex flex-col gap-1.5 w-fit">
+                                <div 
+                                  className="flex flex-col gap-1 text-[10px] bg-sky-50 text-sky-800 dark:bg-sky-900/30 dark:text-sky-200 px-2 py-1.5 rounded-md border border-sky-100 dark:border-sky-800/50"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <div className="flex items-center gap-1 font-bold">
+                                    <Info className="w-3 h-3 text-sky-600 dark:text-sky-400 shrink-0" />
+                                    <span>Status Kerjasama: {item.mitra_id.status_kerjasama.split('(')[0].trim()}</span>
+                                  </div>
+                                  <span className="text-[8.5px] italic text-sky-600/90 dark:text-sky-300/80 leading-tight">
+                                    {item.mitra_id.status_kerjasama.includes('MoU') 
+                                      ? '» Segera arahkan untuk MoA & IA.'
+                                      : item.mitra_id.status_kerjasama.includes('MoA')
+                                      ? '» Segera arahkan untuk IA.'
+                                      : item.mitra_id.status_kerjasama.includes('IA')
+                                      ? '» Seluruh berkas kerjasama terpenuhi.'
+                                      : item.mitra_id.status_kerjasama.includes('Penjajakan')
+                                      ? '» Segera selesaikan dokumen MoU.'
+                                      : '» Segera mulai penjajakan MoU.'}
+                                  </span>
+                                </div>
+                                
+                                <div className="flex flex-wrap items-center gap-1.5 mt-2" onClick={e => e.stopPropagation()}>
+                                  {renderDocButtons('mou', item.mitra_id.file_mou, 'MoU', item.mitra_id._id, item._id)}
+                                  {renderDocButtons('moa', item.mitra_id.file_moa, 'MoA', item.mitra_id._id, item._id)}
+                                  {renderDocButtons('ia', item.mitra_id.file_ia, 'IA', item.mitra_id._id, item._id)}
+                                </div>
+                              </div>
+                            ) : (
+                              <span className="text-xs text-slate-400 italic">Data mitra tidak ditemukan</span>
+                            )}
                           </td>
                           <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
                             {mentor ? (

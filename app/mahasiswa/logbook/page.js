@@ -13,7 +13,13 @@ export default function LogbookPage() {
   const [logbooks, setLogbooks] = useState([]);
   const [loading, setLoading] = useState(true);
   
-  const [activeTab, setActiveTab] = useState('individu'); // 'individu' or 'pokja'
+  const [activeTab, setActiveTab] = useState('individu');
+  
+  // Pagination States
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
   
   const getTodayLocal = () => {
     if (typeof window === 'undefined') return "";
@@ -28,6 +34,7 @@ export default function LogbookPage() {
   const [hasilOutput, setHasilOutput] = useState("");
   const [kendalaSolusi, setKendalaSolusi] = useState("");
   const [buktiFoto, setBuktiFoto] = useState("");
+  const [keteranganBukti, setKeteranganBukti] = useState("");
   const [prokerId, setProkerId] = useState(""); 
   
   const [submitting, setSubmitting] = useState(false);
@@ -50,17 +57,26 @@ export default function LogbookPage() {
         const resProker = await fetch(`/api/proker?pokjaId=${dataP._id}`);
         setProkers(await resProker.json());
 
-        // Fetch Logbooks (semua tipe yang di-assign ke user ini)
-        const resL = await fetch(`/api/logbook?mhsId=${session.user.id}`);
+        // Fetch Logbooks with Pagination
+        const resL = await fetch(`/api/logbook?mhsId=${session.user.id}&tipe=${activeTab}&page=${page}&limit=${limit}`);
         const dataL = await resL.json();
-        setLogbooks(Array.isArray(dataL) ? dataL : []);
+        
+        if (dataL.data && dataL.pagination) {
+          setLogbooks(dataL.data);
+          setTotalItems(dataL.pagination.total);
+          setTotalPages(dataL.pagination.totalPages);
+        } else {
+          setLogbooks(Array.isArray(dataL) ? dataL : []);
+          setTotalItems(Array.isArray(dataL) ? dataL.length : 0);
+          setTotalPages(1);
+        }
       }
     } catch (error) {
       console.error(error);
     } finally {
       setLoading(false);
     }
-  }, [session]);
+  }, [session, activeTab, page, limit]);
 
   useEffect(() => {
     fetchData();
@@ -70,6 +86,7 @@ export default function LogbookPage() {
   const handleTabChange = (tab) => {
     setActiveTab(tab);
     setProkerId(""); // reset proker selection
+    setPage(1); // reset pagination
   };
 
   const handleFileChange = (e) => {
@@ -113,6 +130,27 @@ export default function LogbookPage() {
     setSubmitting(true);
 
     try {
+      let finalBuktiFoto = buktiFoto;
+      
+      // Jika buktiFoto adalah Base64, kirim ke MinIO dulu
+      if (buktiFoto && buktiFoto.startsWith('data:image')) {
+        const uploadRes = await fetch('/api/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ imageBase64: buktiFoto })
+        });
+        
+        if (!uploadRes.ok) {
+          const err = await uploadRes.json();
+          alert("Gagal mengunggah foto ke server kampus: " + (err.error || uploadRes.statusText));
+          setSubmitting(false);
+          return;
+        }
+        
+        const uploadData = await uploadRes.json();
+        finalBuktiFoto = uploadData.url;
+      }
+
       const payload = {
         pokja_id: pokja._id,
         mahasiswa_id: session.user.id,
@@ -122,7 +160,8 @@ export default function LogbookPage() {
         uraian_kegiatan: uraianKegiatan,
         hasil_output: hasilOutput,
         kendala_solusi: kendalaSolusi,
-        bukti_kegiatan: buktiFoto
+        bukti_kegiatan: finalBuktiFoto,
+        keterangan_bukti: keteranganBukti
       };
 
       if (prokerId) {
@@ -142,6 +181,7 @@ export default function LogbookPage() {
         setHasilOutput("");
         setKendalaSolusi("");
         setBuktiFoto("");
+        setKeteranganBukti("");
         setProkerId("");
         
         const fileInput = document.getElementById("file-upload");
@@ -194,7 +234,7 @@ export default function LogbookPage() {
     });
   }, [prokers, pokja, session]);
 
-  const displayedLogbooks = logbooks.filter(log => log.tipe_logbook === activeTab);
+  const displayedLogbooks = logbooks; // Sudah di-filter dari API
 
   return (
     <DashboardLayout title="Logbook Harian Mahasiswa">
@@ -308,6 +348,10 @@ export default function LogbookPage() {
                     <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Upload Bukti Foto <span className="text-red-500">*</span></label>
                     <input required id="file-upload" type="file" accept="image/*" onChange={handleFileChange} className="w-full px-4 py-2.5 rounded-xl border border-white/60 dark:border-slate-700 bg-white/20 dark:bg-slate-900/20 text-sm" />
                   </div>
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Keterangan Gambar / Foto <span className="text-red-500">*</span></label>
+                    <input required value={keteranganBukti} onChange={(e) => setKeteranganBukti(e.target.value)} type="text" placeholder="Cth: Foto bersama kepala desa di balai desa" className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/20 dark:bg-slate-900/20 text-sm" />
+                  </div>
                   <button 
                     type="submit" 
                     disabled={submitting}
@@ -325,7 +369,7 @@ export default function LogbookPage() {
             <div className="flex items-center justify-between">
               <h3 className="text-xl font-bold text-slate-800 dark:text-white">Riwayat {activeTab === 'individu' ? 'Personal' : 'Proker'}</h3>
               <span className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-3 py-1 rounded-full text-xs font-bold shadow-sm">
-                Total: {displayedLogbooks.length}
+                Total: {totalItems} Data
               </span>
             </div>
             
@@ -364,6 +408,43 @@ export default function LogbookPage() {
                     </div>
                   </div>
                 ))}
+
+                {/* PAGINATION UI */}
+                <div className="flex flex-col sm:flex-row items-center justify-between mt-6 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-4 rounded-2xl border border-white/60 dark:border-slate-700 gap-4">
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-bold text-slate-700 dark:text-slate-300">Tampilkan:</span>
+                    <select 
+                      value={limit} 
+                      onChange={(e) => { setLimit(Number(e.target.value)); setPage(1); }}
+                      className="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm font-medium"
+                    >
+                      <option value={10}>10</option>
+                      <option value={20}>20</option>
+                      <option value={50}>50</option>
+                      <option value={100}>100</option>
+                    </select>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <button 
+                      disabled={page === 1} 
+                      onClick={() => setPage(p => Math.max(1, p - 1))}
+                      className="px-3 py-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg text-sm font-bold disabled:opacity-50 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
+                    >
+                      Sebelumnya
+                    </button>
+                    <span className="text-sm font-bold px-2 text-slate-700 dark:text-slate-300">
+                      Hal {page} / {totalPages || 1}
+                    </span>
+                    <button 
+                      disabled={page >= totalPages} 
+                      onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                      className="px-3 py-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg text-sm font-bold disabled:opacity-50 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
+                    >
+                      Berikutnya
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
           </div>

@@ -8,8 +8,20 @@ export default function CetakKeterangan() {
   const [data, setData] = useState(null);
 
   useEffect(() => {
-    if (session?.user?.id) {
-      fetch(`/api/laporan-akhir?mhsId=${session.user.id}`)
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    const mhsId = params.get('mhsId') || session?.user?.id;
+
+    if (id) {
+      fetch(`/api/laporan-akhir?id=${id}`)
+        .then(res => res.json())
+        .then(d => {
+          if (d.laporan && d.pengajuan) {
+            setData(d);
+          }
+        });
+    } else if (mhsId) {
+      fetch(`/api/laporan-akhir?mhsId=${mhsId}`)
         .then(res => res.json())
         .then(d => {
           if (d.laporan && d.pengajuan) {
