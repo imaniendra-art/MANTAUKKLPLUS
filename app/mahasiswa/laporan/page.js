@@ -310,7 +310,7 @@ export default function LaporanAkhirPage() {
       {!pengajuan?.is_laporan_unlocked ? (
         <div className="max-w-2xl mx-auto mt-10">
           <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-10 rounded-3xl border border-white/60 dark:border-slate-700 shadow-sm text-center">
-            <div className="w-20 h-20 bg-yellow-50 text-yellow-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">🔒</div>
+            <div className="w-20 h-20 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">🔒</div>
             <h2 className="text-2xl font-black mb-2 text-slate-800 dark:text-white">Akses Terkunci</h2>
             <p className="text-slate-600 dark:text-slate-400">
               Pengisian Laporan Akhir saat ini masih dikunci oleh sistem. Akses akan dibuka oleh <b>Dosen Pembimbing Lapangan (DPL)</b> setelah kegiatan POKJA dianggap cukup.
@@ -324,13 +324,13 @@ export default function LaporanAkhirPage() {
           <div className="mb-6 flex bg-white p-1 rounded-2xl shadow-sm border border-slate-200 w-fit">
             <button
               onClick={() => setActiveMode('individu')}
-              className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${activeMode === 'individu' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50'}`}
+              className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${activeMode === 'individu' ? 'bg-teal-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50'}`}
             >
               <User className="w-4 h-4" /> Laporan Individu
             </button>
             <button
               onClick={() => setActiveMode('kelompok')}
-              className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${activeMode === 'kelompok' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50'}`}
+              className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${activeMode === 'kelompok' ? 'bg-teal-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50'}`}
             >
               <Users className="w-4 h-4" /> Laporan Kelompok
             </button>
@@ -357,12 +357,12 @@ export default function LaporanAkhirPage() {
         )}
 
         {currentForm.status === 'revisi' && (
-          <div className="mb-8 bg-rose-50 border border-rose-200 text-rose-800 p-4 rounded-xl flex items-start gap-3">
-            <div className="text-2xl mt-1"><AlertTriangle className="w-6 h-6 text-rose-600" /></div>
+          <div className="mb-8 bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-xl flex items-start gap-3">
+            <div className="text-2xl mt-1"><AlertTriangle className="w-6 h-6 text-amber-600" /></div>
             <div>
               <div className="font-bold">Laporan Perlu Direvisi</div>
               <div className="text-sm mb-2">DPL Anda meminta Anda untuk melakukan revisi sebelum laporan {activeMode} dapat disetujui.</div>
-              <div className="bg-white p-3 rounded border border-rose-100 text-sm italic font-medium">
+              <div className="bg-white p-3 rounded border border-amber-100 text-sm italic font-medium">
                 Catatan DPL: Silakan periksa detail pesan revisi yang tertera di kotak merah pada masing-masing kolom isian laporan Anda.
               </div>
             </div>
@@ -370,8 +370,8 @@ export default function LaporanAkhirPage() {
         )}
 
         {currentForm.status === 'disetujui' && (
-          <div className="mb-8 bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 rounded-xl flex items-center gap-3">
-            <div className="text-2xl"><CheckCircle className="w-6 h-6 text-emerald-600" /></div>
+          <div className="mb-8 bg-teal-50 border border-teal-200 text-teal-800 p-4 rounded-xl flex items-center gap-3">
+            <div className="text-2xl"><CheckCircle className="w-6 h-6 text-teal-600" /></div>
             <div>
               <div className="font-bold">Laporan {activeMode} Telah Disetujui DPL</div>
               <div className="text-sm">Anda sekarang dapat mencetak dokumen {activeMode}.</div>
@@ -384,10 +384,10 @@ export default function LaporanAkhirPage() {
           <button onClick={() => setActiveTab('panduan')} className={`px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${activeTab === 'panduan' ? 'bg-amber-100 text-amber-800' : 'text-slate-500 hover:bg-slate-50'}`}>
             <BookOpen className="w-4 h-4" /> Panduan & Template
           </button>
-          <button onClick={() => setActiveTab('bab')} className={`px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${activeTab === 'bab' ? 'bg-emerald-100 text-emerald-800' : 'text-slate-500 hover:bg-slate-50'}`}>
+          <button onClick={() => setActiveTab('bab')} className={`px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${activeTab === 'bab' ? 'bg-teal-100 text-teal-800' : 'text-slate-500 hover:bg-slate-50'}`}>
             <FileSignature className="w-4 h-4" /> Isi Laporan (Pengantar - Bab IV)
           </button>
-          <button onClick={() => setActiveTab('dokumen')} className={`px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${activeTab === 'dokumen' ? 'bg-emerald-100 text-emerald-800' : 'text-slate-500 hover:bg-slate-50'}`}>
+          <button onClick={() => setActiveTab('dokumen')} className={`px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${activeTab === 'dokumen' ? 'bg-teal-100 text-teal-800' : 'text-slate-500 hover:bg-slate-50'}`}>
             <Paperclip className="w-4 h-4" /> Upload Lampiran
           </button>
           <button onClick={() => setActiveTab('cetak')} className={`px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${activeTab === 'cetak' ? 'bg-amber-100 text-amber-800' : 'text-slate-500 hover:bg-slate-50'}`}>
@@ -407,7 +407,7 @@ export default function LaporanAkhirPage() {
                 {activeMode === 'individu' ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="border p-4 rounded-xl md:col-span-2">
-                      <h4 className="font-bold text-lg text-blue-700 border-b pb-2 mb-2">KATA PENGANTAR</h4>
+                      <h4 className="font-bold text-lg text-teal-700 border-b pb-2 mb-2">KATA PENGANTAR</h4>
                       <div className="space-y-3 mt-3">
                         <div>
                           <span className="text-sm text-slate-600">Berisi ucapan syukur kepada Tuhan Yang Maha Esa dan penyampaian rasa terima kasih secara terperinci kepada pihak-pihak yang telah berkontribusi dan mendukung selama proses KKL Plus (misal: Pimpinan Kampus, Dosen Pembimbing Lapangan, Mentor/Pimpinan Instansi Mitra, Rekan Kelompok, dan Keluarga). Sampaikan juga tujuan singkat penulisan laporan serta permohonan maaf atas segala kekurangan yang mungkin ada di dalam penulisan.</span>
@@ -416,7 +416,7 @@ export default function LaporanAkhirPage() {
                     </div>
                     
                     <div className="border p-4 rounded-xl md:col-span-2">
-                      <h4 className="font-bold text-lg text-blue-700 border-b pb-2 mb-2">BAB I. PENDAHULUAN</h4>
+                      <h4 className="font-bold text-lg text-teal-700 border-b pb-2 mb-2">BAB I. PENDAHULUAN</h4>
                       <div className="space-y-3 mt-3">
                         <div>
                           <span className="font-bold text-slate-800 text-sm block mb-1">1.1 Latar Belakang dan Rasionalisasi Pemilihan Mitra</span>
@@ -444,7 +444,7 @@ export default function LaporanAkhirPage() {
                     </div>
 
                     <div className="border p-4 rounded-xl md:col-span-2">
-                      <h4 className="font-bold text-lg text-blue-700 border-b pb-2 mb-2">BAB II. DESKRIPSI PERAN</h4>
+                      <h4 className="font-bold text-lg text-teal-700 border-b pb-2 mb-2">BAB II. DESKRIPSI PERAN</h4>
                       <div className="space-y-3 mt-3">
                         <div>
                           <span className="font-bold text-slate-800 text-sm block mb-1">2.1 Deskripsi Posisi dan Uraian Tugas (Job Description)</span>
@@ -469,7 +469,7 @@ export default function LaporanAkhirPage() {
                       </div>
                     </div>
                     <div className="border p-4 rounded-xl md:col-span-2">
-                      <h4 className="font-bold text-lg text-blue-700 border-b pb-2 mb-2">BAB III. REFLEKSI DAN PEMBAHASAN</h4>
+                      <h4 className="font-bold text-lg text-teal-700 border-b pb-2 mb-2">BAB III. REFLEKSI DAN PEMBAHASAN</h4>
                       <div className="space-y-3 mt-3">
                         <div>
                           <span className="font-bold text-slate-800 text-sm block mb-1">3.1 Relevansi Praktik Kerja dengan Kerangka Teoretis</span>
@@ -505,7 +505,7 @@ export default function LaporanAkhirPage() {
                     </div>
 
                     <div className="border p-4 rounded-xl md:col-span-2">
-                      <h4 className="font-bold text-lg text-blue-700 border-b pb-2 mb-2">BAB IV. PENUTUP</h4>
+                      <h4 className="font-bold text-lg text-teal-700 border-b pb-2 mb-2">BAB IV. PENUTUP</h4>
                       <div className="space-y-3 mt-3">
                         <div>
                           <span className="font-bold text-slate-800 text-sm block mb-1">4.1 Kesimpulan</span>
@@ -533,7 +533,7 @@ export default function LaporanAkhirPage() {
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="border p-4 rounded-xl md:col-span-2">
-                      <h4 className="font-bold text-lg text-blue-700 border-b pb-2 mb-2">KATA PENGANTAR</h4>
+                      <h4 className="font-bold text-lg text-teal-700 border-b pb-2 mb-2">KATA PENGANTAR</h4>
                       <div className="space-y-3 mt-3">
                         <div>
                           <span className="text-sm text-slate-600">Berisi ucapan syukur kepada Tuhan Yang Maha Esa dan penyampaian rasa terima kasih secara terperinci kepada pihak-pihak yang telah berkontribusi dan mendukung selama proses KKL Plus (misal: Pimpinan Kampus, Dosen Pembimbing Lapangan, Mentor/Pimpinan Instansi Mitra, dan pihak lain yang relevan). Sampaikan juga tujuan singkat penulisan laporan kelompok serta permohonan maaf atas segala kekurangan yang mungkin ada di dalam penulisan.</span>
@@ -542,7 +542,7 @@ export default function LaporanAkhirPage() {
                     </div>
 
                     <div className="border p-4 rounded-xl md:col-span-2">
-                      <h4 className="font-bold text-lg text-blue-700 border-b pb-2 mb-2">BAB I. PENDAHULUAN</h4>
+                      <h4 className="font-bold text-lg text-teal-700 border-b pb-2 mb-2">BAB I. PENDAHULUAN</h4>
                       <div className="space-y-3 mt-3">
                         <div>
                           <span className="font-bold text-slate-800 text-sm block mb-1">1.1 Latar Belakang dan Rasionalisasi Program Kerja</span>
@@ -567,7 +567,7 @@ export default function LaporanAkhirPage() {
                     </div>
 
                     <div className="border p-4 rounded-xl md:col-span-2">
-                      <h4 className="font-bold text-lg text-blue-700 border-b pb-2 mb-2">BAB II. PROFIL MITRA DAN ANALISIS</h4>
+                      <h4 className="font-bold text-lg text-teal-700 border-b pb-2 mb-2">BAB II. PROFIL MITRA DAN ANALISIS</h4>
                       <div className="space-y-3 mt-3">
                         <div>
                           <span className="font-bold text-slate-800 text-sm block mb-1">2.1 Tinjauan Historis dan Profil Institusi Mitra</span>
@@ -585,7 +585,7 @@ export default function LaporanAkhirPage() {
                     </div>
 
                     <div className="border p-4 rounded-xl md:col-span-2">
-                      <h4 className="font-bold text-lg text-blue-700 border-b pb-2 mb-2">BAB III. PELAKSANAAN PROGRAM KERJA</h4>
+                      <h4 className="font-bold text-lg text-teal-700 border-b pb-2 mb-2">BAB III. PELAKSANAAN PROGRAM KERJA</h4>
                       <div className="space-y-3 mt-3">
                         <div>
                           <span className="font-bold text-slate-800 text-sm block mb-1">3.1 Deskripsi Komprehensif Pelaksanaan Program Kerja</span>
@@ -609,7 +609,7 @@ export default function LaporanAkhirPage() {
                     </div>
 
                     <div className="border p-4 rounded-xl md:col-span-2">
-                      <h4 className="font-bold text-lg text-blue-700 border-b pb-2 mb-2">BAB IV. PENUTUP</h4>
+                      <h4 className="font-bold text-lg text-teal-700 border-b pb-2 mb-2">BAB IV. PENUTUP</h4>
                       <div className="space-y-3 mt-3">
                         <div>
                           <span className="font-bold text-slate-800 text-sm block mb-1">4.1 Kesimpulan dan Sintesis Kegiatan Kelompok</span>
@@ -628,22 +628,22 @@ export default function LaporanAkhirPage() {
               <div>
                 <h3 className="text-xl font-bold text-slate-800 border-b pb-2 mb-4">Template & Referensi Dokumen</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Link href={`/mahasiswa/laporan/templates/pengesahan?id=${currentForm.id || ''}`} target="_blank" className="flex items-center gap-3 p-4 border rounded-xl hover:bg-emerald-50 transition-colors">
-                    <div className="p-3 bg-emerald-100 rounded-lg text-emerald-600"><PenTool className="w-6 h-6" /></div>
+                  <Link href={`/mahasiswa/laporan/templates/pengesahan?id=${currentForm.id || ''}`} target="_blank" className="flex items-center gap-3 p-4 border rounded-xl hover:bg-teal-50 transition-colors">
+                    <div className="p-3 bg-teal-100 rounded-lg text-teal-600"><PenTool className="w-6 h-6" /></div>
                     <div>
                       <div className="font-bold">Lembar Pengesahan</div>
                       <div className="text-xs text-slate-500">Template Cetak & TTD</div>
                     </div>
                   </Link>
-                  <Link href={`/mahasiswa/laporan/templates/pengantar?id=${currentForm.id || ''}`} target="_blank" className="flex items-center gap-3 p-4 border rounded-xl hover:bg-emerald-50 transition-colors">
-                    <div className="p-3 bg-emerald-100 rounded-lg text-emerald-600"><Mail className="w-6 h-6" /></div>
+                  <Link href={`/mahasiswa/laporan/templates/pengantar?id=${currentForm.id || ''}`} target="_blank" className="flex items-center gap-3 p-4 border rounded-xl hover:bg-teal-50 transition-colors">
+                    <div className="p-3 bg-teal-100 rounded-lg text-teal-600"><Mail className="w-6 h-6" /></div>
                     <div>
                       <div className="font-bold">Surat Pengantar KKL Plus</div>
                       <div className="text-xs text-slate-500">Template Cetak & TTD</div>
                     </div>
                   </Link>
-                  <Link href={`/mahasiswa/laporan/templates/penerimaan?id=${currentForm.id || ''}`} target="_blank" className="flex items-center gap-3 p-4 border rounded-xl hover:bg-emerald-50 transition-colors">
-                    <div className="p-3 bg-emerald-100 rounded-lg text-emerald-600"><FileCheck className="w-6 h-6" /></div>
+                  <Link href={`/mahasiswa/laporan/templates/penerimaan?id=${currentForm.id || ''}`} target="_blank" className="flex items-center gap-3 p-4 border rounded-xl hover:bg-teal-50 transition-colors">
+                    <div className="p-3 bg-teal-100 rounded-lg text-teal-600"><FileCheck className="w-6 h-6" /></div>
                     <div>
                       <div className="font-bold">Surat Penerimaan KKL Plus</div>
                       <div className="text-xs text-slate-500">Template Cetak & TTD</div>
@@ -665,10 +665,10 @@ export default function LaporanAkhirPage() {
           {activeTab === 'bab' && (
             <div className="space-y-8">
               {currentForm.catatan_dpl?.global && (
-                <div className="p-4 bg-rose-50 border-l-4 border-rose-500 rounded-r-xl text-rose-800 shadow-sm flex gap-3 items-start">
-                  <AlertTriangle className="w-6 h-6 shrink-0 mt-0.5 text-rose-600" />
+                <div className="p-4 bg-amber-50 border-l-4 border-amber-500 rounded-r-xl text-amber-800 shadow-sm flex gap-3 items-start">
+                  <AlertTriangle className="w-6 h-6 shrink-0 mt-0.5 text-amber-600" />
                   <div>
-                    <div className="font-bold text-lg mb-1 text-rose-900">Catatan Revisi Umum DPL</div>
+                    <div className="font-bold text-lg mb-1 text-amber-900">Catatan Revisi Umum DPL</div>
                     <div className="whitespace-pre-wrap">{currentForm.catatan_dpl.global}</div>
                   </div>
                 </div>
@@ -684,10 +684,10 @@ export default function LaporanAkhirPage() {
                 </div>
                 <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
                   {currentForm.catatan_dpl?.kata_pengantar && (
-                    <div className="mb-3 p-3 bg-rose-50 border border-rose-200 rounded-lg text-sm text-rose-800 flex gap-2 items-start shadow-sm">
-                      <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5 text-rose-600" />
+                    <div className="mb-3 p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800 flex gap-2 items-start shadow-sm">
+                      <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5 text-amber-600" />
                       <div>
-                        <div className="font-bold mb-0.5 text-rose-900">Revisi DPL (Kata Pengantar):</div>
+                        <div className="font-bold mb-0.5 text-amber-900">Revisi DPL (Kata Pengantar):</div>
                         <div className="whitespace-pre-wrap">{currentForm.catatan_dpl.kata_pengantar}</div>
                       </div>
                     </div>
@@ -699,7 +699,7 @@ export default function LaporanAkhirPage() {
                       setIsDirty(true);
                       setCurrentForm({...currentForm, kata_pengantar: e.target.value});
                     }}
-                    className="w-full h-48 border-slate-300 rounded-xl p-4 focus:ring-2 focus:ring-blue-500 text-sm"
+                    className="w-full h-48 border-slate-300 rounded-xl p-4 focus:ring-2 focus:ring-teal-500 text-sm"
                     placeholder="Puji dan syukur ke hadirat Tuhan Yang Maha Esa... (Tuliskan ungkapan rasa syukur, tujuan penulisan laporan KKL Plus, serta ucapan terima kasih kepada pihak-pihak yang telah membantu kelancaran kegiatan)"
                   ></textarea>
                 </div>
@@ -716,10 +716,10 @@ export default function LaporanAkhirPage() {
                         {(activeMode === 'individu' ? DEFAULT_SECTIONS_INDIVIDU.bab1 : DEFAULT_SECTIONS_KELOMPOK.bab1).find(s => s.id === sec.id)?.title || sec.title}
                       </label>
                       {currentForm.catatan_dpl?.[sec.id] && (
-                        <div className="mb-3 p-3 bg-rose-50 border border-rose-200 rounded-lg text-sm text-rose-800 flex gap-2 items-start shadow-sm">
-                          <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5 text-rose-600" />
+                        <div className="mb-3 p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800 flex gap-2 items-start shadow-sm">
+                          <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5 text-amber-600" />
                           <div>
-                            <div className="font-bold mb-0.5 text-rose-900">Revisi DPL:</div>
+                            <div className="font-bold mb-0.5 text-amber-900">Revisi DPL:</div>
                             <div className="whitespace-pre-wrap">{currentForm.catatan_dpl[sec.id]}</div>
                           </div>
                         </div>
@@ -733,7 +733,7 @@ export default function LaporanAkhirPage() {
                           newSecs[idx].content = e.target.value;
                           setCurrentForm({...currentForm, bab1_sections: newSecs});
                         }}
-                        className="w-full h-32 border-slate-300 rounded-xl p-4 focus:ring-2 focus:ring-blue-500 text-sm"
+                        className="w-full h-32 border-slate-300 rounded-xl p-4 focus:ring-2 focus:ring-teal-500 text-sm"
                         placeholder={(activeMode === 'individu' ? DEFAULT_SECTIONS_INDIVIDU.bab1 : DEFAULT_SECTIONS_KELOMPOK.bab1).find(s => s.id === sec.id)?.placeholder || 'Ketik di sini...'}
                       ></textarea>
                     </div>
@@ -752,10 +752,10 @@ export default function LaporanAkhirPage() {
                         {(activeMode === 'individu' ? DEFAULT_SECTIONS_INDIVIDU.bab2 : DEFAULT_SECTIONS_KELOMPOK.bab2).find(s => s.id === sec.id)?.title || sec.title}
                       </label>
                       {currentForm.catatan_dpl?.[sec.id] && (
-                        <div className="mb-3 p-3 bg-rose-50 border border-rose-200 rounded-lg text-sm text-rose-800 flex gap-2 items-start shadow-sm">
-                          <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5 text-rose-600" />
+                        <div className="mb-3 p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800 flex gap-2 items-start shadow-sm">
+                          <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5 text-amber-600" />
                           <div>
-                            <div className="font-bold mb-0.5 text-rose-900">Revisi DPL:</div>
+                            <div className="font-bold mb-0.5 text-amber-900">Revisi DPL:</div>
                             <div className="whitespace-pre-wrap">{currentForm.catatan_dpl[sec.id]}</div>
                           </div>
                         </div>
@@ -769,12 +769,12 @@ export default function LaporanAkhirPage() {
                           newSecs[idx].content = e.target.value;
                           setCurrentForm({...currentForm, bab2_sections: newSecs});
                         }}
-                        className="w-full h-32 border-slate-300 rounded-xl p-4 focus:ring-2 focus:ring-blue-500 text-sm"
+                        className="w-full h-32 border-slate-300 rounded-xl p-4 focus:ring-2 focus:ring-teal-500 text-sm"
                         placeholder={(activeMode === 'individu' ? DEFAULT_SECTIONS_INDIVIDU.bab2 : DEFAULT_SECTIONS_KELOMPOK.bab2).find(s => s.id === sec.id)?.placeholder || 'Ketik di sini...'}
                       ></textarea>
                       {sec.id === '2_2' && (
-                        <div className="mt-2 text-xs text-slate-600 bg-emerald-50 border border-emerald-100 p-2 rounded-lg flex gap-2 items-start">
-                          <span className="font-semibold text-emerald-700 shrink-0">💡 Tips:</span>
+                        <div className="mt-2 text-xs text-slate-600 bg-teal-50 border border-teal-100 p-2 rounded-lg flex gap-2 items-start">
+                          <span className="font-semibold text-teal-700 shrink-0">💡 Tips:</span>
                           <p>
                             Anda dapat mengunggah Gambar Struktur Organisasi (jika ada) melalui tab{' '}
                             <button 
@@ -783,7 +783,7 @@ export default function LaporanAkhirPage() {
                                 setActiveTab('dokumen');
                                 window.scrollTo({ top: 0, behavior: 'smooth' });
                               }} 
-                              className="text-emerald-600 hover:text-emerald-800 underline font-semibold transition-colors"
+                              className="text-teal-600 hover:text-teal-800 underline font-semibold transition-colors"
                             >
                               Upload Lampiran
                             </button>.
@@ -807,10 +807,10 @@ export default function LaporanAkhirPage() {
                         {(activeMode === 'individu' ? DEFAULT_SECTIONS_INDIVIDU.bab3 : DEFAULT_SECTIONS_KELOMPOK.bab3).find(s => s.id === sec.id)?.title || sec.title}
                       </label>
                       {currentForm.catatan_dpl?.[sec.id] && (
-                        <div className="mb-3 p-3 bg-rose-50 border border-rose-200 rounded-lg text-sm text-rose-800 flex gap-2 items-start shadow-sm">
-                          <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5 text-rose-600" />
+                        <div className="mb-3 p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800 flex gap-2 items-start shadow-sm">
+                          <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5 text-amber-600" />
                           <div>
-                            <div className="font-bold mb-0.5 text-rose-900">Revisi DPL:</div>
+                            <div className="font-bold mb-0.5 text-amber-900">Revisi DPL:</div>
                             <div className="whitespace-pre-wrap">{currentForm.catatan_dpl[sec.id]}</div>
                           </div>
                         </div>
@@ -824,7 +824,7 @@ export default function LaporanAkhirPage() {
                           newSecs[idx].content = e.target.value;
                           setCurrentForm({...currentForm, bab3_sections: newSecs});
                         }}
-                        className="w-full h-32 border-slate-300 rounded-xl p-4 focus:ring-2 focus:ring-blue-500 text-sm"
+                        className="w-full h-32 border-slate-300 rounded-xl p-4 focus:ring-2 focus:ring-teal-500 text-sm"
                         placeholder={(activeMode === 'individu' ? DEFAULT_SECTIONS_INDIVIDU.bab3 : DEFAULT_SECTIONS_KELOMPOK.bab3).find(s => s.id === sec.id)?.placeholder || 'Ketik di sini...'}
                       ></textarea>
                     </div>
@@ -843,10 +843,10 @@ export default function LaporanAkhirPage() {
                         {(activeMode === 'individu' ? DEFAULT_SECTIONS_INDIVIDU.bab4 : DEFAULT_SECTIONS_KELOMPOK.bab4).find(s => s.id === sec.id)?.title || sec.title}
                       </label>
                       {currentForm.catatan_dpl?.[sec.id] && (
-                        <div className="mb-3 p-3 bg-rose-50 border border-rose-200 rounded-lg text-sm text-rose-800 flex gap-2 items-start shadow-sm">
-                          <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5 text-rose-600" />
+                        <div className="mb-3 p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800 flex gap-2 items-start shadow-sm">
+                          <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5 text-amber-600" />
                           <div>
-                            <div className="font-bold mb-0.5 text-rose-900">Revisi DPL:</div>
+                            <div className="font-bold mb-0.5 text-amber-900">Revisi DPL:</div>
                             <div className="whitespace-pre-wrap">{currentForm.catatan_dpl[sec.id]}</div>
                           </div>
                         </div>
@@ -860,7 +860,7 @@ export default function LaporanAkhirPage() {
                           newSecs[idx].content = e.target.value;
                           setCurrentForm({...currentForm, bab4_sections: newSecs});
                         }}
-                        className="w-full h-32 border-slate-300 rounded-xl p-4 focus:ring-2 focus:ring-blue-500 text-sm"
+                        className="w-full h-32 border-slate-300 rounded-xl p-4 focus:ring-2 focus:ring-teal-500 text-sm"
                         placeholder={(activeMode === 'individu' ? DEFAULT_SECTIONS_INDIVIDU.bab4 : DEFAULT_SECTIONS_KELOMPOK.bab4).find(s => s.id === sec.id)?.placeholder || 'Ketik di sini...'}
                       ></textarea>
                     </div>
@@ -880,26 +880,26 @@ export default function LaporanAkhirPage() {
 
               <div className="border border-slate-200 rounded-2xl p-6">
                 <h4 className="font-bold text-slate-800 mb-1">1. Surat Pengantar</h4>
-                <input disabled={['submitted', 'disetujui'].includes(currentForm.status)} type="file" accept="image/*,application/pdf" onChange={(e) => handleFileChange(e, 'file_pengantar')} className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100" />
-                {currentForm.file_pengantar && <span className="ml-4 text-xs font-bold text-emerald-600">✓ Berkas Tersimpan</span>}
+                <input disabled={['submitted', 'disetujui'].includes(currentForm.status)} type="file" accept="image/*,application/pdf" onChange={(e) => handleFileChange(e, 'file_pengantar')} className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100" />
+                {currentForm.file_pengantar && <span className="ml-4 text-xs font-bold text-teal-600">✓ Berkas Tersimpan</span>}
               </div>
 
               <div className="border border-slate-200 rounded-2xl p-6">
                 <h4 className="font-bold text-slate-800 mb-1">2. Surat Penerimaan</h4>
-                <input disabled={['submitted', 'disetujui'].includes(currentForm.status)} type="file" accept="image/*,application/pdf" onChange={(e) => handleFileChange(e, 'file_penerimaan')} className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100" />
-                {currentForm.file_penerimaan && <span className="ml-4 text-xs font-bold text-emerald-600">✓ Berkas Tersimpan</span>}
+                <input disabled={['submitted', 'disetujui'].includes(currentForm.status)} type="file" accept="image/*,application/pdf" onChange={(e) => handleFileChange(e, 'file_penerimaan')} className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100" />
+                {currentForm.file_penerimaan && <span className="ml-4 text-xs font-bold text-teal-600">✓ Berkas Tersimpan</span>}
               </div>
 
               <div className="border border-slate-200 rounded-2xl p-6">
                 <h4 className="font-bold text-slate-800 mb-1">3. Surat Keterangan Selesai</h4>
-                <input disabled={['submitted', 'disetujui'].includes(currentForm.status)} type="file" accept="image/*,application/pdf" onChange={(e) => handleFileChange(e, 'file_keterangan')} className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100" />
-                {currentForm.file_keterangan && <span className="ml-4 text-xs font-bold text-emerald-600">✓ Berkas Tersimpan</span>}
+                <input disabled={['submitted', 'disetujui'].includes(currentForm.status)} type="file" accept="image/*,application/pdf" onChange={(e) => handleFileChange(e, 'file_keterangan')} className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100" />
+                {currentForm.file_keterangan && <span className="ml-4 text-xs font-bold text-teal-600">✓ Berkas Tersimpan</span>}
               </div>
 
               <div className="border border-slate-200 rounded-2xl p-6">
                 <h4 className="font-bold text-slate-800 mb-1">4. Gambar Struktur Organisasi (Opsional)</h4>
-                <input disabled={['submitted', 'disetujui'].includes(currentForm.status)} type="file" accept="image/*" onChange={(e) => handleFileChange(e, 'file_struktur_organisasi')} className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100" />
-                {currentForm.file_struktur_organisasi && <span className="ml-4 text-xs font-bold text-emerald-600">✓ Gambar Tersimpan</span>}
+                <input disabled={['submitted', 'disetujui'].includes(currentForm.status)} type="file" accept="image/*" onChange={(e) => handleFileChange(e, 'file_struktur_organisasi')} className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100" />
+                {currentForm.file_struktur_organisasi && <span className="ml-4 text-xs font-bold text-teal-600">✓ Gambar Tersimpan</span>}
               </div>
             </div>
           )}
@@ -917,10 +917,10 @@ export default function LaporanAkhirPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   
                   <div className="border border-slate-200 rounded-2xl p-8 hover:shadow-lg transition-all text-center group bg-white">
-                    <div className="mx-auto w-16 h-16 bg-emerald-100 text-emerald-600 flex items-center justify-center rounded-2xl mb-4 group-hover:scale-110 transition-transform"><FileText className="w-8 h-8" /></div>
+                    <div className="mx-auto w-16 h-16 bg-teal-100 text-teal-600 flex items-center justify-center rounded-2xl mb-4 group-hover:scale-110 transition-transform"><FileText className="w-8 h-8" /></div>
                     <h3 className="font-black text-xl text-slate-800 mb-2">Laporan Akhir ({activeMode === 'individu' ? 'Individu' : 'Kelompok'})</h3>
                     <p className="text-sm text-slate-500 mb-6">Dokumen lengkap beserta lampiran surat.</p>
-                    <Link href={`/mahasiswa/laporan/cetak/laporan?id=${currentForm.id || ''}`} target="_blank" className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-md shadow-emerald-500/30 flex items-center justify-center gap-2">
+                    <Link href={`/mahasiswa/laporan/cetak/laporan?id=${currentForm.id || ''}`} target="_blank" className="w-full py-3 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold shadow-md shadow-teal-500/30 flex items-center justify-center gap-2">
                       <Download className="w-5 h-5" /> Download PDF Laporan
                     </Link>
                   </div>
@@ -950,7 +950,7 @@ export default function LaporanAkhirPage() {
               if (confirm(`Yakin ingin SUBMIT FINAL Laporan ${activeMode}? Setelah diajukan, laporan akan terkunci untuk direviu oleh DPL.`)) {
                 handleSave(true);
               }
-            }} disabled={isSaving} className="px-8 py-3 rounded-xl bg-emerald-600 font-bold text-white hover:bg-emerald-700 shadow-lg shadow-emerald-500/30 disabled:opacity-50 flex items-center gap-2">
+            }} disabled={isSaving} className="px-8 py-3 rounded-xl bg-teal-600 font-bold text-white hover:bg-teal-700 shadow-lg shadow-teal-500/30 disabled:opacity-50 flex items-center gap-2">
               <CheckCircle className="w-5 h-5" /> Ajukan ke DPL (Submit Final)
             </button>
           </div>

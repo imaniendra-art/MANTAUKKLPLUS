@@ -66,7 +66,7 @@ export default function CetakSertifikatMahasiswa() {
       `}} />
 
       <div className="fixed top-5 right-5 print:hidden z-50 flex flex-col gap-2">
-        <button onClick={() => window.print()} className="px-6 py-3 bg-emerald-600 text-white font-bold rounded-lg shadow-lg hover:bg-emerald-700">
+        <button onClick={() => window.print()} className="px-6 py-3 bg-teal-600 text-white font-bold rounded-lg shadow-lg hover:bg-teal-700">
           🖨️ Cetak Dokumen
         </button>
         <p className="text-xs text-center text-slate-500 bg-white/80 p-1 rounded">Gunakan pengaturan Scale: Default / Fit to Page</p>
@@ -302,14 +302,14 @@ export default function CetakSertifikatMahasiswa() {
                 </div>
 
                 {/* Nilai Akhir KKL Plus */}
-                <div className="border-2 border-emerald-500 rounded p-3 flex justify-between items-center bg-emerald-50 leading-none mt-2">
+                <div className="border-2 border-teal-500 rounded p-3 flex justify-between items-center bg-teal-50 leading-none mt-2">
                   <div>
-                    <p className="text-xs font-black tracking-widest uppercase text-emerald-800 mb-1">Total Nilai Akhir KKL Plus</p>
-                    <h1 className="text-4xl font-black text-emerald-600">{data.penilaian?.nilai_akhir_angka?.toFixed(2) || '0.00'}</h1>
+                    <p className="text-xs font-black tracking-widest uppercase text-teal-800 mb-1">Total Nilai Akhir KKL Plus</p>
+                    <h1 className="text-4xl font-black text-teal-600">{data.penilaian?.nilai_akhir_angka?.toFixed(2) || '0.00'}</h1>
                   </div>
-                  <div className="text-right border-l-2 border-emerald-200 pl-4">
-                    <p className="text-xs font-black tracking-widest uppercase text-emerald-800 mb-1">Predikat Huruf</p>
-                    <h1 className="text-5xl font-black text-emerald-600">{data.penilaian?.nilai_akhir_huruf || '-'}</h1>
+                  <div className="text-right border-l-2 border-teal-200 pl-4">
+                    <p className="text-xs font-black tracking-widest uppercase text-teal-800 mb-1">Predikat Huruf</p>
+                    <h1 className="text-5xl font-black text-teal-600">{data.penilaian?.nilai_akhir_huruf || '-'}</h1>
                   </div>
                 </div>
             </>

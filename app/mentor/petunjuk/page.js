@@ -25,7 +25,7 @@ export default function PetunjukMentor() {
     <DashboardLayout title="Petunjuk & Panduan Mentor">
       <div className="max-w-5xl mx-auto space-y-6 pb-12">
         {/* Banner Penjelasan */}
-        <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-3xl p-8 text-white shadow-lg relative overflow-hidden">
+        <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-3xl p-8 text-white shadow-lg relative overflow-hidden">
           <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
             <svg xmlns="http://www.w3.org/2000/svg" className="w-64 h-64" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
           </div>
@@ -33,7 +33,7 @@ export default function PetunjukMentor() {
             <h1 className="text-3xl font-black mb-4 flex items-center gap-3">
               <span>👋</span> Selamat Datang, Mentor!
             </h1>
-            <div className="space-y-4 text-emerald-50 text-sm md:text-base leading-relaxed max-w-3xl font-medium">
+            <div className="space-y-4 text-teal-50 text-sm md:text-base leading-relaxed max-w-3xl font-medium">
               <p>
                 Sebagai <strong>Mentor Industri</strong>, Anda adalah ujung tombak dalam membimbing mahasiswa mempraktikkan ilmu mereka di dunia nyata. Program <strong>KKL Plus Berdampak</strong> ini dirancang bukan sekadar untuk menjadikan mahasiswa sebagai tenaga bantuan administratif, melainkan agar mereka mampu memberikan <em>dampak nyata</em> melalui proyek inovasi dan penyelesaian masalah di instansi Anda.
               </p>
@@ -57,7 +57,7 @@ export default function PetunjukMentor() {
         {/* Daftar CPMK */}
         <div>
           <div className="flex items-center gap-3 mb-6 px-2">
-            <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-lg">
+            <div className="w-10 h-10 rounded-full bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 flex items-center justify-center font-bold text-lg">
               🎯
             </div>
             <div>
@@ -81,7 +81,7 @@ export default function PetunjukMentor() {
                       <div className="bg-slate-50 dark:bg-slate-800/50 border-b border-white/60 dark:border-slate-700 p-5">
                         <div className="flex justify-between items-start">
                           <div>
-                            <span className="inline-block px-2.5 py-1 bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 rounded-lg text-xs font-bold mb-2 uppercase tracking-wider">
+                            <span className="inline-block px-2.5 py-1 bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400 rounded-lg text-xs font-bold mb-2 uppercase tracking-wider">
                               {mk.kode}
                             </span>
                             <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">{mk.nama}</h3>
@@ -96,11 +96,11 @@ export default function PetunjukMentor() {
                           mk.cpmk.map((c, cIdx) => (
                             <details key={cIdx} className="group p-4 rounded-xl border border-white/60 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/20 [&_summary::-webkit-details-marker]:hidden">
                               <summary className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer list-none focus:outline-none">
-                                <h4 className="font-bold text-slate-700 dark:text-slate-200 text-sm text-indigo-600 dark:text-indigo-400">
+                                <h4 className="font-bold text-slate-700 dark:text-slate-200 text-sm text-teal-600 dark:text-teal-400">
                                   {c.nama_cpmk}
                                 </h4>
                                 <div className="shrink-0 flex items-center">
-                                  <span className="text-xs font-bold px-3 py-1.5 bg-indigo-100 hover:bg-indigo-200 dark:bg-indigo-900/40 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 rounded-lg transition-colors group-open:hidden flex items-center gap-2">
+                                  <span className="text-xs font-bold px-3 py-1.5 bg-teal-100 hover:bg-teal-200 dark:bg-teal-900/40 dark:hover:bg-teal-900/60 text-teal-700 dark:text-teal-300 rounded-lg transition-colors group-open:hidden flex items-center gap-2">
                                     <Eye className="w-4 h-4 inline-block mr-1.5 -mt-0.5" /> Lihat Indikator Aktivitas
                                   </span>
                                   <span className="text-xs font-bold px-3 py-1.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-lg transition-colors hidden group-open:flex items-center gap-2">
@@ -113,7 +113,7 @@ export default function PetunjukMentor() {
                                 <ul className="space-y-2">
                                   {c.indikator.map((ind, iIdx) => (
                                     <li key={iIdx} className="flex gap-3 text-sm text-slate-600 dark:text-slate-300 font-medium leading-relaxed">
-                                      <span className="text-emerald-500 shrink-0 mt-0.5">✓</span>
+                                      <span className="text-teal-500 shrink-0 mt-0.5">✓</span>
                                       <span>{ind}</span>
                                     </li>
                                   ))}

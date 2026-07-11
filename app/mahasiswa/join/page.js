@@ -107,7 +107,7 @@ function JoinPokjaContent() {
       
       <div className="max-w-md w-full relative z-10 bg-white/60 backdrop-blur-2xl p-8 rounded-3xl shadow-xl border border-white/60">
         <div className="text-center mb-6">
-          <div className="w-16 h-16 bg-[#1398A5]/10 text-[#1398A5] rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 bg-teal-600/10 text-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <Users size={32} />
           </div>
           <h2 className="text-2xl font-bold text-slate-800">Undangan Kelompok</h2>
@@ -120,7 +120,7 @@ function JoinPokjaContent() {
             <p>{error}</p>
           </div>
         ) : success ? (
-          <div className="bg-green-50 text-green-600 p-4 rounded-xl text-sm font-medium border border-green-100 mb-6 flex gap-3 items-start">
+          <div className="bg-teal-50 text-teal-600 p-4 rounded-xl text-sm font-medium border border-teal-100 mb-6 flex gap-3 items-start">
             <Check size={20} className="shrink-0" />
             <p>{success}</p>
           </div>
@@ -154,7 +154,7 @@ function JoinPokjaContent() {
             <button
               onClick={handleJoin}
               disabled={processing}
-              className="flex-1 py-3 bg-[#1398A5] hover:bg-teal-600 text-white font-bold rounded-xl shadow-lg shadow-teal-500/30 transition-all disabled:opacity-50"
+              className="flex-1 py-3 bg-teal-600 hover:bg-teal-600 text-white font-bold rounded-xl shadow-lg shadow-teal-500/30 transition-all disabled:opacity-50"
             >
               {processing ? 'Memproses...' : 'Bergabung'}
             </button>

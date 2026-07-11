@@ -70,8 +70,8 @@ export default function MagicLinkValidasi() {
   if (error && !success) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center p-4">
-        <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-xl max-w-md w-full text-center border border-rose-100 dark:border-rose-900/30">
-          <div className="w-20 h-20 bg-rose-100 dark:bg-rose-900/30 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6">
+        <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-xl max-w-md w-full text-center border border-amber-100 dark:border-amber-900/30">
+          <div className="w-20 h-20 bg-amber-100 dark:bg-amber-900/30 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-6">
             <Info className="w-10 h-10" />
           </div>
           <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">Tautan Tidak Valid</h2>
@@ -85,20 +85,20 @@ export default function MagicLinkValidasi() {
   if (success) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center p-4">
-        <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-xl max-w-md w-full text-center border border-emerald-100 dark:border-emerald-900/30 animate-in zoom-in-95 duration-500">
-          <div className="w-24 h-24 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6">
+        <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-xl max-w-md w-full text-center border border-teal-100 dark:border-teal-900/30 animate-in zoom-in-95 duration-500">
+          <div className="w-24 h-24 bg-teal-100 dark:bg-teal-900/30 text-teal-500 rounded-full flex items-center justify-center mx-auto mb-6">
             <Check className="w-12 h-12" />
           </div>
           <h2 className="text-2xl font-black text-slate-800 dark:text-slate-100 mb-3">Terima Kasih, Bapak/Ibu!</h2>
           <p className="text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">Anda telah berhasil menyetujui seluruh kegiatan KKL Plus mahasiswa untuk periode ini.</p>
-          <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 py-3 px-4 rounded-xl">Anda kini dapat menutup halaman ini.</p>
+          <p className="text-sm font-bold text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/20 py-3 px-4 rounded-xl">Anda kini dapat menutup halaman ini.</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 font-sans selection:bg-indigo-500/30 pb-20">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 font-sans selection:bg-teal-500/30 pb-20">
       {/* Header */}
       <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-20 shadow-sm">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
@@ -108,7 +108,7 @@ export default function MagicLinkValidasi() {
             </div>
             <span className="font-bold text-slate-800 dark:text-white tracking-tight">KKL<span className="text-[#D4AF37]">Plus</span></span>
           </div>
-          <span className="text-xs font-bold text-indigo-600 bg-indigo-50 dark:bg-indigo-900/30 dark:text-indigo-400 px-3 py-1.5 rounded-full border border-indigo-100 dark:border-indigo-800">
+          <span className="text-xs font-bold text-teal-600 bg-teal-50 dark:bg-teal-900/30 dark:text-teal-400 px-3 py-1.5 rounded-full border border-teal-100 dark:border-teal-800">
             Akses Publik
           </span>
         </div>
@@ -132,7 +132,7 @@ export default function MagicLinkValidasi() {
           </div>
           <div className="sm:text-right">
             <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Total Kegiatan</p>
-            <p className="font-bold text-indigo-600 dark:text-indigo-400 text-lg">
+            <p className="font-bold text-teal-600 dark:text-teal-400 text-lg">
               {data.logbook_ids?.length || 0} Laporan
             </p>
           </div>
@@ -175,7 +175,7 @@ export default function MagicLinkValidasi() {
                 </div>
                 <div className="flex gap-2 text-sm">
                   <span className="font-bold text-slate-700 dark:text-slate-300 min-w-[80px]">Hasil:</span>
-                  <span className="text-emerald-600 dark:text-emerald-500 font-medium leading-relaxed">{log.hasil_output}</span>
+                  <span className="text-teal-600 dark:text-teal-500 font-medium leading-relaxed">{log.hasil_output}</span>
                 </div>
               </div>
             </div>

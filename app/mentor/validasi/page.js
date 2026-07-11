@@ -166,7 +166,7 @@ export default function MentorValidasi() {
   return (
     <DashboardLayout title="Validasi Faktual (Mentor)">
       {toastMessage && (
-        <div className="fixed top-24 left-1/2 -translate-x-1/2 bg-emerald-600 text-white px-8 py-3.5 rounded-full shadow-2xl z-[100] animate-in fade-in zoom-in-95 duration-300 font-bold flex items-center gap-2.5 border border-emerald-500">
+        <div className="fixed top-24 left-1/2 -translate-x-1/2 bg-teal-600 text-white px-8 py-3.5 rounded-full shadow-2xl z-[100] animate-in fade-in zoom-in-95 duration-300 font-bold flex items-center gap-2.5 border border-teal-500">
           <span><Check className="w-4 h-4 inline-block mr-1.5 -mt-0.5" /></span> {toastMessage}
         </div>
       )}
@@ -179,8 +179,8 @@ export default function MentorValidasi() {
         <button
           className={`px-6 py-2.5 text-sm font-bold rounded-lg transition-all ${
             activeTab === 'antrean' 
-              ? 'bg-slate-100 dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' 
-              : 'text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400'
+              ? 'bg-slate-100 dark:bg-slate-700 text-teal-600 dark:text-teal-400 shadow-sm' 
+              : 'text-slate-500 hover:text-teal-600 dark:text-slate-400 dark:hover:text-teal-400'
           }`}
           onClick={() => setActiveTab('antrean')}
         >
@@ -189,8 +189,8 @@ export default function MentorValidasi() {
         <button
           className={`px-6 py-2.5 text-sm font-bold rounded-lg transition-all ${
             activeTab === 'histori' 
-              ? 'bg-slate-100 dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' 
-              : 'text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400'
+              ? 'bg-slate-100 dark:bg-slate-700 text-teal-600 dark:text-teal-400 shadow-sm' 
+              : 'text-slate-500 hover:text-teal-600 dark:text-slate-400 dark:hover:text-teal-400'
           }`}
           onClick={() => setActiveTab('histori')}
         >
@@ -208,7 +208,7 @@ export default function MentorValidasi() {
               <button 
                 onClick={handleBulkValidasi}
                 disabled={submitting}
-                className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-50 flex items-center gap-2 whitespace-nowrap"
+                className="px-5 py-2.5 bg-teal-500 hover:bg-teal-600 text-white font-bold text-sm rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-50 flex items-center gap-2 whitespace-nowrap"
               >
                 <Check className="w-5 h-5" /> Setujui {selectedLogs.length} Terpilih
               </button>
@@ -225,7 +225,7 @@ export default function MentorValidasi() {
                       <th className="py-4 px-4 w-12 text-center">
                         <input 
                           type="checkbox" 
-                          className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-600"
+                          className="w-4 h-4 rounded border-slate-300 text-teal-600 focus:ring-teal-600"
                           onChange={handleSelectAll}
                           checked={selectedLogs.length > 0 && selectedLogs.length === logbooks.filter(l => l.status_validasi === 'menunggu_mentor').length}
                         />
@@ -252,7 +252,7 @@ export default function MentorValidasi() {
                             <td className="py-4 px-4 text-center align-top">
                               <input 
                                 type="checkbox" 
-                                className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-600 mt-1"
+                                className="w-4 h-4 rounded border-slate-300 text-teal-600 focus:ring-teal-600 mt-1"
                                 checked={selectedLogs.includes(log._id)}
                                 onChange={() => toggleSelectLog(log._id)}
                               />
@@ -275,13 +275,13 @@ export default function MentorValidasi() {
                               {/* Action Buttons */}
                               <div className="flex flex-wrap justify-end gap-2">
                                 {log.bukti_kegiatan && (
-                                  <button onClick={() => handleViewFile(log.bukti_kegiatan)} className="inline-flex items-center gap-1.5 text-[11px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition-colors whitespace-nowrap shadow-sm cursor-pointer">
+                                  <button onClick={() => handleViewFile(log.bukti_kegiatan)} className="inline-flex items-center gap-1.5 text-[11px] font-bold text-teal-700 bg-teal-50 border border-teal-200 px-3 py-1.5 rounded-lg hover:bg-teal-100 transition-colors whitespace-nowrap shadow-sm cursor-pointer">
                                     <span>🖼️</span> Bukti
                                   </button>
                                 )}
                                 <button 
                                   onClick={() => toggleCpmk(log._id)}
-                                  className="inline-flex items-center gap-1.5 text-[11px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 px-3 py-1.5 rounded-lg hover:bg-indigo-100 transition-colors whitespace-nowrap shadow-sm cursor-pointer"
+                                  className="inline-flex items-center gap-1.5 text-[11px] font-bold text-teal-700 bg-teal-50 border border-teal-200 px-3 py-1.5 rounded-lg hover:bg-teal-100 transition-colors whitespace-nowrap shadow-sm cursor-pointer"
                                 >
                                   <span>🎯</span> Capaian
                                 </button>
@@ -293,14 +293,14 @@ export default function MentorValidasi() {
                                   <button 
                                     onClick={() => handleValidasi(log._id, 'divalidasi_mentor')}
                                     disabled={submitting}
-                                    className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs rounded-lg transition-colors shadow-sm whitespace-nowrap disabled:opacity-50"
+                                    className="px-4 py-2 bg-teal-500 hover:bg-teal-600 text-white font-bold text-xs rounded-lg transition-colors shadow-sm whitespace-nowrap disabled:opacity-50"
                                   >
                                     <Check className="w-4 h-4 inline-block mr-1.5 -mt-0.5" /> Validasi
                                   </button>
                                   <button 
                                     onClick={() => openRejectModal(log._id)}
                                     disabled={submitting}
-                                    className="px-4 py-2 border border-rose-200 text-rose-600 hover:bg-rose-50 font-bold text-xs rounded-lg transition-colors shadow-sm whitespace-nowrap disabled:opacity-50"
+                                    className="px-4 py-2 border border-amber-200 text-amber-600 hover:bg-amber-50 font-bold text-xs rounded-lg transition-colors shadow-sm whitespace-nowrap disabled:opacity-50"
                                   >
                                     <X className="w-4 h-4 inline-block mr-1.5 -mt-0.5" /> Revisi
                                   </button>
@@ -308,8 +308,8 @@ export default function MentorValidasi() {
                               ) : (
                                 <span className={`text-xs font-bold px-3 py-1.5 rounded-lg border shadow-sm inline-flex items-center gap-1.5 ${
                                   log.status_validasi === 'revisi' 
-                                    ? 'text-rose-600 bg-rose-50 border-rose-200' 
-                                    : 'text-emerald-700 bg-emerald-50 border-emerald-200'
+                                    ? 'text-amber-600 bg-amber-50 border-amber-200' 
+                                    : 'text-teal-700 bg-teal-50 border-teal-200'
                                 }`}>
                                   <span>{log.status_validasi === 'revisi' ? '❌' : '✅'}</span>
                                   {log.status_validasi === 'revisi' ? 'Direvisi' : 'Divalidasi'}
@@ -326,7 +326,7 @@ export default function MentorValidasi() {
                               <div className="animate-in fade-in slide-in-from-top-2 duration-200 w-full">
                                 {log.matched_indicators && log.matched_indicators.length > 0 ? (
                                   <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 border border-white/60 dark:border-slate-700">
-                                    <p className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                                    <p className="text-[10px] font-bold text-teal-600 dark:text-teal-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
                                       <span>🎯</span> {log.matched_indicators.length} Target CPMK Terpenuhi
                                     </p>
                                     <div className="space-y-3">
@@ -337,9 +337,9 @@ export default function MentorValidasi() {
                                             <p className="text-[11px] font-bold text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-900 px-2 py-1 rounded shadow-sm inline-block mb-1 border border-slate-100 dark:border-slate-700">{ind.nama_cpmk}</p>
                                             <p className="text-xs text-slate-600 dark:text-slate-400 font-medium leading-relaxed">{ind.indikator}</p>
                                             {ind.alasan && (
-                                              <div className="mt-1.5 p-2 bg-indigo-100/50 dark:bg-indigo-900/30 rounded border border-indigo-200/50 dark:border-indigo-800/50">
-                                                <p className="text-xs text-indigo-900 dark:text-indigo-200 leading-relaxed">
-                                                  <span className="font-bold text-indigo-700 dark:text-indigo-400 mr-1">Analisis Kegiatan:</span>
+                                              <div className="mt-1.5 p-2 bg-teal-100/50 dark:bg-teal-900/30 rounded border border-teal-200/50 dark:border-teal-800/50">
+                                                <p className="text-xs text-teal-900 dark:text-teal-200 leading-relaxed">
+                                                  <span className="font-bold text-teal-700 dark:text-teal-400 mr-1">Analisis Kegiatan:</span>
                                                   {ind.alasan}
                                                 </p>
                                               </div>
@@ -380,7 +380,7 @@ export default function MentorValidasi() {
           <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 border border-white/60 dark:border-slate-700">
             <div className="p-6">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-black text-rose-600 dark:text-rose-400">Minta Revisi Logbook</h3>
+                <h3 className="text-lg font-black text-amber-600 dark:text-amber-400">Minta Revisi Logbook</h3>
                 <button onClick={() => setShowRejectModal(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 font-bold text-xl">&times;</button>
               </div>
               <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">Mohon tuliskan dengan jelas bagian mana yang harus diperbaiki oleh mahasiswa pada logbook hari ini.</p>
@@ -390,7 +390,7 @@ export default function MentorValidasi() {
                 value={rejectReason}
                 onChange={(e) => setRejectReason(e.target.value)}
                 placeholder="Contoh: Deskripsi terlalu singkat, mohon jelaskan apa saja tugas spesifik yang kamu kerjakan hari ini..."
-                className="w-full h-32 border border-white/50 dark:border-slate-600 bg-white/20 dark:bg-slate-900/20 rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-rose-500 text-sm font-medium text-slate-800 dark:text-slate-100"
+                className="w-full h-32 border border-white/50 dark:border-slate-600 bg-white/20 dark:bg-slate-900/20 rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm font-medium text-slate-800 dark:text-slate-100"
               ></textarea>
               
               <div className="mt-6 flex justify-end gap-3">
@@ -403,7 +403,7 @@ export default function MentorValidasi() {
                 <button 
                   onClick={() => handleValidasi(selectedLogId, 'revisi', rejectReason)}
                   disabled={submitting || !rejectReason.trim()}
-                  className="px-5 py-2.5 text-sm font-bold text-white bg-rose-600 hover:bg-rose-700 disabled:opacity-50 flex items-center gap-2 rounded-xl shadow-lg shadow-rose-600/20 transition-all"
+                  className="px-5 py-2.5 text-sm font-bold text-white bg-amber-600 hover:bg-amber-700 disabled:opacity-50 flex items-center gap-2 rounded-xl shadow-lg shadow-amber-600/20 transition-all"
                 >
                   {submitting ? 'Memproses...' : 'Kirim Revisi'}
                 </button>

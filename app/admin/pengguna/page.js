@@ -324,8 +324,8 @@ export default function ManajemenPenggunaPage() {
             onClick={() => { setActiveTab(tab.id); setUsers([]); }}
             className={`px-6 py-2.5 text-sm font-bold rounded-lg transition-all ${
               activeTab === tab.id
-                ? "bg-[#1398A5] text-amber-300 shadow-sm"
-                : "text-slate-500 hover:text-[#1398A5] dark:text-slate-400 dark:hover:text-teal-400"
+                ? "bg-teal-600 text-amber-300 shadow-sm"
+                : "text-slate-500 hover:text-teal-600 dark:text-slate-400 dark:hover:text-teal-400"
             }`}
           >
             {tab.label}
@@ -358,7 +358,7 @@ export default function ManajemenPenggunaPage() {
                   </a>
                   <button 
                     onClick={() => setShowImportModal(true)}
-                    className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg shadow-emerald-500/20 hover:-translate-y-0.5 transition-all flex items-center gap-2"
+                    className="bg-teal-500 hover:bg-teal-600 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg shadow-teal-500/20 hover:-translate-y-0.5 transition-all flex items-center gap-2"
                   >
                     <Download className="w-4 h-4 inline-block mr-1.5 -mt-0.5" /> Import Data
                   </button>
@@ -366,7 +366,7 @@ export default function ManajemenPenggunaPage() {
               ) : (
                 <button 
                   onClick={() => setShowAddModal(true)}
-                  className="bg-[#1398A5] hover:bg-teal-700 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg shadow-[#1398A5]/20 hover:-translate-y-0.5 transition-all flex items-center gap-2"
+                  className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg shadow-teal-600/20 hover:-translate-y-0.5 transition-all flex items-center gap-2"
                 >
                   <Plus className="w-4 h-4 inline-block mr-1.5 -mt-0.5" /> Tambah Pengguna
                 </button>
@@ -386,7 +386,7 @@ export default function ManajemenPenggunaPage() {
                   setSearchTerm(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="w-full pl-10 pr-4 py-2 border border-white/60 dark:border-slate-700 rounded-xl bg-white/20 dark:bg-slate-900/20 focus:ring-2 focus:ring-[#1398A5] focus:border-[#1398A5] text-sm text-slate-900 dark:text-white"
+                className="w-full pl-10 pr-4 py-2 border border-white/60 dark:border-slate-700 rounded-xl bg-white/20 dark:bg-slate-900/20 focus:ring-2 focus:ring-teal-600 focus:border-teal-600 text-sm text-slate-900 dark:text-white"
               />
               <div className="absolute left-3 top-2.5 text-slate-400">
                 🔍
@@ -499,14 +499,14 @@ export default function ManajemenPenggunaPage() {
                             {user.isFirstLogin !== false ? (
                               <span className="px-2.5 py-1 bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400 rounded-full text-[10px] font-bold uppercase tracking-wider border border-amber-200 dark:border-amber-800 whitespace-nowrap">Aktif (Belum Ganti PW)</span>
                             ) : (
-                              <span className="px-2.5 py-1 bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400 rounded-full text-xs font-bold uppercase tracking-wider border border-emerald-200 dark:border-emerald-800">Aktif</span>
+                              <span className="px-2.5 py-1 bg-teal-50 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400 rounded-full text-xs font-bold uppercase tracking-wider border border-teal-200 dark:border-teal-800">Aktif</span>
                             )}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                             <div className="flex justify-center items-center space-x-2">
                               <button 
                                 onClick={() => handleEditClick(user)}
-                                className="text-[#1398A5] hover:text-teal-900 dark:text-teal-400 dark:hover:text-teal-300 bg-teal-50 hover:bg-teal-100 dark:bg-teal-900/30 dark:hover:bg-teal-900/50 px-2 py-1 rounded transition-colors" title="Edit"
+                                className="text-teal-600 hover:text-teal-900 dark:text-teal-400 dark:hover:text-teal-300 bg-teal-50 hover:bg-teal-100 dark:bg-teal-900/30 dark:hover:bg-teal-900/50 px-2 py-1 rounded transition-colors" title="Edit"
                               >
                                 <Edit className="w-4 h-4 inline-block mr-1.5 -mt-0.5" />
                               </button>
@@ -560,7 +560,7 @@ export default function ManajemenPenggunaPage() {
                         onClick={() => setCurrentPage(page)}
                         className={`w-10 h-10 rounded-lg font-bold text-sm transition-all ${
                           currentPage === page
-                            ? 'bg-[#1398A5] text-white shadow-md shadow-[#1398A5]/30'
+                            ? 'bg-teal-600 text-white shadow-md shadow-teal-600/30'
                             : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700'
                         }`}
                       >
@@ -608,7 +608,7 @@ export default function ManajemenPenggunaPage() {
               </div>
 
               {importResult && (
-                <div className={`mb-6 p-5 rounded-xl text-sm font-bold border ${importResult.error ? 'bg-red-50 text-red-700 border-red-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'}`}>
+                <div className={`mb-6 p-5 rounded-xl text-sm font-bold border ${importResult.error ? 'bg-red-50 text-red-700 border-red-200' : 'bg-teal-50 text-teal-700 border-teal-200'}`}>
                   {importResult.error ? (
                     <p>⚠️ {importResult.error}</p>
                   ) : (
@@ -638,9 +638,9 @@ export default function ManajemenPenggunaPage() {
                     file:mr-4 file:py-3 file:px-6
                     file:rounded-xl file:border-0
                     file:text-sm file:font-bold
-                    file:bg-emerald-50 file:text-emerald-700
-                    dark:file:bg-emerald-900/30 dark:file:text-emerald-400
-                    hover:file:bg-emerald-100 dark:hover:file:bg-emerald-900/50
+                    file:bg-teal-50 file:text-teal-700
+                    dark:file:bg-teal-900/30 dark:file:text-teal-400
+                    hover:file:bg-teal-100 dark:hover:file:bg-teal-900/50
                     transition-all cursor-pointer bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-xl border border-white/60 dark:border-slate-700 p-2"
                 />
 
@@ -655,7 +655,7 @@ export default function ManajemenPenggunaPage() {
                   <button 
                     type="submit" 
                     disabled={importing || !file}
-                    className="px-8 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/40 hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:transform-none"
+                    className="px-8 py-3 bg-teal-500 hover:bg-teal-600 text-white font-bold rounded-xl shadow-lg shadow-teal-500/30 hover:shadow-teal-500/40 hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:transform-none"
                   >
                     {importing ? 'Memproses Data...' : 'Mulai Import'}
                   </button>
@@ -686,7 +686,7 @@ export default function ManajemenPenggunaPage() {
                   required
                   value={addForm.nim_nidn}
                   onChange={(e) => setAddForm({...addForm, nim_nidn: e.target.value})}
-                  className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1398A5]"
+                  className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-600"
                   placeholder="Contoh: riswan"
                 />
               </div>
@@ -698,7 +698,7 @@ export default function ManajemenPenggunaPage() {
                       required
                       value={addForm.nidn}
                       onChange={(e) => setAddForm({ ...addForm, nidn: e.target.value, nim_nidn: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1398A5]"
+                      className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-600"
                       placeholder="Masukkan NIDN"
                     />
                 </div>
@@ -712,7 +712,7 @@ export default function ManajemenPenggunaPage() {
                   required
                   value={addForm.nama_lengkap}
                   onChange={(e) => setAddForm({...addForm, nama_lengkap: e.target.value})}
-                  className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1398A5]"
+                  className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-600"
                   placeholder="Masukkan nama lengkap"
                 />
               </div>
@@ -725,7 +725,7 @@ export default function ManajemenPenggunaPage() {
                   required
                   value={addForm.nomor_hp}
                   onChange={(e) => setAddForm({...addForm, nomor_hp: e.target.value})}
-                  className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1398A5]"
+                  className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-600"
                   placeholder="0812xxxxxxx"
                 />
               </div>
@@ -737,7 +737,7 @@ export default function ManajemenPenggunaPage() {
                   type="email" 
                   value={addForm.email}
                   onChange={(e) => setAddForm({...addForm, email: e.target.value})}
-                  className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1398A5]"
+                  className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-600"
                   placeholder="opsional@email.com"
                 />
               </div>
@@ -752,7 +752,7 @@ export default function ManajemenPenggunaPage() {
                 <button 
                   type="submit" 
                   disabled={addingUser}
-                  className="px-8 py-3 bg-[#1398A5] hover:bg-teal-700 text-white font-bold rounded-xl shadow-lg shadow-[#1398A5]/30 hover:shadow-[#1398A5]/40 hover:-translate-y-0.5 transition-all disabled:opacity-50"
+                  className="px-8 py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl shadow-lg shadow-teal-600/30 hover:shadow-teal-600/40 hover:-translate-y-0.5 transition-all disabled:opacity-50"
                 >
                   {addingUser ? 'Menyimpan...' : 'Simpan'}
                 </button>
@@ -782,7 +782,7 @@ export default function ManajemenPenggunaPage() {
                   required
                   value={editForm.nim_nidn}
                   onChange={(e) => setEditForm({...editForm, nim_nidn: e.target.value})}
-                  className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1398A5]"
+                  className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-600"
                 />
               </div>
               {activeTab === 'dpl' && (
@@ -794,7 +794,7 @@ export default function ManajemenPenggunaPage() {
                     type="text" 
                     value={editForm.nidn}
                     onChange={(e) => setEditForm({...editForm, nidn: e.target.value})}
-                    className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1398A5]"
+                    className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-600"
                   />
                 </div>
               )}
@@ -807,7 +807,7 @@ export default function ManajemenPenggunaPage() {
                   required
                   value={editForm.nama_lengkap}
                   onChange={(e) => setEditForm({...editForm, nama_lengkap: e.target.value})}
-                  className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1398A5]"
+                  className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-600"
                 />
               </div>
               <div>
@@ -818,7 +818,7 @@ export default function ManajemenPenggunaPage() {
                   type="text" 
                   value={editForm.nomor_hp}
                   onChange={(e) => setEditForm({...editForm, nomor_hp: e.target.value})}
-                  className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1398A5]"
+                  className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-600"
                 />
               </div>
               <div>
@@ -829,7 +829,7 @@ export default function ManajemenPenggunaPage() {
                   type="email" 
                   value={editForm.email}
                   onChange={(e) => setEditForm({...editForm, email: e.target.value})}
-                  className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1398A5]"
+                  className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-600"
                 />
               </div>
               
@@ -841,7 +841,7 @@ export default function ManajemenPenggunaPage() {
                       type="text" 
                       value={editForm.program_studi}
                       onChange={(e) => setEditForm({...editForm, program_studi: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1398A5]"
+                      className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-600"
                     />
                   </div>
                   <div>
@@ -850,7 +850,7 @@ export default function ManajemenPenggunaPage() {
                       type="text" 
                       value={editForm.konsentrasi}
                       onChange={(e) => setEditForm({...editForm, konsentrasi: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1398A5]"
+                      className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-600"
                     />
                   </div>
                   <div>
@@ -859,7 +859,7 @@ export default function ManajemenPenggunaPage() {
                       type="text" 
                       value={editForm.kegiatan}
                       onChange={(e) => setEditForm({...editForm, kegiatan: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1398A5]"
+                      className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-600"
                     />
                   </div>
                 </>
@@ -876,7 +876,7 @@ export default function ManajemenPenggunaPage() {
                 <button 
                   type="submit" 
                   disabled={editingUser}
-                  className="px-8 py-3 bg-[#1398A5] hover:bg-teal-700 text-white font-bold rounded-xl shadow-lg shadow-[#1398A5]/30 hover:shadow-[#1398A5]/40 hover:-translate-y-0.5 transition-all disabled:opacity-50"
+                  className="px-8 py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl shadow-lg shadow-teal-600/30 hover:shadow-teal-600/40 hover:-translate-y-0.5 transition-all disabled:opacity-50"
                 >
                   {editingUser ? 'Menyimpan...' : 'Simpan Perubahan'}
                 </button>

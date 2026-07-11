@@ -82,7 +82,7 @@ export default function DPLDashboard() {
       {hasNotifications && (
         <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-8 rounded-[2rem] border border-white/60 dark:border-slate-700 shadow-sm">
           <h3 className="text-xl font-black text-slate-800 dark:text-white flex items-center gap-3 mb-6">
-            <span className="p-2 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 rounded-xl">
+            <span className="p-2 bg-teal-100 dark:bg-teal-900/40 text-teal-600 dark:text-teal-400 rounded-xl">
               <Bell className="w-5 h-5" />
             </span>
             Pusat Notifikasi
@@ -114,13 +114,13 @@ export default function DPLDashboard() {
             {pendingPokjas.map(pokja => (
               <div key={pokja._id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl transition-all hover:shadow-md">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-900/40 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0">
+                  <div className="w-12 h-12 rounded-xl bg-teal-50 dark:bg-teal-900/40 flex items-center justify-center text-teal-600 dark:text-teal-400 shrink-0">
                     <Clock className="w-6 h-6" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2 mb-1">
                       <h4 className="font-bold text-slate-800 dark:text-white text-lg">{pokja.nama_pokja}</h4>
-                      <span className="px-2 py-0.5 bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300 text-[10px] uppercase tracking-wider font-bold rounded-md">KKL Plus</span>
+                      <span className="px-2 py-0.5 bg-teal-100 text-teal-700 dark:bg-teal-900/50 dark:text-teal-300 text-[10px] uppercase tracking-wider font-bold rounded-md">KKL Plus</span>
                     </div>
                     <p className="text-sm text-slate-500 dark:text-slate-400">
                       Menunggu persetujuan Anda. Ketua: <strong>{pokja.ketua_id?.nama_lengkap}</strong> | Lokasi: <strong>{pokja.mitra_id?.nama_instansi}</strong>
@@ -129,7 +129,7 @@ export default function DPLDashboard() {
                 </div>
                 <button 
                   onClick={() => window.location.href = '/dpl/bimbingan'}
-                  className="w-full sm:w-auto px-6 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-xl shadow-sm shadow-indigo-500/20 transition-all shrink-0 whitespace-nowrap flex items-center justify-center gap-2"
+                  className="w-full sm:w-auto px-6 py-2.5 bg-teal-500 hover:bg-teal-600 text-white font-bold rounded-xl shadow-sm shadow-teal-500/20 transition-all shrink-0 whitespace-nowrap flex items-center justify-center gap-2"
                 >
                   Lakukan Penyerahan
                 </button>
@@ -140,7 +140,7 @@ export default function DPLDashboard() {
             {stats.prokerMenungguValidasi > 0 && (
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl transition-all hover:shadow-md">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-900/40 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
+                  <div className="w-12 h-12 rounded-xl bg-teal-50 dark:bg-teal-900/40 flex items-center justify-center text-teal-600 dark:text-teal-400 shrink-0">
                     <FileEdit className="w-6 h-6" />
                   </div>
                   <div>
@@ -154,7 +154,7 @@ export default function DPLDashboard() {
                 </div>
                 <button 
                   onClick={() => window.location.href = '/dpl/validasi'}
-                  className="w-full sm:w-auto px-6 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl shadow-sm transition-all shrink-0 whitespace-nowrap"
+                  className="w-full sm:w-auto px-6 py-2.5 bg-teal-500 hover:bg-teal-600 text-white font-bold rounded-xl shadow-sm transition-all shrink-0 whitespace-nowrap"
                 >
                   Validasi Sekarang
                 </button>
@@ -165,7 +165,7 @@ export default function DPLDashboard() {
             {stats.laporanMenungguValidasi > 0 && (
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl transition-all hover:shadow-md">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-purple-50 dark:bg-purple-900/40 flex items-center justify-center text-purple-600 dark:text-purple-400 shrink-0">
+                  <div className="w-12 h-12 rounded-xl bg-teal-50 dark:bg-teal-900/40 flex items-center justify-center text-teal-600 dark:text-teal-400 shrink-0">
                     <FileSignature className="w-6 h-6" />
                   </div>
                   <div>
@@ -179,7 +179,7 @@ export default function DPLDashboard() {
                 </div>
                 <button 
                   onClick={() => window.location.href = '/dpl/validasi-laporan'}
-                  className="w-full sm:w-auto px-6 py-2.5 bg-purple-500 hover:bg-purple-600 text-white font-bold rounded-xl shadow-sm transition-all shrink-0 whitespace-nowrap"
+                  className="w-full sm:w-auto px-6 py-2.5 bg-teal-500 hover:bg-teal-600 text-white font-bold rounded-xl shadow-sm transition-all shrink-0 whitespace-nowrap"
                 >
                   Periksa Laporan
                 </button>
@@ -201,13 +201,13 @@ export default function DPLDashboard() {
               return (
                 <div key={`legal-${pokja._id}`} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl transition-all hover:shadow-md">
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-rose-50 dark:bg-rose-900/40 flex items-center justify-center text-rose-600 dark:text-rose-400 shrink-0">
+                    <div className="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-900/40 flex items-center justify-center text-amber-600 dark:text-amber-400 shrink-0">
                       <FileText className="w-6 h-6" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2 mb-1">
                         <h4 className="font-bold text-slate-800 dark:text-white text-lg">{pokja.nama_pokja}</h4>
-                        <span className="px-2 py-0.5 bg-rose-100 text-rose-700 dark:bg-rose-900/50 dark:text-rose-300 text-[10px] uppercase tracking-wider font-bold rounded-md">Status Legal: {status}</span>
+                        <span className="px-2 py-0.5 bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300 text-[10px] uppercase tracking-wider font-bold rounded-md">Status Legal: {status}</span>
                       </div>
                       <p className="text-sm text-slate-500 dark:text-slate-400">
                         {suggestion}

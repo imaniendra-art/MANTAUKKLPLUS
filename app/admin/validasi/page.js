@@ -178,7 +178,7 @@ export default function ValidasiPokja() {
     <DashboardLayout title="Validasi POKJA KKL Plus">
       
       {toastMessage && (
-        <div className="fixed top-24 right-8 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-6 py-3 rounded-xl shadow-lg z-50 animate-in slide-in-from-right-10 fade-in duration-300 font-bold">
+        <div className="fixed top-24 right-8 bg-teal-500/20 text-teal-300 border border-teal-500/30 px-6 py-3 rounded-xl shadow-lg z-50 animate-in slide-in-from-right-10 fade-in duration-300 font-bold">
           {toastMessage}
         </div>
       )}
@@ -188,8 +188,8 @@ export default function ValidasiPokja() {
         <button
           className={`px-6 py-2.5 text-sm font-bold rounded-lg transition-all ${
             activeTab === 'menunggu_persetujuan_lppm' 
-              ? 'bg-[#1398A5] text-amber-300 shadow-sm' 
-              : 'text-slate-500 hover:text-[#1398A5] dark:text-slate-400 dark:hover:text-teal-400'
+              ? 'bg-teal-600 text-amber-300 shadow-sm' 
+              : 'text-slate-500 hover:text-teal-600 dark:text-slate-400 dark:hover:text-teal-400'
           }`}
           onClick={() => setActiveTab('menunggu_persetujuan_lppm')}
         >
@@ -198,8 +198,8 @@ export default function ValidasiPokja() {
         <button
           className={`px-6 py-2.5 text-sm font-bold rounded-lg transition-all ${
             activeTab === 'disetujui_lppm,berjalan,selesai' 
-              ? 'bg-[#1398A5] text-amber-300 shadow-sm' 
-              : 'text-slate-500 hover:text-[#1398A5] dark:text-slate-400 dark:hover:text-teal-400'
+              ? 'bg-teal-600 text-amber-300 shadow-sm' 
+              : 'text-slate-500 hover:text-teal-600 dark:text-slate-400 dark:hover:text-teal-400'
           }`}
           onClick={() => setActiveTab('disetujui_lppm,berjalan,selesai')}
         >
@@ -254,7 +254,7 @@ export default function ValidasiPokja() {
                         <td className="py-4 px-4">
                           <p className="font-bold text-slate-800 dark:text-slate-100">{p.nama_pokja}</p>
                           <p className="text-xs text-slate-500 font-medium">
-                            {p.anggota?.length || 0} Anggota <span className="text-indigo-500">{isExpanded ? "(Tutup)" : "(Lihat)"}</span>
+                            {p.anggota?.length || 0} Anggota <span className="text-teal-500">{isExpanded ? "(Tutup)" : "(Lihat)"}</span>
                           </p>
                         </td>
                         <td className="py-4 px-4">
@@ -266,7 +266,7 @@ export default function ValidasiPokja() {
                         </td>
                         {activeTab !== 'menunggu_persetujuan_lppm' && (
                           <td className="py-4 px-4">
-                            <p className="font-bold text-indigo-600 dark:text-indigo-400">{p.dpl_id?.nama_lengkap || '-'}</p>
+                            <p className="font-bold text-teal-600 dark:text-teal-400">{p.dpl_id?.nama_lengkap || '-'}</p>
                           </td>
                         )}
                         <td className="py-4 px-4 text-center">
@@ -280,19 +280,19 @@ export default function ValidasiPokja() {
                               </button>
                               <button 
                                 onClick={() => handleValidasiClick(p)}
-                                className="px-3 py-1.5 bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-600 hover:text-white font-bold text-xs rounded-lg transition-colors whitespace-nowrap"
+                                className="px-3 py-1.5 bg-teal-500/20 text-teal-600 dark:text-teal-400 hover:bg-teal-600 hover:text-white font-bold text-xs rounded-lg transition-colors whitespace-nowrap"
                               >
                                 Tugaskan DPL
                               </button>
                             </div>
                           ) : (
                             <div className="flex justify-center gap-2 items-center">
-                              <span className="text-emerald-500 font-bold text-xs uppercase hidden md:inline">
+                              <span className="text-teal-500 font-bold text-xs uppercase hidden md:inline">
                                 {p.status_pokja === 'disetujui_lppm' ? 'Persiapan' : p.status_pokja.replace('_', ' ')}
                               </span>
                               <button 
                                 onClick={(e) => { e.stopPropagation(); handleKelolaDokumen(p); }}
-                                className="px-3 py-1.5 bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-600 hover:text-white font-bold text-xs rounded-lg transition-colors whitespace-nowrap"
+                                className="px-3 py-1.5 bg-teal-500/20 text-teal-600 dark:text-teal-400 hover:bg-teal-600 hover:text-white font-bold text-xs rounded-lg transition-colors whitespace-nowrap"
                               >
                                 Kelola Dokumen
                               </button>
@@ -305,12 +305,12 @@ export default function ValidasiPokja() {
                           <td colSpan={6} className="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
                             <div className="p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
                               <h5 className="font-bold text-sm text-slate-800 dark:text-white mb-3 flex items-center gap-2">
-                                <UserCircle className="w-4 h-4 text-indigo-500" /> Detail Anggota Kelompok
+                                <UserCircle className="w-4 h-4 text-teal-500" /> Detail Anggota Kelompok
                               </h5>
                               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 {/* Ketua */}
-                                <div className="p-3 bg-indigo-50/50 dark:bg-indigo-900/10 rounded-lg border border-indigo-100 dark:border-indigo-800/50">
-                                  <span className="text-[10px] uppercase font-bold text-indigo-500 mb-1 block">Ketua POKJA</span>
+                                <div className="p-3 bg-teal-50/50 dark:bg-teal-900/10 rounded-lg border border-teal-100 dark:border-teal-800/50">
+                                  <span className="text-[10px] uppercase font-bold text-teal-500 mb-1 block">Ketua POKJA</span>
                                   <p className="font-bold text-slate-700 dark:text-slate-200 text-sm">{p.ketua_id?.nama_lengkap}</p>
                                   <p className="text-xs text-slate-500 mt-0.5">{p.ketua_id?.nim_nidn}</p>
                                   <p className="text-[11px] text-slate-400 mt-1">{p.ketua_id?.program_studi || "-"} • {p.ketua_id?.konsentrasi || "Belum ada konsentrasi"}</p>
@@ -369,10 +369,10 @@ export default function ValidasiPokja() {
           <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-3xl p-6 w-full max-w-lg shadow-2xl">
             <h3 className="text-lg font-black text-slate-800 dark:text-white mb-4">Validasi & Tugaskan DPL</h3>
             <form onSubmit={handleSubmit}>
-              <div className="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-xl mb-4">
-                <p className="font-bold text-indigo-900 dark:text-indigo-100">{selectedPokja.nama_pokja}</p>
-                <p className="text-sm text-indigo-700 dark:text-indigo-300">Ketua: {selectedPokja.ketua_id?.nama_lengkap}</p>
-                <p className="text-sm text-indigo-700 dark:text-indigo-300">Mitra: {selectedPokja.mitra_id?.nama_instansi || 'Belum memilih'}</p>
+              <div className="bg-teal-50 dark:bg-teal-900/20 p-4 rounded-xl mb-4">
+                <p className="font-bold text-teal-900 dark:text-teal-100">{selectedPokja.nama_pokja}</p>
+                <p className="text-sm text-teal-700 dark:text-teal-300">Ketua: {selectedPokja.ketua_id?.nama_lengkap}</p>
+                <p className="text-sm text-teal-700 dark:text-teal-300">Mitra: {selectedPokja.mitra_id?.nama_instansi || 'Belum memilih'}</p>
               </div>
               <label className="block text-sm font-bold text-slate-500 mb-2">Pilih DPL</label>
               <select 
@@ -388,7 +388,7 @@ export default function ValidasiPokja() {
               </select>
               <div className="flex justify-end gap-3">
                 <button type="button" onClick={() => setShowModal(false)} className="px-5 py-2 font-bold text-slate-500">Batal</button>
-                <button type="submit" className="px-6 py-2 bg-indigo-600 text-white font-bold rounded-xl">Setujui POKJA</button>
+                <button type="submit" className="px-6 py-2 bg-teal-600 text-white font-bold rounded-xl">Setujui POKJA</button>
               </div>
             </form>
           </div>
@@ -411,7 +411,7 @@ export default function ValidasiPokja() {
                       <p className="font-bold text-sm text-slate-800 dark:text-white">Surat Pengantar</p>
                       <p className="text-xs text-slate-500">Otomatis dari sistem</p>
                     </div>
-                    <button onClick={() => window.open(`/mahasiswa/surat/pengantar/${selectedPokja._id}`, '_blank')} className="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-lg hover:bg-blue-200">Buka PDF</button>
+                    <button onClick={() => window.open(`/mahasiswa/surat/pengantar/${selectedPokja._id}`, '_blank')} className="px-3 py-1 bg-teal-100 text-teal-700 text-xs font-bold rounded-lg hover:bg-teal-200">Buka PDF</button>
                   </div>
                   {/* SK Tugas */}
                   <div className="bg-white/60 dark:bg-slate-900/40 p-4 rounded-xl border border-slate-100 flex justify-between items-center">
@@ -420,7 +420,7 @@ export default function ValidasiPokja() {
                       <p className="text-xs text-slate-500">Legalitas kelompok</p>
                     </div>
                     <div className="flex gap-2">
-                      {selectedPokja.file_surat_tugas && <a href={selectedPokja.file_surat_tugas} target="_blank" className="px-3 py-1 bg-indigo-100 text-indigo-700 text-xs font-bold rounded-lg hover:bg-indigo-200">Lihat</a>}
+                      {selectedPokja.file_surat_tugas && <a href={selectedPokja.file_surat_tugas} target="_blank" className="px-3 py-1 bg-teal-100 text-teal-700 text-xs font-bold rounded-lg hover:bg-teal-200">Lihat</a>}
                       <label className="cursor-pointer px-3 py-1 bg-slate-200 text-slate-700 hover:bg-slate-300 text-xs font-bold rounded-lg relative overflow-hidden">
                         <span className={submitting ? "opacity-0" : ""}>Upload</span>
                         <input type="file" className="hidden" accept=".pdf" onChange={(e) => handleAdminUpload(e, 'sk')} disabled={submitting} />
@@ -471,7 +471,7 @@ export default function ValidasiPokja() {
                   <div className="bg-white/60 dark:bg-slate-900/40 p-4 rounded-xl border border-slate-100">
                     <p className="font-bold text-sm text-slate-800 dark:text-white mb-2">MOU</p>
                     <div className="flex flex-wrap gap-2">
-                      {selectedPokja.mitra_id?.file_mou && <a href={selectedPokja.mitra_id.file_mou} target="_blank" className="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-bold rounded-lg hover:bg-purple-200">Lihat MOU</a>}
+                      {selectedPokja.mitra_id?.file_mou && <a href={selectedPokja.mitra_id.file_mou} target="_blank" className="px-3 py-1 bg-teal-100 text-teal-700 text-xs font-bold rounded-lg hover:bg-teal-200">Lihat MOU</a>}
                       <label className="cursor-pointer px-3 py-1 bg-slate-200 text-slate-700 hover:bg-slate-300 text-xs font-bold rounded-lg relative overflow-hidden flex-1 text-center">
                         <span className={submitting ? "opacity-0" : ""}>Upload MOU</span>
                         <input type="file" className="hidden" accept=".pdf" onChange={(e) => handleAdminUpload(e, 'mou')} disabled={submitting} />
@@ -483,7 +483,7 @@ export default function ValidasiPokja() {
                   <div className="bg-white/60 dark:bg-slate-900/40 p-4 rounded-xl border border-slate-100">
                     <p className="font-bold text-sm text-slate-800 dark:text-white mb-2">MOA</p>
                     <div className="flex flex-wrap gap-2">
-                      {selectedPokja.mitra_id?.file_moa && <a href={selectedPokja.mitra_id.file_moa} target="_blank" className="px-3 py-1 bg-pink-100 text-pink-700 text-xs font-bold rounded-lg hover:bg-pink-200">Lihat MOA</a>}
+                      {selectedPokja.mitra_id?.file_moa && <a href={selectedPokja.mitra_id.file_moa} target="_blank" className="px-3 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded-lg hover:bg-amber-200">Lihat MOA</a>}
                       <label className="cursor-pointer px-3 py-1 bg-slate-200 text-slate-700 hover:bg-slate-300 text-xs font-bold rounded-lg relative overflow-hidden flex-1 text-center">
                         <span className={submitting ? "opacity-0" : ""}>Upload MOA</span>
                         <input type="file" className="hidden" accept=".pdf" onChange={(e) => handleAdminUpload(e, 'moa')} disabled={submitting} />
@@ -495,7 +495,7 @@ export default function ValidasiPokja() {
                   <div className="bg-white/60 dark:bg-slate-900/40 p-4 rounded-xl border border-slate-100">
                     <p className="font-bold text-sm text-slate-800 dark:text-white mb-2">IA</p>
                     <div className="flex flex-wrap gap-2">
-                      {selectedPokja.mitra_id?.file_ia && <a href={selectedPokja.mitra_id.file_ia} target="_blank" className="px-3 py-1 bg-rose-100 text-rose-700 text-xs font-bold rounded-lg hover:bg-rose-200">Lihat IA</a>}
+                      {selectedPokja.mitra_id?.file_ia && <a href={selectedPokja.mitra_id.file_ia} target="_blank" className="px-3 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded-lg hover:bg-amber-200">Lihat IA</a>}
                       <label className="cursor-pointer px-3 py-1 bg-slate-200 text-slate-700 hover:bg-slate-300 text-xs font-bold rounded-lg relative overflow-hidden flex-1 text-center">
                         <span className={submitting ? "opacity-0" : ""}>Upload IA</span>
                         <input type="file" className="hidden" accept=".pdf" onChange={(e) => handleAdminUpload(e, 'ia')} disabled={submitting} />

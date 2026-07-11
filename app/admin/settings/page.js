@@ -132,7 +132,7 @@ export default function AdminSettingsPage() {
       <div className="max-w-5xl mx-auto space-y-6">
         
         {message && (
-          <div className={`p-4 rounded-xl flex items-center gap-3 ${message.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
+          <div className={`p-4 rounded-xl flex items-center gap-3 ${message.type === 'success' ? 'bg-teal-50 text-teal-700 border border-teal-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
             {message.type === 'success' ? <CheckCircle className="w-5 h-5" /> : <AlertTriangle className="w-5 h-5" />}
             <span>{message.text}</span>
           </div>
@@ -167,7 +167,7 @@ export default function AdminSettingsPage() {
                     <select 
                       value={systemSettings.periode_aktif}
                       onChange={(e) => setSystemSettings({...systemSettings, periode_aktif: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring focus:ring-emerald-200 focus:ring-opacity-50 transition-all bg-slate-50"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring focus:ring-teal-200 focus:ring-opacity-50 transition-all bg-slate-50"
                       required
                     >
                       {systemSettings.daftar_periode?.map(p => (
@@ -219,7 +219,7 @@ export default function AdminSettingsPage() {
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input type="checkbox" className="sr-only peer" checked={systemSettings.pendaftaran_buka} onChange={(e) => setSystemSettings({...systemSettings, pendaftaran_buka: e.target.checked})} />
-                      <div className="w-14 h-7 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-emerald-500"></div>
+                      <div className="w-14 h-7 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-teal-500"></div>
                     </label>
                   </div>
 
@@ -231,7 +231,7 @@ export default function AdminSettingsPage() {
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input type="checkbox" className="sr-only peer" checked={systemSettings.pengisian_logbook_buka} onChange={(e) => setSystemSettings({...systemSettings, pengisian_logbook_buka: e.target.checked})} />
-                      <div className="w-14 h-7 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-emerald-500"></div>
+                      <div className="w-14 h-7 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-teal-500"></div>
                     </label>
                   </div>
 
@@ -243,7 +243,7 @@ export default function AdminSettingsPage() {
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input type="checkbox" className="sr-only peer" checked={systemSettings.pengumpulan_laporan_buka} onChange={(e) => setSystemSettings({...systemSettings, pengumpulan_laporan_buka: e.target.checked})} />
-                      <div className="w-14 h-7 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-emerald-500"></div>
+                      <div className="w-14 h-7 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-teal-500"></div>
                     </label>
                   </div>
                 </div>
@@ -253,7 +253,7 @@ export default function AdminSettingsPage() {
                 <button 
                   type="submit" 
                   disabled={isSaving}
-                  className="px-8 py-3 bg-emerald-600 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/30 hover:bg-emerald-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+                  className="px-8 py-3 bg-teal-600 text-white font-bold rounded-xl shadow-lg shadow-teal-500/30 hover:bg-teal-700 transition-colors disabled:opacity-50 flex items-center gap-2"
                 >
                   <Save className="w-5 h-5" /> {isSaving ? 'Menyimpan...' : 'Simpan Pengaturan'}
                 </button>
@@ -274,7 +274,7 @@ export default function AdminSettingsPage() {
                       type="text" 
                       value={profileData.nama_lengkap}
                       onChange={(e) => setProfileData({...profileData, nama_lengkap: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition-all bg-slate-50"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring focus:ring-teal-200 focus:ring-opacity-50 transition-all bg-slate-50"
                       required
                     />
                   </div>
@@ -284,7 +284,7 @@ export default function AdminSettingsPage() {
                       type="email" 
                       value={profileData.email}
                       onChange={(e) => setProfileData({...profileData, email: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition-all bg-slate-50"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring focus:ring-teal-200 focus:ring-opacity-50 transition-all bg-slate-50"
                       required
                     />
                   </div>
@@ -302,7 +302,7 @@ export default function AdminSettingsPage() {
                       type="password" 
                       value={profileData.password}
                       onChange={(e) => setProfileData({...profileData, password: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition-all bg-slate-50"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring focus:ring-teal-200 focus:ring-opacity-50 transition-all bg-slate-50"
                       placeholder="Masukkan password baru..."
                     />
                   </div>
@@ -312,7 +312,7 @@ export default function AdminSettingsPage() {
                       type="password" 
                       value={profileData.confirm_password}
                       onChange={(e) => setProfileData({...profileData, confirm_password: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition-all bg-slate-50"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring focus:ring-teal-200 focus:ring-opacity-50 transition-all bg-slate-50"
                       placeholder="Ketik ulang password baru..."
                     />
                   </div>
@@ -323,7 +323,7 @@ export default function AdminSettingsPage() {
                 <button 
                   type="submit" 
                   disabled={isSaving}
-                  className="px-8 py-3 bg-blue-600 text-white font-bold rounded-xl shadow-lg shadow-blue-500/30 hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+                  className="px-8 py-3 bg-teal-600 text-white font-bold rounded-xl shadow-lg shadow-teal-500/30 hover:bg-teal-700 transition-colors disabled:opacity-50 flex items-center gap-2"
                 >
                   <Save className="w-5 h-5" /> {isSaving ? 'Menyimpan...' : 'Simpan Profil'}
                 </button>

@@ -25,7 +25,7 @@ export default function PetunjukDPL() {
     <DashboardLayout title="Petunjuk & Panduan DPL">
       <div className="max-w-5xl mx-auto space-y-6 pb-12">
         {/* Banner Penjelasan */}
-        <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-3xl p-8 text-white shadow-lg relative overflow-hidden">
+        <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-3xl p-8 text-white shadow-lg relative overflow-hidden">
           <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
             <svg xmlns="http://www.w3.org/2000/svg" className="w-64 h-64" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14l9-5-9-5-9 5 9 5z" /><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" /></svg>
           </div>
@@ -33,7 +33,7 @@ export default function PetunjukDPL() {
             <h1 className="text-3xl font-black mb-4 flex items-center gap-3">
               <span>👨‍<School className="w-4 h-4 inline-block mr-1.5 -mt-0.5" /></span> Selamat Datang, Dosen Pembimbing!
             </h1>
-            <div className="space-y-4 text-indigo-50 text-sm md:text-base leading-relaxed max-w-3xl font-medium">
+            <div className="space-y-4 text-teal-50 text-sm md:text-base leading-relaxed max-w-3xl font-medium">
               <p>
                 Sebagai <strong>Dosen Pembimbing Lapangan (DPL)</strong>, peran Anda sangat krusial dalam memastikan bahwa pengalaman KKL Plus mahasiswa sejalan dengan standar akademik program studi. Program <strong>KKL Plus Berdampak</strong> dirancang secara terstruktur (OBE - <em>Outcome Based Education</em>) agar pengalaman praktik lapangan mahasiswa benar-benar bernilai dan dapat dikonversi menjadi SKS.
               </p>
@@ -57,7 +57,7 @@ export default function PetunjukDPL() {
         {/* Daftar CPMK */}
         <div>
           <div className="flex items-center gap-3 mb-6 px-2">
-            <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-lg">
+            <div className="w-10 h-10 rounded-full bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 flex items-center justify-center font-bold text-lg">
               📚
             </div>
             <div>
@@ -81,7 +81,7 @@ export default function PetunjukDPL() {
                       <div className="bg-slate-50 dark:bg-slate-800/50 border-b border-white/60 dark:border-slate-700 p-5">
                         <div className="flex justify-between items-start">
                           <div>
-                            <span className="inline-block px-2.5 py-1 bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 rounded-lg text-xs font-bold mb-2 uppercase tracking-wider">
+                            <span className="inline-block px-2.5 py-1 bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400 rounded-lg text-xs font-bold mb-2 uppercase tracking-wider">
                               {mk.kode}
                             </span>
                             <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">{mk.nama}</h3>
@@ -96,11 +96,11 @@ export default function PetunjukDPL() {
                           mk.cpmk.map((c, cIdx) => (
                             <details key={cIdx} className="group p-4 rounded-xl border border-white/60 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/20 [&_summary::-webkit-details-marker]:hidden">
                               <summary className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer list-none focus:outline-none">
-                                <h4 className="font-bold text-slate-700 dark:text-slate-200 text-sm text-purple-600 dark:text-purple-400">
+                                <h4 className="font-bold text-slate-700 dark:text-slate-200 text-sm text-teal-600 dark:text-teal-400">
                                   {c.nama_cpmk}
                                 </h4>
                                 <div className="shrink-0 flex items-center">
-                                  <span className="text-xs font-bold px-3 py-1.5 bg-purple-100 hover:bg-purple-200 dark:bg-purple-900/40 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-300 rounded-lg transition-colors group-open:hidden flex items-center gap-2">
+                                  <span className="text-xs font-bold px-3 py-1.5 bg-teal-100 hover:bg-teal-200 dark:bg-teal-900/40 dark:hover:bg-teal-900/60 text-teal-700 dark:text-teal-300 rounded-lg transition-colors group-open:hidden flex items-center gap-2">
                                     <Eye className="w-4 h-4 inline-block mr-1.5 -mt-0.5" /> Lihat Indikator Aktivitas
                                   </span>
                                   <span className="text-xs font-bold px-3 py-1.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-lg transition-colors hidden group-open:flex items-center gap-2">
@@ -113,7 +113,7 @@ export default function PetunjukDPL() {
                                 <ul className="space-y-2">
                                   {c.indikator.map((ind, iIdx) => (
                                     <li key={iIdx} className="flex gap-3 text-sm text-slate-600 dark:text-slate-300 font-medium leading-relaxed">
-                                      <span className="text-emerald-500 shrink-0 mt-0.5">✓</span>
+                                      <span className="text-teal-500 shrink-0 mt-0.5">✓</span>
                                       <span>{ind}</span>
                                     </li>
                                   ))}

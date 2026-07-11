@@ -49,9 +49,9 @@ export default function CpmkMasterData() {
   return (
     <DashboardLayout title="Master Data CPMK & AI Translator">
       <div className="space-y-6 max-w-5xl mx-auto">
-        <div className="bg-indigo-50 border border-indigo-100 p-6 rounded-2xl mb-8">
-          <h2 className="text-xl font-black text-indigo-900 mb-2">✨ AI Translator CPMK</h2>
-          <p className="text-sm text-indigo-700 leading-relaxed font-medium">
+        <div className="bg-teal-50 border border-teal-100 p-6 rounded-2xl mb-8">
+          <h2 className="text-xl font-black text-teal-900 mb-2">✨ AI Translator CPMK</h2>
+          <p className="text-sm text-teal-700 leading-relaxed font-medium">
             Seringkali bahasa akademis sulit dipahami oleh mahasiswa saat KKL Plus. Gunakan tombol <strong>Generate Saran AI</strong> pada setiap indikator di bawah ini untuk menerjemahkan bahasa dosen menjadi contoh kegiatan lapangan yang praktis. Saran ini akan sangat membantu AI Sistem saat menilai Logbook Harian mahasiswa!
           </p>
         </div>
@@ -98,7 +98,7 @@ export default function CpmkMasterData() {
                               <button 
                                 onClick={() => handleGenerateAI(p._id, mk._id, c._id)}
                                 disabled={generating}
-                                className="px-3 py-1.5 bg-gradient-to-r from-amber-400 to-orange-500 text-white text-xs font-bold rounded-lg shadow-sm hover:from-amber-500 hover:to-orange-600 transition-all disabled:opacity-50 flex items-center gap-2"
+                                className="px-3 py-1.5 bg-gradient-to-r from-amber-400 to-amber-500 text-white text-xs font-bold rounded-lg shadow-sm hover:from-amber-500 hover:to-amber-600 transition-all disabled:opacity-50 flex items-center gap-2"
                               >
                                 {generating ? "Memproses..." : "✨ Generate AI"}
                               </button>

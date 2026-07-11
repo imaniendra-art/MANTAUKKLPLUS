@@ -169,14 +169,14 @@ export default function DplPenilaianPage() {
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-6">
         <div className="p-6 border-b border-slate-200">
           <h2 className="text-lg font-bold text-slate-800">Nilai Kelompok (Per-Proker)</h2>
-          <div className="mt-4 bg-indigo-50 border border-indigo-100 p-4 rounded-xl">
-            <p className="text-sm font-bold text-indigo-900 mb-2">Indikator Penilaian Proker:</p>
-            <ul className="list-disc list-inside text-sm text-indigo-800 space-y-1 mb-2">
+          <div className="mt-4 bg-teal-50 border border-teal-100 p-4 rounded-xl">
+            <p className="text-sm font-bold text-teal-900 mb-2">Indikator Penilaian Proker:</p>
+            <ul className="list-disc list-inside text-sm text-teal-800 space-y-1 mb-2">
               <li>Tingkat Ketercapaian & Keberhasilan (Sesuai target yang ditetapkan)</li>
               <li>Kesesuaian dengan Bidang Ilmu (Relevansi akademik)</li>
               <li>Manfaat / Dampak Proker bagi instansi atau masyarakat</li>
             </ul>
-            <p className="text-xs text-indigo-700 italic">* Nilai akhir kelompok adalah rata-rata dari seluruh Proker (Bobot 50%).</p>
+            <p className="text-xs text-teal-700 italic">* Nilai akhir kelompok adalah rata-rata dari seluruh Proker (Bobot 50%).</p>
           </div>
         </div>
 
@@ -193,7 +193,7 @@ export default function DplPenilaianPage() {
               return (
                 <div key={proker._id} className="p-6 flex flex-col gap-4 hover:bg-slate-50/50 transition-colors">
                   <div className="border-b border-slate-100 pb-3">
-                    <span className="inline-block px-2 py-1 bg-indigo-100 text-indigo-700 rounded text-[10px] font-bold uppercase tracking-wider mb-2">
+                    <span className="inline-block px-2 py-1 bg-teal-100 text-teal-700 rounded text-[10px] font-bold uppercase tracking-wider mb-2">
                       Proker {index + 1}
                     </span>
                     <h3 className="font-bold text-slate-800">{proker.judul_proker}</h3>
@@ -237,7 +237,7 @@ export default function DplPenilaianPage() {
                   </div>
                   <div className="mt-2 flex items-center justify-end gap-2 bg-white px-4 py-3 rounded-lg border border-slate-200 w-max self-end shadow-sm">
                     <span className="text-xs font-bold text-slate-500 uppercase">Rata-rata Proker {index + 1}:</span>
-                    <span className="text-lg font-bold text-indigo-600">{avgProker.toFixed(2)}</span>
+                    <span className="text-lg font-bold text-teal-600">{avgProker.toFixed(2)}</span>
                   </div>
                 </div>
               );
@@ -246,12 +246,12 @@ export default function DplPenilaianPage() {
         </div>
 
         {prokers.length > 0 && (
-          <div className="p-6 bg-indigo-50 border-t border-indigo-100 flex items-center justify-between">
+          <div className="p-6 bg-teal-50 border-t border-teal-100 flex items-center justify-between">
             <div>
-              <p className="text-xs text-indigo-700 font-bold uppercase tracking-wider">Total Nilai Kelompok</p>
-              <p className="text-[10px] text-indigo-600">Rata-rata dari {prokers.length} Proker</p>
+              <p className="text-xs text-teal-700 font-bold uppercase tracking-wider">Total Nilai Kelompok</p>
+              <p className="text-[10px] text-teal-600">Rata-rata dari {prokers.length} Proker</p>
             </div>
-            <span className="text-2xl font-black text-indigo-900">{calculateKelompok().toFixed(2)}</span>
+            <span className="text-2xl font-black text-teal-900">{calculateKelompok().toFixed(2)}</span>
           </div>
         )}
       </div>
@@ -259,14 +259,14 @@ export default function DplPenilaianPage() {
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         <div className="p-6 border-b border-slate-200">
           <h2 className="text-lg font-bold text-slate-800">Nilai Individu Mahasiswa</h2>
-          <div className="mt-4 bg-indigo-50 border border-indigo-100 p-4 rounded-xl">
-            <p className="text-sm font-bold text-indigo-900 mb-2">Indikator Penilaian Individu:</p>
-            <ul className="list-disc list-inside text-sm text-indigo-800 space-y-1 mb-2">
+          <div className="mt-4 bg-teal-50 border border-teal-100 p-4 rounded-xl">
+            <p className="text-sm font-bold text-teal-900 mb-2">Indikator Penilaian Individu:</p>
+            <ul className="list-disc list-inside text-sm text-teal-800 space-y-1 mb-2">
               <li>Kualitas penyusunan Laporan Akhir KKL Plus (Relevansi dan Tata Tulis)</li>
               <li>Kedisiplinan pengisian Logbook Harian secara konsisten</li>
               <li>Sikap, komunikasi, dan etika mahasiswa selama proses bimbingan</li>
             </ul>
-            <p className="text-xs text-indigo-700 italic">* Rata-rata dari ke-3 indikator ini akan menjadi Nilai Individu per mahasiswa.</p>
+            <p className="text-xs text-teal-700 italic">* Rata-rata dari ke-3 indikator ini akan menjadi Nilai Individu per mahasiswa.</p>
           </div>
         </div>
         <div className="overflow-x-auto">
@@ -289,7 +289,7 @@ export default function DplPenilaianPage() {
                     <p className="font-bold text-slate-800">{item.mahasiswa_id?.nama_lengkap}</p>
                     <p className="text-xs text-slate-500 mb-2">{item.mahasiswa_id?.nim}</p>
                     {item.mentor_sudah_menilai ? (
-                      <span className="inline-flex items-center gap-1 text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md text-xs font-bold border border-emerald-200">
+                      <span className="inline-flex items-center gap-1 text-teal-600 bg-teal-50 px-2 py-1 rounded-md text-xs font-bold border border-teal-200">
                         <CheckCircle2 className="w-3 h-3" /> Mentor Selesai
                       </span>
                     ) : (

@@ -673,7 +673,7 @@ export default function MasterData() {
       {/* Toast Notification (Portaled) */}
       {mounted && toastMessage && createPortal(
         <div style={{ zIndex: 999999 }} className="fixed top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-8 py-3 rounded-2xl shadow-xl shadow-slate-900/20 animate-in slide-in-from-top-10 fade-in duration-300 font-bold border border-slate-700/50 flex items-center gap-3">
-          <span className="text-emerald-400 text-lg"><Check className="w-4 h-4 inline-block mr-1.5 -mt-0.5" /></span> {toastMessage}
+          <span className="text-teal-400 text-lg"><Check className="w-4 h-4 inline-block mr-1.5 -mt-0.5" /></span> {toastMessage}
         </div>,
         document.body
       )}
@@ -683,8 +683,8 @@ export default function MasterData() {
       ) : (
         <>
           <div className="flex space-x-1 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl shadow-sm p-1.5 rounded-xl w-max mb-6 border border-white/60 dark:border-slate-700">
-            <button onClick={() => setActiveTab("mitra")} className={`px-6 py-2.5 text-sm font-bold rounded-lg transition-all ${activeTab === "mitra" ? "bg-[#1398A5] text-amber-300 shadow-sm" : "text-slate-500 hover:text-[#1398A5] dark:text-slate-400 dark:hover:text-teal-400"}`}>Daftar Instansi</button>
-            <button onClick={() => setActiveTab("mentor")} className={`px-6 py-2.5 text-sm font-bold rounded-lg transition-all ${activeTab === "mentor" ? "bg-[#1398A5] text-amber-300 shadow-sm" : "text-slate-500 hover:text-[#1398A5] dark:text-slate-400 dark:hover:text-teal-400"}`}>Data Mentor</button>
+            <button onClick={() => setActiveTab("mitra")} className={`px-6 py-2.5 text-sm font-bold rounded-lg transition-all ${activeTab === "mitra" ? "bg-teal-600 text-amber-300 shadow-sm" : "text-slate-500 hover:text-teal-600 dark:text-slate-400 dark:hover:text-teal-400"}`}>Daftar Instansi</button>
+            <button onClick={() => setActiveTab("mentor")} className={`px-6 py-2.5 text-sm font-bold rounded-lg transition-all ${activeTab === "mentor" ? "bg-teal-600 text-amber-300 shadow-sm" : "text-slate-500 hover:text-teal-600 dark:text-slate-400 dark:hover:text-teal-400"}`}>Data Mentor</button>
           </div>
 
           <div className="space-y-6">
@@ -700,7 +700,7 @@ export default function MasterData() {
                     setMitraForm({ id: null, nama_instansi: "", kategori: "Pemerintahan & Desa (Sektor Publik)", deskripsi_singkat: "" });
                     setShowMitraModal(true);
                   }}
-                  className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl transition-all shadow-md shadow-indigo-200/50"
+                  className="px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm rounded-xl transition-all shadow-md shadow-teal-200/50"
                 >
                   + Tambah Mitra Baru
                 </button>
@@ -728,7 +728,7 @@ export default function MasterData() {
                           <td className="py-4 px-6 text-center text-slate-500 dark:text-slate-400 font-medium">{indexOfFirstMitra + index + 1}</td>
                           <td className="py-4 px-6">
                             <div className="font-semibold text-slate-800 dark:text-slate-100">{mitra.nama_instansi}</div>
-                            <span className={`inline-block mt-1 px-2.5 py-0.5 rounded-md text-[10px] font-bold ${mitra.kategori?.includes('Sektor Publik') ? 'bg-teal-50 text-[#1398A5]' : mitra.kategori?.includes('Ekonomi Kerakyatan') ? 'bg-orange-50 text-orange-600' : mitra.kategori?.includes('Privat') ? 'bg-indigo-50 text-indigo-600' : 'bg-slate-100 text-slate-600'}`}>
+                            <span className={`inline-block mt-1 px-2.5 py-0.5 rounded-md text-[10px] font-bold ${mitra.kategori?.includes('Sektor Publik') ? 'bg-teal-50 text-teal-600' : mitra.kategori?.includes('Ekonomi Kerakyatan') ? 'bg-amber-50 text-amber-600' : mitra.kategori?.includes('Privat') ? 'bg-teal-50 text-teal-600' : 'bg-slate-100 text-slate-600'}`}>
                               {mitra.kategori}
                             </span>
                           </td>
@@ -759,7 +759,7 @@ export default function MasterData() {
                           <td className="py-4 px-6 text-center">
                             <div className="flex justify-center" title={`Status: ${mitra.status_kerjasama || 'Belum Ada'}`}>
                               {mitra.status_kerjasama && mitra.status_kerjasama !== 'Belum Ada' && mitra.status_kerjasama !== 'Proses Penjajakan (Siap MoU)' ? (
-                                <FileText className="w-5 h-5 text-emerald-500" />
+                                <FileText className="w-5 h-5 text-teal-500" />
                               ) : (
                                 <XCircle className="w-5 h-5 text-slate-300" />
                               )}
@@ -767,7 +767,7 @@ export default function MasterData() {
                           </td>
                           <td className="py-4 px-6">
                             <div className="flex justify-center gap-3">
-                              <button onClick={() => { setMitraForm({ id: mitra._id, nama_instansi: mitra.nama_instansi, kategori: mitra.kategori || "Pemerintahan & Desa (Sektor Publik)", deskripsi_singkat: mitra.deskripsi_singkat || "" }); setShowMitraModal(true); }} className="text-slate-400 hover:text-indigo-600 transition-colors" title="Edit Mitra">
+                              <button onClick={() => { setMitraForm({ id: mitra._id, nama_instansi: mitra.nama_instansi, kategori: mitra.kategori || "Pemerintahan & Desa (Sektor Publik)", deskripsi_singkat: mitra.deskripsi_singkat || "" }); setShowMitraModal(true); }} className="text-slate-400 hover:text-teal-600 transition-colors" title="Edit Mitra">
                                 <Edit2 className="w-4 h-4" />
                               </button>
                               <button onClick={() => handleDeleteMitra(mitra._id)} className="text-slate-400 hover:text-red-600 transition-colors" title="Hapus Mitra">
@@ -800,7 +800,7 @@ export default function MasterData() {
                       <button 
                         key={i}
                         onClick={() => setCurrentPageMitra(i + 1)}
-                        className={`w-9 h-9 flex items-center justify-center font-bold rounded-lg shadow-sm transition-colors border ${currentPageMitra === i + 1 ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl border-white/60 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300'}`}
+                        className={`w-9 h-9 flex items-center justify-center font-bold rounded-lg shadow-sm transition-colors border ${currentPageMitra === i + 1 ? 'bg-teal-600 text-white border-teal-600' : 'bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl border-white/60 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300'}`}
                       >
                         {i + 1}
                       </button>
@@ -825,7 +825,7 @@ export default function MasterData() {
                   <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">Data Mentor (Mitra Pendamping)</h2>
                   <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Kelola kontak mentor atau pendamping dari instansi KKL Plus.</p>
                 </div>
-                <button onClick={() => { setMentorForm({ id: null, nidn: "", nama_lengkap: "", nomor_hp: "", email: "", lokasi: "", devisi: "" }); setShowAddMentorModal(true); }} className="px-5 py-2.5 bg-[#1398A5] hover:bg-teal-700 text-white font-bold text-sm rounded-xl transition-all shadow-md">
+                <button onClick={() => { setMentorForm({ id: null, nidn: "", nama_lengkap: "", nomor_hp: "", email: "", lokasi: "", devisi: "" }); setShowAddMentorModal(true); }} className="px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm rounded-xl transition-all shadow-md">
                   + Tambah Mentor
                 </button>
               </div>
@@ -884,7 +884,7 @@ export default function MasterData() {
                       <button 
                         key={i}
                         onClick={() => setCurrentPageMentor(i + 1)}
-                        className={`w-9 h-9 flex items-center justify-center font-bold rounded-lg shadow-sm transition-colors border ${currentPageMentor === i + 1 ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl border-white/60 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300'}`}
+                        className={`w-9 h-9 flex items-center justify-center font-bold rounded-lg shadow-sm transition-colors border ${currentPageMentor === i + 1 ? 'bg-teal-600 text-white border-teal-600' : 'bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl border-white/60 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300'}`}
                       >
                         {i + 1}
                       </button>
@@ -912,7 +912,7 @@ export default function MasterData() {
       {mounted && showSaranModal && createPortal(
         <div style={{ zIndex: 999999 }} className="fixed inset-0 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-3xl shadow-sm w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200 border border-white/60 dark:border-slate-700">
-            <div className="px-6 py-5 border-b border-white/50 dark:border-slate-600 flex justify-between items-center bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20">
+            <div className="px-6 py-5 border-b border-white/50 dark:border-slate-600 flex justify-between items-center bg-gradient-to-r from-amber-50 to-amber-50 dark:from-amber-900/20 dark:to-amber-900/20">
               <h3 className="text-lg font-black text-amber-800 dark:text-amber-500 flex items-center gap-2">
                 <span>✨</span> Preview Saran Kegiatan (AI)
               </h3>
@@ -931,7 +931,7 @@ export default function MasterData() {
             </div>
             <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/80 border-t border-white/50 dark:border-slate-600 flex justify-end gap-3">
               <button type="button" onClick={() => setShowSaranModal(false)} className="px-5 py-2.5 text-sm font-bold text-slate-500 dark:text-slate-400 hover:bg-slate-200 rounded-xl transition-colors">Batal</button>
-              <button onClick={handleSaveSaran} className="px-5 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 rounded-xl shadow-md transition-colors flex items-center gap-2">
+              <button onClick={handleSaveSaran} className="px-5 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-amber-500 to-amber-500 hover:from-amber-600 hover:to-amber-600 rounded-xl shadow-md transition-colors flex items-center gap-2">
                 Simpan Saran
               </button>
             </div>
@@ -952,11 +952,11 @@ export default function MasterData() {
               <div className="p-6 space-y-4">
                 <div>
                   <label className="block text-sm font-bold text-slate-800 dark:text-slate-100 mb-2">Nama Instansi / Mitra</label>
-                  <input required value={mitraForm.nama_instansi} onChange={(e) => setMitraForm({...mitraForm, nama_instansi: e.target.value})} type="text" placeholder="Contoh: PT Sukses Mandiri / Desa Maju" className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-slate-50 dark:bg-slate-800/80" />
+                  <input required value={mitraForm.nama_instansi} onChange={(e) => setMitraForm({...mitraForm, nama_instansi: e.target.value})} type="text" placeholder="Contoh: PT Sukses Mandiri / Desa Maju" className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-slate-50 dark:bg-slate-800/80" />
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-slate-800 dark:text-slate-100 mb-2">Kategori Sektor</label>
-                  <select value={mitraForm.kategori} onChange={(e) => setMitraForm({...mitraForm, kategori: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-slate-50 dark:bg-slate-800/80 appearance-none">
+                  <select value={mitraForm.kategori} onChange={(e) => setMitraForm({...mitraForm, kategori: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-slate-50 dark:bg-slate-800/80 appearance-none">
                     <option value="Pemerintahan & Desa (Sektor Publik)">Pemerintahan & Desa (Sektor Publik)</option>
                     <option value="Bisnis & Ekonomi Kerakyatan">Bisnis & Ekonomi Kerakyatan</option>
                     <option value="Industri & Korporasi (Sektor Privat)">Industri & Korporasi (Sektor Privat)</option>
@@ -966,12 +966,12 @@ export default function MasterData() {
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-slate-800 dark:text-slate-100 mb-2">Deskripsi Singkat (Opsional)</label>
-                  <textarea value={mitraForm.deskripsi_singkat} onChange={(e) => setMitraForm({...mitraForm, deskripsi_singkat: e.target.value})} rows="3" placeholder="Tentang instansi/perusahaan ini secara singkat..." className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-slate-50 dark:bg-slate-800/80"></textarea>
+                  <textarea value={mitraForm.deskripsi_singkat} onChange={(e) => setMitraForm({...mitraForm, deskripsi_singkat: e.target.value})} rows="3" placeholder="Tentang instansi/perusahaan ini secara singkat..." className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-slate-50 dark:bg-slate-800/80"></textarea>
                 </div>
               </div>
               <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/80 border-t border-white/50 dark:border-slate-600 flex justify-end gap-3">
                 <button type="button" onClick={() => setShowMitraModal(false)} className="px-5 py-2.5 text-sm font-bold text-slate-500 dark:text-slate-400 hover:bg-slate-200 rounded-xl transition-colors">Batal</button>
-                <button type="submit" className="px-5 py-2.5 text-sm font-bold text-slate-800 dark:text-slate-100 bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-md transition-colors">Simpan Data</button>
+                <button type="submit" className="px-5 py-2.5 text-sm font-bold text-slate-800 dark:text-slate-100 bg-teal-600 hover:bg-teal-700 rounded-xl shadow-md transition-colors">Simpan Data</button>
               </div>
             </form>
           </div>
@@ -991,21 +991,21 @@ export default function MasterData() {
                 <div className="flex gap-4">
                   <div className="w-1/3">
                     <label className="block text-sm font-bold text-slate-800 dark:text-slate-100 mb-2">Kode</label>
-                    <input required value={matkulForm.kode} onChange={(e) => setMatkulForm({...matkulForm, kode: e.target.value})} type="text" placeholder="MK.001" className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl/80" />
+                    <input required value={matkulForm.kode} onChange={(e) => setMatkulForm({...matkulForm, kode: e.target.value})} type="text" placeholder="MK.001" className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl/80" />
                   </div>
                   <div className="w-2/3">
                     <label className="block text-sm font-bold text-slate-800 dark:text-slate-100 mb-2">SKS</label>
-                    <input required value={matkulForm.sks} onChange={(e) => setMatkulForm({...matkulForm, sks: e.target.value})} type="number" min="1" max="6" className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl/80" />
+                    <input required value={matkulForm.sks} onChange={(e) => setMatkulForm({...matkulForm, sks: e.target.value})} type="number" min="1" max="6" className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl/80" />
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-slate-800 dark:text-slate-100 mb-2">Nama Mata Kuliah</label>
-                  <input required value={matkulForm.nama} onChange={(e) => setMatkulForm({...matkulForm, nama: e.target.value})} type="text" placeholder="Contoh: Manajemen Bisnis" className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl/80" />
+                  <input required value={matkulForm.nama} onChange={(e) => setMatkulForm({...matkulForm, nama: e.target.value})} type="text" placeholder="Contoh: Manajemen Bisnis" className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl/80" />
                 </div>
               </div>
               <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/80 border-t border-white/50 dark:border-slate-600 flex justify-end gap-3">
                 <button type="button" onClick={() => { setShowAddMatkulModal(false); setMatkulForm({ kode: "", nama: "", sks: 3 }); }} className="px-5 py-2.5 text-sm font-bold text-slate-500 dark:text-slate-400 hover:bg-slate-200 rounded-xl transition-colors">Batal</button>
-                <button type="submit" className="px-5 py-2.5 text-sm font-bold text-slate-800 dark:text-slate-100 bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-md transition-colors">Simpan Matkul</button>
+                <button type="submit" className="px-5 py-2.5 text-sm font-bold text-slate-800 dark:text-slate-100 bg-teal-600 hover:bg-teal-700 rounded-xl shadow-md transition-colors">Simpan Matkul</button>
               </div>
             </form>
           </div>
@@ -1029,19 +1029,19 @@ export default function MasterData() {
                 
                 {/* Informasi Dasar */}
                 <div className="space-y-4">
-                  <h4 className="text-sm font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">Informasi Dasar</h4>
+                  <h4 className="text-sm font-bold text-teal-600 dark:text-teal-400 uppercase tracking-wider">Informasi Dasar</h4>
                   <div className="flex gap-4">
                     <div className="w-1/4">
                       <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Kode</label>
-                      <input required value={matkulForm.kode} onChange={(e) => setMatkulForm({...matkulForm, kode: e.target.value})} type="text" className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-slate-50 dark:bg-slate-800" />
+                      <input required value={matkulForm.kode} onChange={(e) => setMatkulForm({...matkulForm, kode: e.target.value})} type="text" className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-slate-50 dark:bg-slate-800" />
                     </div>
                     <div className="w-1/4">
                       <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">SKS</label>
-                      <input required value={matkulForm.sks} onChange={(e) => setMatkulForm({...matkulForm, sks: e.target.value})} type="number" min="1" max="6" className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-slate-50 dark:bg-slate-800" />
+                      <input required value={matkulForm.sks} onChange={(e) => setMatkulForm({...matkulForm, sks: e.target.value})} type="number" min="1" max="6" className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-slate-50 dark:bg-slate-800" />
                     </div>
                     <div className="w-2/4">
                       <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Nama Mata Kuliah</label>
-                      <input required value={matkulForm.nama} onChange={(e) => setMatkulForm({...matkulForm, nama: e.target.value})} type="text" className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-slate-50 dark:bg-slate-800" />
+                      <input required value={matkulForm.nama} onChange={(e) => setMatkulForm({...matkulForm, nama: e.target.value})} type="text" className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-slate-50 dark:bg-slate-800" />
                     </div>
                   </div>
                 </div>
@@ -1051,7 +1051,7 @@ export default function MasterData() {
                 {/* Pengelolaan CPMK & Indikator */}
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <h4 className="text-sm font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">Pengelolaan CPMK & Indikator</h4>
+                    <h4 className="text-sm font-bold text-teal-600 dark:text-teal-400 uppercase tracking-wider">Pengelolaan CPMK & Indikator</h4>
                   </div>
 
                   <div className="space-y-6">
@@ -1065,7 +1065,7 @@ export default function MasterData() {
                       <div key={cpmkIndex} className="bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-white/50 dark:border-slate-600 p-5 space-y-4 relative group">
                         
                         <div className="flex gap-3 items-start">
-                          <div className="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold shrink-0 mt-1 shadow-sm">
+                          <div className="w-8 h-8 rounded-lg bg-teal-100 dark:bg-teal-900/40 text-teal-600 dark:text-teal-400 flex items-center justify-center font-bold shrink-0 mt-1 shadow-sm">
                             C{cpmkIndex + 1}
                           </div>
                           <div className="flex-1">
@@ -1075,7 +1075,7 @@ export default function MasterData() {
                               onChange={(e) => handleUpdateCpmkField(cpmkIndex, e.target.value)}
                               placeholder="Nama/Deskripsi CPMK..."
                               rows="2"
-                              className="w-full px-4 py-2.5 rounded-xl border border-white/50 dark:border-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl font-semibold text-slate-800 dark:text-slate-100 shadow-sm transition-colors"
+                              className="w-full px-4 py-2.5 rounded-xl border border-white/50 dark:border-slate-600 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl font-semibold text-slate-800 dark:text-slate-100 shadow-sm transition-colors"
                             />
                           </div>
                           <button 
@@ -1107,7 +1107,7 @@ export default function MasterData() {
                                 onChange={(e) => handleUpdateIndikatorField(cpmkIndex, indIndex, e.target.value)}
                                 type="text"
                                 placeholder="Detail indikator..."
-                                className="flex-1 px-3 py-2 rounded-lg border border-white/50 dark:border-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl text-sm shadow-sm transition-colors"
+                                className="flex-1 px-3 py-2 rounded-lg border border-white/50 dark:border-slate-600 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl text-sm shadow-sm transition-colors"
                               />
                               <button 
                                 type="button"
@@ -1123,7 +1123,7 @@ export default function MasterData() {
                           <button 
                             type="button"
                             onClick={() => handleAddIndikatorField(cpmkIndex)}
-                            className="mt-2 px-3 py-1.5 bg-white dark:bg-slate-700 border border-white/50 dark:border-slate-600 hover:border-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-400 text-slate-600 dark:text-slate-300 text-xs font-bold rounded-lg transition-colors flex items-center gap-1 shadow-sm"
+                            className="mt-2 px-3 py-1.5 bg-white dark:bg-slate-700 border border-white/50 dark:border-slate-600 hover:border-teal-400 hover:text-teal-600 dark:hover:text-teal-400 text-slate-600 dark:text-slate-300 text-xs font-bold rounded-lg transition-colors flex items-center gap-1 shadow-sm"
                           >
                             + Tambah Indikator
                           </button>
@@ -1135,7 +1135,7 @@ export default function MasterData() {
                       <button 
                         type="button"
                         onClick={handleAddCpmkField}
-                        className="px-6 py-3 bg-indigo-50 dark:bg-indigo-900/20 border-2 border-dashed border-indigo-200 dark:border-indigo-800 hover:border-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 text-sm font-bold rounded-xl transition-all flex items-center gap-2"
+                        className="px-6 py-3 bg-teal-50 dark:bg-teal-900/20 border-2 border-dashed border-teal-200 dark:border-teal-800 hover:border-teal-400 hover:bg-teal-100 dark:hover:bg-teal-900/40 text-teal-600 dark:text-teal-400 text-sm font-bold rounded-xl transition-all flex items-center gap-2"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg>
                         Tambah CPMK Baru
@@ -1149,7 +1149,7 @@ export default function MasterData() {
             
             <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/80 border-t border-slate-300 dark:border-slate-700 flex justify-end gap-3 shrink-0">
               <button type="button" onClick={() => { setShowEditMatkulModal(false); setMatkulForm({ kode: "", nama: "", sks: 3 }); }} className="px-6 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-700 border border-white/50 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-600 rounded-xl transition-colors shadow-sm">Batal</button>
-              <button form="form-edit-matkul" type="submit" className="px-8 py-2.5 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-md shadow-indigo-600/20 transition-all">Simpan Perubahan</button>
+              <button form="form-edit-matkul" type="submit" className="px-8 py-2.5 text-sm font-bold text-white bg-teal-600 hover:bg-teal-700 rounded-xl shadow-md shadow-teal-600/20 transition-all">Simpan Perubahan</button>
             </div>
           </div>
         </div>
@@ -1165,17 +1165,17 @@ export default function MasterData() {
             </div>
             <form onSubmit={handleAddCpmkSubmit}>
               <div className="p-6 space-y-4">
-                <div className="bg-indigo-50 text-indigo-700 p-4 rounded-xl text-sm mb-2 border border-indigo-100">
+                <div className="bg-teal-50 text-teal-700 p-4 rounded-xl text-sm mb-2 border border-teal-100">
                   Menambah CPMK untuk matkul: <br/><strong className="text-base">{selectedMatkul?.nama}</strong>
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-slate-800 dark:text-slate-100 mb-2">Nama CPMK</label>
-                  <textarea required value={cpmkForm.nama_cpmk} onChange={(e) => setCpmkForm({nama_cpmk: e.target.value})} rows="3" placeholder="Contoh: CPMK 1: Mampu mengidentifikasi..." className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-slate-50 dark:bg-slate-800/80"></textarea>
+                  <textarea required value={cpmkForm.nama_cpmk} onChange={(e) => setCpmkForm({nama_cpmk: e.target.value})} rows="3" placeholder="Contoh: CPMK 1: Mampu mengidentifikasi..." className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-slate-50 dark:bg-slate-800/80"></textarea>
                 </div>
               </div>
               <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/80 border-t border-white/50 dark:border-slate-600 flex justify-end gap-3">
                 <button type="button" onClick={() => setShowAddCpmkModal(false)} className="px-5 py-2.5 text-sm font-bold text-slate-500 dark:text-slate-400 hover:bg-slate-200 rounded-xl transition-colors">Batal</button>
-                <button type="submit" className="px-5 py-2.5 text-sm font-bold text-slate-800 dark:text-slate-100 bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-md transition-colors">Simpan CPMK</button>
+                <button type="submit" className="px-5 py-2.5 text-sm font-bold text-slate-800 dark:text-slate-100 bg-teal-600 hover:bg-teal-700 rounded-xl shadow-md transition-colors">Simpan CPMK</button>
               </div>
             </form>
           </div>
@@ -1192,18 +1192,18 @@ export default function MasterData() {
             </div>
             <form onSubmit={handleAddIndikatorSubmit}>
               <div className="p-6 space-y-4">
-                <div className="bg-indigo-50 text-indigo-700 p-4 rounded-xl text-sm mb-2 border border-indigo-100">
+                <div className="bg-teal-50 text-teal-700 p-4 rounded-xl text-sm mb-2 border border-teal-100">
                   Menambah indikator untuk: <br/><strong className="text-base">{selectedCPMK?.nama_cpmk}</strong>
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-slate-800 dark:text-slate-100 mb-2">Deskripsi Indikator</label>
-                  <textarea required value={indikatorForm.indikator} onChange={(e) => setIndikatorForm({indikator: e.target.value})} rows="4" placeholder="Mahasiswa mampu..." className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-slate-50 dark:bg-slate-800/80"></textarea>
+                  <textarea required value={indikatorForm.indikator} onChange={(e) => setIndikatorForm({indikator: e.target.value})} rows="4" placeholder="Mahasiswa mampu..." className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-slate-50 dark:bg-slate-800/80"></textarea>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">Indikator ini akan digunakan DPL dan Mentor saat memvalidasi logbook harian.</p>
                 </div>
               </div>
               <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/80 border-t border-white/50 dark:border-slate-600 flex justify-end gap-3">
                 <button type="button" onClick={() => setShowAddIndikatorModal(false)} className="px-5 py-2.5 text-sm font-bold text-slate-500 dark:text-slate-400 hover:bg-slate-200 rounded-xl transition-colors">Batal</button>
-                <button type="submit" className="px-5 py-2.5 text-sm font-bold text-slate-800 dark:text-slate-100 bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-md transition-colors">Simpan Indikator</button>
+                <button type="submit" className="px-5 py-2.5 text-sm font-bold text-slate-800 dark:text-slate-100 bg-teal-600 hover:bg-teal-700 rounded-xl shadow-md transition-colors">Simpan Indikator</button>
               </div>
             </form>
           </div>
@@ -1227,7 +1227,7 @@ export default function MasterData() {
                 <h4 className="font-bold text-slate-800 dark:text-slate-200">Daftar Divisi/Posisi Tersedia</h4>
                 <button 
                   onClick={() => { setPosisiForm({ id: null, nama_posisi: "", konsentrasi: "SDM", kuota: 1, deskripsi_pekerjaan: "", kriteria_kandidat: "", sistem_kerja: "WFO" }); setShowPosisiFormModal(true); }}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg text-sm shadow-sm transition-colors"
+                  className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg text-sm shadow-sm transition-colors"
                 >
                   + Tambah Posisi
                 </button>
@@ -1240,11 +1240,11 @@ export default function MasterData() {
                   posisiList.map(pos => (
                     <div key={pos._id} className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl border border-white/60 dark:border-slate-700 p-5 rounded-2xl shadow-sm relative group hover:shadow-md transition-all">
                       <div className="absolute top-4 right-4 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => { setPosisiForm({ id: pos._id, nama_posisi: pos.nama_posisi, konsentrasi: pos.konsentrasi, kuota: pos.kuota, deskripsi_pekerjaan: pos.deskripsi_pekerjaan || "", kriteria_kandidat: pos.kriteria_kandidat || "", sistem_kerja: pos.sistem_kerja || "WFO" }); setShowPosisiFormModal(true); }} className="p-1.5 bg-slate-100 hover:bg-indigo-100 text-indigo-600 rounded-md"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
+                        <button onClick={() => { setPosisiForm({ id: pos._id, nama_posisi: pos.nama_posisi, konsentrasi: pos.konsentrasi, kuota: pos.kuota, deskripsi_pekerjaan: pos.deskripsi_pekerjaan || "", kriteria_kandidat: pos.kriteria_kandidat || "", sistem_kerja: pos.sistem_kerja || "WFO" }); setShowPosisiFormModal(true); }} className="p-1.5 bg-slate-100 hover:bg-teal-100 text-teal-600 rounded-md"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
                         <button onClick={() => handleDeletePosisi(pos._id)} className="p-1.5 bg-slate-100 hover:bg-red-100 text-red-600 rounded-md"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
                       </div>
                       <h5 className="font-bold text-slate-800 dark:text-slate-100 pr-12">{pos.nama_posisi}</h5>
-                      <span className={`inline-block mt-2 px-2.5 py-1 text-xs font-bold rounded-md ${pos.sistem_kerja === 'WFH' ? 'bg-green-50 text-green-600' : pos.sistem_kerja === 'Hybrid' ? 'bg-purple-50 text-purple-600' : 'bg-teal-50 text-[#1398A5]'}`}>{pos.sistem_kerja || 'WFO'}</span>
+                      <span className={`inline-block mt-2 px-2.5 py-1 text-xs font-bold rounded-md ${pos.sistem_kerja === 'WFH' ? 'bg-teal-50 text-teal-600' : pos.sistem_kerja === 'Hybrid' ? 'bg-teal-50 text-teal-600' : 'bg-teal-50 text-teal-600'}`}>{pos.sistem_kerja || 'WFO'}</span>
                       <div className="mt-4 space-y-2 text-sm text-slate-500 dark:text-slate-400">
                         <div className="flex justify-between"><span>Konsentrasi:</span> <strong className="text-slate-700 dark:text-slate-300 text-right">{pos.konsentrasi}</strong></div>
                         <div className="flex justify-between"><span>Kuota Tersedia:</span> <strong className="text-slate-700 dark:text-slate-300">{pos.kuota} Mahasiswa</strong></div>
@@ -1272,11 +1272,11 @@ export default function MasterData() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-2">Nama Divisi / Posisi</label>
-                    <input required value={posisiForm.nama_posisi} onChange={e => setPosisiForm({...posisiForm, nama_posisi: e.target.value})} type="text" className="w-full px-4 py-2.5 rounded-xl border border-white/50 dark:border-slate-600 focus:ring-2 focus:ring-indigo-500 dark:bg-slate-700" placeholder="Contoh: Digital Marketing" />
+                    <input required value={posisiForm.nama_posisi} onChange={e => setPosisiForm({...posisiForm, nama_posisi: e.target.value})} type="text" className="w-full px-4 py-2.5 rounded-xl border border-white/50 dark:border-slate-600 focus:ring-2 focus:ring-teal-500 dark:bg-slate-700" placeholder="Contoh: Digital Marketing" />
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-2">Konsentrasi Manajemen</label>
-                    <select value={posisiForm.konsentrasi} onChange={e => setPosisiForm({...posisiForm, konsentrasi: e.target.value})} className="w-full px-4 py-2.5 rounded-xl border border-white/50 dark:border-slate-600 focus:ring-2 focus:ring-indigo-500 dark:bg-slate-700">
+                    <select value={posisiForm.konsentrasi} onChange={e => setPosisiForm({...posisiForm, konsentrasi: e.target.value})} className="w-full px-4 py-2.5 rounded-xl border border-white/50 dark:border-slate-600 focus:ring-2 focus:ring-teal-500 dark:bg-slate-700">
                       <option value="SDM">Manajemen SDM</option>
                       <option value="Keuangan">Manajemen Keuangan</option>
                       <option value="Pemasaran">Manajemen Pemasaran</option>
@@ -1288,11 +1288,11 @@ export default function MasterData() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-2">Kuota Penerimaan</label>
-                    <input required value={posisiForm.kuota} onChange={e => setPosisiForm({...posisiForm, kuota: Number(e.target.value)})} type="number" min="1" className="w-full px-4 py-2.5 rounded-xl border border-white/50 dark:border-slate-600 focus:ring-2 focus:ring-indigo-500 dark:bg-slate-700" />
+                    <input required value={posisiForm.kuota} onChange={e => setPosisiForm({...posisiForm, kuota: Number(e.target.value)})} type="number" min="1" className="w-full px-4 py-2.5 rounded-xl border border-white/50 dark:border-slate-600 focus:ring-2 focus:ring-teal-500 dark:bg-slate-700" />
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-2">Sistem Kerja</label>
-                    <select value={posisiForm.sistem_kerja} onChange={e => setPosisiForm({...posisiForm, sistem_kerja: e.target.value})} className="w-full px-4 py-2.5 rounded-xl border border-white/50 dark:border-slate-600 focus:ring-2 focus:ring-indigo-500 dark:bg-slate-700">
+                    <select value={posisiForm.sistem_kerja} onChange={e => setPosisiForm({...posisiForm, sistem_kerja: e.target.value})} className="w-full px-4 py-2.5 rounded-xl border border-white/50 dark:border-slate-600 focus:ring-2 focus:ring-teal-500 dark:bg-slate-700">
                       <option value="WFO">WFO (Work From Office)</option>
                       <option value="WFH">WFH (Work From Home)</option>
                       <option value="Hybrid">Hybrid</option>
@@ -1302,19 +1302,19 @@ export default function MasterData() {
 
                 <div>
                   <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-2">Deskripsi Pekerjaan</label>
-                  <textarea value={posisiForm.deskripsi_pekerjaan} onChange={e => setPosisiForm({...posisiForm, deskripsi_pekerjaan: e.target.value})} rows="3" className="w-full px-4 py-2.5 rounded-xl border border-white/50 dark:border-slate-600 focus:ring-2 focus:ring-indigo-500 dark:bg-slate-700" placeholder="Uraikan tugas harian divisi ini..."></textarea>
+                  <textarea value={posisiForm.deskripsi_pekerjaan} onChange={e => setPosisiForm({...posisiForm, deskripsi_pekerjaan: e.target.value})} rows="3" className="w-full px-4 py-2.5 rounded-xl border border-white/50 dark:border-slate-600 focus:ring-2 focus:ring-teal-500 dark:bg-slate-700" placeholder="Uraikan tugas harian divisi ini..."></textarea>
                 </div>
 
                 <div>
                   <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-2">Kriteria Kandidat</label>
-                  <textarea value={posisiForm.kriteria_kandidat} onChange={e => setPosisiForm({...posisiForm, kriteria_kandidat: e.target.value})} rows="3" className="w-full px-4 py-2.5 rounded-xl border border-white/50 dark:border-slate-600 focus:ring-2 focus:ring-indigo-500 dark:bg-slate-700" placeholder="Syarat: Menguasai Excel, Analitis..."></textarea>
+                  <textarea value={posisiForm.kriteria_kandidat} onChange={e => setPosisiForm({...posisiForm, kriteria_kandidat: e.target.value})} rows="3" className="w-full px-4 py-2.5 rounded-xl border border-white/50 dark:border-slate-600 focus:ring-2 focus:ring-teal-500 dark:bg-slate-700" placeholder="Syarat: Menguasai Excel, Analitis..."></textarea>
                 </div>
               </form>
             </div>
             
             <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/80 border-t border-white/60 dark:border-slate-700 flex justify-end gap-3">
               <button onClick={() => setShowPosisiFormModal(false)} className="px-5 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-200 rounded-xl transition-colors">Batal</button>
-              <button type="submit" form="posisiForm" className="px-5 py-2.5 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-md transition-colors">Simpan Posisi</button>
+              <button type="submit" form="posisiForm" className="px-5 py-2.5 text-sm font-bold text-white bg-teal-600 hover:bg-teal-700 rounded-xl shadow-md transition-colors">Simpan Posisi</button>
             </div>
           </div>
         </div>
@@ -1333,36 +1333,36 @@ export default function MasterData() {
             <form onSubmit={(e) => handleMentorSubmit(e, showEditMentorModal)} className="p-8 bg-white/20 dark:bg-slate-900/20/50 space-y-4">
               <div>
                 <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">ID / Username</label>
-                <input required value={mentorForm.nidn} onChange={(e) => setMentorForm({...mentorForm, nidn: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1398A5]" placeholder="Masukkan ID atau username" />
+                <input required value={mentorForm.nidn} onChange={(e) => setMentorForm({...mentorForm, nidn: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-600" placeholder="Masukkan ID atau username" />
               </div>
               <div>
                 <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Nama Lengkap</label>
-                <input required value={mentorForm.nama_lengkap} onChange={(e) => setMentorForm({...mentorForm, nama_lengkap: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1398A5]" placeholder="Nama Lengkap Mentor" />
+                <input required value={mentorForm.nama_lengkap} onChange={(e) => setMentorForm({...mentorForm, nama_lengkap: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-600" placeholder="Nama Lengkap Mentor" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Instansi / Lokasi</label>
-                  <input required value={mentorForm.lokasi} onChange={(e) => setMentorForm({...mentorForm, lokasi: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1398A5]" placeholder="Contoh: PT Telkom" />
+                  <input required value={mentorForm.lokasi} onChange={(e) => setMentorForm({...mentorForm, lokasi: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-600" placeholder="Contoh: PT Telkom" />
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Posisi / Devisi</label>
-                  <input required value={mentorForm.devisi} onChange={(e) => setMentorForm({...mentorForm, devisi: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1398A5]" placeholder="Contoh: HRD" />
+                  <input required value={mentorForm.devisi} onChange={(e) => setMentorForm({...mentorForm, devisi: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-600" placeholder="Contoh: HRD" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Nomor HP</label>
-                  <input required value={mentorForm.nomor_hp} onChange={(e) => setMentorForm({...mentorForm, nomor_hp: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1398A5]" placeholder="0812..." />
+                  <input required value={mentorForm.nomor_hp} onChange={(e) => setMentorForm({...mentorForm, nomor_hp: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-600" placeholder="0812..." />
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Email</label>
-                  <input type="email" required value={mentorForm.email} onChange={(e) => setMentorForm({...mentorForm, email: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1398A5]" placeholder="Email Mentor" />
+                  <input type="email" required value={mentorForm.email} onChange={(e) => setMentorForm({...mentorForm, email: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-600" placeholder="Email Mentor" />
                 </div>
               </div>
               
               <div className="flex gap-3 pt-4">
                 <button type="button" onClick={() => { setShowAddMentorModal(false); setShowEditMentorModal(false); }} className="flex-1 px-4 py-3 rounded-xl font-bold bg-white/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-all border border-slate-200 dark:border-slate-700 shadow-sm">Batal</button>
-                <button type="submit" className="flex-1 px-4 py-3 rounded-xl font-bold bg-[#1398A5] hover:bg-teal-700 text-white transition-all shadow-lg shadow-teal-500/30">Simpan Mentor</button>
+                <button type="submit" className="flex-1 px-4 py-3 rounded-xl font-bold bg-teal-600 hover:bg-teal-700 text-white transition-all shadow-lg shadow-teal-500/30">Simpan Mentor</button>
               </div>
             </form>
           </div>

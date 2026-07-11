@@ -101,7 +101,7 @@ export default function DaftarProker() {
       {!pokja || pokja.status_pokja === 'draft' || pokja.status_pokja === 'menunggu_persetujuan_lppm' ? (
         <div className="max-w-2xl mx-auto mt-10">
           <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-10 rounded-3xl border border-white/60 dark:border-slate-700 shadow-sm text-center">
-            <div className="w-20 h-20 bg-yellow-50 text-yellow-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">🔒</div>
+            <div className="w-20 h-20 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">🔒</div>
             <h2 className="text-2xl font-black mb-2 text-slate-800 dark:text-white">Akses Terkunci</h2>
             <p className="text-slate-600 dark:text-slate-400">
               Pengisian Program Kerja (Proker) baru bisa dilakukan **setelah** POKJA Anda disetujui oleh LPPM dan mendapatkan Dosen Pembimbing Lapangan (DPL).
@@ -127,7 +127,7 @@ export default function DaftarProker() {
               });
               setIsModalOpen(true);
             }}
-            className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md transition-all flex items-center gap-2"
+            className="px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl shadow-md transition-all flex items-center gap-2"
           >
             <Plus className="w-5 h-5" /> Tambah Proker Baru
           </button>
@@ -145,7 +145,7 @@ export default function DaftarProker() {
               <div key={p._id} className="p-6 bg-white/60 dark:bg-slate-800/60 rounded-2xl border border-white/80 dark:border-slate-600 shadow-sm hover:shadow-md transition-all flex flex-col">
                 <div className="flex items-start justify-between mb-4 gap-4">
                   <div className="flex items-center gap-4">
-                    <span className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-400 flex items-center justify-center font-black text-lg shrink-0">{idx + 1}</span>
+                    <span className="w-10 h-10 rounded-full bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-400 flex items-center justify-center font-black text-lg shrink-0">{idx + 1}</span>
                     <div>
                       <h3 className="font-bold text-lg text-slate-800 dark:text-white leading-tight">{p.judul_proker}</h3>
                       <div className="flex items-center gap-2 mt-1.5 flex-wrap">
@@ -166,23 +166,23 @@ export default function DaftarProker() {
                   
                   <p className="text-sm text-slate-600 dark:text-slate-300 mb-4 leading-relaxed flex-1">{p.deskripsi}</p>
                   
-                  <div className="bg-emerald-50 dark:bg-emerald-900/10 p-3 rounded-xl border border-emerald-100 dark:border-emerald-800/30 mb-4">
-                    <p className="text-[11px] font-bold text-emerald-800 dark:text-emerald-500 mb-1 uppercase tracking-wider">Target Capaian</p>
-                    <p className="text-sm text-emerald-700 dark:text-emerald-300 font-medium">{p.target_dampak}</p>
+                  <div className="bg-teal-50 dark:bg-teal-900/10 p-3 rounded-xl border border-teal-100 dark:border-teal-800/30 mb-4">
+                    <p className="text-[11px] font-bold text-teal-800 dark:text-teal-500 mb-1 uppercase tracking-wider">Target Capaian</p>
+                    <p className="text-sm text-teal-700 dark:text-teal-300 font-medium">{p.target_dampak}</p>
                   </div>
 
                   {p.status === 'revisi' && p.catatan_revisi && (
-                    <div className="bg-rose-50 dark:bg-rose-900/10 p-3 rounded-xl border border-rose-200 dark:border-rose-800/30 mb-4">
-                      <p className="text-[11px] font-bold text-rose-800 dark:text-rose-500 mb-1 uppercase tracking-wider">Catatan Revisi DPL</p>
-                      <p className="text-sm text-rose-700 dark:text-rose-300 font-medium">{p.catatan_revisi}</p>
+                    <div className="bg-amber-50 dark:bg-amber-900/10 p-3 rounded-xl border border-amber-200 dark:border-amber-800/30 mb-4">
+                      <p className="text-[11px] font-bold text-amber-800 dark:text-amber-500 mb-1 uppercase tracking-wider">Catatan Revisi DPL</p>
+                      <p className="text-sm text-amber-700 dark:text-amber-300 font-medium">{p.catatan_revisi}</p>
                     </div>
                   )}
 
                   <div className="flex flex-wrap items-center justify-between gap-4 mt-auto pt-4 border-t border-slate-100 dark:border-slate-700">
                     <div className="flex items-center gap-3">
                       <span className={`text-[10px] px-2.5 py-1.5 rounded-lg font-bold border uppercase tracking-wider ${
-                        p.status === 'disetujui_dpl' ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:border-emerald-800' :
-                        p.status === 'revisi' ? 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-900/30 dark:border-rose-800' :
+                        p.status === 'disetujui_dpl' ? 'bg-teal-50 text-teal-700 border-teal-200 dark:bg-teal-900/30 dark:border-teal-800' :
+                        p.status === 'revisi' ? 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:border-amber-800' :
                         'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:border-amber-800'
                       }`}>
                         {p.status === 'disetujui_dpl' ? 'Disetujui DPL' : p.status === 'revisi' ? 'Revisi DPL' : 'Menunggu DPL'}
@@ -204,8 +204,8 @@ export default function DaftarProker() {
                         }}
                         className={`text-xs rounded-lg border px-3 py-1.5 font-bold focus:ring-2 focus:outline-none ${
                           p.status !== 'disetujui_dpl' ? 'bg-slate-50 text-slate-400 border-slate-200 cursor-not-allowed dark:bg-slate-800/50 dark:border-slate-700 dark:text-slate-500' :
-                          (p.status_pelaksanaan === 'Selesai' ? 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/40 dark:text-emerald-400' : 
-                          p.status_pelaksanaan === 'Sedang Berjalan' ? 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/40 dark:text-blue-400' : 
+                          (p.status_pelaksanaan === 'Selesai' ? 'bg-teal-100 text-teal-700 border-teal-200 dark:bg-teal-900/40 dark:text-teal-400' : 
+                          p.status_pelaksanaan === 'Sedang Berjalan' ? 'bg-teal-100 text-teal-700 border-teal-200 dark:bg-teal-900/40 dark:text-teal-400' : 
                           'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-300')
                         }`}
                       >
@@ -231,7 +231,7 @@ export default function DaftarProker() {
                             });
                             setIsModalOpen(true);
                           }}
-                          className="px-4 py-1.5 text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-lg hover:bg-indigo-100 transition-colors dark:bg-indigo-900/30 dark:text-indigo-400 dark:border-indigo-800"
+                          className="px-4 py-1.5 text-xs font-bold text-teal-700 bg-teal-50 border border-teal-200 rounded-lg hover:bg-teal-100 transition-colors dark:bg-teal-900/30 dark:text-teal-400 dark:border-teal-800"
                         >
                           Edit
                         </button>
@@ -246,7 +246,7 @@ export default function DaftarProker() {
                               }
                             }
                           }}
-                          className="px-4 py-1.5 text-xs font-bold text-rose-700 bg-rose-50 border border-rose-200 rounded-lg hover:bg-rose-100 transition-colors dark:bg-rose-900/30 dark:text-rose-400 dark:border-rose-800"
+                          className="px-4 py-1.5 text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-lg hover:bg-amber-100 transition-colors dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800"
                         >
                           Hapus
                         </button>
@@ -284,7 +284,7 @@ export default function DaftarProker() {
                     required
                     value={formData.jenis_proker}
                     onChange={(e) => setFormData({...formData, jenis_proker: e.target.value})}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-teal-500 outline-none transition-all"
                   >
                     <option value="Utama">Utama (Core Project)</option>
                     <option value="Pendukung">Pendukung (Opsional)</option>
@@ -296,7 +296,7 @@ export default function DaftarProker() {
                     required
                     value={formData.pic_id}
                     onChange={(e) => setFormData({...formData, pic_id: e.target.value})}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-teal-500 outline-none transition-all"
                   >
                     <option value="" disabled>Pilih Anggota</option>
                     {pokja?.ketua_id && <option value={pokja.ketua_id._id}>{pokja.ketua_id.nama_lengkap} (Ketua)</option>}
@@ -317,7 +317,7 @@ export default function DaftarProker() {
                   value={formData.judul_proker}
                   onChange={(e) => setFormData({...formData, judul_proker: e.target.value})}
                   placeholder="Misal: Revitalisasi Tata Kelola BUMDes"
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-teal-500 outline-none transition-all"
                 />
               </div>
               
@@ -329,7 +329,7 @@ export default function DaftarProker() {
                     type="date" 
                     value={formData.tanggal_mulai}
                     onChange={(e) => setFormData({...formData, tanggal_mulai: e.target.value})}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-teal-500 outline-none transition-all"
                   />
                 </div>
                 <div>
@@ -339,7 +339,7 @@ export default function DaftarProker() {
                     type="date" 
                     value={formData.tanggal_selesai}
                     onChange={(e) => setFormData({...formData, tanggal_selesai: e.target.value})}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-teal-500 outline-none transition-all"
                   />
                 </div>
               </div>
@@ -351,7 +351,7 @@ export default function DaftarProker() {
                   rows={3}
                   value={formData.deskripsi}
                   onChange={(e) => setFormData({...formData, deskripsi: e.target.value})}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-sm"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-teal-500 outline-none transition-all text-sm"
                 />
               </div>
               <div>
@@ -361,7 +361,7 @@ export default function DaftarProker() {
                   rows={2}
                   value={formData.target_dampak}
                   onChange={(e) => setFormData({...formData, target_dampak: e.target.value})}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-sm"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-teal-500 outline-none transition-all text-sm"
                 />
               </div>
               <div className="flex gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
@@ -375,7 +375,7 @@ export default function DaftarProker() {
                 <button 
                   type="submit"
                   disabled={submitting}
-                  className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl disabled:opacity-50 transition-colors shadow-md"
+                  className="flex-1 py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl disabled:opacity-50 transition-colors shadow-md"
                 >
                   {submitting ? 'Menyimpan...' : (editingId ? 'Simpan Perubahan' : 'Tambahkan Proker')}
                 </button>

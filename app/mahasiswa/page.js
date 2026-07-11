@@ -148,7 +148,7 @@ function MahasiswaDashboardContent() {
     return (
       <DashboardLayout title="Ruang POKJA KKL Plus" notifications={<></>}>
         <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-8 rounded-3xl shadow-sm text-center max-w-2xl mx-auto mt-10">
-          <div className="w-20 h-20 bg-indigo-100 dark:bg-indigo-900/50 rounded-full flex items-center justify-center mx-auto mb-6 text-indigo-600 text-3xl">
+          <div className="w-20 h-20 bg-teal-100 dark:bg-teal-900/50 rounded-full flex items-center justify-center mx-auto mb-6 text-teal-600 text-3xl">
             🤝
           </div>
           <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-3">Anda Belum Tergabung di POKJA</h2>
@@ -157,7 +157,7 @@ function MahasiswaDashboardContent() {
           </p>
           <button 
             onClick={() => setShowCreateModal(true)}
-            className="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 transition-all"
+            className="px-8 py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl shadow-lg shadow-teal-200 transition-all"
           >
             Buat POKJA Baru
           </button>
@@ -178,7 +178,7 @@ function MahasiswaDashboardContent() {
                 />
                 <div className="flex gap-3 justify-end">
                   <button type="button" onClick={() => setShowCreateModal(false)} className="px-4 py-2 font-bold text-slate-500">Batal</button>
-                  <button type="submit" className="px-6 py-2 bg-indigo-600 text-white font-bold rounded-xl">Buat POKJA</button>
+                  <button type="submit" className="px-6 py-2 bg-teal-600 text-white font-bold rounded-xl">Buat POKJA</button>
                 </div>
               </form>
             </div>
@@ -203,7 +203,7 @@ function MahasiswaDashboardContent() {
               <div>
                 <h2 className="text-2xl font-black text-slate-800 dark:text-white flex items-center gap-2">
                   {pokja.nama_pokja} 
-                  <span className="text-sm px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full font-bold uppercase tracking-wider">
+                  <span className="text-sm px-3 py-1 bg-teal-100 text-teal-700 rounded-full font-bold uppercase tracking-wider">
                     {pokja.status_pokja === 'disetujui_lppm' ? 'Persiapan' : pokja.status_pokja.replace(/_/g, ' ')}
                   </span>
                 </h2>
@@ -218,7 +218,7 @@ function MahasiswaDashboardContent() {
                   <p className="text-sm text-amber-700">Anda diundang untuk bergabung di kelompok ini.</p>
                 </div>
                 <div className="flex gap-2">
-                  <button onClick={() => handleRespondInvite('ditolak')} className="px-4 py-2 text-rose-600 font-bold bg-white rounded-lg">Tolak</button>
+                  <button onClick={() => handleRespondInvite('ditolak')} className="px-4 py-2 text-amber-600 font-bold bg-white rounded-lg">Tolak</button>
                   <button onClick={() => handleRespondInvite('bergabung')} className="px-4 py-2 bg-amber-600 text-white font-bold rounded-lg shadow">Terima Undangan</button>
                 </div>
               </div>
@@ -230,7 +230,7 @@ function MahasiswaDashboardContent() {
                 <div className="p-6 bg-white/20 dark:bg-slate-900/20 rounded-2xl border border-slate-200 border-dashed text-center">
                   <p className="text-slate-500 mb-4">Lokasi instansi belum dipilih.</p>
                   {isKetua && (
-                    <button onClick={() => router.push('/mahasiswa/pengajuan')} className="px-6 py-2 bg-indigo-600 text-white font-bold rounded-xl shadow-sm">Pilih Lokasi Mitra</button>
+                    <button onClick={() => router.push('/mahasiswa/pengajuan')} className="px-6 py-2 bg-teal-600 text-white font-bold rounded-xl shadow-sm">Pilih Lokasi Mitra</button>
                   )}
                 </div>
               </div>
@@ -239,9 +239,9 @@ function MahasiswaDashboardContent() {
             {/* Kelola Dokumen Section */}
             {pokja.mitra_id && ['disetujui_lppm', 'berjalan', 'selesai'].includes(pokja.status_pokja) && (
               <div className="mt-6">
-                <div className="flex items-center justify-between p-5 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-900/30 dark:to-blue-900/20 rounded-2xl border border-indigo-100 dark:border-indigo-800 shadow-sm">
+                <div className="flex items-center justify-between p-5 bg-gradient-to-r from-teal-50 to-teal-50 dark:from-teal-900/30 dark:to-teal-900/20 rounded-2xl border border-teal-100 dark:border-teal-800 shadow-sm">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center shadow-sm text-indigo-600">
+                    <div className="w-12 h-12 bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center shadow-sm text-teal-600">
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                     </div>
                     <div>
@@ -249,7 +249,7 @@ function MahasiswaDashboardContent() {
                       <p className="text-sm text-slate-500">Kelola Surat Pengantar, LOA, dan Sertifikat di sini.</p>
                     </div>
                   </div>
-                  <button onClick={() => router.push('/mahasiswa/pengajuan')} className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-sm transition-colors whitespace-nowrap">
+                  <button onClick={() => router.push('/mahasiswa/pengajuan')} className="px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl shadow-sm transition-colors whitespace-nowrap">
                     Buka Dokumen
                   </button>
                 </div>
@@ -258,8 +258,8 @@ function MahasiswaDashboardContent() {
 
             {pokja.status_pokja === 'berjalan' && (
               <div className="mt-6 flex gap-4">
-                <button onClick={() => router.push('/mahasiswa/proker')} className="flex-1 py-3 bg-emerald-600 text-white font-bold rounded-xl shadow-sm text-center">Rancang Proker</button>
-                <button onClick={() => router.push('/mahasiswa/logbook')} className="flex-1 py-3 bg-indigo-600 text-white font-bold rounded-xl shadow-sm text-center">Isi Logbook Harian</button>
+                <button onClick={() => router.push('/mahasiswa/proker')} className="flex-1 py-3 bg-teal-600 text-white font-bold rounded-xl shadow-sm text-center">Rancang Proker</button>
+                <button onClick={() => router.push('/mahasiswa/logbook')} className="flex-1 py-3 bg-teal-600 text-white font-bold rounded-xl shadow-sm text-center">Isi Logbook Harian</button>
               </div>
             )}
 
@@ -274,7 +274,7 @@ function MahasiswaDashboardContent() {
                       <h4 className="font-bold text-slate-800 dark:text-white flex items-center gap-2">
                         {pokja.mitra_id?.nama_instansi}
                         {pokja.mitra_id?.is_lengkap ? (
-                          <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[10px] uppercase font-black tracking-wider rounded-md">Profil Lengkap</span>
+                          <span className="px-2 py-0.5 bg-teal-100 text-teal-700 text-[10px] uppercase font-black tracking-wider rounded-md">Profil Lengkap</span>
                         ) : (
                           <span className="px-2 py-0.5 bg-amber-100 text-amber-700 text-[10px] uppercase font-black tracking-wider rounded-md">Profil Belum Lengkap</span>
                         )}
@@ -284,10 +284,10 @@ function MahasiswaDashboardContent() {
                   </div>
                   
                   {isKetua && !pokja.mitra_id?.is_lengkap && (
-                    <div className="mt-2 p-4 bg-indigo-50 border border-indigo-100 rounded-xl flex items-center justify-between">
+                    <div className="mt-2 p-4 bg-teal-50 border border-teal-100 rounded-xl flex items-center justify-between">
                       <div>
-                        <h5 className="font-bold text-indigo-900 text-sm">Lengkapi Profil Mitra</h5>
-                        <p className="text-xs text-indigo-700 mt-1">Anda wajib melengkapi detail lokasi instansi untuk memulai KKL Plus.</p>
+                        <h5 className="font-bold text-teal-900 text-sm">Lengkapi Profil Mitra</h5>
+                        <p className="text-xs text-teal-700 mt-1">Anda wajib melengkapi detail lokasi instansi untuk memulai KKL Plus.</p>
                       </div>
                       <button 
                         onClick={() => {
@@ -305,7 +305,7 @@ function MahasiswaDashboardContent() {
                           });
                           setShowMitraProfileModal(true);
                         }} 
-                        className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg text-sm shadow-sm transition-colors"
+                        className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg text-sm shadow-sm transition-colors"
                       >
                         Lengkapi Sekarang
                       </button>
@@ -353,7 +353,7 @@ function MahasiswaDashboardContent() {
                             </div>
                           )}
                           {isKetua && (
-                            <label className="cursor-pointer text-[10px] bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded-lg font-bold">
+                            <label className="cursor-pointer text-[10px] bg-teal-50 hover:bg-teal-100 text-teal-700 px-3 py-1.5 rounded-lg font-bold">
                               Upload
                               <input type="file" className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, 'foto_kantor_desa')} />
                             </label>
@@ -369,7 +369,7 @@ function MahasiswaDashboardContent() {
                             </div>
                           )}
                           {isKetua && (
-                            <label className="cursor-pointer text-[10px] bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded-lg font-bold">
+                            <label className="cursor-pointer text-[10px] bg-teal-50 hover:bg-teal-100 text-teal-700 px-3 py-1.5 rounded-lg font-bold">
                               Upload
                               <input type="file" className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, 'foto_kantor_bumdes')} />
                             </label>
@@ -385,7 +385,7 @@ function MahasiswaDashboardContent() {
                             </div>
                           )}
                           {isKetua && (
-                            <label className="cursor-pointer text-[10px] bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded-lg font-bold">
+                            <label className="cursor-pointer text-[10px] bg-teal-50 hover:bg-teal-100 text-teal-700 px-3 py-1.5 rounded-lg font-bold">
                               Upload
                               <input type="file" className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, 'logo_mitra')} />
                             </label>
@@ -412,14 +412,14 @@ function MahasiswaDashboardContent() {
             
             <div className="space-y-3">
               {/* Ketua */}
-              <div className="flex items-center justify-between p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl">
+              <div className="flex items-center justify-between p-3 bg-teal-50 dark:bg-teal-900/20 rounded-xl">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-indigo-200 flex items-center justify-center text-sm font-bold text-indigo-700">
+                  <div className="w-8 h-8 rounded-full bg-teal-200 flex items-center justify-center text-sm font-bold text-teal-700">
                     {pokja.ketua_id?.nama_lengkap?.charAt(0) || 'K'}
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-indigo-900 dark:text-indigo-100">{pokja.ketua_id?.nama_lengkap}</p>
-                    <p className="text-[10px] uppercase font-black tracking-wider text-indigo-500">Ketua</p>
+                    <p className="text-sm font-bold text-teal-900 dark:text-teal-100">{pokja.ketua_id?.nama_lengkap}</p>
+                    <p className="text-[10px] uppercase font-black tracking-wider text-teal-500">Ketua</p>
                   </div>
                 </div>
               </div>
@@ -467,8 +467,8 @@ function MahasiswaDashboardContent() {
                 <button onClick={() => setShowMitraProfileModal(false)} className="text-slate-500 hover:text-red-500 text-2xl font-bold">&times;</button>
               </div>
               
-              <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-4 mb-6">
-                <p className="text-sm text-indigo-800">
+              <div className="bg-teal-50 border border-teal-100 rounded-xl p-4 mb-6">
+                <p className="text-sm text-teal-800">
                   <strong>Penting:</strong> Data profil ini bersifat krusial untuk persetujuan LPPM. Pastikan Anda mengisi alamat, kontak, dan status kerja sama dengan sebenar-benarnya sesuai hasil observasi.
                 </p>
               </div>
@@ -497,7 +497,7 @@ function MahasiswaDashboardContent() {
                     <div className="flex gap-2">
                       <input type="text" value={mitraProfileForm.link_maps} onChange={e => setMitraProfileForm({...mitraProfileForm, link_maps: e.target.value})} className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-indigo-500" placeholder="https://maps.app.goo.gl/..." />
                       {mitraProfileForm.link_maps && (
-                        <a href={mitraProfileForm.link_maps.startsWith('http') ? mitraProfileForm.link_maps : `https://${mitraProfileForm.link_maps}`} target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-blue-100 text-blue-700 hover:bg-blue-200 font-bold rounded-xl whitespace-nowrap flex items-center justify-center">
+                        <a href={mitraProfileForm.link_maps.startsWith('http') ? mitraProfileForm.link_maps : `https://${mitraProfileForm.link_maps}`} target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-teal-100 text-teal-700 hover:bg-teal-200 font-bold rounded-xl whitespace-nowrap flex items-center justify-center">
                           Buka Maps
                         </a>
                       )}
@@ -551,7 +551,7 @@ function MahasiswaDashboardContent() {
 
                 <div className="flex gap-3 justify-end pt-4 border-t">
                   <button type="button" onClick={() => setShowMitraProfileModal(false)} className="px-6 py-2 font-bold text-slate-500">Batal</button>
-                  <button type="submit" className="px-8 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg">Simpan & Lengkapi</button>
+                  <button type="submit" className="px-8 py-2 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl shadow-lg">Simpan & Lengkapi</button>
                 </div>
               </form>
             </div>

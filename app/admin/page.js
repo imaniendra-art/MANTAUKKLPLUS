@@ -61,7 +61,7 @@ export default function AdminDashboard() {
 
           <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-5 rounded-2xl border border-white/60 dark:border-slate-700 shadow-sm flex flex-col justify-center">
             <p className="text-sm font-semibold text-slate-600 dark:text-slate-400">POKJA Berjalan / Disetujui</p>
-            <p className="text-3xl font-black text-[#1398A5] dark:text-teal-400 mt-2 drop-shadow-sm">{stats.posisiTerisi}</p>
+            <p className="text-3xl font-black text-teal-600 dark:text-teal-400 mt-2 drop-shadow-sm">{stats.posisiTerisi}</p>
           </div>
         </div>
       </div>

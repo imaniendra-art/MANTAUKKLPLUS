@@ -17,19 +17,19 @@ export default function ModalDetailLowongan({ isOpen, onClose, mitra }) {
 
   const getBadgeColor = (skema) => {
     switch(skema?.toLowerCase()) {
-      case 'corporate': return 'bg-blue-100 text-blue-700';
+      case 'corporate': return 'bg-teal-100 text-teal-700';
       case 'pemerintahan': return 'bg-amber-100 text-amber-700';
-      case 'wirausaha': return 'bg-emerald-100 text-emerald-700';
+      case 'wirausaha': return 'bg-teal-100 text-teal-700';
       default: return 'bg-slate-100 text-slate-700';
     }
   };
 
   const getKonsentrasiColor = (konsentrasi) => {
     switch(konsentrasi?.toLowerCase()) {
-      case 'sdm': return 'bg-purple-100 text-purple-700';
-      case 'keuangan': return 'bg-emerald-100 text-emerald-700';
-      case 'pemasaran': return 'bg-orange-100 text-orange-700';
-      case 'pengembangan bisnis': return 'bg-blue-100 text-blue-700';
+      case 'sdm': return 'bg-teal-100 text-teal-700';
+      case 'keuangan': return 'bg-teal-100 text-teal-700';
+      case 'pemasaran': return 'bg-amber-100 text-amber-700';
+      case 'pengembangan bisnis': return 'bg-teal-100 text-teal-700';
       default: return 'bg-slate-100 text-slate-700';
     }
   };
@@ -47,7 +47,7 @@ export default function ModalDetailLowongan({ isOpen, onClose, mitra }) {
         {/* Header */}
         <div className="px-6 py-6 border-b border-slate-100 bg-slate-50/80 flex justify-between items-start sticky top-0 z-10 backdrop-blur-md">
           <div className="flex gap-5 items-start pr-8">
-            <div className="w-16 h-16 shrink-0 bg-gradient-to-br from-indigo-600 to-blue-700 text-white rounded-2xl flex items-center justify-center font-extrabold text-2xl shadow-[0_10px_20px_-10px_rgba(79,70,229,0.5)] border border-indigo-500/20">
+            <div className="w-16 h-16 shrink-0 bg-gradient-to-br from-teal-600 to-teal-700 text-white rounded-2xl flex items-center justify-center font-extrabold text-2xl shadow-[0_10px_20px_-10px_rgba(79,70,229,0.5)] border border-teal-500/20">
               {mitra.nama_instansi.substring(0, 2).toUpperCase()}
             </div>
             <div>
@@ -76,7 +76,7 @@ export default function ModalDetailLowongan({ isOpen, onClose, mitra }) {
           {/* Section 1: Profil */}
           <section>
             <h3 className="text-[17px] font-extrabold text-slate-900 mb-4 flex items-center gap-2">
-              <Building size={20} className="text-indigo-600" />
+              <Building size={20} className="text-teal-600" />
               Tentang Instansi / Perusahaan
             </h3>
             <div className="text-slate-600 text-[15px] leading-relaxed bg-slate-50/50 p-5 rounded-2xl border border-slate-100">
@@ -91,17 +91,17 @@ export default function ModalDetailLowongan({ isOpen, onClose, mitra }) {
           {/* Section 2: Posisi */}
           <section>
             <h3 className="text-[17px] font-extrabold text-slate-900 mb-5 flex items-center gap-2">
-              <Briefcase size={20} className="text-indigo-600" />
+              <Briefcase size={20} className="text-teal-600" />
               Posisi & Lowongan Tersedia
             </h3>
             
             {mitra.posisi_list?.length > 0 ? (
               <div className="space-y-5">
                 {mitra.posisi_list.map((pos) => (
-                  <div key={pos._id} className="border border-slate-200 rounded-3xl p-6 hover:border-indigo-300 hover:shadow-[0_10px_30px_-15px_rgba(79,70,229,0.2)] transition-all duration-300 group bg-white">
+                  <div key={pos._id} className="border border-slate-200 rounded-3xl p-6 hover:border-teal-300 hover:shadow-[0_10px_30px_-15px_rgba(79,70,229,0.2)] transition-all duration-300 group bg-white">
                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-5">
                       <div>
-                        <h4 className="text-lg font-extrabold text-slate-900 group-hover:text-indigo-600 transition-colors leading-tight">{pos.nama_posisi}</h4>
+                        <h4 className="text-lg font-extrabold text-slate-900 group-hover:text-teal-600 transition-colors leading-tight">{pos.nama_posisi}</h4>
                         <div className="flex flex-wrap gap-2 mt-2.5">
                           <span className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider ${getKonsentrasiColor(pos.konsentrasi)}`}>
                             {pos.konsentrasi || 'Umum'}
@@ -111,8 +111,8 @@ export default function ModalDetailLowongan({ isOpen, onClose, mitra }) {
                           </span>
                         </div>
                       </div>
-                      <div className="shrink-0 flex items-center gap-1.5 px-3.5 py-2 bg-indigo-50 text-indigo-700 rounded-xl border border-indigo-100 font-extrabold text-sm shadow-sm">
-                        <Users size={16} className="text-indigo-500" />
+                      <div className="shrink-0 flex items-center gap-1.5 px-3.5 py-2 bg-teal-50 text-teal-700 rounded-xl border border-teal-100 font-extrabold text-sm shadow-sm">
+                        <Users size={16} className="text-teal-500" />
                         {pos.kuota || 0} Slot Tersedia
                       </div>
                     </div>
@@ -128,7 +128,7 @@ export default function ModalDetailLowongan({ isOpen, onClose, mitra }) {
                         <h5 className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-1.5">Kriteria Kandidat</h5>
                         <div className="text-[14px] text-slate-600 leading-relaxed bg-slate-50 p-4 rounded-xl">
                           {pos.kriteria_kandidat ? (
-                            <div className="whitespace-pre-line pl-2 border-l-2 border-indigo-200">{pos.kriteria_kandidat}</div>
+                            <div className="whitespace-pre-line pl-2 border-l-2 border-teal-200">{pos.kriteria_kandidat}</div>
                           ) : (
                             <span className="italic text-slate-400">Kriteria belum tersedia.</span>
                           )}
@@ -146,7 +146,7 @@ export default function ModalDetailLowongan({ isOpen, onClose, mitra }) {
                             // Redirect ke halaman login / pengajuan
                             window.location.href = '/login';
                           }}
-                          className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-bold text-sm transition-all shadow-md shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-0.5 flex items-center gap-2"
+                          className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-teal-600 to-teal-600 hover:from-teal-700 hover:to-teal-700 text-white font-bold text-sm transition-all shadow-md shadow-teal-500/30 hover:shadow-teal-500/50 hover:-translate-y-0.5 flex items-center gap-2"
                         >
                           Daftar Posisi Ini
                         </button>

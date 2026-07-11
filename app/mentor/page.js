@@ -40,24 +40,24 @@ export default function MentorDashboard() {
       )}
 
       {stats.pendingLogbooks > 0 ? (
-        <div className="relative bg-gradient-to-br from-cyan-500/10 to-blue-500/5 p-6 rounded-2xl border border-cyan-400/20 flex items-center gap-5 overflow-hidden">
+        <div className="relative bg-gradient-to-br from-teal-500/10 to-teal-500/5 p-6 rounded-2xl border border-teal-400/20 flex items-center gap-5 overflow-hidden">
           <div className="absolute -right-2 -bottom-2 text-7xl opacity-[0.06] pointer-events-none">📋</div>
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-500 text-white shadow-lg shadow-cyan-500/20 flex items-center justify-center text-2xl shrink-0">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-teal-400 to-teal-500 text-white shadow-lg shadow-teal-500/20 flex items-center justify-center text-2xl shrink-0">
             <FileSignature className="w-4 h-4 inline-block mr-1.5 -mt-0.5" />
           </div>
           <div className="relative z-10">
-            <p className="text-sm font-semibold text-cyan-300">Logbook Menunggu Validasi</p>
-            <p className="text-3xl font-black text-slate-800 dark:text-slate-100 mt-1">{stats.pendingLogbooks} <span className="text-base font-semibold text-cyan-400">catatan</span></p>
+            <p className="text-sm font-semibold text-teal-300">Logbook Menunggu Validasi</p>
+            <p className="text-3xl font-black text-slate-800 dark:text-slate-100 mt-1">{stats.pendingLogbooks} <span className="text-base font-semibold text-teal-400">catatan</span></p>
           </div>
         </div>
       ) : (
         <div className="bg-[#0F172A]/15 dark:bg-slate-800/40 backdrop-blur-xl shadow-sm dark:shadow-none p-6 rounded-2xl border border-white/60 dark:border-slate-700 flex items-center gap-5">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-500 text-white shadow-lg shadow-emerald-500/20 flex items-center justify-center text-2xl shrink-0">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-teal-400 to-teal-500 text-white shadow-lg shadow-teal-500/20 flex items-center justify-center text-2xl shrink-0">
             <Check className="w-4 h-4 inline-block mr-1.5 -mt-0.5" />
           </div>
           <div>
             <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">Validasi Logbook</p>
-            <p className="text-lg font-bold text-emerald-400 mt-1">Semua tervalidasi</p>
+            <p className="text-lg font-bold text-teal-400 mt-1">Semua tervalidasi</p>
           </div>
         </div>
       )}

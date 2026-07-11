@@ -268,7 +268,7 @@ export default function DaftarBimbinganPage() {
     if (url) {
       return (
         <div className="flex items-center" onClick={e => e.stopPropagation()}>
-          <a href={url} target="_blank" rel="noopener noreferrer" className="text-[9px] font-bold px-2 py-1.5 rounded-l-md border border-r-0 border-emerald-200 bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400 dark:border-emerald-500/30 hover:bg-emerald-200 dark:hover:bg-emerald-500/30 transition-colors flex items-center gap-1">
+          <a href={url} target="_blank" rel="noopener noreferrer" className="text-[9px] font-bold px-2 py-1.5 rounded-l-md border border-r-0 border-teal-200 bg-teal-100 text-teal-700 dark:bg-teal-500/20 dark:text-teal-400 dark:border-teal-500/30 hover:bg-teal-200 dark:hover:bg-teal-500/30 transition-colors flex items-center gap-1">
             <Eye className="w-3 h-3" /> {label}
           </a>
           <label className={`text-[9px] font-bold px-2 py-1.5 rounded-r-md border border-slate-200 bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 transition-colors flex items-center gap-1 ${isUploading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700'}`}>
@@ -290,8 +290,8 @@ export default function DaftarBimbinganPage() {
     <DashboardLayout title="Daftar Bimbingan & Penyerahan" backPath="/dpl">
       <div className="space-y-6">
         
-        <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-6 rounded-2xl border border-blue-200/50 dark:border-blue-800/50 shadow-sm flex items-start gap-4 mb-6">
-          <div className="w-12 h-12 rounded-full bg-blue-500/20 text-blue-500 dark:text-blue-400 flex items-center justify-center shrink-0">
+        <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-6 rounded-2xl border border-teal-200/50 dark:border-teal-800/50 shadow-sm flex items-start gap-4 mb-6">
+          <div className="w-12 h-12 rounded-full bg-teal-500/20 text-teal-500 dark:text-teal-400 flex items-center justify-center shrink-0">
             <Info className="w-6 h-6" />
           </div>
           <div>
@@ -344,14 +344,14 @@ export default function DaftarBimbinganPage() {
                         >
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-full flex items-center justify-center font-bold shrink-0">
+                              <div className="w-10 h-10 bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 rounded-full flex items-center justify-center font-bold shrink-0">
                                 👥
                               </div>
                               <div>
                                 <p className="font-bold text-slate-800 dark:text-slate-100">{item.nama_pokja || "Kelompok KKL"}</p>
                                 <p className="text-xs text-slate-500">Ketua: {ketua?.nama_lengkap}</p>
                                 <div className="flex items-center gap-1.5 mt-1 text-[11px] text-slate-500 font-medium">
-                                  {anggota.length + 1} Anggota <span className="text-indigo-500">{isExpanded ? "(Tutup Detail)" : "(Lihat Detail)"}</span>
+                                  {anggota.length + 1} Anggota <span className="text-teal-500">{isExpanded ? "(Tutup Detail)" : "(Lihat Detail)"}</span>
                                 </div>
                               </div>
                             </div>
@@ -418,7 +418,7 @@ export default function DaftarBimbinganPage() {
                           <td className="px-6 py-4 align-middle">
                             <div className="flex flex-col gap-2">
                               {item.all_proker_approved && (
-                                <span className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400 text-xs font-bold rounded-full border border-emerald-200 dark:border-emerald-500/30 w-full">
+                                <span className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-teal-100 text-teal-700 dark:bg-teal-500/20 dark:text-teal-400 text-xs font-bold rounded-full border border-teal-200 dark:border-teal-500/30 w-full">
                                   <CheckCircle2 className="w-3.5 h-3.5" /> Disetujui Semua
                                 </span>
                               )}
@@ -430,7 +430,7 @@ export default function DaftarBimbinganPage() {
                                 className={`px-4 py-2 text-xs font-bold rounded-lg border transition-colors flex items-center gap-2 w-full justify-center ${
                                   expandedProkerRow === item._id
                                     ? "bg-slate-100 text-slate-700 border-slate-300 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 hover:bg-slate-200"
-                                    : "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800/50 hover:bg-indigo-100 dark:hover:bg-indigo-900/50"
+                                    : "bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 border-teal-200 dark:border-teal-800/50 hover:bg-teal-100 dark:hover:bg-teal-900/50"
                                 }`}
                               >
                                 {expandedProkerRow === item._id ? "Tutup Proker" : "Review Proker"}
@@ -440,7 +440,7 @@ export default function DaftarBimbinganPage() {
                         <td className="px-6 py-4 align-middle text-center">
                           {['berjalan', 'selesai'].includes(item.status_pokja) ? (
                             <div className="flex flex-col items-center gap-2">
-                              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400 text-xs font-bold rounded-full border border-emerald-200 dark:border-emerald-500/30">
+                              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-teal-100 text-teal-700 dark:bg-teal-500/20 dark:text-teal-400 text-xs font-bold rounded-full border border-teal-200 dark:border-teal-500/30">
                                 <CheckCircle2 className="w-3.5 h-3.5" /> Terkonfirmasi
                               </span>
                               
@@ -449,7 +449,7 @@ export default function DaftarBimbinganPage() {
                                 className={`px-3 py-1.5 rounded-lg text-[10px] font-bold w-full max-w-[140px] border transition-all ${
                                   item.is_laporan_unlocked
                                     ? "bg-red-50 text-red-600 border-red-200 hover:bg-red-100 dark:bg-red-500/10 dark:border-red-500/30 dark:text-red-400"
-                                    : "bg-indigo-50 text-indigo-600 border-indigo-200 hover:bg-indigo-100 dark:bg-indigo-500/10 dark:border-indigo-500/30 dark:text-indigo-400"
+                                    : "bg-teal-50 text-teal-600 border-teal-200 hover:bg-teal-100 dark:bg-teal-500/10 dark:border-teal-500/30 dark:text-teal-400"
                                 }`}
                               >
                                 {item.is_laporan_unlocked ? "🔒 Kunci Laporan" : "🔓 Buka Laporan"}
@@ -465,7 +465,7 @@ export default function DaftarBimbinganPage() {
                                 disabled={!mentor}
                                 className={`px-4 py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all w-full max-w-[140px] ${
                                   mentor 
-                                    ? "bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-500/20" 
+                                    ? "bg-teal-600 hover:bg-teal-700 text-white shadow-md shadow-teal-500/20" 
                                     : "bg-slate-200 dark:bg-slate-700 text-slate-400 cursor-not-allowed"
                                 }`}
                                 title={!mentor ? "Tugaskan mentor terlebih dahulu" : "Konfirmasi penyerahan"}
@@ -490,12 +490,12 @@ export default function DaftarBimbinganPage() {
                             <td colSpan={5} className="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
                               <div className="p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
                                 <h5 className="font-bold text-sm text-slate-800 dark:text-white mb-3 flex items-center gap-2">
-                                  <UserCircle className="w-4 h-4 text-indigo-500" /> Detail Anggota Kelompok
+                                  <UserCircle className="w-4 h-4 text-teal-500" /> Detail Anggota Kelompok
                                 </h5>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                   {/* Ketua */}
-                                  <div className="p-3 bg-indigo-50/50 dark:bg-indigo-900/10 rounded-lg border border-indigo-100 dark:border-indigo-800/50">
-                                    <span className="text-[10px] uppercase font-bold text-indigo-500 mb-1 block">Ketua POKJA</span>
+                                  <div className="p-3 bg-teal-50/50 dark:bg-teal-900/10 rounded-lg border border-teal-100 dark:border-teal-800/50">
+                                    <span className="text-[10px] uppercase font-bold text-teal-500 mb-1 block">Ketua POKJA</span>
                                     <p className="font-bold text-slate-700 dark:text-slate-200 text-sm">{ketua?.nama_lengkap}</p>
                                     <p className="text-xs text-slate-500 mt-0.5">{ketua?.nim_nidn}</p>
                                     <p className="text-[11px] text-slate-400 mt-1">{ketua?.program_studi || "-"} • {ketua?.konsentrasi || "Belum ada konsentrasi"}</p>
@@ -541,7 +541,7 @@ export default function DaftarBimbinganPage() {
                                       <div key={p._id} className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col xl:flex-row gap-6">
                                         <div className="flex-1">
                                           <div className="flex items-center gap-3 mb-2">
-                                            <span className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-black shrink-0">{idx + 1}</span>
+                                            <span className="w-8 h-8 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center font-black shrink-0">{idx + 1}</span>
                                             <h4 className="font-bold text-lg text-slate-800 dark:text-white leading-tight">{p.judul_proker}</h4>
                                           </div>
                                           <div className="ml-11 space-y-3">
@@ -557,9 +557,9 @@ export default function DaftarBimbinganPage() {
                                               </span>
                                             </div>
                                             <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{p.deskripsi}</p>
-                                            <div className="bg-emerald-50 dark:bg-emerald-900/20 p-3 rounded-lg border border-emerald-100 dark:border-emerald-800/30">
-                                              <p className="text-xs font-bold text-emerald-800 dark:text-emerald-400 mb-1">Target Dampak:</p>
-                                              <p className="text-sm text-emerald-700 dark:text-emerald-300">{p.target_dampak}</p>
+                                            <div className="bg-teal-50 dark:bg-teal-900/20 p-3 rounded-lg border border-teal-100 dark:border-teal-800/30">
+                                              <p className="text-xs font-bold text-teal-800 dark:text-teal-400 mb-1">Target Dampak:</p>
+                                              <p className="text-sm text-teal-700 dark:text-teal-300">{p.target_dampak}</p>
                                             </div>
                                           </div>
                                         </div>
@@ -567,8 +567,8 @@ export default function DaftarBimbinganPage() {
                                         <div className="w-full xl:w-64 shrink-0 flex flex-col justify-center border-t xl:border-t-0 xl:border-l border-slate-100 dark:border-slate-700 pt-4 xl:pt-0 xl:pl-6">
                                           <div className="mb-3 text-center">
                                             <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold border ${
-                                              p.status === 'disetujui_dpl' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-                                              p.status === 'revisi' ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                                              p.status === 'disetujui_dpl' ? 'bg-teal-50 text-teal-700 border-teal-200' :
+                                              p.status === 'revisi' ? 'bg-amber-50 text-amber-700 border-amber-200' :
                                               'bg-amber-50 text-amber-700 border-amber-200'
                                             }`}>
                                               {p.status === 'disetujui_dpl' ? 'Disetujui' : p.status === 'revisi' ? 'Perlu Revisi' : 'Menunggu Persetujuan'}
@@ -580,7 +580,7 @@ export default function DaftarBimbinganPage() {
                                               {p.status !== 'revisi' && (
                                                 <button
                                                   onClick={() => handleReviewProker(p._id, 'disetujui_dpl')}
-                                                  className="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-xl transition-colors shadow-sm"
+                                                  className="w-full py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-xl transition-colors shadow-sm"
                                                 >
                                                   Setujui Proker
                                                 </button>
@@ -590,12 +590,12 @@ export default function DaftarBimbinganPage() {
                                                   placeholder="Catatan revisi..."
                                                   value={revisiNotes[p._id] || ''}
                                                   onChange={(e) => setRevisiNotes({...revisiNotes, [p._id]: e.target.value})}
-                                                  className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-2 text-xs mb-2 resize-none h-16 focus:ring-2 focus:ring-rose-500 focus:outline-none"
+                                                  className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-2 text-xs mb-2 resize-none h-16 focus:ring-2 focus:ring-amber-500 focus:outline-none"
                                                 ></textarea>
                                                 <button
                                                   onClick={() => handleReviewProker(p._id, 'revisi')}
                                                   disabled={!revisiNotes[p._id]}
-                                                  className="w-full py-2 bg-rose-100 text-rose-700 hover:bg-rose-200 text-xs font-bold rounded-lg transition-colors disabled:opacity-50"
+                                                  className="w-full py-2 bg-amber-100 text-amber-700 hover:bg-amber-200 text-xs font-bold rounded-lg transition-colors disabled:opacity-50"
                                                 >
                                                   {p.status === 'revisi' ? 'Perbarui Revisi' : 'Minta Revisi'}
                                                 </button>
@@ -604,9 +604,9 @@ export default function DaftarBimbinganPage() {
                                           )}
                                           
                                           {p.status === 'revisi' && p.catatan_revisi && (
-                                            <div className="mt-3 p-3 bg-rose-50 dark:bg-rose-900/20 rounded-lg border border-rose-100 dark:border-rose-800/30">
-                                              <p className="text-[10px] font-bold text-rose-800 dark:text-rose-400 mb-1">Catatan Terakhir:</p>
-                                              <p className="text-xs text-rose-700 dark:text-rose-300">{p.catatan_revisi}</p>
+                                            <div className="mt-3 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-100 dark:border-amber-800/30">
+                                              <p className="text-[10px] font-bold text-amber-800 dark:text-amber-400 mb-1">Catatan Terakhir:</p>
+                                              <p className="text-xs text-amber-700 dark:text-amber-300">{p.catatan_revisi}</p>
                                             </div>
                                           )}
                                         </div>
@@ -652,7 +652,7 @@ export default function DaftarBimbinganPage() {
                   required
                   value={mentorForm.nama_lengkap}
                   onChange={e => setMentorForm({...mentorForm, nama_lengkap: e.target.value})}
-                  className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/20 dark:bg-slate-900/20/50 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/20 dark:bg-slate-900/20/50 text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-500"
                   placeholder="Cth: Budi Santoso"
                 />
               </div>
@@ -663,7 +663,7 @@ export default function DaftarBimbinganPage() {
                   required
                   value={mentorForm.nomor_hp}
                   onChange={e => setMentorForm({...mentorForm, nomor_hp: e.target.value})}
-                  className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/20 dark:bg-slate-900/20/50 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/20 dark:bg-slate-900/20/50 text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-500"
                   placeholder="Cth: 08123456789 (Digunakan sbg login & password)"
                 />
               </div>
@@ -673,7 +673,7 @@ export default function DaftarBimbinganPage() {
                   type="email" 
                   value={mentorForm.email}
                   onChange={e => setMentorForm({...mentorForm, email: e.target.value})}
-                  className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/20 dark:bg-slate-900/20/50 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/20 dark:bg-slate-900/20/50 text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-500"
                   placeholder="budi@perusahaan.com"
                 />
               </div>
@@ -689,7 +689,7 @@ export default function DaftarBimbinganPage() {
                 <button 
                   type="submit" 
                   disabled={isSubmitting}
-                  className="px-6 py-2.5 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-500/30 disabled:opacity-50 transition-all flex items-center gap-2"
+                  className="px-6 py-2.5 rounded-xl font-bold text-white bg-teal-600 hover:bg-teal-700 shadow-lg shadow-teal-500/30 disabled:opacity-50 transition-all flex items-center gap-2"
                 >
                   {isSubmitting ? "Menyimpan..." : "Simpan & Tugaskan"}
                 </button>
@@ -760,7 +760,7 @@ export default function DaftarBimbinganPage() {
                 <li><strong className="text-slate-800 dark:text-slate-100">Belum Ada / Proses Penjajakan:</strong> Kesempatan Bapak/Ibu DPL untuk menjajaki/membuka peluang kerja sama baru dengan pihak instansi.</li>
                 <li><strong className="text-slate-800 dark:text-slate-100">MOU (Memorandum of Understanding):</strong> Sudah ada kesepakatan payung (tingkat STIMI YAPMI Makassar). Butuh ditindaklanjuti secara spesifik.</li>
                 <li><strong className="text-slate-800 dark:text-slate-100">MOA (Memorandum of Agreement):</strong> Sudah ada kesepakatan rinci teknis.</li>
-                <li><strong className="text-slate-800 dark:text-slate-100">IA (Implementation Arrangement):</strong> <span className="text-emerald-600 dark:text-emerald-400 font-bold">Kasta Tertinggi.</span> Bukti bahwa kegiatan nyata (seperti KKL Plus ini) telah/sedang berjalan.</li>
+                <li><strong className="text-slate-800 dark:text-slate-100">IA (Implementation Arrangement):</strong> <span className="text-teal-600 dark:text-teal-400 font-bold">Kasta Tertinggi.</span> Bukti bahwa kegiatan nyata (seperti KKL Plus ini) telah/sedang berjalan.</li>
               </ul>
               <div className="bg-amber-50 dark:bg-amber-900/20 text-amber-800 dark:text-amber-200 p-3 rounded-lg text-xs mt-4">
                 <strong>Tips:</strong> Jika instansi bersedia meningkatkan status kerja sama (misal dari MoU ke IA), dokumen bisa diunggah oleh POKJA melalui halaman Pusat Dokumen atau diserahkan ke Admin LPPM.

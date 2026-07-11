@@ -244,7 +244,7 @@ export default function LogbookPage() {
       ) : !pokja || pokja.status_pokja !== 'berjalan' ? (
         <div className="max-w-2xl mx-auto mt-10">
           <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-10 rounded-3xl border border-white/60 dark:border-slate-700 shadow-sm text-center">
-            <div className="w-20 h-20 bg-yellow-50 text-yellow-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">🔒</div>
+            <div className="w-20 h-20 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">🔒</div>
             <h2 className="text-2xl font-black mb-2 text-slate-800 dark:text-white">Akses Terkunci</h2>
             <p className="text-slate-600 dark:text-slate-400">
               Logbook Harian terbuka **setelah** POKJA Anda disetujui oleh LPPM dan statusnya berjalan.
@@ -260,7 +260,7 @@ export default function LogbookPage() {
             <div className="flex bg-slate-100 dark:bg-slate-900 rounded-xl p-1 border border-slate-200 dark:border-slate-700/50 w-full">
               <button
                 className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-2 ${
-                  activeTab === 'individu' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                  activeTab === 'individu' ? 'bg-white dark:bg-slate-700 text-teal-600 dark:text-teal-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
                 }`}
                 onClick={() => handleTabChange('individu')}
               >
@@ -268,7 +268,7 @@ export default function LogbookPage() {
               </button>
               <button
                 className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-2 ${
-                  activeTab === 'pokja' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                  activeTab === 'pokja' ? 'bg-white dark:bg-slate-700 text-teal-600 dark:text-teal-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
                 }`}
                 onClick={() => handleTabChange('pokja')}
               >
@@ -278,7 +278,7 @@ export default function LogbookPage() {
 
             {/* Form Pengisian */}
             <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-3xl border border-white/60 dark:border-slate-700 shadow-sm overflow-hidden sticky top-28">
-              <div className="p-6 border-b border-slate-100 dark:border-slate-700 bg-indigo-50/30 dark:bg-indigo-900/10">
+              <div className="p-6 border-b border-slate-100 dark:border-slate-700 bg-teal-50/30 dark:bg-teal-900/10">
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                   Tulis Logbook {activeTab === 'individu' ? 'Personal' : 'Proker'}
                 </h3>
@@ -355,7 +355,7 @@ export default function LogbookPage() {
                   <button 
                     type="submit" 
                     disabled={submitting}
-                    className="w-full bg-indigo-600 hover:bg-indigo-700 py-3.5 text-sm font-bold text-white rounded-xl shadow-md transition-all disabled:opacity-50"
+                    className="w-full bg-teal-600 hover:bg-teal-700 py-3.5 text-sm font-bold text-white rounded-xl shadow-md transition-all disabled:opacity-50"
                   >
                     {submitting ? 'Menyimpan...' : 'Simpan Logbook'}
                   </button>
@@ -386,13 +386,13 @@ export default function LogbookPage() {
                       <div>
                         <p className="text-sm font-bold text-slate-800 dark:text-white">{new Date(log.tanggal).toLocaleDateString('id-ID', { weekday: 'long', month: 'short', year: 'numeric' })}</p>
                         {log.proker_id && (
-                          <p className="text-xs font-bold text-indigo-600 dark:text-indigo-400 mt-1">Proker: {log.proker_id.judul_proker}</p>
+                          <p className="text-xs font-bold text-teal-600 dark:text-teal-400 mt-1">Proker: {log.proker_id.judul_proker}</p>
                         )}
                       </div>
                       
                       <div className="flex items-center gap-2">
                         {log.bukti_kegiatan && (
-                          <button onClick={() => handleViewFile(log.bukti_kegiatan)} className="text-[11px] font-bold text-blue-700 bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-200 hover:bg-blue-100">
+                          <button onClick={() => handleViewFile(log.bukti_kegiatan)} className="text-[11px] font-bold text-teal-700 bg-teal-50 px-3 py-1.5 rounded-lg border border-teal-200 hover:bg-teal-100">
                             🖼️ Bukti
                           </button>
                         )}

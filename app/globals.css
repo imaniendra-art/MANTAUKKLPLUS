@@ -5,28 +5,31 @@
 
 @theme {
   /* Brand Theme Customization based on user palette */
-  --color-indigo-950: #1a103c;
-  --color-indigo-900: #291c53;
-  --color-indigo-800: #3d2b77; /* Deep Purple from palette */
-  --color-indigo-700: #4e3a89;
-  --color-indigo-600: #60559a; /* Muted Purple from palette */
-  --color-indigo-500: #7b70ae;
-  --color-indigo-400: #978ec1;
-  --color-indigo-300: #b5aed4;
-  --color-indigo-200: #d4d0e6;
-  --color-indigo-100: #eceaf3;
-  --color-indigo-50:  #f6f5f9;
+  /* KKL Teal (#1398A5) overriding standard teal */
+  --color-teal-50:  #e6f7f8;
+  --color-teal-100: #c0ebef;
+  --color-teal-200: #8adce3;
+  --color-teal-300: #4dc7d3;
+  --color-teal-400: #23a9b7;
+  --color-teal-500: #18909f;
+  --color-teal-600: #1398A5; /* Primary Brand Teal */
+  --color-teal-700: #126570;
+  --color-teal-800: #15515b;
+  --color-teal-900: #16434d;
+  --color-teal-950: #0a2c34;
 
-  --color-amber-300: #fbf3a3; /* Pale Yellow from palette */
-  --color-amber-200: #fcf6c2;
-  --color-amber-100: #fdfae1;
-  --color-amber-50:  #fefdf0;
-  
-  --color-orange-400: #f8c78c; /* Peach from palette */
-  --color-orange-300: #facf9c;
-  --color-orange-200: #fce1c2;
-  --color-orange-100: #fef0e1;
-  --color-orange-50:  #fff8f0;
+  /* Emas Plus (#F5A623) overriding standard amber */
+  --color-amber-50:  #fff9eb;
+  --color-amber-100: #fef1c7;
+  --color-amber-200: #fde08b;
+  --color-amber-300: #fbc64c;
+  --color-amber-400: #f9ab24;
+  --color-amber-500: #F5A623; /* Primary Brand Gold */
+  --color-amber-600: #d97706;
+  --color-amber-700: #b45309;
+  --color-amber-800: #92400e;
+  --color-amber-900: #78350f;
+  --color-amber-950: #451a03;
 }
 
 :root {

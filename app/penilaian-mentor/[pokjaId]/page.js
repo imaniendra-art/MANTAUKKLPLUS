@@ -130,7 +130,7 @@ export default function MentorPenilaianPage() {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
         <div className="bg-white p-8 rounded-2xl shadow-sm text-center max-w-md w-full border border-slate-100">
-          <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckCircle2 className="w-8 h-8" />
           </div>
           <h2 className="text-2xl font-bold text-slate-800 mb-2">Penilaian Diterima</h2>
@@ -190,7 +190,7 @@ export default function MentorPenilaianPage() {
                 placeholder="0-100"
                 value={detailKelompokMentor.keberhasilan || ''}
                 onChange={(e) => setDetailKelompokMentor(prev => ({...prev, keberhasilan: e.target.value}))}
-                className="w-full sm:max-w-xs border-slate-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm py-2"
+                className="w-full sm:max-w-xs border-slate-300 rounded-lg shadow-sm focus:border-teal-500 focus:ring-teal-500 text-sm py-2"
               />
             </div>
             <div>
@@ -201,7 +201,7 @@ export default function MentorPenilaianPage() {
                 placeholder="0-100"
                 value={detailKelompokMentor.manfaat || ''}
                 onChange={(e) => setDetailKelompokMentor(prev => ({...prev, manfaat: e.target.value}))}
-                className="w-full sm:max-w-xs border-slate-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm py-2"
+                className="w-full sm:max-w-xs border-slate-300 rounded-lg shadow-sm focus:border-teal-500 focus:ring-teal-500 text-sm py-2"
               />
             </div>
             <div>
@@ -212,13 +212,13 @@ export default function MentorPenilaianPage() {
                 placeholder="0-100"
                 value={detailKelompokMentor.kerjasama || ''}
                 onChange={(e) => setDetailKelompokMentor(prev => ({...prev, kerjasama: e.target.value}))}
-                className="w-full sm:max-w-xs border-slate-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm py-2"
+                className="w-full sm:max-w-xs border-slate-300 rounded-lg shadow-sm focus:border-teal-500 focus:ring-teal-500 text-sm py-2"
               />
             </div>
           </div>
           <div className="mt-4 pt-4 border-t border-slate-100 flex items-center gap-2">
             <span className="text-sm font-bold text-slate-600">Rata-rata Nilai Kelompok:</span>
-            <span className="text-lg font-bold text-blue-600">{calculateKelompok().toFixed(2)}</span>
+            <span className="text-lg font-bold text-teal-600">{calculateKelompok().toFixed(2)}</span>
           </div>
         </div>
 
@@ -254,7 +254,7 @@ export default function MentorPenilaianPage() {
                       placeholder="0-100"
                       value={item.detail_mentor_individu?.kedisiplinan || ''}
                       onChange={(e) => handleIndividuDetailChange(item._id, 'kedisiplinan', e.target.value)}
-                      className="w-full border-slate-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 font-bold text-sm"
+                      className="w-full border-slate-300 rounded-lg shadow-sm focus:border-teal-500 focus:ring-teal-500 font-bold text-sm"
                     />
                   </div>
                   <div>
@@ -265,7 +265,7 @@ export default function MentorPenilaianPage() {
                       placeholder="0-100"
                       value={item.detail_mentor_individu?.tanggungjawab || ''}
                       onChange={(e) => handleIndividuDetailChange(item._id, 'tanggungjawab', e.target.value)}
-                      className="w-full border-slate-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 font-bold text-sm"
+                      className="w-full border-slate-300 rounded-lg shadow-sm focus:border-teal-500 focus:ring-teal-500 font-bold text-sm"
                     />
                   </div>
                   <div>
@@ -276,14 +276,14 @@ export default function MentorPenilaianPage() {
                       placeholder="0-100"
                       value={item.detail_mentor_individu?.keterampilan || ''}
                       onChange={(e) => handleIndividuDetailChange(item._id, 'keterampilan', e.target.value)}
-                      className="w-full border-slate-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 font-bold text-sm"
+                      className="w-full border-slate-300 rounded-lg shadow-sm focus:border-teal-500 focus:ring-teal-500 font-bold text-sm"
                     />
                   </div>
                 </div>
                 
                 <div className="flex justify-end gap-2 items-center bg-slate-50 px-3 py-2 rounded-lg border border-slate-100">
                   <span className="text-xs font-bold text-slate-500 uppercase">Rata-rata:</span>
-                  <span className="text-sm font-bold text-blue-600">{avgIndividu.toFixed(2)}</span>
+                  <span className="text-sm font-bold text-teal-600">{avgIndividu.toFixed(2)}</span>
                 </div>
               </div>
             )})}
@@ -293,7 +293,7 @@ export default function MentorPenilaianPage() {
         <button 
           onClick={handleSubmit}
           disabled={saving}
-          className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-4 rounded-xl font-bold transition-all disabled:opacity-50 shadow-md shadow-blue-500/20 text-lg"
+          className="w-full flex items-center justify-center gap-2 bg-teal-600 hover:bg-teal-700 text-white px-6 py-4 rounded-xl font-bold transition-all disabled:opacity-50 shadow-md shadow-teal-500/20 text-lg"
         >
           <Save className="w-5 h-5" />
           {saving ? 'Mengirim Data...' : 'Kirim Penilaian'}

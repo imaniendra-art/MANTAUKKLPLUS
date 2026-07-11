@@ -49,7 +49,7 @@ export default function Home() {
           <div className="relative z-20 w-full lg:max-w-3xl space-y-8 py-10 px-8 lg:p-12 mt-10">
             <h1 className="text-6xl lg:text-7xl font-extrabold text-[#FAF9F6] leading-[1.1] tracking-tight drop-shadow-[0_4px_4px_rgba(0,0,0,0.6)]">
               Bangun Program,<br/>
-              <span className="text-[#1398A5]">Bergerak Bersama,</span><br/>
+              <span className="text-teal-600">Bergerak Bersama,</span><br/>
               Beri Dampak Nyata.
             </h1>
             <p className="text-xl text-[#FAF9F6] leading-relaxed font-semibold drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
@@ -63,7 +63,7 @@ export default function Home() {
                   localStorage.removeItem('target_kkl');
                   window.location.href = getDashboardUrl();
                 }} 
-                className="px-8 py-3.5 rounded-xl bg-[#1398A5] hover:bg-[#0f7a85] text-white font-bold text-lg transition-all shadow-lg shadow-[#1398A5]/30"
+                className="px-8 py-3.5 rounded-xl bg-teal-600 hover:bg-[#0f7a85] text-white font-bold text-lg transition-all shadow-lg shadow-teal-600/30"
               >
                 {status === 'authenticated' ? 'Ke Dashboard' : 'Mulai Sekarang'}
               </button>
@@ -90,40 +90,40 @@ export default function Home() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8 lg:gap-12">
             {/* Card 1 */}
-            <div className="relative p-10 rounded-3xl bg-gradient-to-br from-white to-slate-50 border border-slate-100 hover:border-indigo-200 transition-all duration-500 group hover:shadow-[0_20px_40px_-15px_rgba(96,85,154,0.15)] hover:-translate-y-2">
-              <div className="absolute top-0 right-0 p-8 opacity-5 text-8xl pointer-events-none group-hover:text-indigo-500 group-hover:opacity-10 transition-all duration-500 group-hover:-translate-y-4 group-hover:rotate-12"><GraduationCap className="w-4 h-4 inline-block mr-1.5 -mt-0.5" /></div>
+            <div className="relative p-10 rounded-3xl bg-gradient-to-br from-white to-slate-50 border border-slate-100 hover:border-teal-200 transition-all duration-500 group hover:shadow-[0_20px_40px_-15px_rgba(96,85,154,0.15)] hover:-translate-y-2">
+              <div className="absolute top-0 right-0 p-8 opacity-5 text-8xl pointer-events-none group-hover:text-teal-500 group-hover:opacity-10 transition-all duration-500 group-hover:-translate-y-4 group-hover:rotate-12"><GraduationCap className="w-4 h-4 inline-block mr-1.5 -mt-0.5" /></div>
               <div className="relative z-10">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-400 to-indigo-700 text-white shadow-lg shadow-indigo-500/30 flex items-center justify-center text-3xl mb-8 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500"><GraduationCap className="w-4 h-4 inline-block mr-1.5 -mt-0.5" /></div>
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-400 to-teal-700 text-white shadow-lg shadow-teal-500/30 flex items-center justify-center text-3xl mb-8 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500"><GraduationCap className="w-4 h-4 inline-block mr-1.5 -mt-0.5" /></div>
                 <h3 className="text-2xl font-bold text-slate-900 mb-4">Bagi Mahasiswa</h3>
                 <p className="text-slate-600 text-base leading-relaxed">Tergabung dalam Kelompok Kerja (POKJA) untuk berkolaborasi merumuskan dan mengeksekusi Program Kerja (Proker) yang berdampak langsung di lapangan.</p>
               </div>
             </div>
             
             {/* Card 2 */}
-            <div className="relative p-10 rounded-3xl bg-gradient-to-br from-white to-slate-50 border border-slate-100 hover:border-indigo-200 transition-all duration-500 group hover:shadow-[0_20px_40px_-15px_rgba(96,85,154,0.15)] hover:-translate-y-2">
-              <div className="absolute top-0 right-0 p-8 opacity-5 text-8xl pointer-events-none group-hover:text-indigo-500 group-hover:opacity-10 transition-all duration-500 group-hover:-translate-y-4 group-hover:rotate-12">🏛️</div>
+            <div className="relative p-10 rounded-3xl bg-gradient-to-br from-white to-slate-50 border border-slate-100 hover:border-teal-200 transition-all duration-500 group hover:shadow-[0_20px_40px_-15px_rgba(96,85,154,0.15)] hover:-translate-y-2">
+              <div className="absolute top-0 right-0 p-8 opacity-5 text-8xl pointer-events-none group-hover:text-teal-500 group-hover:opacity-10 transition-all duration-500 group-hover:-translate-y-4 group-hover:rotate-12">🏛️</div>
               <div className="relative z-10">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-600 text-white shadow-lg shadow-emerald-500/30 flex items-center justify-center text-3xl mb-8 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500">🏛️</div>
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-400 to-teal-600 text-white shadow-lg shadow-teal-500/30 flex items-center justify-center text-3xl mb-8 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500">🏛️</div>
                 <h3 className="text-2xl font-bold text-slate-900 mb-4">Bagi Kampus</h3>
                 <p className="text-slate-600 text-base leading-relaxed">Memperluas jaringan kemitraan institusi dan memberikan kontribusi nyata kepada masyarakat melalui inovasi serta solusi praktis dari mahasiswa.</p>
               </div>
             </div>
             
             {/* Card 3 */}
-            <div className="relative p-10 rounded-3xl bg-gradient-to-br from-white to-slate-50 border border-slate-100 hover:border-indigo-200 transition-all duration-500 group hover:shadow-[0_20px_40px_-15px_rgba(96,85,154,0.15)] hover:-translate-y-2">
-              <div className="absolute top-0 right-0 p-8 opacity-5 text-8xl pointer-events-none group-hover:text-indigo-500 group-hover:opacity-10 transition-all duration-500 group-hover:-translate-y-4 group-hover:rotate-12">🎯</div>
+            <div className="relative p-10 rounded-3xl bg-gradient-to-br from-white to-slate-50 border border-slate-100 hover:border-teal-200 transition-all duration-500 group hover:shadow-[0_20px_40px_-15px_rgba(96,85,154,0.15)] hover:-translate-y-2">
+              <div className="absolute top-0 right-0 p-8 opacity-5 text-8xl pointer-events-none group-hover:text-teal-500 group-hover:opacity-10 transition-all duration-500 group-hover:-translate-y-4 group-hover:rotate-12">🎯</div>
               <div className="relative z-10">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-lg shadow-orange-500/30 flex items-center justify-center text-3xl mb-8 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500">🎯</div>
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-500 text-white shadow-lg shadow-amber-500/30 flex items-center justify-center text-3xl mb-8 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500">🎯</div>
                 <h3 className="text-2xl font-bold text-slate-900 mb-4">Keberhasilan Proker</h3>
                 <p className="text-slate-600 text-base leading-relaxed">Fokus pada eksekusi Program Kerja yang terukur dan aplikatif. Penilaian didasarkan pada sejauh mana solusi bermanfaat bagi instansi.</p>
               </div>
             </div>
 
             {/* Card 4 */}
-            <div className="relative p-10 rounded-3xl bg-gradient-to-br from-white to-slate-50 border border-slate-100 hover:border-indigo-200 transition-all duration-500 group hover:shadow-[0_20px_40px_-15px_rgba(96,85,154,0.15)] hover:-translate-y-2">
-              <div className="absolute top-0 right-0 p-8 opacity-5 text-8xl pointer-events-none group-hover:text-indigo-500 group-hover:opacity-10 transition-all duration-500 group-hover:-translate-y-4 group-hover:rotate-12"><Building className="w-4 h-4 inline-block mr-1.5 -mt-0.5" /></div>
+            <div className="relative p-10 rounded-3xl bg-gradient-to-br from-white to-slate-50 border border-slate-100 hover:border-teal-200 transition-all duration-500 group hover:shadow-[0_20px_40px_-15px_rgba(96,85,154,0.15)] hover:-translate-y-2">
+              <div className="absolute top-0 right-0 p-8 opacity-5 text-8xl pointer-events-none group-hover:text-teal-500 group-hover:opacity-10 transition-all duration-500 group-hover:-translate-y-4 group-hover:rotate-12"><Building className="w-4 h-4 inline-block mr-1.5 -mt-0.5" /></div>
               <div className="relative z-10">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-400 to-cyan-600 text-white shadow-lg shadow-blue-500/30 flex items-center justify-center text-3xl mb-8 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500"><Building className="w-4 h-4 inline-block mr-1.5 -mt-0.5" /></div>
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-400 to-teal-600 text-white shadow-lg shadow-teal-500/30 flex items-center justify-center text-3xl mb-8 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500"><Building className="w-4 h-4 inline-block mr-1.5 -mt-0.5" /></div>
                 <h3 className="text-2xl font-bold text-slate-900 mb-4">Bagi Mitra (Instansi)</h3>
                 <p className="text-slate-600 text-base leading-relaxed">Mendapatkan gagasan segar, solusi inovatif, dan tenaga bantuan terdidik yang secara proaktif membantu menyelesaikan tantangan operasional di lokasi.</p>
               </div>

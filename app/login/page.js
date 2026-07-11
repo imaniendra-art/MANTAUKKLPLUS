@@ -133,7 +133,7 @@ export default function Login() {
                 type="text"
                 autoComplete="username"
                 required
-                className="appearance-none relative block w-full px-4 py-3.5 border border-slate-300 placeholder:text-slate-400 text-slate-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1398A5] focus:border-[#1398A5] sm:text-sm bg-white/70 backdrop-blur-md transition-all shadow-sm"
+                className="appearance-none relative block w-full px-4 py-3.5 border border-slate-300 placeholder:text-slate-400 text-slate-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-600 focus:border-teal-600 sm:text-sm bg-white/70 backdrop-blur-md transition-all shadow-sm"
                 placeholder="Masukkan Email atau NIM"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -142,7 +142,7 @@ export default function Login() {
             <div>
               <div className="flex justify-between items-center mb-2">
                 <label className="block text-sm font-bold text-slate-700" htmlFor="password">Password</label>
-                <a href="#" className="text-xs font-bold text-[#1398A5] hover:text-[#0f7a85] transition-colors">Lupa password?</a>
+                <a href="#" className="text-xs font-bold text-teal-600 hover:text-[#0f7a85] transition-colors">Lupa password?</a>
               </div>
               <div className="relative">
                 <input
@@ -151,7 +151,7 @@ export default function Login() {
                   type={showPassword ? "text" : "password"}
                   autoComplete="current-password"
                   required
-                  className="appearance-none block w-full px-4 py-3.5 border border-slate-300 placeholder:text-slate-400 text-slate-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1398A5] focus:border-[#1398A5] sm:text-sm bg-white/70 backdrop-blur-md transition-all pr-12 shadow-sm"
+                  className="appearance-none block w-full px-4 py-3.5 border border-slate-300 placeholder:text-slate-400 text-slate-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-600 focus:border-teal-600 sm:text-sm bg-white/70 backdrop-blur-md transition-all pr-12 shadow-sm"
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -171,7 +171,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-3.5 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-[#1398A5] hover:bg-[#0f7a85] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1398A5] disabled:opacity-50 transition-all shadow-lg shadow-[#1398A5]/30 hover:-translate-y-0.5"
+              className="group relative w-full flex justify-center py-3.5 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-teal-600 hover:bg-[#0f7a85] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-600 disabled:opacity-50 transition-all shadow-lg shadow-teal-600/30 hover:-translate-y-0.5"
             >
               {loading ? 'Memproses...' : 'Masuk ke Sistem'}
             </button>

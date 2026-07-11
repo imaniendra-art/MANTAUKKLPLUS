@@ -19,7 +19,7 @@ export default async function ProfilMahasiswa() {
 
   return (
     <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-      <div className="bg-blue-500/10 border border-blue-500/20 text-blue-800 dark:text-blue-300 p-4 rounded-xl text-sm mb-8 flex items-start gap-3">
+      <div className="bg-teal-500/10 border border-teal-500/20 text-teal-800 dark:text-teal-300 p-4 rounded-xl text-sm mb-8 flex items-start gap-3">
         <span className="text-xl">🔄</span>
         <p>
           <strong>Data disinkronkan:</strong> Data profil Anda disinkronkan secara otomatis dari SIAM (Sistem Informasi Akademik) STIMI YAPMI. Jika terdapat kekeliruan data, silakan hubungi bagian BAAK.
@@ -46,7 +46,7 @@ export default async function ProfilMahasiswa() {
                   value={user.nama_lengkap}
                   disabled
                   readOnly
-                  className="block w-full rounded-xl border-0 py-3 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 bg-slate-100 dark:bg-slate-900/50 dark:text-slate-300 dark:ring-slate-700 cursor-not-allowed opacity-80"
+                  className="block w-full rounded-xl border-0 py-3 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6 bg-slate-100 dark:bg-slate-900/50 dark:text-slate-300 dark:ring-slate-700 cursor-not-allowed opacity-80"
                 />
               </div>
             </div>
@@ -63,7 +63,7 @@ export default async function ProfilMahasiswa() {
                   value={user.nim_nidn}
                   disabled
                   readOnly
-                  className="block w-full rounded-xl border-0 py-3 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 bg-slate-100 dark:bg-slate-900/50 dark:text-slate-300 dark:ring-slate-700 cursor-not-allowed opacity-80"
+                  className="block w-full rounded-xl border-0 py-3 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6 bg-slate-100 dark:bg-slate-900/50 dark:text-slate-300 dark:ring-slate-700 cursor-not-allowed opacity-80"
                 />
               </div>
             </div>
@@ -80,7 +80,7 @@ export default async function ProfilMahasiswa() {
                   value={user.email}
                   disabled
                   readOnly
-                  className="block w-full rounded-xl border-0 py-3 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 bg-slate-100 dark:bg-slate-900/50 dark:text-slate-300 dark:ring-slate-700 cursor-not-allowed opacity-80"
+                  className="block w-full rounded-xl border-0 py-3 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6 bg-slate-100 dark:bg-slate-900/50 dark:text-slate-300 dark:ring-slate-700 cursor-not-allowed opacity-80"
                 />
               </div>
             </div>
@@ -97,7 +97,7 @@ export default async function ProfilMahasiswa() {
                   value={user.program_studi || 'Manajemen (S1)'}
                   disabled
                   readOnly
-                  className="block w-full rounded-xl border-0 py-3 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 bg-slate-100 dark:bg-slate-900/50 dark:text-slate-300 dark:ring-slate-700 cursor-not-allowed opacity-80"
+                  className="block w-full rounded-xl border-0 py-3 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6 bg-slate-100 dark:bg-slate-900/50 dark:text-slate-300 dark:ring-slate-700 cursor-not-allowed opacity-80"
                 />
               </div>
             </div>
@@ -114,7 +114,7 @@ export default async function ProfilMahasiswa() {
                   value={user.konsentrasi || '-'}
                   disabled
                   readOnly
-                  className="block w-full rounded-xl border-0 py-3 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 bg-slate-100 dark:bg-slate-900/50 dark:text-slate-300 dark:ring-slate-700 cursor-not-allowed opacity-80"
+                  className="block w-full rounded-xl border-0 py-3 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6 bg-slate-100 dark:bg-slate-900/50 dark:text-slate-300 dark:ring-slate-700 cursor-not-allowed opacity-80"
                 />
               </div>
             </div>
@@ -131,7 +131,7 @@ export default async function ProfilMahasiswa() {
                   value="Makassar, 01 Januari 2002"
                   disabled
                   readOnly
-                  className="block w-full rounded-xl border-0 py-3 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 bg-slate-100 dark:bg-slate-900/50 dark:text-slate-300 dark:ring-slate-700 cursor-not-allowed opacity-80"
+                  className="block w-full rounded-xl border-0 py-3 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6 bg-slate-100 dark:bg-slate-900/50 dark:text-slate-300 dark:ring-slate-700 cursor-not-allowed opacity-80"
                 />
                 <p className="mt-1 text-xs text-slate-500">Hanya dummy/contoh integrasi SIAM.</p>
               </div>
@@ -149,7 +149,7 @@ export default async function ProfilMahasiswa() {
                   value="3.75"
                   disabled
                   readOnly
-                  className="block w-full rounded-xl border-0 py-3 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 bg-slate-100 dark:bg-slate-900/50 dark:text-slate-300 dark:ring-slate-700 cursor-not-allowed opacity-80"
+                  className="block w-full rounded-xl border-0 py-3 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6 bg-slate-100 dark:bg-slate-900/50 dark:text-slate-300 dark:ring-slate-700 cursor-not-allowed opacity-80"
                 />
               </div>
             </div>

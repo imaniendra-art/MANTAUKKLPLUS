@@ -53,9 +53,9 @@ function PokjaLogbookList({ pokjaId }) {
 
   const getStatusBadge = (status) => {
     switch (status) {
-      case 'menunggu_mentor': return <span className="px-2 py-1 bg-yellow-50 text-yellow-700 border border-yellow-200 text-[10px] font-bold rounded shadow-sm">⏳ Menunggu Mentor</span>;
+      case 'menunggu_mentor': return <span className="px-2 py-1 bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-bold rounded shadow-sm">⏳ Menunggu Mentor</span>;
       case 'divalidasi_mentor': return <span className="px-2 py-1 bg-teal-50 text-teal-700 border border-teal-200 text-[10px] font-bold rounded shadow-sm">🔹 Divalidasi Mentor</span>;
-      case 'divalidasi_dpl': return <span className="px-2 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold rounded shadow-sm"><Check className="w-4 h-4 inline-block mr-1.5 -mt-0.5" /> Divalidasi DPL</span>;
+      case 'divalidasi_dpl': return <span className="px-2 py-1 bg-teal-50 text-teal-700 border border-teal-200 text-[10px] font-bold rounded shadow-sm"><Check className="w-4 h-4 inline-block mr-1.5 -mt-0.5" /> Divalidasi DPL</span>;
       case 'revisi': return <span className="px-2 py-1 bg-red-50 text-red-700 border border-red-200 text-[10px] font-bold rounded shadow-sm"><X className="w-4 h-4 inline-block mr-1.5 -mt-0.5" /> Direvisi</span>;
       default: return <span className="px-2 py-1 bg-slate-50 text-slate-700 border border-slate-200 text-[10px] font-bold rounded shadow-sm">{status}</span>;
     }
@@ -90,7 +90,7 @@ function PokjaLogbookList({ pokjaId }) {
             
             {log.bukti_kegiatan && (
               <div className="shrink-0">
-                <button onClick={() => handleViewFile(log.bukti_kegiatan)} className="text-xs font-bold text-[#1398A5] bg-teal-50 hover:bg-teal-100 px-3 py-1.5 rounded-lg transition-colors border border-teal-200">
+                <button onClick={() => handleViewFile(log.bukti_kegiatan)} className="text-xs font-bold text-teal-600 bg-teal-50 hover:bg-teal-100 px-3 py-1.5 rounded-lg transition-colors border border-teal-200">
                   🖼️ Bukti
                 </button>
               </div>
@@ -160,7 +160,7 @@ export default function MonitoringPokjaPage() {
               placeholder="Cari Kelompok atau Ketua..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full sm:w-72 pl-10 pr-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 bg-white/20 dark:bg-slate-900/20 font-medium text-sm text-slate-900 dark:text-white transition-all"
+              className="w-full sm:w-72 pl-10 pr-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 bg-white/20 dark:bg-slate-900/20 font-medium text-sm text-slate-900 dark:text-white transition-all"
             />
           </div>
         </div>
@@ -191,7 +191,7 @@ export default function MonitoringPokjaPage() {
                   ) : (
                     filteredPokjas.map((p) => (
                       <React.Fragment key={p._id}>
-                        <tr className={`transition-colors ${expandedId === p._id ? 'bg-indigo-50/30 dark:bg-indigo-900/10' : 'hover:bg-slate-50/50 dark:hover:bg-slate-700/20'}`}>
+                        <tr className={`transition-colors ${expandedId === p._id ? 'bg-teal-50/30 dark:bg-teal-900/10' : 'hover:bg-slate-50/50 dark:hover:bg-slate-700/20'}`}>
                           <td className="py-4 px-6 align-middle">
                             <p className="font-bold text-sm text-slate-800 dark:text-slate-100">{p.nama_pokja}</p>
                             <p className="text-xs text-slate-500 font-medium">Ketua: {p.ketua_id?.nama_lengkap}</p>
@@ -207,7 +207,7 @@ export default function MonitoringPokjaPage() {
                           <td className="py-4 px-6 align-middle text-center">
                             <button 
                               onClick={() => toggleExpand(p._id)}
-                              className="inline-flex items-center gap-2 text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 px-4 py-2 rounded-lg hover:bg-indigo-100 transition-colors whitespace-nowrap shadow-sm dark:bg-indigo-900/30 dark:text-indigo-400 dark:border-indigo-800/50 dark:hover:bg-indigo-900/50"
+                              className="inline-flex items-center gap-2 text-xs font-bold text-teal-700 bg-teal-50 border border-teal-200 px-4 py-2 rounded-lg hover:bg-teal-100 transition-colors whitespace-nowrap shadow-sm dark:bg-teal-900/30 dark:text-teal-400 dark:border-teal-800/50 dark:hover:bg-teal-900/50"
                             >
                               <span>📋</span> {expandedId === p._id ? 'Tutup Logbook' : 'Lihat Logbook'}
                             </button>
@@ -216,7 +216,7 @@ export default function MonitoringPokjaPage() {
                         {/* Expandable Row Content */}
                         {expandedId === p._id && (
                           <tr>
-                            <td colSpan="4" className="p-0 border-b-2 border-indigo-200 dark:border-indigo-800/50">
+                            <td colSpan="4" className="p-0 border-b-2 border-teal-200 dark:border-teal-800/50">
                               <div className="animate-in slide-in-from-top-2 fade-in duration-300">
                                 <PokjaLogbookList pokjaId={p._id} />
                               </div>

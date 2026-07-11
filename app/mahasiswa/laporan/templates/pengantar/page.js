@@ -108,7 +108,7 @@ export default function CetakPengantar() {
         }
       `}</style>
       <div className="fixed top-5 right-5 print:hidden">
-        <button onClick={() => window.print()} className="px-6 py-3 bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:bg-blue-700">
+        <button onClick={() => window.print()} className="px-6 py-3 bg-teal-600 text-white font-bold rounded-lg shadow-lg hover:bg-teal-700">
           🖨️ Cetak PDF
         </button>
       </div>

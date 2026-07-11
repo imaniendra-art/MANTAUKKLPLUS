@@ -74,7 +74,7 @@ export default function GantiPassword() {
         )}
         
         {success && (
-          <div className="bg-green-500/10 border border-green-500/20 text-green-500 p-4 rounded-xl text-sm mb-6">
+          <div className="bg-teal-500/10 border border-teal-500/20 text-teal-500 p-4 rounded-xl text-sm mb-6">
             {success}
           </div>
         )}
@@ -89,7 +89,7 @@ export default function GantiPassword() {
               required
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
-              className="w-full px-4 py-3 border border-white/60 dark:border-slate-700 rounded-xl bg-white/20 dark:bg-slate-900/20 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-3 border border-white/60 dark:border-slate-700 rounded-xl bg-white/20 dark:bg-slate-900/20 focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
               placeholder="Masukkan password saat ini"
             />
           </div>
@@ -103,7 +103,7 @@ export default function GantiPassword() {
               required
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              className="w-full px-4 py-3 border border-white/60 dark:border-slate-700 rounded-xl bg-white/20 dark:bg-slate-900/20 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-3 border border-white/60 dark:border-slate-700 rounded-xl bg-white/20 dark:bg-slate-900/20 focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
               placeholder="Masukkan password baru"
             />
           </div>
@@ -117,7 +117,7 @@ export default function GantiPassword() {
               required
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full px-4 py-3 border border-white/60 dark:border-slate-700 rounded-xl bg-white/20 dark:bg-slate-900/20 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-3 border border-white/60 dark:border-slate-700 rounded-xl bg-white/20 dark:bg-slate-900/20 focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
               placeholder="Ulangi password baru"
             />
           </div>
@@ -126,7 +126,7 @@ export default function GantiPassword() {
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-lg shadow-blue-500/30 transition-all disabled:opacity-50"
+              className="px-6 py-3 bg-teal-600 hover:bg-teal-500 text-white font-bold rounded-xl shadow-lg shadow-teal-500/30 transition-all disabled:opacity-50"
             >
               {loading ? 'Menyimpan...' : 'Simpan Password'}
             </button>

@@ -51,7 +51,7 @@ function ThemeToggle({ toggleTheme, isDark }) {
       <div className={`absolute w-5 h-5 rounded-full transition-all duration-500 flex items-center justify-center shadow-lg ${
         isDark
           ? 'left-1 bg-slate-700 text-slate-100 shadow-slate-900/30'
-          : 'left-7.5 bg-[#1398A5] text-white shadow-teal-500/30'
+          : 'left-7.5 bg-teal-600 text-white shadow-teal-500/30'
       }`}>
         {isDark ? <MoonIcon /> : <SunIcon />}
       </div>
@@ -82,9 +82,9 @@ function UserMenu({ nama, role }) {
       >
         <div className="text-right hidden sm:block">
           <p className="text-sm font-bold leading-tight text-slate-800 dark:text-slate-100">{nama}</p>
-          <p className="text-xs font-semibold text-[#1398A5] dark:text-teal-400 uppercase tracking-wider mt-0.5">{role.replace('_', ' ')}</p>
+          <p className="text-xs font-semibold text-teal-600 dark:text-teal-400 uppercase tracking-wider mt-0.5">{role.replace('_', ' ')}</p>
         </div>
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1398A5] to-teal-700 text-white flex items-center justify-center font-bold text-lg shadow-inner">
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-600 to-teal-700 text-white flex items-center justify-center font-bold text-lg shadow-inner">
           {nama ? nama.charAt(0).toUpperCase() : 'U'}
         </div>
       </button>
@@ -93,7 +93,7 @@ function UserMenu({ nama, role }) {
         <div className="absolute right-0 mt-2 w-56 bg-white/90 dark:bg-slate-800/95 backdrop-blur-xl rounded-2xl shadow-xl border border-white/50 dark:border-slate-700 overflow-hidden animate-in slide-in-from-top-2 duration-200">
           <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-700/50 sm:hidden">
             <p className="text-sm font-bold leading-tight text-slate-800 dark:text-slate-100">{nama}</p>
-            <p className="text-xs font-semibold text-[#1398A5] dark:text-teal-400 uppercase tracking-wider mt-0.5">{role.replace('_', ' ')}</p>
+            <p className="text-xs font-semibold text-teal-600 dark:text-teal-400 uppercase tracking-wider mt-0.5">{role.replace('_', ' ')}</p>
           </div>
           <Link href="/profil" onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-4 py-3.5 text-sm font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100/50 dark:hover:bg-slate-700/50 transition-colors">
             <Settings className="w-4 h-4 inline-block mr-1.5 -mt-0.5" /> Pengaturan Profil
@@ -117,13 +117,13 @@ const MENU_CONFIG = {
     greeting: "Admin & Prodi",
     subtitle: "Kelola master data, monitoring seluruh aktivitas KKL Plus, dan pantau DPL serta Mahasiswa.",
     menus: [
-      { name: "Manajemen Pengguna", href: "/admin/pengguna", icon: <Users className="w-6 h-6" />, desc: "Kelola akun Mahasiswa, DPL, dan Mentor.", color: "from-[#1398A5] to-teal-700" },
-      { name: "Master Data", href: "/admin/master-data", icon: <Database className="w-6 h-6" />, desc: "Kelola Instansi Mitra dan Posisi.", color: "from-indigo-500 to-indigo-600" },
-      { name: "Validasi dan Data Pengajuan", href: "/admin/validasi", icon: <ClipboardCheck className="w-6 h-6" />, desc: "Persetujuan KKL Plus & plotting DPL.", color: "from-emerald-500 to-emerald-600" },
+      { name: "Manajemen Pengguna", href: "/admin/pengguna", icon: <Users className="w-6 h-6" />, desc: "Kelola akun Mahasiswa, DPL, dan Mentor.", color: "from-teal-600 to-teal-700" },
+      { name: "Master Data", href: "/admin/master-data", icon: <Database className="w-6 h-6" />, desc: "Kelola Instansi Mitra dan Posisi.", color: "from-teal-500 to-teal-600" },
+      { name: "Validasi dan Data Pengajuan", href: "/admin/validasi", icon: <ClipboardCheck className="w-6 h-6" />, desc: "Persetujuan KKL Plus & plotting DPL.", color: "from-teal-500 to-teal-600" },
       { name: "Monitoring KKL Plus", href: "/admin/monitoring", icon: <Monitor className="w-6 h-6" />, desc: "Pantau logbook dan kendala lapangan.", color: "from-amber-500 to-amber-600" },
-      { name: "Rekapitulasi Nilai", href: "/admin/rekapitulasi", icon: <Award className="w-6 h-6" />, desc: "Hasil akhir dan konversi SKS.", color: "from-purple-500 to-purple-600" },
-      { name: "Arsip & Dokumen", href: "/admin/arsip", icon: <Archive className="w-6 h-6" />, desc: "Cetak surat pengantar & sertifikat.", color: "from-rose-500 to-rose-600" },
-      { name: "Sinkronisasi PDDikti", href: "/admin/sinkronisasi", icon: <CloudSync className="w-6 h-6" />, desc: "Ekspor data pelaporan PDDikti.", color: "from-cyan-500 to-cyan-600" },
+      { name: "Rekapitulasi Nilai", href: "/admin/rekapitulasi", icon: <Award className="w-6 h-6" />, desc: "Hasil akhir dan konversi SKS.", color: "from-teal-500 to-teal-600" },
+      { name: "Arsip & Dokumen", href: "/admin/arsip", icon: <Archive className="w-6 h-6" />, desc: "Cetak surat pengantar & sertifikat.", color: "from-amber-500 to-amber-600" },
+      { name: "Sinkronisasi PDDikti", href: "/admin/sinkronisasi", icon: <CloudSync className="w-6 h-6" />, desc: "Ekspor data pelaporan PDDikti.", color: "from-teal-500 to-teal-600" },
       { name: "Pengaturan Sistem", href: "/admin/settings", icon: <Settings className="w-6 h-6" />, desc: "Konfigurasi aplikasi dan periode.", color: "from-slate-500 to-slate-600" },
     ],
   },
@@ -131,27 +131,27 @@ const MENU_CONFIG = {
     greeting: "Mahasiswa",
     subtitle: "Kumpulkan poin dengan menyelesaikan indikator CPMK setiap harinya.",
     menus: [
-      { name: "Pengajuan KKL Plus", href: "/mahasiswa/pengajuan", icon: <FileSignature className="w-6 h-6" />, desc: "Ajukan dan kelola pengajuan KKL Plus baru", color: "from-[#1398A5] to-teal-600" },
-      { name: "Logbook Harian", href: "/mahasiswa/logbook", icon: <BookOpen className="w-6 h-6" />, desc: "Catat kegiatan harian dan kumpulkan poin kinerja", color: "from-emerald-500 to-teal-600" },
-      { name: "Laporan & Sertifikat", href: "/mahasiswa/laporan", icon: <FileBadge className="w-6 h-6" />, desc: "Unduh laporan KKL Plus dan sertifikat pencapaian", color: "from-amber-500 to-orange-600" },
+      { name: "Pengajuan KKL Plus", href: "/mahasiswa/pengajuan", icon: <FileSignature className="w-6 h-6" />, desc: "Ajukan dan kelola pengajuan KKL Plus baru", color: "from-teal-600 to-teal-600" },
+      { name: "Logbook Harian", href: "/mahasiswa/logbook", icon: <BookOpen className="w-6 h-6" />, desc: "Catat kegiatan harian dan kumpulkan poin kinerja", color: "from-teal-500 to-teal-600" },
+      { name: "Laporan & Sertifikat", href: "/mahasiswa/laporan", icon: <FileBadge className="w-6 h-6" />, desc: "Unduh laporan KKL Plus dan sertifikat pencapaian", color: "from-amber-500 to-amber-600" },
     ],
   },
   dpl: {
     greeting: "Dosen Pembimbing",
     subtitle: "Pantau aktivitas mahasiswa bimbingan Anda dan berikan penilaian berkala.",
     menus: [
-      { name: "Daftar Bimbingan", href: "/dpl/bimbingan", icon: <Users className="w-6 h-6" />, desc: "Pantau dan konfirmasi penyerahan mahasiswa", color: "from-[#1398A5] to-teal-600" },
-      { name: "Validasi Logbook", href: "/dpl/validasi", icon: <CheckSquare className="w-6 h-6" />, desc: "Review dan validasi logbook harian mahasiswa", color: "from-emerald-500 to-teal-600" },
-      { name: "Validasi Laporan & Penilaian", href: "/dpl/validasi-laporan", icon: <FileCheck className="w-6 h-6" />, desc: "Persetujuan Laporan Akhir", color: "from-purple-500 to-purple-600" },
-      { name: "Petunjuk KKL Plus", href: "/dpl/petunjuk", icon: <Book className="w-6 h-6" />, desc: "Panduan pembimbingan dan rincian target CPMK", color: "from-amber-500 to-orange-600" },
+      { name: "Daftar Bimbingan", href: "/dpl/bimbingan", icon: <Users className="w-6 h-6" />, desc: "Pantau dan konfirmasi penyerahan mahasiswa", color: "from-teal-600 to-teal-600" },
+      { name: "Validasi Logbook", href: "/dpl/validasi", icon: <CheckSquare className="w-6 h-6" />, desc: "Review dan validasi logbook harian mahasiswa", color: "from-teal-500 to-teal-600" },
+      { name: "Validasi Laporan & Penilaian", href: "/dpl/validasi-laporan", icon: <FileCheck className="w-6 h-6" />, desc: "Persetujuan Laporan Akhir", color: "from-teal-500 to-teal-600" },
+      { name: "Petunjuk KKL Plus", href: "/dpl/petunjuk", icon: <Book className="w-6 h-6" />, desc: "Panduan pembimbingan dan rincian target CPMK", color: "from-amber-500 to-amber-600" },
     ],
   },
   mentor: {
     greeting: "Mentor Industri",
     subtitle: "Validasi logbook harian dan pantau perkembangan mahasiswa KKL Plus.",
     menus: [
-      { name: "Validasi Logbook", href: "/mentor/validasi", icon: <CheckSquare className="w-6 h-6" />, desc: "Review dan validasi logbook harian mahasiswa", color: "from-[#1398A5] to-teal-600" },
-      { name: "Petunjuk KKL Plus", href: "/mentor/petunjuk", icon: <Book className="w-6 h-6" />, desc: "Panduan mentoring dan rincian target CPMK", color: "from-emerald-500 to-teal-600" },
+      { name: "Validasi Logbook", href: "/mentor/validasi", icon: <CheckSquare className="w-6 h-6" />, desc: "Review dan validasi logbook harian mahasiswa", color: "from-teal-600 to-teal-600" },
+      { name: "Petunjuk KKL Plus", href: "/mentor/petunjuk", icon: <Book className="w-6 h-6" />, desc: "Panduan mentoring dan rincian target CPMK", color: "from-teal-500 to-teal-600" },
     ],
   },
 };
@@ -201,7 +201,7 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
     return (
       <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-slate-50 dark:bg-slate-900">
         <div className="relative z-10 flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-3 rounded-full animate-spin border-[#1398A5]/30 border-t-[#1398A5]" />
+          <div className="w-12 h-12 border-3 rounded-full animate-spin border-teal-600/30 border-t-teal-600" />
           <div className="text-lg font-bold animate-pulse text-slate-500 dark:text-slate-400">Memuat data...</div>
         </div>
       </div>
@@ -229,15 +229,15 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
       <div className={`absolute inset-0 z-0 transition-colors duration-700 ${isDark ? 'bg-slate-900/80' : 'bg-slate-50/85 backdrop-blur-[2px]'}`} />
       
       {/* Glow Effects */}
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#1398A5]/10 dark:from-[#1398A5]/15 to-transparent rounded-full pointer-events-none z-0" />
-      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-indigo-500/5 dark:from-indigo-500/10 to-transparent rounded-full pointer-events-none z-0" />
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-teal-600/10 dark:from-teal-600/15 to-transparent rounded-full pointer-events-none z-0" />
+      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-teal-500/5 dark:from-teal-500/10 to-transparent rounded-full pointer-events-none z-0" />
     </>
   );
 
   // ═══════════════════════ SUB-PAGE LAYOUT ═══════════════════════
   if (!isMainDashboard) {
     return (
-      <div className="min-h-screen relative overflow-hidden bg-slate-50 dark:bg-slate-900 selection:bg-[#1398A5]/30">
+      <div className="min-h-screen relative overflow-hidden bg-slate-50 dark:bg-slate-900 selection:bg-teal-600/30">
         <BackgroundScene />
 
         {/* Sticky Header */}
@@ -255,8 +255,8 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
               <h1 className="hidden sm:block text-lg font-bold tracking-tight text-slate-800 dark:text-slate-100">{subPageTitle}</h1>
             </div>
             <div className="flex items-center gap-4">
-              <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#1398A5]/10 dark:bg-teal-500/10 border border-[#1398A5]/20 dark:border-teal-500/20">
-                <span className="text-xs font-bold text-[#1398A5] dark:text-teal-400 tracking-wide uppercase">Periode Aktif:</span>
+              <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-teal-600/10 dark:bg-teal-500/10 border border-teal-600/20 dark:border-teal-500/20">
+                <span className="text-xs font-bold text-teal-600 dark:text-teal-400 tracking-wide uppercase">Periode Aktif:</span>
                 <span className="text-sm font-bold text-slate-800 dark:text-slate-100">{activePeriode}</span>
               </div>
               <ThemeToggle toggleTheme={toggleTheme} isDark={isDark} />
@@ -277,7 +277,7 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
 
   // ═══════════════════════ MAIN DASHBOARD LAYOUT ═══════════════════════
   return (
-    <div className="min-h-screen relative overflow-hidden bg-slate-50 dark:bg-slate-900 selection:bg-[#1398A5]/30">
+    <div className="min-h-screen relative overflow-hidden bg-slate-50 dark:bg-slate-900 selection:bg-teal-600/30">
       <BackgroundScene />
 
       {/* ═══════════════ NAVBAR ═══════════════ */}
@@ -291,7 +291,7 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
         </Link>
         <div className="flex items-center gap-5">
           <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/50 dark:bg-slate-800/50 border border-white/60 dark:border-slate-700/50 shadow-sm backdrop-blur-md">
-            <span className="text-xs font-bold text-[#1398A5] dark:text-teal-400 tracking-wide uppercase">Periode Aktif:</span>
+            <span className="text-xs font-bold text-teal-600 dark:text-teal-400 tracking-wide uppercase">Periode Aktif:</span>
             <span className="text-sm font-bold text-slate-800 dark:text-slate-100">{activePeriode}</span>
           </div>
           <ThemeToggle toggleTheme={toggleTheme} isDark={isDark} />
@@ -310,7 +310,7 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
           {/* Dark Overlay for contrast */}
           <div className="absolute inset-0 bg-slate-900/80 dark:bg-slate-950/80"></div>
           {/* Accent Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#1398A5]/90 to-[#1398A5]/20 dark:from-teal-900/90 dark:to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-teal-600/90 to-teal-600/20 dark:from-teal-900/90 dark:to-transparent"></div>
           
           <div className="relative z-10 p-8 lg:p-12">
             <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white shadow-sm mb-6">
@@ -336,7 +336,7 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
       {/* ═══════════════ MENU CARDS ═══════════════ */}
       <section className="relative z-10 w-full px-8 lg:px-[5cm] pb-20">
         <div className="flex items-center gap-3 mb-8">
-          <div className="w-1 h-6 bg-[#1398A5] rounded-full shadow-sm shadow-[#1398A5]/50" />
+          <div className="w-1 h-6 bg-teal-600 rounded-full shadow-sm shadow-teal-600/50" />
           <h2 className="text-xl font-bold tracking-tight text-slate-800 dark:text-slate-100 drop-shadow-sm">Menu Utama</h2>
         </div>
         <div className={`grid grid-cols-1 sm:grid-cols-2 ${config.menus.length >= 4 ? 'lg:grid-cols-4' : config.menus.length === 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-2'} gap-5 lg:gap-6`}>
@@ -350,7 +350,7 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
                 <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${menu.color} text-white shadow-lg flex items-center justify-center text-2xl mb-5 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500`}>
                   {menu.icon}
                 </div>
-                <h3 className="text-lg font-bold mb-2 transition-colors duration-300 text-slate-800 dark:text-slate-100 group-hover:text-[#1398A5] dark:group-hover:text-teal-400">
+                <h3 className="text-lg font-bold mb-2 transition-colors duration-300 text-slate-800 dark:text-slate-100 group-hover:text-teal-600 dark:group-hover:text-teal-400">
                   {menu.name}
                 </h3>
                 <p className="text-sm leading-relaxed transition-colors duration-300 text-slate-600 dark:text-slate-400 group-hover:text-slate-800 dark:group-hover:text-slate-300">
@@ -359,7 +359,7 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
               </div>
 
               {/* Arrow indicator */}
-              <div className="absolute top-7 right-7 w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 bg-white/50 dark:bg-slate-900/50 group-hover:bg-[#1398A5]/10 dark:group-hover:bg-[#1398A5]/20 border border-white/40 dark:border-slate-700 text-slate-400 dark:text-slate-500 group-hover:text-[#1398A5] dark:group-hover:text-teal-400 backdrop-blur-sm">
+              <div className="absolute top-7 right-7 w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 bg-white/50 dark:bg-slate-900/50 group-hover:bg-teal-600/10 dark:group-hover:bg-teal-600/20 border border-white/40 dark:border-slate-700 text-slate-400 dark:text-slate-500 group-hover:text-teal-600 dark:group-hover:text-teal-400 backdrop-blur-sm">
                 <ArrowRightIcon />
               </div>
             </Link>

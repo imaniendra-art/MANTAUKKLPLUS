@@ -253,7 +253,7 @@ const toggleSelectLog = (id) => {
   return (
     <DashboardLayout title="Pantau Kegiatan Mahasiswa (DPL)">
       {toastMessage && (
-        <div className="fixed top-24 left-1/2 -translate-x-1/2 bg-emerald-600 text-white px-8 py-3.5 rounded-full shadow-2xl z-[100] animate-in fade-in zoom-in-95 duration-300 font-bold flex items-center gap-2.5 border border-emerald-500">
+        <div className="fixed top-24 left-1/2 -translate-x-1/2 bg-teal-600 text-white px-8 py-3.5 rounded-full shadow-2xl z-[100] animate-in fade-in zoom-in-95 duration-300 font-bold flex items-center gap-2.5 border border-teal-500">
           <span><Check className="w-4 h-4 inline-block mr-1.5 -mt-0.5" /></span> {toastMessage}
         </div>
       )}
@@ -280,7 +280,7 @@ const toggleSelectLog = (id) => {
               <div className="flex bg-slate-100 dark:bg-slate-900 rounded-xl p-1 border border-slate-200 dark:border-slate-700/50">
                 <button
                   className={`px-5 py-2 text-sm font-bold rounded-lg transition-all flex items-center gap-2 ${
-                    viewMode === 'individu' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                    viewMode === 'individu' ? 'bg-white dark:bg-slate-700 text-teal-600 dark:text-teal-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
                   }`}
                   onClick={() => setViewMode('individu')}
                 >
@@ -288,7 +288,7 @@ const toggleSelectLog = (id) => {
                 </button>
                 <button
                   className={`px-5 py-2 text-sm font-bold rounded-lg transition-all flex items-center gap-2 ${
-                    viewMode === 'pokja' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                    viewMode === 'pokja' ? 'bg-white dark:bg-slate-700 text-teal-600 dark:text-teal-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
                   }`}
                   onClick={() => setViewMode('pokja')}
                 >
@@ -310,7 +310,7 @@ const toggleSelectLog = (id) => {
                 </button>
                 <button
                   className={`px-5 py-2 text-sm font-bold rounded-lg transition-all flex items-center gap-2 ${
-                    activeTab === 'histori' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                    activeTab === 'histori' ? 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
                   }`}
                   onClick={() => setActiveTab('histori')}
                 >
@@ -338,7 +338,7 @@ const toggleSelectLog = (id) => {
                     onClick={() => setExpandedPokja(expandedPokja === pokja.pokjaId ? null : pokja.pokjaId)}
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                      <div className="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-900/40 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0">
                         <Briefcase className="w-6 h-6" />
                       </div>
                       <div>
@@ -370,7 +370,7 @@ const toggleSelectLog = (id) => {
                               onClick={() => setExpandedSubGroup(isSubExpanded ? null : subGroupId)}
                             >
                               <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                                <div className="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0">
                                   {viewMode === 'individu' ? <User className="w-5 h-5" /> : <ClipboardList className="w-5 h-5" />}
                                 </div>
                                 <div>
@@ -391,13 +391,13 @@ const toggleSelectLog = (id) => {
                                 
                                 <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
                                   <span className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
-                                    <FileSignature className="w-4 h-4 text-indigo-500" />
+                                    <FileSignature className="w-4 h-4 text-teal-500" />
                                     Total {subGroup.logs.length} Logbook
                                   </span>
                                   {activeTab === 'antrean' && subGroup.logs.some(l => l.status_validasi === 'menunggu_dpl') && (
                                     <button 
                                       onClick={() => handleSelectSubGroup(subGroup.logs)}
-                                      className="text-xs font-bold px-4 py-2 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 rounded-lg border border-indigo-200 dark:border-indigo-800/50 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors flex items-center justify-center gap-2"
+                                      className="text-xs font-bold px-4 py-2 bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400 rounded-lg border border-teal-200 dark:border-teal-800/50 hover:bg-teal-100 dark:hover:bg-teal-900/50 transition-colors flex items-center justify-center gap-2"
                                     >
                                       <CheckCircle2 className="w-3.5 h-3.5" /> Pilih Semua di Grup Ini
                                     </button>
@@ -415,7 +415,7 @@ const toggleSelectLog = (id) => {
                                       <button 
                                         onClick={() => handleForceValidate(subGroup.logs)}
                                         disabled={submitting}
-                                        className="text-xs font-bold px-4 py-2 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 rounded-lg border border-emerald-200 dark:border-emerald-800/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-colors flex items-center justify-center gap-2"
+                                        className="text-xs font-bold px-4 py-2 bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400 rounded-lg border border-teal-200 dark:border-teal-800/50 hover:bg-teal-100 dark:hover:bg-teal-900/50 transition-colors flex items-center justify-center gap-2"
                                       >
                                         <Check className="w-3.5 h-3.5" /> Bantu Validasi
                                       </button>
@@ -430,7 +430,7 @@ const toggleSelectLog = (id) => {
                                       <div 
                                         key={log._id} 
                                         className={`bg-white dark:bg-slate-800 rounded-2xl p-5 shadow-sm border transition-all ${
-                                          isSelected ? 'border-indigo-400 dark:border-indigo-500 ring-2 ring-indigo-400/20 dark:ring-indigo-500/20 shadow-md' : 'border-slate-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-600'
+                                          isSelected ? 'border-teal-400 dark:border-teal-500 ring-2 ring-teal-400/20 dark:ring-teal-500/20 shadow-md' : 'border-slate-200 dark:border-slate-700 hover:border-teal-300 dark:hover:border-teal-600'
                                         }`}
                                       >
                                         <div className="flex justify-between items-start mb-4 gap-3">
@@ -438,14 +438,14 @@ const toggleSelectLog = (id) => {
                                             {activeTab === 'antrean' && log.status_validasi === 'menunggu_dpl' && (
                                               <input 
                                                 type="checkbox" 
-                                                className="w-5 h-5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-600 mt-0.5 cursor-pointer"
+                                                className="w-5 h-5 rounded border-slate-300 text-teal-600 focus:ring-teal-600 mt-0.5 cursor-pointer"
                                                 checked={isSelected}
                                                 onChange={() => toggleSelectLog(log._id)}
                                               />
                                             )}
                                             <div>
                                               <p className="text-sm font-black text-slate-700 dark:text-slate-200 flex items-center gap-2">
-                                                <Calendar className="w-4 h-4 text-indigo-500" /> 
+                                                <Calendar className="w-4 h-4 text-teal-500" /> 
                                                 {new Date(log.tanggal).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
                                               </p>
                                             </div>
@@ -455,29 +455,29 @@ const toggleSelectLog = (id) => {
                                             {log.bukti_kegiatan && (
                                               <button 
                                                 onClick={(e) => { e.stopPropagation(); handleViewFile(log.bukti_kegiatan); }} 
-                                                className="text-[10px] font-bold text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 px-2 py-1 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors border border-blue-200 dark:border-blue-800/50 flex items-center gap-1"
+                                                className="text-[10px] font-bold text-teal-600 bg-teal-50 dark:bg-teal-900/20 dark:text-teal-400 px-2 py-1 rounded-md hover:bg-teal-100 dark:hover:bg-teal-900/40 transition-colors border border-teal-200 dark:border-teal-800/50 flex items-center gap-1"
                                                 title="Lihat Bukti Kegiatan"
                                               >
                                                 🖼️ Bukti
                                               </button>
                                             )}
                                             {log.status_validasi === 'menunggu_dpl' && <span className="px-2 py-1 bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 text-[10px] font-bold rounded-md border border-amber-200 dark:border-amber-800/50">Menunggu DPL</span>}
-                                            {log.status_validasi === 'menunggu_mentor' && <span className="px-2 py-1 bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 text-[10px] font-bold rounded-md border border-indigo-200 dark:border-indigo-800/50 animate-pulse">Di Mentor</span>}
-                                            {log.status_validasi === 'selesai' && <span className="px-2 py-1 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 text-[10px] font-bold rounded-md border border-emerald-200 dark:border-emerald-800/50">Selesai</span>}
+                                            {log.status_validasi === 'menunggu_mentor' && <span className="px-2 py-1 bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400 text-[10px] font-bold rounded-md border border-teal-200 dark:border-teal-800/50 animate-pulse">Di Mentor</span>}
+                                            {log.status_validasi === 'selesai' && <span className="px-2 py-1 bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400 text-[10px] font-bold rounded-md border border-teal-200 dark:border-teal-800/50">Selesai</span>}
                                           </div>
                                         </div>
 
                                         <div className="space-y-2 mb-2 bg-slate-50/50 dark:bg-slate-900/20 p-4 rounded-xl border border-slate-100 dark:border-slate-800">
                                           <p className="text-sm text-slate-700 dark:text-slate-300">
-                                            <span className="font-bold text-indigo-600 dark:text-indigo-400 mr-2">Rencana Target:</span> 
+                                            <span className="font-bold text-teal-600 dark:text-teal-400 mr-2">Rencana Target:</span> 
                                             {log.rencana_target}
                                           </p>
                                           <p className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap">
-                                            <span className="font-bold text-indigo-600 dark:text-indigo-400 mr-2">Uraian Kegiatan:</span> 
+                                            <span className="font-bold text-teal-600 dark:text-teal-400 mr-2">Uraian Kegiatan:</span> 
                                             {log.uraian_kegiatan}
                                           </p>
-                                          <p className="text-sm text-emerald-700 dark:text-emerald-400 font-medium">
-                                            <span className="font-bold text-emerald-600 dark:text-emerald-500 mr-2">Hasil / Output:</span> 
+                                          <p className="text-sm text-teal-700 dark:text-teal-400 font-medium">
+                                            <span className="font-bold text-teal-600 dark:text-teal-500 mr-2">Hasil / Output:</span> 
                                             {log.hasil_output}
                                           </p>
                                         </div>
@@ -504,7 +504,7 @@ const toggleSelectLog = (id) => {
         <div className="fixed bottom-0 left-0 right-0 lg:left-64 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] p-4 sm:p-5 transform transition-transform duration-300 animate-in slide-in-from-bottom-full">
           <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-black">
+              <div className="w-10 h-10 rounded-full bg-teal-100 dark:bg-teal-900/40 text-teal-600 dark:text-teal-400 flex items-center justify-center font-black">
                 {selectedLogs.length}
               </div>
               <div>
@@ -523,7 +523,7 @@ const toggleSelectLog = (id) => {
               <button 
                 onClick={handleBulkValidasi}
                 disabled={submitting}
-                className="flex-1 sm:flex-none px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex-1 sm:flex-none px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
                 Kirim via WhatsApp
@@ -556,7 +556,7 @@ const toggleSelectLog = (id) => {
       {lastGeneratedLink && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
           <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 md:p-8 max-w-lg w-full shadow-2xl border border-slate-200 dark:border-slate-700 animate-in fade-in zoom-in-95 duration-200">
-            <div className="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-5 mx-auto">
+            <div className="w-12 h-12 rounded-full bg-teal-100 dark:bg-teal-900/40 text-teal-600 dark:text-teal-400 flex items-center justify-center mb-5 mx-auto">
               <CheckCircle2 className="w-6 h-6" />
             </div>
             <h3 className="text-xl font-black text-slate-800 dark:text-white text-center mb-2">Tautan Berhasil Dibuat!</h3>
