@@ -129,7 +129,7 @@ export default function AdminSettingsPage() {
 
   return (
     <DashboardLayout title="Pengaturan Sistem">
-      <div className="max-w-5xl mx-auto space-y-6">
+      <div className="w-full space-y-6">
         
         {message && (
           <div className={`p-4 rounded-xl flex items-center gap-3 ${message.type === 'success' ? 'bg-teal-50 text-teal-700 border border-teal-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
@@ -138,22 +138,30 @@ export default function AdminSettingsPage() {
           </div>
         )}
 
-        <div className="flex flex-col sm:flex-row gap-4 border-b border-slate-200 pb-2">
+        <div className="flex space-x-1 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl shadow-sm p-1.5 rounded-xl w-max mb-6 border border-white/60 dark:border-slate-700">
           <button 
             onClick={() => { setActiveTab('system'); setMessage(null); }}
-            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all ${activeTab === 'system' ? 'bg-slate-800 text-white shadow-md' : 'text-slate-500 hover:bg-slate-100'}`}
+            className={`flex items-center gap-2 px-6 py-2.5 text-sm font-bold rounded-lg transition-all ${
+              activeTab === 'system' 
+                ? 'bg-teal-600 text-amber-300 shadow-sm' 
+                : 'text-slate-500 hover:text-teal-600 dark:text-slate-400 dark:hover:text-teal-400'
+            }`}
           >
-            <SettingsIcon className="w-5 h-5" /> Pengaturan Aplikasi
+            <SettingsIcon className="w-4 h-4" /> Pengaturan Aplikasi
           </button>
           <button 
             onClick={() => { setActiveTab('account'); setMessage(null); }}
-            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all ${activeTab === 'account' ? 'bg-slate-800 text-white shadow-md' : 'text-slate-500 hover:bg-slate-100'}`}
+            className={`flex items-center gap-2 px-6 py-2.5 text-sm font-bold rounded-lg transition-all ${
+              activeTab === 'account' 
+                ? 'bg-teal-600 text-amber-300 shadow-sm' 
+                : 'text-slate-500 hover:text-teal-600 dark:text-slate-400 dark:hover:text-teal-400'
+            }`}
           >
-            <User className="w-5 h-5" /> Akun Admin
+            <User className="w-4 h-4" /> Akun Admin
           </button>
         </div>
 
-        <div className="bg-white rounded-3xl p-6 md:p-10 shadow-sm border border-slate-100">
+        <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-2xl shadow-sm border border-white/60 dark:border-slate-700 p-6 md:p-10">
           
           {activeTab === 'system' && (
             <form onSubmit={handleSaveSystem} className="space-y-8">
