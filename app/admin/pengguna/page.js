@@ -309,6 +309,8 @@ export default function ManajemenPenggunaPage() {
   const tabs = [
     { id: "mahasiswa", label: "Data Mahasiswa" },
     { id: "dpl", label: "Data DPL" },
+    { id: "mentor", label: "Data Mentor" },
+    { id: "admin", label: "Data Admin" },
   ];
 
   return (
@@ -319,7 +321,7 @@ export default function ManajemenPenggunaPage() {
         {tabs.map(tab => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => { setActiveTab(tab.id); setUsers([]); }}
             className={`px-6 py-2.5 text-sm font-bold rounded-lg transition-all ${
               activeTab === tab.id
                 ? "bg-[#1398A5] text-amber-300 shadow-sm"
@@ -670,7 +672,7 @@ export default function ManajemenPenggunaPage() {
           <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/60 dark:border-slate-700 w-full max-w-lg overflow-hidden relative scale-in-95 duration-200">
             <div className="p-8 border-b border-white/60 dark:border-slate-700">
               <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100">
-                Tambah DPL
+                Tambah {activeTab === 'dpl' ? 'DPL' : activeTab === 'mentor' ? 'Mentor' : activeTab === 'admin' ? 'Admin' : 'Mahasiswa'}
               </h3>
             </div>
             
@@ -688,17 +690,19 @@ export default function ManajemenPenggunaPage() {
                   placeholder="Contoh: riswan"
                 />
               </div>
-              <div className="mb-4">
-                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">NIDN</label>
-                  <input
-                    type="text"
-                    required
-                    value={addForm.nidn}
-                    onChange={(e) => setAddForm({ ...addForm, nidn: e.target.value, nim_nidn: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1398A5]"
-                    placeholder="Masukkan NIDN"
-                  />
-              </div>
+              {activeTab === 'dpl' && (
+                <div className="mb-4">
+                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">NIDN</label>
+                    <input
+                      type="text"
+                      required
+                      value={addForm.nidn}
+                      onChange={(e) => setAddForm({ ...addForm, nidn: e.target.value, nim_nidn: e.target.value })}
+                      className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1398A5]"
+                      placeholder="Masukkan NIDN"
+                    />
+                </div>
+              )}
               <div>
                 <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
                   Nama Lengkap
@@ -781,7 +785,7 @@ export default function ManajemenPenggunaPage() {
                   className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1398A5]"
                 />
               </div>
-              {activeTab !== 'mahasiswa' && (
+              {activeTab === 'dpl' && (
                 <div>
                   <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
                     NIDN

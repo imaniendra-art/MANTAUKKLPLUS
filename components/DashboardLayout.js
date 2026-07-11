@@ -177,6 +177,25 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
   const router = useRouter();
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === "dark";
+  const [activePeriode, setActivePeriode] = useState("Memuat...");
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      fetch('/api/admin/settings')
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.periode_aktif) {
+            setActivePeriode(data.periode_aktif);
+          } else {
+            setActivePeriode("Ganjil 2026/2027");
+          }
+        })
+        .catch(err => {
+          console.error("Gagal mengambil periode aktif:", err);
+          setActivePeriode("Ganjil 2026/2027");
+        });
+    }
+  }, [status]);
 
   if (status === "loading") {
     return (
@@ -236,6 +255,10 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
               <h1 className="hidden sm:block text-lg font-bold tracking-tight text-slate-800 dark:text-slate-100">{subPageTitle}</h1>
             </div>
             <div className="flex items-center gap-4">
+              <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#1398A5]/10 dark:bg-teal-500/10 border border-[#1398A5]/20 dark:border-teal-500/20">
+                <span className="text-xs font-bold text-[#1398A5] dark:text-teal-400 tracking-wide uppercase">Periode Aktif:</span>
+                <span className="text-sm font-bold text-slate-800 dark:text-slate-100">{activePeriode}</span>
+              </div>
               <ThemeToggle toggleTheme={toggleTheme} isDark={isDark} />
               <UserMenu nama={nama} role={role} />
             </div>
@@ -267,6 +290,10 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
           </div>
         </Link>
         <div className="flex items-center gap-5">
+          <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/50 dark:bg-slate-800/50 border border-white/60 dark:border-slate-700/50 shadow-sm backdrop-blur-md">
+            <span className="text-xs font-bold text-[#1398A5] dark:text-teal-400 tracking-wide uppercase">Periode Aktif:</span>
+            <span className="text-sm font-bold text-slate-800 dark:text-slate-100">{activePeriode}</span>
+          </div>
           <ThemeToggle toggleTheme={toggleTheme} isDark={isDark} />
           <UserMenu nama={nama} role={role} />
         </div>

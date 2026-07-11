@@ -57,13 +57,16 @@ export async function POST(req) {
     }
 
     const Pokja = (await import('@/models/Pokja')).default;
+    const SystemSettings = (await import('@/models/SystemSettings')).default;
+    const settings = await SystemSettings.findOne({});
+    const activePeriode = settings?.periode_aktif || "Ganjil 2026/2027";
     
-    // Create new Pokja group
     const pengajuan = await Pokja.create({
+      periode: activePeriode,
       nama_pokja: `Pokja Baru`, // User can edit this later
       ketua_id: mahasiswa_id,
-      anggota: [{ user_id: mahasiswa_id, status_undangan: 'bergabung' }],
       mitra_id: mitra_id || undefined,
+      anggota: [{ user_id: mahasiswa_id, status_undangan: 'bergabung' }],
       status_pokja: 'menunggu_persetujuan_lppm',
       tanggal_mulai: new Date(),
       tanggal_selesai: new Date(new Date().setMonth(new Date().getMonth() + 4)),

@@ -11,7 +11,15 @@ export async function GET(req) {
     
     if (!dplId) return NextResponse.json({ error: "Missing dplId" }, { status: 400 });
     
-    const pokjas = await Pokja.find({ dpl_id: dplId, status_pokja: { $in: ['berjalan', 'selesai'] } })
+    const SystemSettings = (await import('@/models/SystemSettings')).default;
+    const settings = await SystemSettings.findOne({});
+    const activePeriode = settings?.periode_aktif || "Ganjil 2026/2027";
+
+    const pokjas = await Pokja.find({ 
+      dpl_id: dplId, 
+      status_pokja: { $in: ['berjalan', 'selesai'] },
+      periode: activePeriode
+    })
       .populate({ path: 'anggota.user_id', select: 'nama_lengkap nim_nidn' })
       .lean();
       

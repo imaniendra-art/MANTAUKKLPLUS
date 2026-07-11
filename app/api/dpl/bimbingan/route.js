@@ -17,9 +17,14 @@ export async function GET(req) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const SystemSettings = (await import('@/models/SystemSettings')).default;
+    const settings = await SystemSettings.findOne({});
+    const activePeriode = settings?.periode_aktif || "Ganjil 2026/2027";
+
     const bimbinganList = await Pokja.find({ 
       dpl_id: session.user.id, 
-      status_pokja: { $in: ['disetujui_lppm', 'berjalan', 'selesai'] }
+      status_pokja: { $in: ['disetujui_lppm', 'berjalan', 'selesai'] },
+      periode: activePeriode
     })
       .populate('ketua_id', 'nama_lengkap nim_nidn nomor_hp email program_studi konsentrasi')
       .populate('anggota.user_id', 'nama_lengkap nim_nidn nomor_hp email program_studi konsentrasi')

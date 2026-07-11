@@ -89,11 +89,19 @@ export async function GET(req) {
     if (isAdmin === 'true') {
       const status = searchParams.get('status') || 'menunggu_persetujuan_lppm';
       const statusArray = status.includes(',') ? status.split(',') : [status];
-      const pokjas = await Pokja.find({ status_pokja: { $in: statusArray } })
+      
+      const SystemSettings = (await import('@/models/SystemSettings')).default;
+      const settings = await SystemSettings.findOne({});
+      const activePeriode = settings?.periode_aktif || "Ganjil 2026/2027";
+
+      const pokjas = await Pokja.find({ 
+        status_pokja: { $in: statusArray },
+        periode: activePeriode
+      })
         .populate({ path: 'ketua_id', select: 'nama_lengkap nim_nidn program_studi konsentrasi' })
         .populate({ path: 'anggota.user_id', select: 'nama_lengkap nim_nidn program_studi konsentrasi' })
         .populate({ path: 'dpl_id', select: 'nama_lengkap' })
-        .populate({ path: 'mitra_id', select: 'nama_instansi' }) // we might not need all fields here, but let's process it safely
+        .populate({ path: 'mitra_id', select: 'nama_instansi' })
         .sort({ createdAt: -1 });
         
       const processed = await Promise.all(pokjas.map(p => processPokjaUrls(p)));
@@ -122,7 +130,14 @@ export async function GET(req) {
     }
     
     if (dplId) {
-      const pokjas = await Pokja.find({ dpl_id: dplId })
+      const SystemSettings = (await import('@/models/SystemSettings')).default;
+      const settings = await SystemSettings.findOne({});
+      const activePeriode = settings?.periode_aktif || "Ganjil 2026/2027";
+
+      const pokjas = await Pokja.find({ 
+        dpl_id: dplId,
+        periode: activePeriode 
+      })
         .populate({ path: 'ketua_id', select: 'nama_lengkap nim_nidn' })
         .populate('mitra_id')
         .sort({ createdAt: -1 });

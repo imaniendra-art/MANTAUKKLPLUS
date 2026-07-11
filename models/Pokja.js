@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
 const PokjaSchema = new mongoose.Schema({
+  periode: { type: String, default: "Ganjil 2026/2027" },
   nama_pokja: { type: String, required: false },
   ketua_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   anggota: [{
