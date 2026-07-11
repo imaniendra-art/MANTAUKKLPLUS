@@ -43,8 +43,9 @@ export default function ManajemenPenggunaPage() {
 
   const fetchUsers = async (role) => {
     setLoading(true);
+    const roleToFetch = role === 'admin' ? 'lppm' : role;
     try {
-      const res = await fetch(`/api/admin/pengguna?role=${role}`);
+      const res = await fetch(`/api/admin/pengguna?role=${roleToFetch}`);
       const data = await res.json();
       setUsers(Array.isArray(data) ? data : []);
       setCurrentPage(1); // Reset to page 1 on tab change or reload
@@ -182,7 +183,7 @@ export default function ManajemenPenggunaPage() {
       const res = await fetch('/api/admin/pengguna', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...addForm, role: activeTab })
+        body: JSON.stringify({ ...addForm, role: activeTab === 'admin' ? 'lppm' : activeTab })
       });
       const data = await res.json();
       
