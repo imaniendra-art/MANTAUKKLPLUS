@@ -471,7 +471,7 @@ export default function MasterData() {
 
   const getPetunjukSheet = () => {
     const sheetData = [
-      ["PETUNJUK PENGISIAN FORMAT EXCEL CAPAIAN PEMBELAJARAN (MAGANG BERDAMPAK)"],
+      ["PETUNJUK PENGISIAN FORMAT EXCEL CAPAIAN PEMBELAJARAN (KKL PLUS BERDAMPAK)"],
       [],
       ["Langkah 1:", "Isi 'Kode Mata Kuliah', 'Nama Mata Kuliah', 'SKS', dan 'Dosen Pengampu' pada baris yang telah disediakan."],
       ["Langkah 2:", "Tentukan CPMK (Capaian Pembelajaran Mata Kuliah)."],

@@ -79,7 +79,7 @@ export default function CetakLaporan() {
           <div className="space-y-2 w-full pt-4">
             <h1 className="text-2xl md:text-3xl font-bold uppercase tracking-wide leading-relaxed">
               LAPORAN AKHIR {laporan.tipe_laporan === 'pokja' ? 'KELOMPOK' : 'INDIVIDU'}<br />
-              KEGIATAN MAGANG BERDAMPAK<br />
+              KEGIATAN KKL PLUS BERDAMPAK<br />
               DI PERUSAHAAN {mitra}
             </h1>
           </div>
@@ -109,7 +109,7 @@ export default function CetakLaporan() {
         <div className="page-break" style={{ pageBreakBefore: 'always' }}></div>
         <div className="p-[3cm] min-h-[29.7cm] print:min-h-0 text-justify leading-relaxed print:p-0 flex flex-col justify-center">
           <h2 className="text-center font-bold text-xl mb-8">LEMBAR PENGESAHAN</h2>
-          <p className="mb-4">Laporan Akhir {laporan.tipe_laporan === 'pokja' ? 'Kelompok' : 'Individu'} Kegiatan Magang Berdampak (KKL Plus) ini disusun oleh:</p>
+          <p className="mb-4">Laporan Akhir {laporan.tipe_laporan === 'pokja' ? 'Kelompok' : 'Individu'} Kegiatan KKL Plus Berdampak (KKL Plus) ini disusun oleh:</p>
           <table className="w-full mb-8">
             <tbody>
               <tr><td className="w-48 font-bold">Nama</td><td className="w-4">:</td><td className="uppercase">{mhs.nama_lengkap}</td></tr>

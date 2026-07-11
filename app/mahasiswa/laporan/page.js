@@ -294,7 +294,7 @@ export default function LaporanAkhirPage() {
 
   if (!pengajuan) {
     return (
-      <DashboardLayout title="Laporan Akhir">
+      <DashboardLayout title="Laporan Akhir Mahasiswa">
         <div className="p-8">
           <div className="bg-red-50 text-red-700 p-6 rounded-2xl border border-red-100">
             <h3 className="font-bold text-lg mb-2">Akses Ditolak</h3>
@@ -306,7 +306,18 @@ export default function LaporanAkhirPage() {
   }
 
   return (
-    <DashboardLayout title="Penyusunan Laporan Akhir">
+    <DashboardLayout title="Laporan Akhir Mahasiswa">
+      {!pengajuan?.is_laporan_unlocked ? (
+        <div className="max-w-2xl mx-auto mt-10">
+          <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-10 rounded-3xl border border-white/60 dark:border-slate-700 shadow-sm text-center">
+            <div className="w-20 h-20 bg-yellow-50 text-yellow-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">🔒</div>
+            <h2 className="text-2xl font-black mb-2 text-slate-800 dark:text-white">Akses Terkunci</h2>
+            <p className="text-slate-600 dark:text-slate-400">
+              Pengisian Laporan Akhir saat ini masih dikunci oleh sistem. Akses akan dibuka oleh <b>Dosen Pembimbing Lapangan (DPL)</b> setelah kegiatan POKJA dianggap cukup.
+            </p>
+          </div>
+        </div>
+      ) : (
       <div className="p-8 max-w-6xl mx-auto">
 
         {isKetua && (
@@ -512,7 +523,7 @@ export default function LaporanAkhirPage() {
                             <p>Memberikan ulasan konstruktif sebagai landasan perbaikan berkelanjutan (continuous improvement), yang mencakup:</p>
                             <ul className="list-disc pl-5 space-y-1">
                               <li><b>Evaluasi Personal (Self-Assessment):</b> Identifikasi celah kompetensi (competency gap) yang masih perlu dioptimalkan untuk meminimalkan disparitas antara kualifikasi diri saat ini dengan tuntutan industri.</li>
-                              <li><b>Rekomendasi Strategis:</b> Saran konstruktif dan aplikatif yang ditujukan kepada institusi kampus (penyesuaian kurikulum), instansi mitra (perbaikan manajemen program mahasiswa magang/KKL Plus), maupun bagi mahasiswa periode mendatang.</li>
+                              <li><b>Rekomendasi Strategis:</b> Saran konstruktif dan aplikatif yang ditujukan kepada institusi kampus (penyesuaian kurikulum), instansi mitra (perbaikan manajemen program mahasiswa KKL Plus), maupun bagi mahasiswa periode mendatang.</li>
                             </ul>
                           </div>
                         </div>
@@ -944,8 +955,8 @@ export default function LaporanAkhirPage() {
             </button>
           </div>
         )}
-
       </div>
+      )}
     </DashboardLayout>
   );
 }

@@ -58,7 +58,7 @@ export default function CetakKeterangan() {
           </div>
 
           <div className="text-center mb-8">
-            <h2 className="text-xl font-bold underline uppercase">SURAT KETERANGAN SELESAI MAGANG</h2>
+            <h2 className="text-xl font-bold underline uppercase">SURAT KETERANGAN SELESAI KKL PLUS</h2>
             <p>Nomor: ......../............/............/20....</p>
           </div>
 

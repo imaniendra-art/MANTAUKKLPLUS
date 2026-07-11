@@ -48,7 +48,7 @@ export default function CetakPengesahan() {
       <div className="max-w-[21cm] mx-auto bg-white shadow-2xl print:shadow-none print:max-w-none">
         <div className="p-[3cm] min-h-[29.7cm] print:p-[2.5cm]">
           <h2 className="text-center font-bold text-xl uppercase mb-12">
-            PENGESAHAN LAPORAN {data.laporan?.tipe_laporan === 'pokja' ? 'KELOMPOK' : 'INDIVIDU'}<br/>KEGIATAN MAGANG BERDAMPAK
+            PENGESAHAN LAPORAN {data.laporan?.tipe_laporan === 'pokja' ? 'KELOMPOK' : 'INDIVIDU'}<br/>KEGIATAN KKL PLUS BERDAMPAK
           </h2>
           
           <div className="text-justify leading-relaxed space-y-4 mb-12">

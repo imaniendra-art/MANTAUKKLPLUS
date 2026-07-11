@@ -98,6 +98,20 @@ export default function DaftarProker() {
   return (
     <DashboardLayout title="Daftar Program Kerja POKJA">
       
+      {!pokja || pokja.status_pokja === 'draft' || pokja.status_pokja === 'menunggu_persetujuan_lppm' ? (
+        <div className="max-w-2xl mx-auto mt-10">
+          <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-10 rounded-3xl border border-white/60 dark:border-slate-700 shadow-sm text-center">
+            <div className="w-20 h-20 bg-yellow-50 text-yellow-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">🔒</div>
+            <h2 className="text-2xl font-black mb-2 text-slate-800 dark:text-white">Akses Terkunci</h2>
+            <p className="text-slate-600 dark:text-slate-400">
+              Pengisian Program Kerja (Proker) baru bisa dilakukan **setelah** POKJA Anda disetujui oleh LPPM dan mendapatkan Dosen Pembimbing Lapangan (DPL).
+            </p>
+            <p className="text-sm font-bold text-slate-500 mt-6 bg-slate-100 dark:bg-slate-900/50 py-3 rounded-xl border border-slate-200 dark:border-slate-700 inline-block px-6">
+              Status POKJA saat ini: <span className="text-amber-600 dark:text-amber-400 uppercase tracking-wider">{pokja?.status_pokja?.replace(/_/g, ' ')}</span>
+            </p>
+          </div>
+        </div>
+      ) : (
       <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-3xl p-6 md:p-8 shadow-sm border border-white/60 dark:border-slate-700 w-full">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
@@ -123,7 +137,7 @@ export default function DaftarProker() {
           <div className="text-center p-12 text-slate-500 bg-white/20 dark:bg-slate-900/20 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700">
             <div className="text-4xl mb-4">📂</div>
             <p className="font-bold text-lg">Belum ada program kerja</p>
-            <p className="text-sm">Klik tombol "Tambah Proker Baru" untuk mulai merancang kegiatan.</p>
+            <p className="text-sm">Klik tombol &quot;Tambah Proker Baru&quot; untuk mulai merancang kegiatan.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
@@ -245,6 +259,7 @@ export default function DaftarProker() {
           </div>
         )}
       </div>
+      )}
 
       {/* MODAL FORM PROKER */}
       {isModalOpen && (
