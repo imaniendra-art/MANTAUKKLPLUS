@@ -142,7 +142,7 @@ const MENU_CONFIG = {
     menus: [
       { name: "Daftar Bimbingan", href: "/dpl/bimbingan", icon: <Users className="w-6 h-6" />, desc: "Pantau dan konfirmasi penyerahan mahasiswa", color: "from-[#1398A5] to-teal-600" },
       { name: "Validasi Logbook", href: "/dpl/validasi", icon: <CheckSquare className="w-6 h-6" />, desc: "Review dan validasi logbook harian mahasiswa", color: "from-emerald-500 to-teal-600" },
-      { name: "Validasi Laporan", href: "/dpl/validasi-laporan", icon: <FileCheck className="w-6 h-6" />, desc: "Persetujuan Laporan Akhir", color: "from-purple-500 to-purple-600" },
+      { name: "Validasi Laporan & Penilaian", href: "/dpl/validasi-laporan", icon: <FileCheck className="w-6 h-6" />, desc: "Persetujuan Laporan Akhir", color: "from-purple-500 to-purple-600" },
       { name: "Petunjuk KKL Plus", href: "/dpl/petunjuk", icon: <Book className="w-6 h-6" />, desc: "Panduan pembimbingan dan rincian target CPMK", color: "from-amber-500 to-orange-600" },
     ],
   },

@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { useSession } from "next-auth/react";
-import { Check, X, ChevronDown, ChevronUp } from "lucide-react";
+import { Check, X, ChevronDown, ChevronUp, Award, Link } from "lucide-react";
 
 const DEFAULT_SECTIONS_INDIVIDU = {
   bab1: [
@@ -218,7 +218,7 @@ export default function DplValidasiLaporan() {
                               )}
                             </td>
                             <td className="py-4 px-6 align-middle text-right">
-                              <div className="flex justify-end gap-2">
+                              <div className="flex justify-end gap-2 flex-wrap">
                                 <a 
                                   href={`/mahasiswa/laporan/cetak/laporan?id=${laporan._id}`} 
                                   target="_blank" 
@@ -239,6 +239,15 @@ export default function DplValidasiLaporan() {
                                   {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                                   {isExpanded ? 'Tutup Revisi' : 'Periksa & Revisi'}
                                 </button>
+                                
+                                  {laporan.status === 'disetujui' && (
+                                    <a
+                                      href={`/dpl/penilaian/${laporan.pokja_id._id}`}
+                                      className="text-xs font-bold text-fuchsia-700 bg-fuchsia-50 hover:bg-fuchsia-100 px-3 py-2 rounded-lg transition-colors border border-fuchsia-200 flex items-center gap-1.5"
+                                    >
+                                      <Award className="w-3.5 h-3.5" /> Penilaian
+                                    </a>
+                                  )}
                               </div>
                             </td>
                           </tr>

@@ -169,7 +169,7 @@ export default function CetakLaporan() {
               <div key={sec.id} className="pl-6">{sec.title}</div>
             ))}
 
-            <div className="font-bold pt-4">BAB II METODE KKLP KERJA</div>
+            <div className="font-bold pt-4">BAB II METODE KKL PLUS</div>
             {safeParse(laporan.bab2_metode).map(sec => (
               <div key={sec.id} className="pl-6">{sec.title}</div>
             ))}
