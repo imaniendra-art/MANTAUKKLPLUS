@@ -9,7 +9,7 @@ export async function POST(req) {
     const payload = await req.json();
     const { pokja_id, judul_proker, deskripsi, target_dampak, jenis_proker, pic_id, tanggal_mulai, tanggal_selesai } = payload;
 
-    if (!pokja_id || !judul_proker || !jenis_proker || !pic_id || !tanggal_mulai || !tanggal_selesai) {
+    if (!pokja_id || !judul_proker || !jenis_proker || !pic_id || !tanggal_mulai || !tanggal_selesai || (Array.isArray(pic_id) && pic_id.length === 0)) {
       return NextResponse.json({ error: "Pokja ID, Judul, Jenis, PIC, dan Tanggal wajib diisi" }, { status: 400 });
     }
 

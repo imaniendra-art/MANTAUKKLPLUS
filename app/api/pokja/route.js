@@ -53,7 +53,7 @@ export async function POST(req) {
       ketua_id,
       anggota,
       mitra_id: mitra_id || null,
-      status_pokja: 'menunggu_persetujuan_lppm'
+      status_pokja: 'menunggu_persetujuan_admin'
     });
     
     return NextResponse.json(pokja, { status: 201 });
@@ -87,7 +87,7 @@ export async function GET(req) {
     }
     
     if (isAdmin === 'true') {
-      const status = searchParams.get('status') || 'menunggu_persetujuan_lppm';
+      const status = searchParams.get('status') || 'menunggu_persetujuan_admin';
       const statusArray = status.includes(',') ? status.split(',') : [status];
       
       const SystemSettings = (await import('@/models/SystemSettings')).default;
@@ -156,9 +156,19 @@ export async function PATCH(req) {
   await dbConnect();
   try {
     const data = await req.json();
-    const { id, dpl_id, status_pokja, catatan_lppm, action, mhs_id, mitra_id } = data;
+    const { id, dpl_id, status_pokja, catatan_admin, action, mhs_id, mitra_id } = data;
     
     if (!id) return NextResponse.json({ error: "ID wajib diisi" }, { status: 400 });
+
+    // Handle rename
+    if (action === 'rename' && data.nama_pokja) {
+      const updated = await Pokja.findByIdAndUpdate(
+        id,
+        { $set: { nama_pokja: data.nama_pokja } },
+        { new: true }
+      );
+      return NextResponse.json(updated);
+    }
 
     // Handle invite response (anggota accept/reject)
     if (action === 'respond_invite' && mhs_id && status_pokja) {
@@ -191,11 +201,11 @@ export async function PATCH(req) {
       return NextResponse.json({ success: true, pokja: targetPokja });
     }
 
-    // Handle LPPM actions
+    // Handle Admin actions
     const updatePayload = {};
     if (status_pokja) updatePayload.status_pokja = status_pokja;
     if (dpl_id) updatePayload.dpl_id = dpl_id;
-    if (catatan_lppm) updatePayload.catatan_lppm = catatan_lppm;
+    if (catatan_admin) updatePayload.catatan_admin = catatan_admin;
     if (mitra_id) updatePayload.mitra_id = mitra_id;
 
     const updated = await Pokja.findByIdAndUpdate(
@@ -205,6 +215,45 @@ export async function PATCH(req) {
     );
     
     return NextResponse.json(updated);
+  } catch (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
+export async function DELETE(req) {
+  await dbConnect();
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get('id');
+
+    if (!id) return NextResponse.json({ error: "ID wajib diisi" }, { status: 400 });
+
+    const deleted = await Pokja.findByIdAndDelete(id);
+    if (!deleted) {
+      return NextResponse.json({ error: "POKJA tidak ditemukan" }, { status: 404 });
+    }
+
+    // Hapus data terkait agar tidak menjadi sampah (orphaned data)
+    try {
+      const Absensi = (await import('@/models/Absensi')).default;
+      const Proker = (await import('@/models/Proker')).default;
+      const LaporanAkhir = (await import('@/models/LaporanAkhir')).default;
+      const Penilaian = (await import('@/models/Penilaian')).default;
+      const Logbook = (await import('@/models/Logbook')).default;
+      
+      await Promise.all([
+        Absensi.deleteMany({ pokja_id: id }),
+        Proker.deleteMany({ pokja_id: id }),
+        LaporanAkhir.deleteMany({ pokja_id: id }),
+        Penilaian.deleteMany({ pokja_id: id }),
+        Logbook.deleteMany({ pokja_id: id })
+      ]);
+    } catch (cleanupError) {
+      console.warn("Gagal membersihkan sebagian data terkait pokja:", cleanupError);
+      // Tetap lanjutkan karena pokja utamanya sudah terhapus
+    }
+
+    return NextResponse.json({ message: "POKJA & Data Terkait berhasil dihapus" }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

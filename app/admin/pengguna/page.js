@@ -19,7 +19,7 @@ export default function ManajemenPenggunaPage() {
   // Add User Modal State
   const [showAddModal, setShowAddModal] = useState(false);
   const [addingUser, setAddingUser] = useState(false);
-  const [addForm, setAddForm] = useState({ nim_nidn: "", nidn: "", nama_lengkap: "", nomor_hp: "", email: "" });
+  const [addForm, setAddForm] = useState({ nim_nidn: "", nidn: "", nama_lengkap: "", nomor_hp: "", email: "", tipe_admin: "prodi" });
 
   // Edit User Modal State
   const [showEditModal, setShowEditModal] = useState(false);
@@ -33,7 +33,8 @@ export default function ManajemenPenggunaPage() {
     email: "",
     program_studi: "",
     konsentrasi: "",
-    kegiatan: ""
+    kegiatan: "",
+    tipe_admin: ""
   });
 
   const ITEMS_PER_PAGE = 10;
@@ -43,7 +44,7 @@ export default function ManajemenPenggunaPage() {
 
   const fetchUsers = async (role) => {
     setLoading(true);
-    const roleToFetch = role === 'admin' ? 'lppm' : role;
+    const roleToFetch = role === 'admin' ? 'admin' : role;
     try {
       const res = await fetch(`/api/admin/pengguna?role=${roleToFetch}`);
       const data = await res.json();
@@ -183,7 +184,7 @@ export default function ManajemenPenggunaPage() {
       const res = await fetch('/api/admin/pengguna', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...addForm, role: activeTab === 'admin' ? 'lppm' : activeTab })
+        body: JSON.stringify({ ...addForm, role: activeTab === 'admin' ? 'admin' : activeTab })
       });
       const data = await res.json();
       
@@ -192,7 +193,7 @@ export default function ManajemenPenggunaPage() {
       } else {
         alert("Pengguna berhasil ditambahkan. Password default sama dengan NIM/ID.");
         setShowAddModal(false);
-        setAddForm({ nim_nidn: "", nidn: "", nama_lengkap: "", nomor_hp: "", email: "" });
+        setAddForm({ nim_nidn: "", nidn: "", nama_lengkap: "", nomor_hp: "", email: "", tipe_admin: "prodi" });
         fetchUsers(activeTab);
       }
     } catch (error) {
@@ -212,7 +213,8 @@ export default function ManajemenPenggunaPage() {
       email: user.email || "",
       program_studi: user.program_studi || "",
       konsentrasi: user.konsentrasi || "",
-      kegiatan: user.kegiatan || ""
+      kegiatan: user.kegiatan || "",
+      tipe_admin: user.tipe_admin || "prodi"
     });
     setShowEditModal(true);
   };
@@ -267,7 +269,7 @@ export default function ManajemenPenggunaPage() {
 
     let headers = [];
     if (activeTab === 'mahasiswa') {
-      headers = ['NIM', 'Nama Mahasiswa', 'Prodi', 'Nama POKJA', 'Jabatan', 'Nomor HP', 'Email', 'Status Sandi'];
+      headers = ['NIM', 'Nama Mahasiswa', 'Prodi', 'Nama POKJA', 'Jabatan', 'Nomor HP', 'Email', 'Status Akun'];
     } else {
       headers = ['NIDN/ID', 'Nama Lengkap', 'Email'];
     }
@@ -288,7 +290,7 @@ export default function ManajemenPenggunaPage() {
         row.push(escape(user.kegiatan));
         row.push(escape(user.nomor_hp));
         row.push(escape(user.email));
-        row.push(escape(user.isFirstLogin !== false ? 'Belum Diatur' : 'Selesai Setup'));
+        row.push(escape(user.isFirstLogin !== false ? 'Belum Aktif' : 'Aktif'));
       } else {
         row.push(escape(user.email));
       }
@@ -310,7 +312,6 @@ export default function ManajemenPenggunaPage() {
   const tabs = [
     { id: "mahasiswa", label: "Data Mahasiswa" },
     { id: "dpl", label: "Data DPL" },
-    { id: "mentor", label: "Data Mentor" },
     { id: "admin", label: "Data Admin" },
   ];
 
@@ -451,12 +452,12 @@ export default function ManajemenPenggunaPage() {
                         )}
                         <th 
                           scope="col" 
-                          onClick={() => requestSort('kegiatan')}
+                          onClick={() => requestSort(activeTab === 'admin' ? 'tipe_admin' : 'kegiatan')}
                           className="px-6 py-4 text-left text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                         >
-                          {activeTab === 'dpl' ? 'Nomor HP' : 'Jabatan'} {getSortIcon('kegiatan')}
+                          {activeTab === 'dpl' ? 'Nomor HP' : activeTab === 'admin' ? 'Tipe Admin' : 'Jabatan'} {getSortIcon(activeTab === 'admin' ? 'tipe_admin' : 'kegiatan')}
                         </th>
-                        {activeTab === 'mahasiswa' && (
+                        {(activeTab === 'mahasiswa' || activeTab === 'admin') && (
                           <th 
                             scope="col" 
                             onClick={() => requestSort('nomor_hp')}
@@ -465,13 +466,15 @@ export default function ManajemenPenggunaPage() {
                             Nomor HP {getSortIcon('nomor_hp')}
                           </th>
                         )}
-                        <th 
-                          scope="col" 
-                          onClick={() => requestSort('isFirstLogin')}
-                          className="px-6 py-4 text-left text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                        >
-                          Status Akun {getSortIcon('isFirstLogin')}
-                        </th>
+                        {activeTab !== 'admin' && (
+                          <th 
+                            scope="col" 
+                            onClick={() => requestSort('isFirstLogin')}
+                            className="px-6 py-4 text-left text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                          >
+                            Status Akun {getSortIcon('isFirstLogin')}
+                          </th>
+                        )}
                         <th scope="col" className="px-6 py-4 text-center text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider">Aksi</th>
                       </tr>
                     </thead>
@@ -489,20 +492,26 @@ export default function ManajemenPenggunaPage() {
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">{user.konsentrasi || '-'}</td>
                           )}
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
-                            {activeTab === 'dpl' ? (user.nomor_hp || '-') : (user.kegiatan || '-')}
+                            {activeTab === 'dpl' ? (user.nomor_hp || '-') : activeTab === 'admin' ? (
+                              <span className="capitalize px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded font-semibold text-xs">
+                                {user.tipe_admin || 'Prodi'}
+                              </span>
+                            ) : (user.kegiatan || '-')}
                           </td>
-                          {activeTab === 'mahasiswa' && (
+                          {(activeTab === 'mahasiswa' || activeTab === 'admin') && (
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
                               {user.nomor_hp || '-'}
                             </td>
                           )}
-                          <td className="px-6 py-4 whitespace-nowrap text-sm">
-                            {user.isFirstLogin !== false ? (
-                              <span className="px-2.5 py-1 bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400 rounded-full text-[10px] font-bold uppercase tracking-wider border border-amber-200 dark:border-amber-800 whitespace-nowrap">Aktif (Belum Ganti PW)</span>
-                            ) : (
-                              <span className="px-2.5 py-1 bg-teal-50 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400 rounded-full text-xs font-bold uppercase tracking-wider border border-teal-200 dark:border-teal-800">Aktif</span>
-                            )}
-                          </td>
+                          {activeTab !== 'admin' && (
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                              {user.isFirstLogin !== false ? (
+                                <span className="px-2.5 py-1 bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400 rounded-full text-[10px] font-bold uppercase tracking-wider border border-amber-200 dark:border-amber-800 whitespace-nowrap">Belum Aktif</span>
+                              ) : (
+                                <span className="px-2.5 py-1 bg-teal-50 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400 rounded-full text-xs font-bold uppercase tracking-wider border border-teal-200 dark:border-teal-800">Aktif</span>
+                              )}
+                            </td>
+                          )}
                           <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                             <div className="flex justify-center items-center space-x-2">
                               <button 
@@ -742,6 +751,26 @@ export default function ManajemenPenggunaPage() {
                   placeholder="opsional@email.com"
                 />
               </div>
+              
+              {activeTab === 'admin' && (
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+                    Tipe Admin
+                  </label>
+                  <select
+                    value={addForm.tipe_admin}
+                    onChange={(e) => setAddForm({...addForm, tipe_admin: e.target.value})}
+                    className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-600"
+                  >
+                    <option value="prodi">Program Studi (Prodi)</option>
+                    <option value="lppm">LPPM / Panitia Universitas</option>
+                    <option value="fakultas">Fakultas</option>
+                    <option value="superadmin">Super Admin</option>
+                    <option value="lainnya">Lainnya</option>
+                  </select>
+                </div>
+              )}
+              
               <div className="mt-8 flex items-center justify-end gap-3 border-t border-white/60 dark:border-slate-700 pt-6">
                 <button 
                   type="button" 
@@ -864,6 +893,25 @@ export default function ManajemenPenggunaPage() {
                     />
                   </div>
                 </>
+              )}
+              
+              {activeTab === 'admin' && (
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+                    Tipe Admin
+                  </label>
+                  <select
+                    value={editForm.tipe_admin}
+                    onChange={(e) => setEditForm({...editForm, tipe_admin: e.target.value})}
+                    className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-600"
+                  >
+                    <option value="prodi">Program Studi (Prodi)</option>
+                    <option value="lppm">LPPM / Panitia Universitas</option>
+                    <option value="fakultas">Fakultas</option>
+                    <option value="superadmin">Super Admin</option>
+                    <option value="lainnya">Lainnya</option>
+                  </select>
+                </div>
               )}
 
               <div className="mt-8 flex items-center justify-end gap-3 border-t border-white/60 dark:border-slate-700 pt-6">

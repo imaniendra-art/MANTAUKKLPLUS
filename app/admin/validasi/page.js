@@ -5,9 +5,11 @@ import DashboardLayout from "@/components/DashboardLayout";
 import { Check, UserCircle, Info } from "lucide-react";
 
 export default function ValidasiPokja() {
-  const [activeTab, setActiveTab] = useState('menunggu_persetujuan_lppm');
+  const [activeTab, setActiveTab] = useState('menunggu_persetujuan_admin');
   const [pokjas, setPokjas] = useState([]);
   const [dpls, setDpls] = useState([]);
+  const [mahasiswaList, setMahasiswaList] = useState([]);
+  const [mitraList, setMitraList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expandedRow, setExpandedRow] = useState(null);
   
@@ -22,21 +24,43 @@ export default function ValidasiPokja() {
   // Modal State Dokumen
   const [showDokumenModal, setShowDokumenModal] = useState(false);
 
+  // Modal State Plotting
+  const [showPlotModal, setShowPlotModal] = useState(false);
+  const [plotForm, setPlotForm] = useState({
+    nama_pokja: '',
+    ketua_id: '',
+    anggota_ids: [],
+    mitra_id: '',
+    dpl_id: ''
+  });
+  
+  const [searchKetua, setSearchKetua] = useState("");
+  const [searchAnggota, setSearchAnggota] = useState("");
+
   const [submitting, setSubmitting] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
   const fetchData = useCallback(async (status) => {
     setLoading(true);
     try {
-      const [pokjaRes, dplRes] = await Promise.all([
+      const [pokjaRes, dplRes, mhsRes, mitraRes] = await Promise.all([
         fetch(`/api/pokja?admin=true&status=${status}`),
-        fetch('/api/users/dpl')
+        fetch('/api/users/dpl'),
+        fetch('/api/admin/pengguna?role=mahasiswa'),
+        fetch('/api/mitra?available=true')
       ]);
       const pokjaData = await pokjaRes.json();
       const dplData = await dplRes.json();
+      const mhsData = await mhsRes.json();
+      const mitraData = await mitraRes.json();
       
       if (Array.isArray(pokjaData)) setPokjas(pokjaData);
       if (Array.isArray(dplData)) setDpls(dplData);
+      if (Array.isArray(mhsData)) {
+        // Hanya tampilkan mahasiswa yang belum berkelompok
+        setMahasiswaList(mhsData.filter(m => m.kegiatan !== 'Ketua' && m.kegiatan !== 'Anggota'));
+      }
+      if (Array.isArray(mitraData)) setMitraList(mitraData);
     } catch (error) {
       console.error("Gagal mengambil data", error);
     } finally {
@@ -122,7 +146,7 @@ export default function ValidasiPokja() {
         body: JSON.stringify({
           id: selectedPokja._id,
           dpl_id: selectedDplId,
-          status_pokja: 'disetujui_lppm'
+          status_pokja: 'disetujui_admin'
         })
       });
       
@@ -154,7 +178,7 @@ export default function ValidasiPokja() {
         body: JSON.stringify({
           id: selectedPokja._id,
           status_pokja: 'ditolak',
-          catatan_lppm: rejectReason
+          catatan_admin: rejectReason
         })
       });
       
@@ -174,6 +198,77 @@ export default function ValidasiPokja() {
     }
   };
 
+  const handlePlotSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      const res = await fetch('/api/admin/pokja/plotting', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(plotForm)
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setShowPlotModal(false);
+        showToast("✅ Kelompok berhasil di-plot!");
+        setPlotForm({ nama_pokja: '', ketua_id: '', anggota_ids: [], mitra_id: '', dpl_id: '' });
+        fetchData(activeTab);
+      } else {
+        alert(data.error || "Gagal melakukan plotting kelompok");
+      }
+    } catch (error) {
+      alert("Terjadi kesalahan sistem.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDeletePokja = async (p) => {
+    if (!window.confirm(`Yakin ingin MENGHAPUS secara permanen kelompok "${p.nama_pokja}"?\n\nSemua mahasiswa di kelompok ini akan kembali ke status belum berkelompok.`)) {
+      return;
+    }
+    
+    try {
+      const res = await fetch(`/api/pokja?id=${p._id}`, {
+        method: 'DELETE',
+      });
+      
+      if (res.ok) {
+        showToast("🗑️ POKJA Berhasil Dihapus");
+        fetchData(activeTab);
+      } else {
+        const errData = await res.json();
+        alert("Gagal menghapus: " + errData.error);
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Terjadi kesalahan sistem saat menghapus POKJA.");
+    }
+  };
+
+  const handleCheckboxAnggota = (id) => {
+    setPlotForm(prev => {
+      const isSelected = prev.anggota_ids.includes(id);
+      if (isSelected) {
+        return { ...prev, anggota_ids: prev.anggota_ids.filter(aId => aId !== id) };
+      } else {
+        return { ...prev, anggota_ids: [...prev.anggota_ids, id] };
+      }
+    });
+  };
+  const filteredKetuaList = mahasiswaList.filter(mhs => 
+    mhs.nama_lengkap.toLowerCase().includes(searchKetua.toLowerCase()) || 
+    mhs.nim_nidn.toLowerCase().includes(searchKetua.toLowerCase())
+  );
+
+  const filteredAnggotaList = mahasiswaList.filter(mhs => 
+    mhs._id !== plotForm.ketua_id && 
+    (mhs.nama_lengkap.toLowerCase().includes(searchAnggota.toLowerCase()) || 
+     mhs.nim_nidn.toLowerCase().includes(searchAnggota.toLowerCase()))
+  );
+
+  const totalMembers = (plotForm.ketua_id ? 1 : 0) + plotForm.anggota_ids.length;
+
   return (
     <DashboardLayout title="Validasi POKJA KKL Plus">
       
@@ -187,30 +282,40 @@ export default function ValidasiPokja() {
       <div className="flex space-x-1 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl shadow-sm p-1.5 rounded-xl w-max border border-white/60 dark:border-slate-700">
         <button
           className={`px-6 py-2.5 text-sm font-bold rounded-lg transition-all ${
-            activeTab === 'menunggu_persetujuan_lppm' 
+            activeTab === 'menunggu_persetujuan_admin' 
               ? 'bg-teal-600 text-amber-300 shadow-sm' 
               : 'text-slate-500 hover:text-teal-600 dark:text-slate-400 dark:hover:text-teal-400'
           }`}
-          onClick={() => setActiveTab('menunggu_persetujuan_lppm')}
+          onClick={() => setActiveTab('menunggu_persetujuan_admin')}
         >
           Antrean Validasi
         </button>
         <button
           className={`px-6 py-2.5 text-sm font-bold rounded-lg transition-all ${
-            activeTab === 'disetujui_lppm,berjalan,selesai' 
+            activeTab === 'disetujui_admin,berjalan,selesai' 
               ? 'bg-teal-600 text-amber-300 shadow-sm' 
               : 'text-slate-500 hover:text-teal-600 dark:text-slate-400 dark:hover:text-teal-400'
           }`}
-          onClick={() => setActiveTab('disetujui_lppm,berjalan,selesai')}
+          onClick={() => setActiveTab('disetujui_admin,berjalan,selesai')}
         >
           Semua POKJA Aktif
         </button>
       </div>
 
         {/* Header Card */}
-        <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl shadow-sm rounded-2xl border border-white/60 dark:border-slate-700 p-6">
-          <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">Validasi Kelompok Kerja (POKJA) KKL Plus</h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Verifikasi pembentukan kelompok mahasiswa, tinjau usulan mitra lokasi, dan alokasikan Dosen Pembimbing Lapangan (DPL).</p>
+        <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl shadow-sm rounded-2xl border border-white/60 dark:border-slate-700 p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">Validasi Kelompok Kerja (POKJA) KKL Plus</h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Verifikasi pembentukan kelompok mahasiswa, tinjau usulan mitra lokasi, dan alokasikan Dosen Pembimbing Lapangan (DPL).</p>
+          </div>
+          <div>
+            <button 
+              onClick={() => setShowPlotModal(true)}
+              className="bg-teal-600 hover:bg-teal-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-teal-600/20 hover:-translate-y-0.5 transition-all whitespace-nowrap"
+            >
+              + Plotting Kelompok
+            </button>
+          </div>
         </div>
 
         <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl shadow-sm rounded-2xl border border-white/60 dark:border-slate-700 overflow-hidden flex flex-col">
@@ -222,7 +327,7 @@ export default function ValidasiPokja() {
                     <th className="py-4 px-4 text-left">Nama Kelompok</th>
                     <th className="py-4 px-4 text-left">Ketua</th>
                     <th className="py-4 px-4 text-left">Mitra Tujuan</th>
-                    {activeTab !== 'menunggu_persetujuan_lppm' && <th className="py-4 px-4 text-left">DPL</th>}
+                    {activeTab !== 'menunggu_persetujuan_admin' && <th className="py-4 px-4 text-left">DPL</th>}
                     <th className="py-4 px-4 text-center">Aksi</th>
                   </tr>
                 </thead>
@@ -264,22 +369,29 @@ export default function ValidasiPokja() {
                         <td className="py-4 px-4">
                           <p className="font-semibold text-slate-700 dark:text-slate-200">{p.mitra_id?.nama_instansi || 'Belum Memilih Mitra'}</p>
                         </td>
-                        {activeTab !== 'menunggu_persetujuan_lppm' && (
+                        {activeTab !== 'menunggu_persetujuan_admin' && (
                           <td className="py-4 px-4">
                             <p className="font-bold text-teal-600 dark:text-teal-400">{p.dpl_id?.nama_lengkap || '-'}</p>
                           </td>
                         )}
                         <td className="py-4 px-4 text-center">
-                          {activeTab === 'menunggu_persetujuan_lppm' ? (
+                          {activeTab === 'menunggu_persetujuan_admin' ? (
                             <div className="flex justify-center gap-2">
                               <button 
-                                onClick={() => handleRejectClick(p)}
-                                className="px-3 py-1.5 bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500 hover:text-white font-bold text-xs rounded-lg transition-colors whitespace-nowrap"
+                                onClick={(e) => { e.stopPropagation(); handleDeletePokja(p); }}
+                                className="px-3 py-1.5 bg-red-100/50 text-red-600 hover:bg-red-500 hover:text-white font-bold text-xs rounded-lg transition-colors whitespace-nowrap"
+                                title="Hapus Permanen"
+                              >
+                                Hapus
+                              </button>
+                              <button 
+                                onClick={(e) => { e.stopPropagation(); handleRejectClick(p); }}
+                                className="px-3 py-1.5 bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500 hover:text-white font-bold text-xs rounded-lg transition-colors whitespace-nowrap"
                               >
                                 Tolak
                               </button>
                               <button 
-                                onClick={() => handleValidasiClick(p)}
+                                onClick={(e) => { e.stopPropagation(); handleValidasiClick(p); }}
                                 className="px-3 py-1.5 bg-teal-500/20 text-teal-600 dark:text-teal-400 hover:bg-teal-600 hover:text-white font-bold text-xs rounded-lg transition-colors whitespace-nowrap"
                               >
                                 Tugaskan DPL
@@ -287,9 +399,16 @@ export default function ValidasiPokja() {
                             </div>
                           ) : (
                             <div className="flex justify-center gap-2 items-center">
-                              <span className="text-teal-500 font-bold text-xs uppercase hidden md:inline">
-                                {p.status_pokja === 'disetujui_lppm' ? 'Persiapan' : p.status_pokja.replace('_', ' ')}
+                              <span className="text-teal-500 font-bold text-xs uppercase hidden md:inline mr-1">
+                                {p.status_pokja === 'disetujui_admin' ? 'Persiapan' : p.status_pokja.replace('_', ' ')}
                               </span>
+                              <button 
+                                onClick={(e) => { e.stopPropagation(); handleDeletePokja(p); }}
+                                className="px-3 py-1.5 bg-red-100/50 text-red-600 hover:bg-red-500 hover:text-white font-bold text-xs rounded-lg transition-colors whitespace-nowrap"
+                                title="Hapus Permanen"
+                              >
+                                Hapus
+                              </button>
                               <button 
                                 onClick={(e) => { e.stopPropagation(); handleKelolaDokumen(p); }}
                                 className="px-3 py-1.5 bg-teal-500/20 text-teal-600 dark:text-teal-400 hover:bg-teal-600 hover:text-white font-bold text-xs rounded-lg transition-colors whitespace-nowrap"
@@ -456,7 +575,7 @@ export default function ValidasiPokja() {
                     <div className="text-sm text-sky-800 dark:text-sky-200">
                       <p className="font-bold mb-1">Panduan Status Kerja Sama Mitra:</p>
                       <ul className="list-disc pl-4 space-y-1 text-xs">
-                        <li><strong>Belum Ada / Penjajakan:</strong> Peluang DPL & LPPM untuk membuka kerja sama baru selama masa KKL Plus.</li>
+                        <li><strong>Belum Ada / Penjajakan:</strong> Peluang DPL & Admin untuk membuka kerja sama baru selama masa KKL Plus.</li>
                         <li><strong>MOU (Memorandum of Understanding):</strong> Payung kerja sama umum (tingkat Universitas). Harus ditindaklanjuti dengan MOA/IA.</li>
                         <li><strong>MOA (Memorandum of Agreement):</strong> Kesepakatan spesifik (tingkat Fakultas). Membutuhkan IA sebagai bukti pelaksanaan riil.</li>
                         <li><strong>IA (Implementation Arrangement):</strong> Bukti implementasi nyata bahwa mahasiswa KKL telah beraktivitas. Sangat penting untuk <strong>IKU & Akreditasi!</strong></li>
@@ -516,6 +635,168 @@ export default function ValidasiPokja() {
                 Tutup Panel
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Plotting Kelompok */}
+      {showPlotModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
+          <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-3xl p-6 w-full max-w-2xl shadow-2xl my-8">
+            <h3 className="text-xl font-black text-slate-800 dark:text-white mb-6">Plotting Kelompok Baru</h3>
+            
+            <form onSubmit={handlePlotSubmit} className="space-y-5">
+              <div>
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Nama Kelompok (POKJA) <span className="text-red-500">*</span></label>
+                <input 
+                  type="text" 
+                  required 
+                  value={plotForm.nama_pokja} 
+                  onChange={(e) => setPlotForm({...plotForm, nama_pokja: e.target.value})} 
+                  placeholder="Masukkan nama kelompok"
+                  className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/60 dark:bg-slate-900/60"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Ketua Kelompok <span className="text-red-500">*</span></label>
+                <input 
+                  type="text" 
+                  placeholder="Cari nama / NIM ketua..." 
+                  value={searchKetua}
+                  onChange={(e) => setSearchKetua(e.target.value)}
+                  className="w-full px-4 py-2 mb-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm focus:ring-2 focus:ring-teal-500 outline-none"
+                />
+                <div className="bg-white/60 dark:bg-slate-900/60 border border-white/60 dark:border-slate-700 rounded-xl p-4 max-h-48 overflow-y-auto space-y-2">
+                  {filteredKetuaList.length === 0 ? (
+                    <p className="text-sm text-slate-500 italic text-center py-4">Tidak ada mahasiswa tersedia yang cocok dengan pencarian</p>
+                  ) : (
+                    filteredKetuaList.map(mhs => (
+                      <label key={mhs._id} className="flex items-start gap-3 p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg cursor-pointer transition-colors">
+                        <input 
+                          type="radio" 
+                          name="ketua_id"
+                          required
+                          checked={plotForm.ketua_id === mhs._id}
+                          onChange={() => setPlotForm({...plotForm, ketua_id: mhs._id, anggota_ids: plotForm.anggota_ids.filter(id => id !== mhs._id)})}
+                          className="mt-1 w-4 h-4 text-teal-600 rounded-full border-slate-300 focus:ring-teal-500"
+                        />
+                        <div>
+                          <p className="text-sm font-bold text-slate-800 dark:text-slate-200">{mhs.nama_lengkap}</p>
+                          <p className="text-xs text-slate-500">{mhs.nim_nidn} • {mhs.program_studi || '-'}</p>
+                        </div>
+                      </label>
+                    ))
+                  )}
+                  {/* Selalu pastikan ketua yang dipilih tetap muncul meski tak terfilter */}
+                  {plotForm.ketua_id && !filteredKetuaList.find(m => m._id === plotForm.ketua_id) && (() => {
+                    const selected = mahasiswaList.find(m => m._id === plotForm.ketua_id);
+                    if (selected) return (
+                      <label key={selected._id} className="flex items-start gap-3 p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg cursor-pointer transition-colors">
+                        <input 
+                          type="radio" 
+                          name="ketua_id"
+                          required
+                          checked={true}
+                          onChange={() => {}}
+                          className="mt-1 w-4 h-4 text-teal-600 rounded-full border-slate-300 focus:ring-teal-500"
+                        />
+                        <div>
+                          <p className="text-sm font-bold text-slate-800 dark:text-slate-200">{selected.nama_lengkap}</p>
+                          <p className="text-xs text-slate-500">{selected.nim_nidn} • {selected.program_studi || '-'}</p>
+                        </div>
+                      </label>
+                    );
+                  })()}
+                </div>
+                <p className="text-xs text-slate-500 mt-1">Hanya mahasiswa yang belum memiliki kelompok yang muncul di daftar ini.</p>
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-300">
+                    Anggota Kelompok <span className="ml-1 text-teal-600 dark:text-teal-400">({plotForm.anggota_ids.length} dipilih)</span>
+                  </label>
+                  <span className={`text-xs font-bold px-2 py-1 rounded-md ${plotForm.anggota_ids.length > 4 ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600'}`}>Total Tim: {totalMembers} Orang</span>
+                </div>
+                
+                {plotForm.anggota_ids.length > 4 && (
+                  <div className="mb-3 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-amber-700 dark:text-amber-400 text-xs font-medium">
+                    ⚠️ <strong>Peringatan:</strong> Jumlah anggota melebihi 4 orang (Total 1 tim melebihi 5 orang). Anda tetap dapat melanjutkannya jika memang ini adalah kebijakan khusus.
+                  </div>
+                )}
+
+                <input 
+                  type="text" 
+                  placeholder="Cari nama / NIM anggota..." 
+                  value={searchAnggota}
+                  onChange={(e) => setSearchAnggota(e.target.value)}
+                  className="w-full px-4 py-2 mb-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm focus:ring-2 focus:ring-teal-500 outline-none"
+                />
+                
+                <div className="bg-white/60 dark:bg-slate-900/60 border border-white/60 dark:border-slate-700 rounded-xl p-4 max-h-48 overflow-y-auto space-y-2">
+                  {filteredAnggotaList.length === 0 ? (
+                    <p className="text-sm text-slate-500 italic text-center py-4">Tidak ada mahasiswa tersedia yang cocok dengan pencarian</p>
+                  ) : (
+                    filteredAnggotaList.map(mhs => (
+                      <label key={mhs._id} className="flex items-start gap-3 p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg cursor-pointer transition-colors">
+                        <input 
+                          type="checkbox" 
+                          checked={plotForm.anggota_ids.includes(mhs._id)}
+                          onChange={() => handleCheckboxAnggota(mhs._id)}
+                          className="mt-1 w-4 h-4 text-teal-600 rounded border-slate-300 focus:ring-teal-500"
+                        />
+                        <div>
+                          <p className="text-sm font-bold text-slate-800 dark:text-slate-200">{mhs.nama_lengkap}</p>
+                          <p className="text-xs text-slate-500">{mhs.nim_nidn} • {mhs.program_studi || '-'}</p>
+                        </div>
+                      </label>
+                    ))
+                  )}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Mitra Tujuan (Opsional)</label>
+                  <select 
+                    value={plotForm.mitra_id} 
+                    onChange={(e) => setPlotForm({...plotForm, mitra_id: e.target.value})} 
+                    className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/60 dark:bg-slate-900/60"
+                  >
+                    <option value="">-- Pilih Mitra --</option>
+                    {mitraList.map(mitra => (
+                      <option key={mitra._id} value={mitra._id}>{mitra.nama_instansi}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Dosen Pembimbing (Opsional)</label>
+                  <select 
+                    value={plotForm.dpl_id} 
+                    onChange={(e) => setPlotForm({...plotForm, dpl_id: e.target.value})} 
+                    className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/60 dark:bg-slate-900/60"
+                  >
+                    <option value="">-- Pilih DPL --</option>
+                    {dpls.map(dpl => (
+                      <option key={dpl._id} value={dpl._id}>{dpl.nama_lengkap}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="bg-teal-50 dark:bg-teal-900/20 text-teal-800 dark:text-teal-300 p-4 rounded-xl text-sm border border-teal-200 dark:border-teal-800 mt-4 flex items-start gap-3">
+                <Info className="w-5 h-5 shrink-0 mt-0.5" />
+                <p>Kelompok ini akan langsung memiliki status <strong>Persiapan</strong> (Terkunci) dan anggota otomatis bergabung tanpa perlu persetujuan (Terima Undangan) oleh mahasiswa.</p>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-4 border-t border-white/60 dark:border-slate-700">
+                <button type="button" onClick={() => setShowPlotModal(false)} className="px-5 py-2 font-bold text-slate-500 hover:bg-slate-100 rounded-xl">Batal</button>
+                <button type="submit" disabled={submitting} className="px-6 py-2 bg-teal-600 text-white font-bold rounded-xl shadow-lg shadow-teal-600/30 hover:-translate-y-0.5 transition-all disabled:opacity-50">
+                  {submitting ? 'Menyimpan...' : 'Buat POKJA'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

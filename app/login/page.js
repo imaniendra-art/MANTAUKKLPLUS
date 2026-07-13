@@ -72,7 +72,7 @@ export default function Login() {
             }
           }
           else if (session.user.role === 'dpl') window.location.href = '/dpl';
-          else if (session.user.role === 'lppm') window.location.href = '/admin';
+          else if (session.user.role === 'admin') window.location.href = '/admin';
           else if (session.user.role === 'mentor') window.location.href = '/mentor';
           else window.location.href = '/';
         } else {

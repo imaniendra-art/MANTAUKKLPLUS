@@ -10,7 +10,7 @@ export default function Home() {
 
   const getDashboardUrl = () => {
     if (!session || !session.user) return '/login';
-    if (session.user.role === 'lppm') return '/admin';
+    if (session.user.role === 'admin') return '/admin';
     return `/${session.user.role}`;
   };
 

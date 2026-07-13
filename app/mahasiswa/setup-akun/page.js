@@ -19,22 +19,40 @@ function SetupAkunContent() {
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  
+  const [isPlotted, setIsPlotted] = useState(false);
+  const [plottedPokja, setPlottedPokja] = useState(null);
 
   useEffect(() => {
-    // Fetch available pokjas when component mounts or when role changes to anggota
-    if (peranKelompok === 'anggota') {
-      fetch('/api/pokja/available')
-        .then(res => res.json())
-        .then(data => {
-          if (data.data) {
-            setAvailablePokjas(data.data);
-            if (inviteId && data.data.some(p => p._id === inviteId)) {
-              setPokjaId(inviteId);
-            }
+    // Check if user is already plotted by admin
+    fetch('/api/mahasiswa/cek-plot')
+      .then(res => res.json())
+      .then(data => {
+        if (data.plotted) {
+          setIsPlotted(true);
+          setPeranKelompok(data.peran);
+          setPlottedPokja(data.pokja);
+          if (data.peran === 'ketua') {
+            setNamaKelompok(data.pokja.nama_pokja);
+          } else {
+            setPokjaId(data.pokja._id);
           }
-        })
-        .catch(err => console.error("Gagal mengambil data kelompok:", err));
-    }
+        } else if (peranKelompok === 'anggota') {
+          // Only fetch available pokjas if not plotted and role is anggota
+          fetch('/api/pokja/available')
+            .then(res => res.json())
+            .then(data => {
+              if (data.data) {
+                setAvailablePokjas(data.data);
+                if (inviteId && data.data.some(p => p._id === inviteId)) {
+                  setPokjaId(inviteId);
+                }
+              }
+            })
+            .catch(err => console.error("Gagal mengambil data kelompok:", err));
+        }
+      })
+      .catch(err => console.error("Gagal cek plot:", err));
   }, [peranKelompok, inviteId]);
 
   const handleSubmit = async (e) => {
@@ -46,18 +64,15 @@ function SetupAkunContent() {
       return setError('Nomor HP dan Password wajib diisi.');
     }
 
-    if (peranKelompok === 'ketua' && !namaKelompok) {
+    if (!isPlotted && peranKelompok === 'ketua' && !namaKelompok) {
       return setError('Nama Kelompok wajib diisi.');
     }
     
-    if (peranKelompok === 'ketua' && !namaKelompok.toLowerCase().includes('manajemen')) {
-      // Hanya himbauan, tapi kita bisa menampilkannya jika tidak ada sama sekali.
-      // Sesuai konfirmasi, sekadar imbauan UI, jadi tidak di-block di backend, tapi kita bisa biarkan lewat.
-      // Jika butuh sekadar notif:
+    if (!isPlotted && peranKelompok === 'ketua' && !namaKelompok.toLowerCase().includes('manajemen')) {
       console.warn("Disarankan menggunakan kata 'manajemen'");
     }
 
-    if (peranKelompok === 'anggota' && !pokjaId) {
+    if (!isPlotted && peranKelompok === 'anggota' && !pokjaId) {
       return setError('Silakan pilih kelompok yang ingin diikuti.');
     }
 
@@ -78,7 +93,8 @@ function SetupAkunContent() {
           namaKelompok, 
           pokjaId, 
           nomor_hp: nomorHp, 
-          newPassword: password 
+          newPassword: password,
+          isPlotted 
         }),
       });
 
@@ -124,67 +140,80 @@ function SetupAkunContent() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
-                Peran dalam Kelompok KKL
-              </label>
-              <div className="flex gap-4">
-                <label className={`flex-1 flex items-center justify-center p-3 border rounded-xl transition-all ${peranKelompok === 'ketua' ? 'border-teal-600 bg-teal-50 dark:bg-teal-900/20 text-teal-600 font-bold' : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'} ${inviteId ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
-                  <input type="radio" name="peran" value="ketua" disabled={!!inviteId} checked={peranKelompok === 'ketua'} onChange={() => setPeranKelompok('ketua')} className="hidden" />
-                  Ketua Kelompok
-                </label>
-                <label className={`flex-1 flex items-center justify-center p-3 border rounded-xl transition-all ${peranKelompok === 'anggota' ? 'border-teal-600 bg-teal-50 dark:bg-teal-900/20 text-teal-600 font-bold' : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'} ${inviteId ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
-                  <input type="radio" name="peran" value="anggota" disabled={!!inviteId} checked={peranKelompok === 'anggota'} onChange={() => setPeranKelompok('anggota')} className="hidden" />
-                  Anggota
-                </label>
-              </div>
-            </div>
-
-            {peranKelompok === 'ketua' ? (
-              <div>
-                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
-                  Nama Kelompok Baru
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={namaKelompok}
-                  onChange={(e) => setNamaKelompok(e.target.value)}
-                  className="w-full px-4 py-3 border border-white/60 dark:border-slate-700 rounded-xl bg-white/20 dark:bg-slate-900/20 focus:ring-2 focus:ring-teal-600 focus:border-teal-600 text-slate-900 dark:text-white"
-                  placeholder="Contoh: Manajemen Hebat"
-                />
-                <p className="text-xs text-slate-500 mt-2">ℹ️ Disarankan untuk menyertakan kata "Manajemen" pada nama kelompok Anda.</p>
+            {isPlotted ? (
+              <div className="bg-teal-50 border border-teal-200 p-4 rounded-xl mb-6">
+                <p className="text-sm text-teal-800">
+                  Anda telah ditempatkan oleh Admin ke dalam kelompok: 
+                  <strong className="block text-lg mt-1">{plottedPokja?.nama_pokja}</strong>
+                  sebagai <strong className="capitalize">{peranKelompok}</strong>.
+                </p>
+                <p className="text-xs text-teal-600 mt-2">Sila lengkapi Nomor HP dan Sandi Baru Anda di bawah ini untuk melanjutkan.</p>
               </div>
             ) : (
-              <div>
-                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
-                  Pilih Kelompok (Dibuat oleh Ketua)
-                </label>
-                {availablePokjas.length > 0 ? (
-                  <select
-                    required
-                    disabled={!!inviteId}
-                    value={pokjaId}
-                    onChange={(e) => setPokjaId(e.target.value)}
-                    className="w-full px-4 py-3 border border-white/60 dark:border-slate-700 rounded-xl bg-white/20 dark:bg-slate-900/20 focus:ring-2 focus:ring-teal-600 focus:border-teal-600 text-slate-900 dark:text-white appearance-none disabled:opacity-75 disabled:bg-slate-100"
-                  >
-                    <option value="" disabled>-- Pilih Kelompok Anda --</option>
-                    {availablePokjas.map(p => {
-                      const totalMembers = p.jumlah_anggota + 1; // 1 for Ketua
-                      const isFull = p.jumlah_anggota >= 4;
-                      return (
-                        <option key={p._id} value={p._id} disabled={isFull && p._id !== inviteId}>
-                          {p.nama_pokja} (Ketua: {p.ketua_nama}) - {isFull ? 'Penuh (5/5)' : `${totalMembers}/5 Orang`}
-                        </option>
-                      );
-                    })}
-                  </select>
+              <>
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+                    Peran dalam Kelompok KKL
+                  </label>
+                  <div className="flex gap-4">
+                    <label className={`flex-1 flex items-center justify-center p-3 border rounded-xl transition-all ${peranKelompok === 'ketua' ? 'border-teal-600 bg-teal-50 dark:bg-teal-900/20 text-teal-600 font-bold' : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'} ${inviteId ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
+                      <input type="radio" name="peran" value="ketua" disabled={!!inviteId} checked={peranKelompok === 'ketua'} onChange={() => setPeranKelompok('ketua')} className="hidden" />
+                      Ketua Kelompok
+                    </label>
+                    <label className={`flex-1 flex items-center justify-center p-3 border rounded-xl transition-all ${peranKelompok === 'anggota' ? 'border-teal-600 bg-teal-50 dark:bg-teal-900/20 text-teal-600 font-bold' : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'} ${inviteId ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
+                      <input type="radio" name="peran" value="anggota" disabled={!!inviteId} checked={peranKelompok === 'anggota'} onChange={() => setPeranKelompok('anggota')} className="hidden" />
+                      Anggota
+                    </label>
+                  </div>
+                </div>
+
+                {peranKelompok === 'ketua' ? (
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+                      Nama Kelompok Baru
+                    </label>
+                    <input
+                      type="text"
+                      required={!isPlotted}
+                      value={namaKelompok}
+                      onChange={(e) => setNamaKelompok(e.target.value)}
+                      className="w-full px-4 py-3 border border-white/60 dark:border-slate-700 rounded-xl bg-white/20 dark:bg-slate-900/20 focus:ring-2 focus:ring-teal-600 focus:border-teal-600 text-slate-900 dark:text-white"
+                      placeholder="Contoh: Manajemen Hebat"
+                    />
+                    <p className="text-xs text-slate-500 mt-2">ℹ️ Disarankan untuk menyertakan kata "Manajemen" pada nama kelompok Anda.</p>
+                  </div>
                 ) : (
-                  <div className="p-4 bg-amber-50 text-amber-700 border border-amber-200 rounded-xl text-sm">
-                    Belum ada kelompok yang tersedia. Minta ketua kelompok Anda untuk mendaftar terlebih dahulu.
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+                      Pilih Kelompok (Dibuat oleh Ketua)
+                    </label>
+                    {availablePokjas.length > 0 ? (
+                      <select
+                        required={!isPlotted}
+                        disabled={!!inviteId}
+                        value={pokjaId}
+                        onChange={(e) => setPokjaId(e.target.value)}
+                        className="w-full px-4 py-3 border border-white/60 dark:border-slate-700 rounded-xl bg-white/20 dark:bg-slate-900/20 focus:ring-2 focus:ring-teal-600 focus:border-teal-600 text-slate-900 dark:text-white appearance-none disabled:opacity-75 disabled:bg-slate-100"
+                      >
+                        <option value="" disabled>-- Pilih Kelompok Anda --</option>
+                        {availablePokjas.map(p => {
+                          const totalMembers = p.jumlah_anggota + 1; // 1 for Ketua
+                          const isFull = p.jumlah_anggota >= 4;
+                          return (
+                            <option key={p._id} value={p._id} disabled={isFull && p._id !== inviteId}>
+                              {p.nama_pokja} (Ketua: {p.ketua_nama}) - {isFull ? 'Penuh (5/5)' : `${totalMembers}/5 Orang`}
+                            </option>
+                          );
+                        })}
+                      </select>
+                    ) : (
+                      <div className="p-4 bg-amber-50 text-amber-700 border border-amber-200 rounded-xl text-sm">
+                        Belum ada kelompok yang tersedia. Minta ketua kelompok Anda untuk mendaftar terlebih dahulu.
+                      </div>
+                    )}
                   </div>
                 )}
-              </div>
+              </>
             )}
 
             <div>
@@ -227,7 +256,7 @@ function SetupAkunContent() {
             <div className="pt-4 shrink-0 space-y-3">
               <button
                 type="submit"
-                disabled={loading || success || (peranKelompok === 'anggota' && availablePokjas.length === 0)}
+                disabled={loading || success || (!isPlotted && peranKelompok === 'anggota' && availablePokjas.length === 0)}
                 className="w-full py-3.5 bg-teal-600 hover:bg-teal-600 text-white font-bold rounded-xl shadow-lg shadow-teal-500/30 transition-all disabled:opacity-50"
               >
                 {loading ? 'Menyimpan...' : 'Simpan & Login Ulang'}

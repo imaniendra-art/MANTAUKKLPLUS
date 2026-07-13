@@ -10,7 +10,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 export async function POST(req) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || !['lppm', 'dpl'].includes(session.user.role)) {
+    if (!session || !['admin', 'dpl'].includes(session.user.role)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

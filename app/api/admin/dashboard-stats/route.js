@@ -10,8 +10,8 @@ export async function GET() {
     const totalMitra = await MitraKKL.countDocuments();
 
     const totalAjuan = await Pokja.countDocuments();
-    const antreanValidasi = await Pokja.countDocuments({ status_pokja: 'menunggu_persetujuan_lppm' });
-    const posisiTerisi = await Pokja.countDocuments({ status_pokja: { $in: ['disetujui_lppm', 'berjalan', 'selesai'] } });
+    const antreanValidasi = await Pokja.countDocuments({ status_pokja: 'menunggu_persetujuan_admin' });
+    const posisiTerisi = await Pokja.countDocuments({ status_pokja: { $in: ['disetujui_admin', 'berjalan', 'selesai'] } });
 
     // Aktivitas Cepat: 5 Log Terbaru
     const aktivitasTerbaru = await LogAktivitas.find()

@@ -74,7 +74,7 @@ export default function DaftarProker() {
       if (res.ok) {
         setFormData({ 
           judul_proker: "", deskripsi: "", target_dampak: "", 
-          jenis_proker: "Utama", pic_id: "", tanggal_mulai: "", tanggal_selesai: "" 
+          jenis_proker: "Utama", pic_id: [], tanggal_mulai: "", tanggal_selesai: "" 
         });
         setEditingId(null);
         setIsModalOpen(false);
@@ -98,13 +98,13 @@ export default function DaftarProker() {
   return (
     <DashboardLayout title="Daftar Program Kerja POKJA">
       
-      {!pokja || pokja.status_pokja === 'draft' || pokja.status_pokja === 'menunggu_persetujuan_lppm' ? (
+      {!pokja || pokja.status_pokja === 'draft' || pokja.status_pokja === 'menunggu_persetujuan_admin' ? (
         <div className="max-w-2xl mx-auto mt-10">
           <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-10 rounded-3xl border border-white/60 dark:border-slate-700 shadow-sm text-center">
             <div className="w-20 h-20 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">🔒</div>
             <h2 className="text-2xl font-black mb-2 text-slate-800 dark:text-white">Akses Terkunci</h2>
             <p className="text-slate-600 dark:text-slate-400">
-              Pengisian Program Kerja (Proker) baru bisa dilakukan **setelah** POKJA Anda disetujui oleh LPPM dan mendapatkan Dosen Pembimbing Lapangan (DPL).
+              Pengisian Program Kerja (Proker) baru bisa dilakukan **setelah** POKJA Anda disetujui oleh Admin dan mendapatkan Dosen Pembimbing Lapangan (DPL).
             </p>
             <p className="text-sm font-bold text-slate-500 mt-6 bg-slate-100 dark:bg-slate-900/50 py-3 rounded-xl border border-slate-200 dark:border-slate-700 inline-block px-6">
               Status POKJA saat ini: <span className="text-amber-600 dark:text-amber-400 uppercase tracking-wider">{pokja?.status_pokja?.replace(/_/g, ' ')}</span>
@@ -123,7 +123,7 @@ export default function DaftarProker() {
               setEditingId(null);
               setFormData({ 
                 judul_proker: "", deskripsi: "", target_dampak: "", 
-                jenis_proker: "Utama", pic_id: "", tanggal_mulai: "", tanggal_selesai: "" 
+                jenis_proker: "Utama", pic_id: [], tanggal_mulai: "", tanggal_selesai: "" 
               });
               setIsModalOpen(true);
             }}
@@ -152,7 +152,7 @@ export default function DaftarProker() {
                         <span className={`text-[10px] px-2 py-0.5 rounded-md font-bold uppercase tracking-wider ${p.jenis_proker === 'Utama' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' : 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300'}`}>
                           {p.jenis_proker}
                         </span>
-                        <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">PIC: <span className="font-bold">{p.pic_id?.nama_lengkap || '-'}</span></span>
+                        <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">PIC: <span className="font-bold">{ (Array.isArray(p.pic_id) ? p.pic_id.map(pic => pic.nama_lengkap).join(', ') : p.pic_id?.nama_lengkap) || '-' }</span></span>
                       </div>
                     </div>
                   </div>
@@ -225,7 +225,7 @@ export default function DaftarProker() {
                               deskripsi: p.deskripsi,
                               target_dampak: p.target_dampak,
                               jenis_proker: p.jenis_proker || 'Utama',
-                              pic_id: p.pic_id?._id || '',
+                              pic_id: Array.isArray(p.pic_id) ? p.pic_id.map(pic => pic._id) : (p.pic_id?._id ? [p.pic_id._id] : []),
                               tanggal_mulai: p.tanggal_mulai ? p.tanggal_mulai.substring(0, 10) : '',
                               tanggal_selesai: p.tanggal_selesai ? p.tanggal_selesai.substring(0, 10) : ''
                             });
@@ -292,20 +292,58 @@ export default function DaftarProker() {
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Penanggung Jawab (PIC)</label>
-                  <select 
-                    required
-                    value={formData.pic_id}
-                    onChange={(e) => setFormData({...formData, pic_id: e.target.value})}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-teal-500 outline-none transition-all"
-                  >
-                    <option value="" disabled>Pilih Anggota</option>
-                    {pokja?.ketua_id && <option value={pokja.ketua_id._id}>{pokja.ketua_id.nama_lengkap} (Ketua)</option>}
-                    {pokja?.anggota?.map(a => (
-                      a.status_undangan === 'bergabung' && (
-                        <option key={a.user_id._id} value={a.user_id._id}>{a.user_id.nama_lengkap} (Anggota)</option>
-                      )
-                    ))}
-                  </select>
+                  {formData.jenis_proker === 'Utama' ? (
+                    <select 
+                      required
+                      value={formData.pic_id[0] || ''}
+                      onChange={(e) => setFormData({...formData, pic_id: [e.target.value]})}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-teal-500 outline-none transition-all"
+                    >
+                      <option value="" disabled>Pilih PIC (Maks. 1 orang)</option>
+                      {pokja?.ketua_id && <option value={pokja.ketua_id._id}>{pokja.ketua_id.nama_lengkap} (Ketua)</option>}
+                      {pokja?.anggota?.map(a => (
+                        a.status_undangan === 'bergabung' && (
+                          <option key={a.user_id._id} value={a.user_id._id}>{a.user_id.nama_lengkap} (Anggota)</option>
+                        )
+                      ))}
+                    </select>
+                  ) : (
+                    <div className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 max-h-48 overflow-y-auto space-y-2">
+                      <p className="text-xs text-slate-500 mb-2 font-medium">Pilih PIC (Maks. 2 orang)</p>
+                      {pokja?.ketua_id && (
+                        <label className="flex items-center gap-3 p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg cursor-pointer">
+                          <input 
+                            type="checkbox" 
+                            checked={formData.pic_id.includes(pokja.ketua_id._id)}
+                            disabled={!formData.pic_id.includes(pokja.ketua_id._id) && formData.pic_id.length >= 2}
+                            onChange={(e) => {
+                              if (e.target.checked) setFormData({...formData, pic_id: [...formData.pic_id, pokja.ketua_id._id]});
+                              else setFormData({...formData, pic_id: formData.pic_id.filter(id => id !== pokja.ketua_id._id)});
+                            }}
+                            className="w-4 h-4 text-teal-600 rounded focus:ring-teal-500 dark:bg-slate-900 border-slate-300 dark:border-slate-600" 
+                          />
+                          <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{pokja.ketua_id.nama_lengkap} (Ketua)</span>
+                        </label>
+                      )}
+                      {pokja?.anggota?.map(a => (
+                        a.status_undangan === 'bergabung' && (
+                          <label key={a.user_id._id} className="flex items-center gap-3 p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg cursor-pointer">
+                            <input 
+                              type="checkbox" 
+                              checked={formData.pic_id.includes(a.user_id._id)}
+                              disabled={!formData.pic_id.includes(a.user_id._id) && formData.pic_id.length >= 2}
+                              onChange={(e) => {
+                                if (e.target.checked) setFormData({...formData, pic_id: [...formData.pic_id, a.user_id._id]});
+                                else setFormData({...formData, pic_id: formData.pic_id.filter(id => id !== a.user_id._id)});
+                              }}
+                              className="w-4 h-4 text-teal-600 rounded focus:ring-teal-500 dark:bg-slate-900 border-slate-300 dark:border-slate-600" 
+                            />
+                            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{a.user_id.nama_lengkap} (Anggota)</span>
+                          </label>
+                        )
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 

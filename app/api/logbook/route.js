@@ -64,8 +64,8 @@ export async function GET(req) {
       return NextResponse.json(processedLogs);
     }
 
-    // LPPM: Tarik seluruh logbook untuk monitoring
-    if (role === 'lppm') {
+    // Admin: Tarik seluruh logbook untuk monitoring
+    if (role === 'admin') {
       const logs = await Logbook.find({})
         .populate({ path: 'mahasiswa_id', select: 'nama_lengkap nim_nidn program_studi' })
         .populate({ path: 'pokja_id', select: 'nama_pokja', populate: { path: 'mitra_id' } })

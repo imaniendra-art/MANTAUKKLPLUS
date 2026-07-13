@@ -8,6 +8,7 @@ export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
     const isPublic = searchParams.get('public') === 'true';
+    const isAvailableOnly = searchParams.get('available') === 'true';
 
     const mitra = await MitraKKL.aggregate([
       {
@@ -21,15 +22,23 @@ export async function GET(req) {
       { $sort: { createdAt: -1 } }
     ]);
 
+    let finalMitra = mitra;
+
+    if (isAvailableOnly) {
+      const Pokja = (await import('@/models/Pokja')).default;
+      const activePokjas = await Pokja.find({ 
+        status_pokja: { $ne: 'ditolak' },
+        mitra_id: { $exists: true, $ne: null }
+      }).select('mitra_id');
+      
+      const usedMitraIds = activePokjas.map(p => p.mitra_id.toString());
+      finalMitra = finalMitra.filter(m => !usedMitraIds.includes(m._id.toString()));
+    }
+
     if (isPublic) {
       // In the new POKJA system, groups apply to Mitra directly. 
       // For now, we will return all positions without strict quota filtering until the new quota system is designed.
-      const Pokja = (await import('@/models/Pokja')).default;
-      const pokjas = await Pokja.find({ 
-        status_pokja: { $in: ['disetujui_lppm', 'berjalan', 'selesai'] }
-      });
-
-      const filteredMitra = mitra.map(m => {
+      const filteredMitra = finalMitra.map(m => {
         // Just return all positions for public view for now
         return m;
       }).filter(m => m.posisi_list.length > 0);
@@ -37,7 +46,7 @@ export async function GET(req) {
       return NextResponse.json(filteredMitra);
     }
 
-    return NextResponse.json(mitra);
+    return NextResponse.json(finalMitra);
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

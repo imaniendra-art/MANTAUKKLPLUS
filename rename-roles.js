@@ -3,7 +3,7 @@ const path = require('path');
 
 const replacements = [
   { from: /lppm/g, to: 'lppm' },
-  { from: /LPPM/g, to: 'LPPM' },
+  { from: /Admin/g, to: 'Admin' },
   { from: /lppm/g, to: 'lppm' }
 ];
 

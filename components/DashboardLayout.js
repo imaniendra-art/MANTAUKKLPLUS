@@ -113,7 +113,7 @@ function UserMenu({ nama, role }) {
 
 // ═══════════════════════ MENU CONFIG ═══════════════════════
 const MENU_CONFIG = {
-  lppm: {
+  admin: {
     greeting: "Admin & Prodi",
     subtitle: "Kelola master data, monitoring seluruh aktivitas KKL Plus, dan pantau DPL serta Mahasiswa.",
     menus: [

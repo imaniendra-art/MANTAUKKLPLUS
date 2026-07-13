@@ -318,7 +318,7 @@ export default function LaporanAkhirPage() {
           </div>
         </div>
       ) : (
-      <div className="p-8 max-w-6xl mx-auto">
+      <div className="space-y-6 pb-28 mt-6">
 
         {isKetua && (
           <div className="mb-6 flex bg-white p-1 rounded-2xl shadow-sm border border-slate-200 w-fit">

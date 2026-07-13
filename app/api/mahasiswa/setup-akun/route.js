@@ -13,17 +13,17 @@ export async function POST(req) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const { peran, namaKelompok, pokjaId, nomor_hp, newPassword } = await req.json();
+    const { peran, namaKelompok, pokjaId, nomor_hp, newPassword, isPlotted } = await req.json();
 
     if (!peran || !nomor_hp || !newPassword) {
       return NextResponse.json({ message: 'Data tidak lengkap (Peran, No HP & Password wajib diisi)' }, { status: 400 });
     }
     
-    if (peran === 'ketua' && !namaKelompok) {
+    if (!isPlotted && peran === 'ketua' && !namaKelompok) {
       return NextResponse.json({ message: 'Nama kelompok wajib diisi untuk Ketua' }, { status: 400 });
     }
     
-    if (peran === 'anggota' && !pokjaId) {
+    if (!isPlotted && peran === 'anggota' && !pokjaId) {
       return NextResponse.json({ message: 'Pilihan kelompok wajib diisi untuk Anggota' }, { status: 400 });
     }
 
@@ -39,39 +39,41 @@ export async function POST(req) {
     }
 
     // Process Pokja
-    if (peran === 'ketua') {
-      // Check if user is already a ketua somewhere else
-      const existingPokja = await import('@/models/Pokja').then(m => m.default).then(Pokja => Pokja.findOne({ ketua_id: user._id }));
-      if (existingPokja) {
-        // Just update it if they are already ketua, or ignore
-      } else {
+    if (!isPlotted) {
+      if (peran === 'ketua') {
+        // Check if user is already a ketua somewhere else
+        const existingPokja = await import('@/models/Pokja').then(m => m.default).then(Pokja => Pokja.findOne({ ketua_id: user._id }));
+        if (existingPokja) {
+          // Just update it if they are already ketua, or ignore
+        } else {
+          const Pokja = (await import('@/models/Pokja')).default;
+          await Pokja.create({
+            nama_pokja: namaKelompok,
+            ketua_id: user._id,
+            status_pokja: 'draft',
+            anggota: []
+          });
+        }
+      } else if (peran === 'anggota') {
         const Pokja = (await import('@/models/Pokja')).default;
-        await Pokja.create({
-          nama_pokja: namaKelompok,
-          ketua_id: user._id,
-          status_pokja: 'draft',
-          anggota: []
-        });
-      }
-    } else if (peran === 'anggota') {
-      const Pokja = (await import('@/models/Pokja')).default;
-      const pokjaTarget = await Pokja.findById(pokjaId);
-      if (!pokjaTarget) {
-        return NextResponse.json({ message: 'Kelompok tidak ditemukan' }, { status: 404 });
-      }
-      
-      if (pokjaTarget.anggota.length >= 4) {
-        return NextResponse.json({ message: 'Kelompok sudah penuh (maksimal 5 orang termasuk ketua)' }, { status: 400 });
-      }
-      
-      // Check if already joined
-      const isAlreadyMember = pokjaTarget.anggota.find(a => a.user_id.toString() === user._id.toString());
-      if (!isAlreadyMember) {
-        pokjaTarget.anggota.push({
-          user_id: user._id,
-          status_undangan: 'bergabung',
-        });
-        await pokjaTarget.save();
+        const pokjaTarget = await Pokja.findById(pokjaId);
+        if (!pokjaTarget) {
+          return NextResponse.json({ message: 'Kelompok tidak ditemukan' }, { status: 404 });
+        }
+        
+        if (pokjaTarget.anggota.length >= 4) {
+          return NextResponse.json({ message: 'Kelompok sudah penuh (maksimal 5 orang termasuk ketua)' }, { status: 400 });
+        }
+        
+        // Check if already joined
+        const isAlreadyMember = pokjaTarget.anggota.find(a => a.user_id.toString() === user._id.toString());
+        if (!isAlreadyMember) {
+          pokjaTarget.anggota.push({
+            user_id: user._id,
+            status_undangan: 'bergabung',
+          });
+          await pokjaTarget.save();
+        }
       }
     }
 

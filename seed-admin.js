@@ -37,7 +37,7 @@ async function seedAdminUser() {
       nim_nidn: adminUsername, // Gunakan nim_nidn sebagai field username untuk login
       email: "admin@stimi.ac.id",
       password: hashedPassword,
-      role: "lppm",
+      role: 'admin',
       isFirstLogin: false,
     });
 

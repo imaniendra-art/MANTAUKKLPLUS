@@ -23,7 +23,7 @@ export async function GET(req) {
 
     const bimbinganList = await Pokja.find({ 
       dpl_id: session.user.id, 
-      status_pokja: { $in: ['disetujui_lppm', 'berjalan', 'selesai'] },
+      status_pokja: { $in: ['disetujui_admin', 'berjalan', 'selesai'] },
       periode: activePeriode
     })
       .populate('ketua_id', 'nama_lengkap nim_nidn nomor_hp email program_studi konsentrasi')

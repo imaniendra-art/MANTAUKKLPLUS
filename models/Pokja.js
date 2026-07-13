@@ -16,14 +16,15 @@ const PokjaSchema = new mongoose.Schema({
   mentor_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false },
   status_pokja: {
     type: String,
-    enum: ['draft', 'menunggu_persetujuan_lppm', 'disetujui_lppm', 'berjalan', 'selesai', 'ditolak'],
+    enum: ['draft', 'menunggu_persetujuan_admin', 'disetujui_admin', 'berjalan', 'selesai', 'ditolak'],
     default: 'draft',
   },
-  catatan_lppm: { type: String, default: '' },
+  catatan_admin: { type: String, default: '' },
   tanggal_mulai: { type: Date, required: false },
   tanggal_selesai: { type: Date, required: false },
   judul_proker: { type: String, default: '' },
   is_laporan_unlocked: { type: Boolean, default: false },
+  is_locked_by_admin: { type: Boolean, default: false },
   
   // Dokumen Kelompok (Brankas Dokumen)
   file_surat_pengantar: { type: String, default: '' },

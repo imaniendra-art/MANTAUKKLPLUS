@@ -56,12 +56,12 @@ export default function AlurMagang() {
                 <div className="text-4xl mb-4"><FileSignature className="w-4 h-4 inline-block mr-1.5 -mt-0.5" /></div>
                 <h3 className="text-2xl font-black text-slate-900 mb-3">Pendaftaran & Pembentukan POKJA</h3>
                 <p className="text-slate-600 leading-relaxed mb-4">
-                  Mahasiswa mendaftar, membentuk Kelompok Kerja (POKJA), dan memilih lokasi instansi atau masyarakat sasaran. Pengajuan ini kemudian diteruskan ke pihak LPPM.
+                  Mahasiswa mendaftar, membentuk Kelompok Kerja (POKJA), dan memilih lokasi instansi atau masyarakat sasaran. Pengajuan ini kemudian diteruskan ke pihak Admin.
                 </p>
                 <ul className="space-y-2 text-sm font-medium text-slate-700">
                   <li className="flex items-center gap-2"><span className="text-teal-600">✓</span> Pendaftaran dan pemilihan lokasi sasaran</li>
                   <li className="flex items-center gap-2"><span className="text-teal-600">✓</span> Pembentukan Kelompok Kerja (POKJA)</li>
-                  <li className="flex items-center gap-2"><span className="text-teal-600">✓</span> Pengajuan kelompok ke LPPM</li>
+                  <li className="flex items-center gap-2"><span className="text-teal-600">✓</span> Pengajuan kelompok ke Admin</li>
                 </ul>
               </div>
             </div>
@@ -75,10 +75,10 @@ export default function AlurMagang() {
                 <div className="text-4xl mb-4">⚖️</div>
                 <h3 className="text-2xl font-black text-slate-900 mb-3">Plotting DPL & Penyusunan Proker</h3>
                 <p className="text-slate-600 leading-relaxed mb-4">
-                  LPPM meninjau pengajuan dan menetapkan Dosen Pembimbing Lapangan (DPL). Bersama DPL dan Mentor, kelompok kemudian menyusun usulan Program Kerja (Proker).
+                  Admin meninjau pengajuan dan menetapkan Dosen Pembimbing Lapangan (DPL). Bersama DPL dan Mentor, kelompok kemudian menyusun usulan Program Kerja (Proker).
                 </p>
                 <ul className="space-y-2 text-sm font-medium text-slate-700">
-                  <li className="flex items-center gap-2"><span className="text-teal-500">✓</span> Peninjauan pengajuan & Plotting DPL oleh LPPM</li>
+                  <li className="flex items-center gap-2"><span className="text-teal-500">✓</span> Peninjauan pengajuan & Plotting DPL oleh Admin</li>
                   <li className="flex items-center gap-2"><span className="text-teal-500">✓</span> Kolaborasi awal bersama DPL & Mentor Lokal</li>
                   <li className="flex items-center gap-2"><span className="text-teal-500">✓</span> Penyusunan usulan Program Kerja (Proker)</li>
                 </ul>

@@ -15,12 +15,12 @@ export async function GET() {
 
     await connectToDatabase();
     
-    // Fetch pokja that have names and are in 'draft' or 'menunggu_persetujuan_lppm' status
+    // Fetch pokja that have names and are in 'draft' or 'menunggu_persetujuan_admin' status
     // Because if it's already running, it might not accept members (or maybe they all do, but let's just get draft ones)
     // Actually, just fetch all that have a nama_pokja. 
     const availablePokjas = await Pokja.find({ 
       nama_pokja: { $exists: true, $ne: "" },
-      status_pokja: { $in: ['draft', 'menunggu_persetujuan_lppm', 'disetujui_lppm'] }
+      status_pokja: { $in: ['draft', 'menunggu_persetujuan_admin', 'disetujui_admin'] }
     })
     .populate('ketua_id', 'nama_lengkap nim_nidn')
     .select('_id nama_pokja ketua_id anggota')

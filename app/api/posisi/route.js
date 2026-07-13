@@ -30,7 +30,7 @@ export async function GET(req) {
     if (isPublic) {
       const Pokja = (await import('@/models/Pokja')).default;
       const pokjas = await Pokja.find({ 
-        status_pokja: { $in: ['disetujui_lppm', 'berjalan', 'selesai'] }
+        status_pokja: { $in: ['disetujui_admin', 'berjalan', 'selesai'] }
       });
 
       // Bypassing strict posisi quota for now because Pokja binds to Mitra, not Posisi

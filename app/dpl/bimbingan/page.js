@@ -763,7 +763,7 @@ export default function DaftarBimbinganPage() {
                 <li><strong className="text-slate-800 dark:text-slate-100">IA (Implementation Arrangement):</strong> <span className="text-teal-600 dark:text-teal-400 font-bold">Kasta Tertinggi.</span> Bukti bahwa kegiatan nyata (seperti KKL Plus ini) telah/sedang berjalan.</li>
               </ul>
               <div className="bg-amber-50 dark:bg-amber-900/20 text-amber-800 dark:text-amber-200 p-3 rounded-lg text-xs mt-4">
-                <strong>Tips:</strong> Jika instansi bersedia meningkatkan status kerja sama (misal dari MoU ke IA), dokumen bisa diunggah oleh POKJA melalui halaman Pusat Dokumen atau diserahkan ke Admin LPPM.
+                <strong>Tips:</strong> Jika instansi bersedia meningkatkan status kerja sama (misal dari MoU ke IA), dokumen bisa diunggah oleh POKJA melalui halaman Pusat Dokumen atau diserahkan ke Admin Admin.
               </div>
             </div>
             <div className="mt-6 flex justify-end">

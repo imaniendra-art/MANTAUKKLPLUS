@@ -6,7 +6,7 @@ const ProkerSchema = new mongoose.Schema({
   deskripsi: { type: String, required: true },
   target_dampak: { type: String, required: true },
   jenis_proker: { type: String, enum: ['Utama', 'Pendukung'], required: true },
-  pic_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  pic_id: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }],
   tanggal_mulai: { type: Date, required: true },
   tanggal_selesai: { type: Date, required: true },
   status_pelaksanaan: {

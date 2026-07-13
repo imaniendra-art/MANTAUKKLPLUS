@@ -26,7 +26,7 @@ export default function DPLDashboard() {
         if (Array.isArray(pokjasList)) {
           const activeList = pokjasList.filter(p => p.status_pokja === 'berjalan' || p.status_pokja === 'selesai');
           pokjaBelumIA = activeList.filter(p => p.mitra_id?.status_kerjasama !== 'Implementation Arrangement (IA)').length;
-          setPendingPokjas(pokjasList.filter(p => p.status_pokja === 'disetujui_lppm'));
+          setPendingPokjas(pokjasList.filter(p => p.status_pokja === 'disetujui_admin'));
           setActivePokjas(activeList);
         }
 

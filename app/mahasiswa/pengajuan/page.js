@@ -19,7 +19,7 @@ export default function BursaMitra() {
     try {
       const [resPokja, resMitra] = await Promise.all([
         fetch(`/api/pokja?mhsId=${session.user.id}`),
-        fetch(`/api/mitra`)
+        fetch(`/api/mitra?available=true`)
       ]);
       const pokjaData = await resPokja.json();
       setPokja(pokjaData);
@@ -79,11 +79,11 @@ export default function BursaMitra() {
         body: JSON.stringify({
           id: pokja._id,
           mitra_id: mitraId,
-          status_pokja: 'menunggu_persetujuan_lppm' // Jika mitra dipilih, ajukan ke LPPM
+          status_pokja: 'menunggu_persetujuan_admin' // Jika mitra dipilih, ajukan ke Admin
         })
       });
       if (res.ok) {
-        alert("Mitra berhasil dipilih dan diajukan ke LPPM!");
+        alert("Mitra berhasil dipilih dan diajukan ke Admin!");
         router.push('/mahasiswa');
       }
     } catch (err) {
@@ -97,7 +97,7 @@ export default function BursaMitra() {
   if (loading) return <DashboardLayout title="Memuat..."><div className="p-10 text-center animate-pulse">Memuat data...</div></DashboardLayout>;
 
   // MODE: PUSAT DOKUMEN
-  if (pokja?.mitra_id && ['disetujui_lppm', 'berjalan', 'selesai'].includes(pokja?.status_pokja)) {
+  if (pokja?.mitra_id && ['disetujui_admin', 'berjalan', 'selesai'].includes(pokja?.status_pokja)) {
     return (
       <DashboardLayout title="Pusat Dokumen KKL Plus">
         <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-700">
@@ -305,7 +305,7 @@ export default function BursaMitra() {
     <DashboardLayout title="Pilih Lokasi Mitra KKL Plus">
       <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-3xl p-6 shadow-sm border border-white/60 dark:border-slate-700 mb-6">
         <h2 className="text-xl font-bold mb-2">Bursa Lokasi KKL Plus</h2>
-        <p className="text-slate-500 mb-4">Pilih tempat atau instansi di mana POKJA Anda akan melaksanakan program kerja. Memilih mitra akan langsung mengajukan POKJA ke LPPM untuk validasi.</p>
+        <p className="text-slate-500 mb-4">Pilih tempat atau instansi di mana POKJA Anda akan melaksanakan program kerja. Memilih mitra akan langsung mengajukan POKJA ke Admin untuk validasi.</p>
         
         {!isKetua && (
           <div className="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg mb-4">
@@ -314,7 +314,7 @@ export default function BursaMitra() {
           </div>
         )}
 
-        {isKetua && pokja?.mitra_id && ['menunggu_persetujuan_lppm', 'disetujui_lppm', 'berjalan', 'selesai'].includes(pokja?.status_pokja) && (
+        {isKetua && pokja?.mitra_id && ['menunggu_persetujuan_admin', 'disetujui_admin', 'berjalan', 'selesai'].includes(pokja?.status_pokja) && (
           <div className="bg-teal-50 border-l-4 border-teal-500 p-4 rounded-r-lg">
             <p className="text-sm font-bold text-teal-700">Lokasi Sudah Diajukan</p>
             <p className="text-sm text-teal-600 mt-1">Anda sudah mengajukan lokasi mitra. Anda tidak dapat memilih lokasi lain kecuali ajuan sebelumnya ditolak oleh admin.</p>
@@ -351,7 +351,7 @@ export default function BursaMitra() {
             </div>
             
             {isKetua ? (
-              pokja?.mitra_id && ['menunggu_persetujuan_lppm', 'disetujui_lppm', 'berjalan', 'selesai'].includes(pokja?.status_pokja) ? (
+              pokja?.mitra_id && ['menunggu_persetujuan_admin', 'disetujui_admin', 'berjalan', 'selesai'].includes(pokja?.status_pokja) ? (
                 <button 
                   disabled
                   className="w-full py-3 bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 font-bold rounded-xl mt-4 cursor-not-allowed"
@@ -364,7 +364,7 @@ export default function BursaMitra() {
                   onClick={() => handleSelectMitra(mitra._id)}
                   className="w-full py-3 bg-teal-600 text-white font-bold rounded-xl shadow-sm hover:bg-teal-700 transition-colors disabled:opacity-50 mt-4"
                 >
-                  {submitting ? 'Memproses...' : 'Pilih Lokasi & Ajukan ke LPPM'}
+                  {submitting ? 'Memproses...' : 'Pilih Lokasi & Ajukan ke Admin'}
                 </button>
               )
             ) : (

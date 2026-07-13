@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { Save, CheckCircle2 } from 'lucide-react';
-import Image from 'next/image';
 
 export default function MentorPenilaianPage() {
   const params = useParams();
@@ -146,11 +145,17 @@ export default function MentorPenilaianPage() {
   return (
     <div className="min-h-screen bg-slate-50 pb-20">
       {/* Header */}
-      <div className="bg-white border-b border-slate-200 sticky top-0 z-10 px-4 py-4 flex items-center gap-3 shadow-sm">
-        <Image src="/logo.png" alt="Logo" width={32} height={32} className="object-contain" />
-        <div>
-          <h1 className="font-bold text-slate-800 text-sm">Penilaian KKL Plus</h1>
-          <p className="text-[10px] text-slate-500">Form Mentor Lapangan (Instansi)</p>
+      <div className="bg-white border-b border-slate-200 sticky top-0 z-20 shadow-sm">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#D4AF37] to-amber-600 flex items-center justify-center text-white font-black text-lg">
+              K
+            </div>
+            <span className="font-bold text-slate-800 tracking-tight">KKL<span className="text-[#D4AF37]">Plus</span></span>
+          </div>
+          <span className="text-xs font-bold text-teal-600 bg-teal-50 px-3 py-1.5 rounded-full border border-teal-100">
+            Form Mentor Lapangan
+          </span>
         </div>
       </div>
 
@@ -190,7 +195,7 @@ export default function MentorPenilaianPage() {
                 placeholder="0-100"
                 value={detailKelompokMentor.keberhasilan || ''}
                 onChange={(e) => setDetailKelompokMentor(prev => ({...prev, keberhasilan: e.target.value}))}
-                className="w-full sm:max-w-xs border-slate-300 rounded-lg shadow-sm focus:border-teal-500 focus:ring-teal-500 text-sm py-2"
+                className="w-full sm:max-w-xs border-slate-300 rounded-lg shadow-sm focus:border-teal-500 focus:ring-teal-500 text-sm px-4 py-2.5"
               />
             </div>
             <div>
@@ -201,7 +206,7 @@ export default function MentorPenilaianPage() {
                 placeholder="0-100"
                 value={detailKelompokMentor.manfaat || ''}
                 onChange={(e) => setDetailKelompokMentor(prev => ({...prev, manfaat: e.target.value}))}
-                className="w-full sm:max-w-xs border-slate-300 rounded-lg shadow-sm focus:border-teal-500 focus:ring-teal-500 text-sm py-2"
+                className="w-full sm:max-w-xs border-slate-300 rounded-lg shadow-sm focus:border-teal-500 focus:ring-teal-500 text-sm px-4 py-2.5"
               />
             </div>
             <div>
@@ -234,6 +239,21 @@ export default function MentorPenilaianPage() {
               </ul>
               <p className="text-[10px] text-teal-700 italic">* Rata-rata dari indikator ini akan menjadi nilai individu masing-masing mahasiswa.</p>
             </div>
+
+            <div className="mt-4 bg-slate-50 border border-slate-200 p-4 rounded-xl">
+              <p className="text-sm font-bold text-slate-800 mb-3">Skala Penilaian (Konversi Huruf):</p>
+              <div className="flex flex-wrap gap-2 text-xs">
+                <span className="bg-white border border-slate-200 px-3 py-1.5 rounded-lg"><strong className="text-teal-700">A:</strong> 90-100</span>
+                <span className="bg-white border border-slate-200 px-3 py-1.5 rounded-lg"><strong className="text-teal-700">A-:</strong> 80-89.9</span>
+                <span className="bg-white border border-slate-200 px-3 py-1.5 rounded-lg"><strong className="text-teal-700">B+:</strong> 75-79.9</span>
+                <span className="bg-white border border-slate-200 px-3 py-1.5 rounded-lg"><strong className="text-teal-700">B:</strong> 70-74.9</span>
+                <span className="bg-white border border-slate-200 px-3 py-1.5 rounded-lg"><strong className="text-amber-600">B-:</strong> 66-69.9</span>
+                <span className="bg-white border border-slate-200 px-3 py-1.5 rounded-lg"><strong className="text-amber-600">C+:</strong> 61-65.9</span>
+                <span className="bg-white border border-slate-200 px-3 py-1.5 rounded-lg"><strong className="text-amber-600">C:</strong> 56-60.9</span>
+                <span className="bg-white border border-slate-200 px-3 py-1.5 rounded-lg"><strong className="text-rose-600">D:</strong> 46-55.9</span>
+                <span className="bg-white border border-slate-200 px-3 py-1.5 rounded-lg"><strong className="text-rose-600">E:</strong> &lt; 46</span>
+              </div>
+            </div>
           </div>
           <div className="divide-y divide-slate-100">
             {penilaians.map((item) => {
@@ -254,7 +274,7 @@ export default function MentorPenilaianPage() {
                       placeholder="0-100"
                       value={item.detail_mentor_individu?.kedisiplinan || ''}
                       onChange={(e) => handleIndividuDetailChange(item._id, 'kedisiplinan', e.target.value)}
-                      className="w-full border-slate-300 rounded-lg shadow-sm focus:border-teal-500 focus:ring-teal-500 font-bold text-sm"
+                      className="w-full px-4 py-2.5 border-slate-300 rounded-lg shadow-sm focus:border-teal-500 focus:ring-teal-500 font-bold text-sm"
                     />
                   </div>
                   <div>
@@ -265,7 +285,7 @@ export default function MentorPenilaianPage() {
                       placeholder="0-100"
                       value={item.detail_mentor_individu?.tanggungjawab || ''}
                       onChange={(e) => handleIndividuDetailChange(item._id, 'tanggungjawab', e.target.value)}
-                      className="w-full border-slate-300 rounded-lg shadow-sm focus:border-teal-500 focus:ring-teal-500 font-bold text-sm"
+                      className="w-full px-4 py-2.5 border-slate-300 rounded-lg shadow-sm focus:border-teal-500 focus:ring-teal-500 font-bold text-sm"
                     />
                   </div>
                   <div>
@@ -276,7 +296,7 @@ export default function MentorPenilaianPage() {
                       placeholder="0-100"
                       value={item.detail_mentor_individu?.keterampilan || ''}
                       onChange={(e) => handleIndividuDetailChange(item._id, 'keterampilan', e.target.value)}
-                      className="w-full border-slate-300 rounded-lg shadow-sm focus:border-teal-500 focus:ring-teal-500 font-bold text-sm"
+                      className="w-full px-4 py-2.5 border-slate-300 rounded-lg shadow-sm focus:border-teal-500 focus:ring-teal-500 font-bold text-sm"
                     />
                   </div>
                 </div>

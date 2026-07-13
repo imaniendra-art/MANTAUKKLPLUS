@@ -45,7 +45,7 @@ export async function GET(req) {
       users = await Promise.all(users.map(async (dpl) => {
         const pokjas = await Pokja.find({ 
           dpl_id: dpl._id, 
-          status_pokja: { $in: ['disetujui_lppm', 'berjalan', 'selesai'] }
+          status_pokja: { $in: ['disetujui_admin', 'berjalan', 'selesai'] }
         }).populate('ketua_id', 'program_studi kegiatan').lean();
         
         const prodis = [...new Set(pokjas.map(p => p.ketua_id?.program_studi).filter(Boolean))].join(', ');
@@ -99,6 +99,7 @@ export async function POST(req) {
       email: data.email || `${nim_nidn}@mantau.local`, // Use provided email or fallback
       password: hashedPassword,
       role: role || 'dpl',
+      tipe_admin: data.tipe_admin || undefined,
       isFirstLogin: true,
     });
 

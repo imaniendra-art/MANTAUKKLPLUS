@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { ArrowLeft, Save, AlertCircle, CheckCircle2, Copy } from 'lucide-react';
+import DashboardLayout from '@/components/DashboardLayout';
 
 export default function DplPenilaianPage() {
   const params = useParams();
@@ -137,10 +138,15 @@ export default function DplPenilaianPage() {
     }
   };
 
-  if (loading) return <div className="p-8 text-center">Loading...</div>;
+  if (loading) return (
+    <DashboardLayout title="Penilaian KKL Plus (DPL)">
+      <div className="p-8 text-center text-slate-500 font-bold">Memuat data...</div>
+    </DashboardLayout>
+  );
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
+    <DashboardLayout title="Penilaian KKL Plus (DPL)">
+      <div className="space-y-6 pb-28 mt-6">
       <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-6">
         <div className="flex items-center gap-4">
           <button onClick={() => router.back()} className="p-2 hover:bg-slate-100 rounded-full transition">
@@ -208,7 +214,7 @@ export default function DplPenilaianPage() {
                         min="0" max="100"
                         value={data.ketercapaian || ''}
                         onChange={(e) => handleProkerDetailChange(proker._id, 'ketercapaian', e.target.value)}
-                        className="w-full border-slate-300 rounded-lg shadow-sm focus:border-fuchsia-500 focus:ring-fuchsia-500"
+                        className="w-full px-4 py-2.5 border-slate-300 rounded-lg shadow-sm focus:border-fuchsia-500 focus:ring-fuchsia-500"
                         placeholder="0-100"
                       />
                     </div>
@@ -219,7 +225,7 @@ export default function DplPenilaianPage() {
                         min="0" max="100"
                         value={data.kesesuaian || ''}
                         onChange={(e) => handleProkerDetailChange(proker._id, 'kesesuaian', e.target.value)}
-                        className="w-full border-slate-300 rounded-lg shadow-sm focus:border-fuchsia-500 focus:ring-fuchsia-500"
+                        className="w-full px-4 py-2.5 border-slate-300 rounded-lg shadow-sm focus:border-fuchsia-500 focus:ring-fuchsia-500"
                         placeholder="0-100"
                       />
                     </div>
@@ -230,7 +236,7 @@ export default function DplPenilaianPage() {
                         min="0" max="100"
                         value={data.manfaat || ''}
                         onChange={(e) => handleProkerDetailChange(proker._id, 'manfaat', e.target.value)}
-                        className="w-full border-slate-300 rounded-lg shadow-sm focus:border-fuchsia-500 focus:ring-fuchsia-500"
+                        className="w-full px-4 py-2.5 border-slate-300 rounded-lg shadow-sm focus:border-fuchsia-500 focus:ring-fuchsia-500"
                         placeholder="0-100"
                       />
                     </div>
@@ -268,6 +274,21 @@ export default function DplPenilaianPage() {
             </ul>
             <p className="text-xs text-teal-700 italic">* Rata-rata dari ke-3 indikator ini akan menjadi Nilai Individu per mahasiswa.</p>
           </div>
+
+          <div className="mt-4 bg-slate-50 border border-slate-200 p-4 rounded-xl">
+            <p className="text-sm font-bold text-slate-800 mb-3">Skala Penilaian (Konversi Huruf):</p>
+            <div className="flex flex-wrap gap-2 text-xs">
+              <span className="bg-white border border-slate-200 px-3 py-1.5 rounded-lg"><strong className="text-teal-700">A:</strong> 90-100</span>
+              <span className="bg-white border border-slate-200 px-3 py-1.5 rounded-lg"><strong className="text-teal-700">A-:</strong> 80-89.9</span>
+              <span className="bg-white border border-slate-200 px-3 py-1.5 rounded-lg"><strong className="text-teal-700">B+:</strong> 75-79.9</span>
+              <span className="bg-white border border-slate-200 px-3 py-1.5 rounded-lg"><strong className="text-teal-700">B:</strong> 70-74.9</span>
+              <span className="bg-white border border-slate-200 px-3 py-1.5 rounded-lg"><strong className="text-amber-600">B-:</strong> 66-69.9</span>
+              <span className="bg-white border border-slate-200 px-3 py-1.5 rounded-lg"><strong className="text-amber-600">C+:</strong> 61-65.9</span>
+              <span className="bg-white border border-slate-200 px-3 py-1.5 rounded-lg"><strong className="text-amber-600">C:</strong> 56-60.9</span>
+              <span className="bg-white border border-slate-200 px-3 py-1.5 rounded-lg"><strong className="text-rose-600">D:</strong> 46-55.9</span>
+              <span className="bg-white border border-slate-200 px-3 py-1.5 rounded-lg"><strong className="text-rose-600">E:</strong> &lt; 46</span>
+            </div>
+          </div>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-slate-600">
@@ -304,7 +325,7 @@ export default function DplPenilaianPage() {
                       min="0" max="100"
                       value={item.detail_dpl_individu?.laporan || ''}
                       onChange={(e) => handleIndividuDetailChange(item._id, 'laporan', e.target.value)}
-                      className="w-24 border-slate-300 rounded-lg shadow-sm focus:border-fuchsia-500 focus:ring-fuchsia-500"
+                      className="w-24 px-3 py-2 border-slate-300 rounded-lg shadow-sm focus:border-fuchsia-500 focus:ring-fuchsia-500"
                     />
                   </td>
                   <td className="px-6 py-4 align-top">
@@ -313,7 +334,7 @@ export default function DplPenilaianPage() {
                       min="0" max="100"
                       value={item.detail_dpl_individu?.logbook || ''}
                       onChange={(e) => handleIndividuDetailChange(item._id, 'logbook', e.target.value)}
-                      className="w-24 border-slate-300 rounded-lg shadow-sm focus:border-fuchsia-500 focus:ring-fuchsia-500"
+                      className="w-24 px-3 py-2 border-slate-300 rounded-lg shadow-sm focus:border-fuchsia-500 focus:ring-fuchsia-500"
                     />
                   </td>
                   <td className="px-6 py-4 align-top">
@@ -322,7 +343,7 @@ export default function DplPenilaianPage() {
                       min="0" max="100"
                       value={item.detail_dpl_individu?.etika || ''}
                       onChange={(e) => handleIndividuDetailChange(item._id, 'etika', e.target.value)}
-                      className="w-24 border-slate-300 rounded-lg shadow-sm focus:border-fuchsia-500 focus:ring-fuchsia-500"
+                      className="w-24 px-3 py-2 border-slate-300 rounded-lg shadow-sm focus:border-fuchsia-500 focus:ring-fuchsia-500"
                     />
                   </td>
                   <td className="px-6 py-4 align-top">
@@ -352,6 +373,7 @@ export default function DplPenilaianPage() {
           </button>
         </div>
       </div>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }

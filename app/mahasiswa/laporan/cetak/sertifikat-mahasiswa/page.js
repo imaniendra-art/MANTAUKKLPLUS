@@ -145,7 +145,18 @@ export default function CetakSertifikatMahasiswa() {
               {/* Predikat Badge */}
               <div className="mt-6 border-2 border-[#6B21A8] bg-[#fdfaf6] px-8 py-3 rounded shadow-sm">
                 <p className="text-2xl font-bold text-slate-800 tracking-wide">
-                  LULUS dengan Predikat: <span className="text-[#6B21A8]">SANGAT BAIK ( A )</span>
+                  LULUS dengan Predikat: <span className="text-[#6B21A8]">
+                    {(() => {
+                      const huruf = data?.penilaian?.nilai_akhir_huruf || '-';
+                      let teks = 'MEMUASKAN';
+                      if (huruf.startsWith('A')) teks = 'SANGAT BAIK';
+                      else if (huruf.startsWith('B')) teks = 'BAIK';
+                      else if (huruf.startsWith('C')) teks = 'CUKUP';
+                      else if (huruf === 'D') teks = 'KURANG';
+                      else if (huruf === 'E') teks = 'SANGAT KURANG';
+                      return `${teks} ( ${huruf} )`;
+                    })()}
+                  </span>
                 </p>
               </div>
             </div>
@@ -311,6 +322,20 @@ export default function CetakSertifikatMahasiswa() {
                     <p className="text-xs font-black tracking-widest uppercase text-teal-800 mb-1">Predikat Huruf</p>
                     <h1 className="text-5xl font-black text-teal-600">{data.penilaian?.nilai_akhir_huruf || '-'}</h1>
                   </div>
+                </div>
+
+                {/* Keterangan Skala Nilai */}
+                <div className="mt-2 text-[9px] text-slate-500 bg-slate-50 border border-slate-200 rounded flex justify-between items-center px-3 py-1.5 w-full print:border-none print:bg-transparent print:p-0">
+                  <span className="font-bold mr-2 uppercase tracking-wider">Skala Penilaian:</span>
+                  <span><strong className="text-teal-700">A:</strong> 90-100</span>
+                  <span><strong className="text-teal-700">A-:</strong> 80-89.9</span>
+                  <span><strong className="text-teal-700">B+:</strong> 75-79.9</span>
+                  <span><strong className="text-teal-700">B:</strong> 70-74.9</span>
+                  <span><strong className="text-amber-600">B-:</strong> 66-69.9</span>
+                  <span><strong className="text-amber-600">C+:</strong> 61-65.9</span>
+                  <span><strong className="text-amber-600">C:</strong> 56-60.9</span>
+                  <span><strong className="text-rose-600">D:</strong> 46-55.9</span>
+                  <span><strong className="text-rose-600">E:</strong> &lt; 46</span>
                 </div>
             </>
           ) : (

@@ -67,7 +67,7 @@ export async function POST(req) {
       ketua_id: mahasiswa_id,
       mitra_id: mitra_id || undefined,
       anggota: [{ user_id: mahasiswa_id, status_undangan: 'bergabung' }],
-      status_pokja: 'menunggu_persetujuan_lppm',
+      status_pokja: 'menunggu_persetujuan_admin',
       tanggal_mulai: new Date(),
       tanggal_selesai: new Date(new Date().setMonth(new Date().getMonth() + 4)),
     });

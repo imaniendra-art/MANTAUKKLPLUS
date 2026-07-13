@@ -29,7 +29,7 @@ export async function GET(req) {
 export async function PUT(req) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || (session.user?.role !== 'admin' && session.user?.role !== 'lppm')) {
+    if (!session || (session.user?.role !== 'admin' && session.user?.role !== 'admin')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

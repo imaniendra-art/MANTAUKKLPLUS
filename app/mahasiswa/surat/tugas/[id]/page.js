@@ -34,7 +34,7 @@ export default function SuratTugasPage({ params }) {
   }
 
   // Cek kelayakan status
-  if (!['disetujui_lppm', 'berjalan', 'selesai'].includes(pokja.status_pokja)) {
+  if (!['disetujui_admin', 'berjalan', 'selesai'].includes(pokja.status_pokja)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-100">
         <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md text-center border-t-4 border-red-500">
@@ -42,7 +42,7 @@ export default function SuratTugasPage({ params }) {
             <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
           </div>
           <h2 className="text-xl font-bold text-slate-800 mb-2">Akses Ditolak</h2>
-          <p className="text-slate-600 mb-6">Surat Tugas (SK Penugasan) belum diterbitkan karena kelompok Anda belum berstatus Disetujui LPPM atau Berjalan.</p>
+          <p className="text-slate-600 mb-6">Surat Tugas (SK Penugasan) belum diterbitkan karena kelompok Anda belum berstatus Disetujui Admin atau Berjalan.</p>
           <button onClick={() => router.back()} className="px-6 py-2 bg-slate-800 text-white font-bold rounded-lg w-full">Kembali</button>
         </div>
       </div>
@@ -84,7 +84,7 @@ export default function SuratTugasPage({ params }) {
           <div className="text-center flex-1">
             <h1 className="font-bold text-[14pt] tracking-wide uppercase">Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi</h1>
             <h2 className="font-bold text-[16pt] uppercase mt-1">Universitas Contoh Indonesia</h2>
-            <h3 className="font-bold text-[12pt] mt-1">Lembaga Penelitian dan Pengabdian kepada Masyarakat (LPPM)</h3>
+            <h3 className="font-bold text-[12pt] mt-1">Lembaga Penelitian dan Pengabdian kepada Masyarakat (Admin)</h3>
             <p className="text-[10pt] mt-2">Jl. Pendidikan No. 1, Kota Akademik 12345, Telp. (021) 123456</p>
             <p className="text-[10pt]">Laman: www.contoh.ac.id | Email: lppm@contoh.ac.id</p>
           </div>
@@ -94,13 +94,13 @@ export default function SuratTugasPage({ params }) {
         {/* JUDUL SURAT */}
         <div className="text-center mb-8">
           <h1 className="font-bold text-[14pt] underline">SURAT TUGAS PELAKSANAAN KKL PLUS</h1>
-          <p>Nomor: ..... /UN.../LPPM/KKL-TUGAS/{new Date().getFullYear()}</p>
+          <p>Nomor: ..... /UN.../Admin/KKL-TUGAS/{new Date().getFullYear()}</p>
         </div>
 
         {/* ISI SURAT */}
         <div className="space-y-4 text-justify">
           <p>
-            Ketua Lembaga Penelitian dan Pengabdian kepada Masyarakat (LPPM) Universitas Contoh Indonesia, dengan ini memberikan tugas kepada:
+            Ketua Lembaga Penelitian dan Pengabdian kepada Masyarakat (Admin) Universitas Contoh Indonesia, dengan ini memberikan tugas kepada:
           </p>
 
           <table className="w-full mt-4 border-collapse border border-black text-[11pt]">
@@ -155,7 +155,7 @@ export default function SuratTugasPage({ params }) {
           </table>
 
           <p className="mt-4">
-            Surat tugas ini berlaku selama mahasiswa melaksanakan kegiatan di lokasi mitra yang bersangkutan. Mahasiswa diwajibkan untuk menjaga nama baik almamater, mematuhi peraturan yang berlaku di instansi mitra, serta melaporkan hasil kegiatannya kepada LPPM.
+            Surat tugas ini berlaku selama mahasiswa melaksanakan kegiatan di lokasi mitra yang bersangkutan. Mahasiswa diwajibkan untuk menjaga nama baik almamater, mematuhi peraturan yang berlaku di instansi mitra, serta melaporkan hasil kegiatannya kepada Admin.
           </p>
           <p>
             Demikian surat tugas ini dibuat agar dapat dilaksanakan dengan penuh tanggung jawab.

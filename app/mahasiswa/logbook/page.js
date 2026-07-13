@@ -247,7 +247,7 @@ export default function LogbookPage() {
             <div className="w-20 h-20 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">🔒</div>
             <h2 className="text-2xl font-black mb-2 text-slate-800 dark:text-white">Akses Terkunci</h2>
             <p className="text-slate-600 dark:text-slate-400">
-              Logbook Harian terbuka **setelah** POKJA Anda disetujui oleh LPPM dan statusnya berjalan.
+              Logbook Harian terbuka **setelah** POKJA Anda disetujui oleh Admin dan statusnya berjalan.
             </p>
           </div>
         </div>

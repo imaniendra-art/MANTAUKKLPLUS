@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Users, Building, Plus, CheckCircle, Clock } from "lucide-react";;
+import { Users, Building, Plus, CheckCircle, Clock, Edit } from "lucide-react";
 import { Suspense } from "react";
 
 function MahasiswaDashboardContent() {
@@ -18,6 +18,9 @@ function MahasiswaDashboardContent() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [namaPokja, setNamaPokja] = useState("");
   const [showMitraProfileModal, setShowMitraProfileModal] = useState(false);
+  
+  const [showEditNamaModal, setShowEditNamaModal] = useState(false);
+  const [editNamaPokja, setEditNamaPokja] = useState("");
   const [mitraProfileForm, setMitraProfileForm] = useState({
     alamat_lengkap: "", kecamatan: "", kabupaten_kota: "", titik_koordinat: "", link_maps: "",
     nama_pimpinan: "", kontak_mitra: "", status_kerjasama: "Belum Ada", kuota_maksimal: 5, fasilitas_khusus: ""
@@ -55,9 +58,33 @@ function MahasiswaDashboardContent() {
       if (res.ok) {
         setShowCreateModal(false);
         fetchPokja();
+      } else {
+        alert("Gagal membuat kelompok");
       }
-    } catch (err) {
-      console.error(err);
+    } catch (e) {
+      console.error(e);
+      alert("Terjadi kesalahan sistem.");
+    }
+  };
+
+  const handleEditNama = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch('/api/pokja', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: pokja._id, action: 'rename', nama_pokja: editNamaPokja })
+      });
+      if (res.ok) {
+        setShowEditNamaModal(false);
+        fetchPokja();
+      } else {
+        const data = await res.json();
+        alert(data.error || "Gagal mengganti nama kelompok");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Terjadi kesalahan sistem.");
     }
   };
 
@@ -203,8 +230,17 @@ function MahasiswaDashboardContent() {
               <div>
                 <h2 className="text-2xl font-black text-slate-800 dark:text-white flex items-center gap-2">
                   {pokja.nama_pokja} 
-                  <span className="text-sm px-3 py-1 bg-teal-100 text-teal-700 rounded-full font-bold uppercase tracking-wider">
-                    {pokja.status_pokja === 'disetujui_lppm' ? 'Persiapan' : pokja.status_pokja.replace(/_/g, ' ')}
+                  {isKetua && (
+                    <button 
+                      onClick={() => { setEditNamaPokja(pokja.nama_pokja); setShowEditNamaModal(true); }}
+                      className="text-teal-600 hover:text-teal-700 bg-teal-50 hover:bg-teal-100 p-1.5 rounded-lg transition-colors shadow-sm ml-1"
+                      title="Ganti Nama Kelompok"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </button>
+                  )}
+                  <span className="text-sm px-3 py-1 bg-teal-100 text-teal-700 rounded-full font-bold uppercase tracking-wider ml-2">
+                    {pokja.status_pokja === 'disetujui_admin' ? 'Persiapan' : pokja.status_pokja.replace(/_/g, ' ')}
                   </span>
                 </h2>
                 <p className="text-slate-500 mt-1">Dosen Pembimbing: {pokja.dpl_id ? pokja.dpl_id.nama_lengkap : 'Belum ditentukan'}</p>
@@ -237,7 +273,7 @@ function MahasiswaDashboardContent() {
             )}
 
             {/* Kelola Dokumen Section */}
-            {pokja.mitra_id && ['disetujui_lppm', 'berjalan', 'selesai'].includes(pokja.status_pokja) && (
+            {pokja.mitra_id && ['disetujui_admin', 'berjalan', 'selesai'].includes(pokja.status_pokja) && (
               <div className="mt-6">
                 <div className="flex items-center justify-between p-5 bg-gradient-to-r from-teal-50 to-teal-50 dark:from-teal-900/30 dark:to-teal-900/20 rounded-2xl border border-teal-100 dark:border-teal-800 shadow-sm">
                   <div className="flex items-center gap-4">
@@ -469,7 +505,7 @@ function MahasiswaDashboardContent() {
               
               <div className="bg-teal-50 border border-teal-100 rounded-xl p-4 mb-6">
                 <p className="text-sm text-teal-800">
-                  <strong>Penting:</strong> Data profil ini bersifat krusial untuk persetujuan LPPM. Pastikan Anda mengisi alamat, kontak, dan status kerja sama dengan sebenar-benarnya sesuai hasil observasi.
+                  <strong>Penting:</strong> Data profil ini bersifat krusial untuk persetujuan Admin. Pastikan Anda mengisi alamat, kontak, dan status kerja sama dengan sebenar-benarnya sesuai hasil observasi.
                 </p>
               </div>
 
@@ -557,6 +593,32 @@ function MahasiswaDashboardContent() {
             </div>
           </div>
         )}
+        
+      {/* Modal Edit Nama Kelompok */}
+      {showEditNamaModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-3xl p-6 max-w-md w-full shadow-2xl">
+            <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-4">Ganti Nama Kelompok</h3>
+            <form onSubmit={handleEditNama}>
+              <div className="mb-4">
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Nama Kelompok Baru</label>
+                <input 
+                  type="text" 
+                  required 
+                  value={editNamaPokja} 
+                  onChange={(e) => setEditNamaPokja(e.target.value)} 
+                  placeholder="Misal: Kelompok 1 - ITB"
+                  className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/60 dark:bg-slate-900/60 focus:ring-2 focus:ring-teal-600 focus:border-teal-600 outline-none transition-all"
+                />
+              </div>
+              <div className="flex justify-end gap-3 mt-6">
+                <button type="button" onClick={() => setShowEditNamaModal(false)} className="px-5 py-2 font-bold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors">Batal</button>
+                <button type="submit" className="px-6 py-2 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl shadow-lg shadow-teal-600/30 transition-all">Simpan Perubahan</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       </div>
     </DashboardLayout>

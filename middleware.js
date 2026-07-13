@@ -13,7 +13,7 @@ export default withAuth(
     if (path.startsWith('/mahasiswa') && token.role !== 'mahasiswa') {
       if (token.role === 'dpl' && path.startsWith('/mahasiswa/laporan/cetak/laporan')) {
         // allow DPL to view
-      } else if (token.role === 'lppm' && path.startsWith('/mahasiswa/laporan/templates/pengantar')) {
+      } else if (token.role === 'admin' && path.startsWith('/mahasiswa/laporan/templates/pengantar')) {
         // allow Admin to view
       } else {
         return NextResponse.redirect(new URL('/login', req.url));
@@ -39,7 +39,7 @@ export default withAuth(
       return NextResponse.redirect(new URL('/login', req.url));
     }
 
-    if (path.startsWith('/admin') && token.role !== 'lppm') {
+    if (path.startsWith('/admin') && token.role !== 'admin') {
       return NextResponse.redirect(new URL('/login', req.url));
     }
 

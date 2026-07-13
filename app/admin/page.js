@@ -69,7 +69,7 @@ export default function AdminDashboard() {
   };
 
   return (
-    <DashboardLayout title="Dashboard LPPM" notifications={renderContent()}>
+    <DashboardLayout title="Dashboard Admin" notifications={renderContent()}>
     </DashboardLayout>
   );
 }

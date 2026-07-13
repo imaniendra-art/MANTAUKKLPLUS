@@ -19,7 +19,7 @@ export async function GET(req) {
         { ketua_id: mhsId },
         { 'anggota.user_id': mhsId }
       ],
-      status_pokja: { $in: ['disetujui_lppm', 'berjalan', 'selesai'] }
+      status_pokja: { $in: ['disetujui_admin', 'berjalan', 'selesai'] }
     });
     
     let cpmkAchievements = [];

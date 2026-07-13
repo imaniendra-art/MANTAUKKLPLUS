@@ -22,7 +22,7 @@ export default function ProfilPage() {
 
   const role = session?.user?.role;
   let dashboardPath = "/";
-  if (role === "lppm") dashboardPath = "/admin";
+  if (role === 'admin') dashboardPath = "/admin";
   else if (role === "mahasiswa") dashboardPath = "/mahasiswa";
   else if (role === "dpl") dashboardPath = "/dpl";
   else if (role === "mentor") dashboardPath = "/mentor";

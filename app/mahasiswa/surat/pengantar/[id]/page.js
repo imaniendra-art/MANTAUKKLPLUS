@@ -68,7 +68,7 @@ export default function SuratPengantarPage({ params }) {
           <div className="text-center flex-1">
             <h1 className="font-bold text-[14pt] tracking-wide uppercase">Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi</h1>
             <h2 className="font-bold text-[16pt] uppercase mt-1">Universitas Contoh Indonesia</h2>
-            <h3 className="font-bold text-[12pt] mt-1">Lembaga Penelitian dan Pengabdian kepada Masyarakat (LPPM)</h3>
+            <h3 className="font-bold text-[12pt] mt-1">Lembaga Penelitian dan Pengabdian kepada Masyarakat (Admin)</h3>
             <p className="text-[10pt] mt-2">Jl. Pendidikan No. 1, Kota Akademik 12345, Telp. (021) 123456</p>
             <p className="text-[10pt]">Laman: www.contoh.ac.id | Email: lppm@contoh.ac.id</p>
           </div>
@@ -83,7 +83,7 @@ export default function SuratPengantarPage({ params }) {
                 <tr>
                   <td className="pr-4 py-1">Nomor</td>
                   <td className="pr-2">:</td>
-                  <td>..... /UN.../LPPM/KKL/{new Date().getFullYear()}</td>
+                  <td>..... /UN.../Admin/KKL/{new Date().getFullYear()}</td>
                 </tr>
                 <tr>
                   <td className="pr-4 py-1">Lampiran</td>
@@ -160,7 +160,7 @@ export default function SuratPengantarPage({ params }) {
         {/* TTD */}
         <div className="mt-16 flex justify-end">
           <div className="w-64 text-center">
-            <p className="mb-20">Ketua LPPM,</p>
+            <p className="mb-20">Ketua Admin,</p>
             <p className="font-bold underline">Prof. Dr. Akademisi Hebat, M.Si.</p>
             <p>NIP. 19800101 200501 1 001</p>
           </div>

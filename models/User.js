@@ -25,8 +25,14 @@ const UserSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['mahasiswa', 'dpl', 'lppm', 'mentor'],
+    enum: ['mahasiswa', 'dpl', 'admin', 'mentor'],
     required: [true, 'Role wajib diisi'],
+  },
+  tipe_admin: {
+    type: String,
+    enum: ['lppm', 'prodi', 'fakultas', 'superadmin', 'lainnya'],
+    required: false,
+    default: 'lppm' // Defaulting existing admins to lppm initially, but they are all 'admin' role now
   },
   program_studi: {
     type: String,
