@@ -180,7 +180,7 @@ function SetupAkunContent() {
                       className="w-full px-4 py-3 border border-white/60 dark:border-slate-700 rounded-xl bg-white/20 dark:bg-slate-900/20 focus:ring-2 focus:ring-teal-600 focus:border-teal-600 text-slate-900 dark:text-white"
                       placeholder="Contoh: Manajemen Hebat"
                     />
-                    <p className="text-xs text-slate-500 mt-2">ℹ️ Disarankan untuk menyertakan kata "Manajemen" pada nama kelompok Anda.</p>
+                    <p className="text-xs text-slate-500 mt-2">ℹ️ Disarankan untuk menyertakan kata &quot;Manajemen&quot; pada nama kelompok Anda.</p>
                   </div>
                 ) : (
                   <div>

@@ -148,7 +148,7 @@ export default function MonitoringPokjaPage() {
           <div className="w-full md:w-auto">
             <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight mb-2">Monitoring Logbook POKJA</h2>
             <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
-              Pantau aktivitas kelompok mahasiswa. Klik "Lihat Logbook" untuk menampilkan riwayat kegiatan proyek kerja mereka.
+              Pantau aktivitas kelompok mahasiswa. Klik &quot;Lihat Logbook&quot; untuk menampilkan riwayat kegiatan proyek kerja mereka.
             </p>
           </div>
           <div className="w-full md:w-auto flex shrink-0 relative">

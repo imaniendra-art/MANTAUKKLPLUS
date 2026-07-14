@@ -16,10 +16,6 @@ export default function ArsipDokumen() {
   const [activeTab, setActiveTab] = useState("surat"); // surat, laporan, sertifikat, galeri
   const [searchTerm, setSearchTerm] = useState("");
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -35,6 +31,10 @@ export default function ArsipDokumen() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const TABS = [
     { id: "surat", label: "Surat & SK", icon: <FileSignature className="w-4 h-4" /> },

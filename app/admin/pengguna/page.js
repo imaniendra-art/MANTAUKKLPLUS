@@ -606,7 +606,7 @@ export default function ManajemenPenggunaPage() {
               <div className="mb-6 bg-teal-50 dark:bg-teal-900/20 text-teal-800 dark:text-teal-300 p-5 rounded-xl text-sm border border-teal-200 dark:border-teal-800">
                 <p className="font-bold mb-2">Petunjuk Format CSV:</p>
                 <ul className="list-disc pl-5 space-y-1">
-                  <li>Baris pertama WAJIB ada header: <strong>nim, nama, prodi</strong> (boleh ada kolom 'no')</li>
+                  <li>Baris pertama WAJIB ada header: <strong>nim, nama, prodi</strong> (boleh ada kolom &apos;no&apos;)</li>
                   <li>Pisahkan kolom dengan koma (,) atau titik koma (;).</li>
                   <li>Nama POKJA dan password akan diisi langsung oleh mahasiswa saat login pertama kali.</li>
                 </ul>

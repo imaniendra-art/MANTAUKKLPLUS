@@ -20,44 +20,44 @@ export default function MentorPenilaianPage() {
   });
 
   useEffect(() => {
-    fetchData();
-  }, [params.pokjaId]);
-
-  const fetchData = async () => {
-    try {
-      const res = await fetch(`/api/penilaian?pokjaId=${params.pokjaId}`);
-      const data = await res.json();
-      if (data.success) {
-        setPenilaians(data.penilaians.map(p => ({
-          ...p,
-          detail_mentor_individu: p.detail_mentor_individu || { kedisiplinan: 0, tanggungjawab: 0, keterampilan: 0 }
-        })));
-        
-        setProkers(data.prokers || []);
-        
-        if (data.penilaians.length > 0) {
-          if (data.penilaians[0].detail_mentor_kelompok) {
-            const dk = data.penilaians[0].detail_mentor_kelompok;
-            if (dk.keberhasilan !== undefined) {
-              setDetailKelompokMentor({
-                keberhasilan: dk.keberhasilan || 0,
-                manfaat: dk.manfaat || 0,
-                kerjasama: dk.kerjasama || 0
-              });
+    const fetchData = async () => {
+      try {
+        const res = await fetch(`/api/penilaian?pokjaId=${params.pokjaId}`);
+        const data = await res.json();
+        if (data.success) {
+          setPenilaians(data.penilaians.map(p => ({
+            ...p,
+            detail_mentor_individu: p.detail_mentor_individu || { kedisiplinan: 0, tanggungjawab: 0, keterampilan: 0 }
+          })));
+          
+          setProkers(data.prokers || []);
+          
+          if (data.penilaians.length > 0) {
+            if (data.penilaians[0].detail_mentor_kelompok) {
+              const dk = data.penilaians[0].detail_mentor_kelompok;
+              if (dk.keberhasilan !== undefined) {
+                setDetailKelompokMentor({
+                  keberhasilan: dk.keberhasilan || 0,
+                  manfaat: dk.manfaat || 0,
+                  kerjasama: dk.kerjasama || 0
+                });
+              }
+            }
+            if (data.penilaians[0].mentor_sudah_menilai) {
+              setSubmitted(true);
             }
           }
-          if (data.penilaians[0].mentor_sudah_menilai) {
-            setSubmitted(true);
-          }
         }
+      } catch (err) {
+        console.error(err);
+        alert('Gagal mengambil data penilaian');
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error(err);
-      alert('Gagal mengambil data penilaian');
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+
+    fetchData();
+  }, [params.pokjaId]);
 
   const handleIndividuDetailChange = (id, field, value) => {
     setPenilaians(prev => prev.map(p => {

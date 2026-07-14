@@ -70,6 +70,12 @@ export default function CetakLaporan() {
   const titleBab2 = laporan.tipe_laporan === 'pokja' ? 'PROFIL INSTITUSI MITRA' : 'METODE PELAKSANAAN';
   const titleBab3 = laporan.tipe_laporan === 'pokja' ? 'PELAKSANAAN PROGRAM KERJA' : 'HASIL DAN PEMBAHASAN';
 
+  const isDisetujui = laporan.status === 'disetujui';
+  // Use absolute URL dynamically based on current window location
+  const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://mantaukklplus.vercel.app';
+  const verifyUrl = `${baseUrl}/verify/${laporan._id}`;
+  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(verifyUrl)}`;
+
   const groupedLogbooks = logbooks.reduce((acc, log) => {
     const groupName = log.proker_id?.judul_proker || 'Kegiatan Harian / Lainnya';
     if (!acc[groupName]) acc[groupName] = [];
@@ -196,12 +202,24 @@ export default function CetakLaporan() {
           
           <div className="flex justify-between items-end mt-16 text-center">
             <div className="flex flex-col items-center">
-              <p className="mb-24">Menyetujui,<br/>Mentor (Pembimbing Lapangan)</p>
+              <p className={isDisetujui ? "mb-4" : "mb-24"}>Menyetujui,<br/>Mentor (Pembimbing Lapangan)</p>
+              {isDisetujui && (
+                <div className="flex flex-col items-center mb-4">
+                  <img src={qrCodeUrl} alt="QR Code" className="w-24 h-24 border-2 border-slate-200 p-1 bg-white rounded-lg shadow-sm mb-1" />
+                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Validasi Digital</p>
+                </div>
+              )}
               <p className="font-bold underline uppercase">{pengajuan.mentor_nama || '_________________________'}</p>
               <p>{pengajuan.mentor_jabatan || 'Instansi/Perusahaan'}</p>
             </div>
             <div className="flex flex-col items-center">
-              <p className="mb-24">Mengesahkan,<br/>Dosen Pembimbing Lapangan (DPL)</p>
+              <p className={isDisetujui ? "mb-4" : "mb-24"}>Mengesahkan,<br/>Dosen Pembimbing Lapangan (DPL)</p>
+              {isDisetujui && (
+                <div className="flex flex-col items-center mb-4">
+                  <img src={qrCodeUrl} alt="QR Code" className="w-24 h-24 border-2 border-slate-200 p-1 bg-white rounded-lg shadow-sm mb-1" />
+                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Validasi Digital</p>
+                </div>
+              )}
               <p className="font-bold underline uppercase">{pengajuan.dpl_id?.nama_lengkap || '_________________________'}</p>
               <p>NIDN: {pengajuan.dpl_id?.nim_nidn || '__________________'}</p>
             </div>

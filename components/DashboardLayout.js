@@ -171,6 +171,23 @@ const SUB_PAGE_TITLES = {
   "/mentor/validasi": "Validasi Logbook",
 };
 
+// Background Component to reuse
+const BackgroundScene = ({ isDark }) => (
+  <>
+    {/* Gambar Latar */}
+    <div 
+      className={`absolute inset-0 z-0 bg-cover bg-center bg-no-repeat bg-fixed transition-opacity duration-700 ${isDark ? 'opacity-20' : 'opacity-40'}`} 
+      style={{ backgroundImage: "url('/hero-2.webp')" }}
+    />
+    {/* Overlay agar teks tetap terbaca */}
+    <div className={`absolute inset-0 z-0 transition-colors duration-700 ${isDark ? 'bg-slate-900/80' : 'bg-slate-50/85 backdrop-blur-[2px]'}`} />
+    
+    {/* Glow Effects */}
+    <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-teal-600/10 dark:from-teal-600/15 to-transparent rounded-full pointer-events-none z-0" />
+    <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-teal-500/5 dark:from-teal-500/10 to-transparent rounded-full pointer-events-none z-0" />
+  </>
+);
+
 // ═══════════════════════ MAIN EXPORT ═══════════════════════
 export default function DashboardLayout({ children, title = "Dashboard", notifications = null, backPath = null, customMenus = null }) {
   const { data: session, status } = useSession();
@@ -218,28 +235,11 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
   const parentPath = backPath || ("/" + pathname.split("/")[1]);
   const subPageTitle = SUB_PAGE_TITLES[pathname] || title;
 
-  // Background Component to reuse
-  const BackgroundScene = () => (
-    <>
-      {/* Gambar Latar */}
-      <div 
-        className={`absolute inset-0 z-0 bg-cover bg-center bg-no-repeat bg-fixed transition-opacity duration-700 ${isDark ? 'opacity-20' : 'opacity-40'}`} 
-        style={{ backgroundImage: "url('/hero-2.webp')" }}
-      />
-      {/* Overlay agar teks tetap terbaca */}
-      <div className={`absolute inset-0 z-0 transition-colors duration-700 ${isDark ? 'bg-slate-900/80' : 'bg-slate-50/85 backdrop-blur-[2px]'}`} />
-      
-      {/* Glow Effects */}
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-teal-600/10 dark:from-teal-600/15 to-transparent rounded-full pointer-events-none z-0" />
-      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-teal-500/5 dark:from-teal-500/10 to-transparent rounded-full pointer-events-none z-0" />
-    </>
-  );
-
   // ═══════════════════════ SUB-PAGE LAYOUT ═══════════════════════
   if (!isMainDashboard) {
     return (
       <div className="min-h-screen relative overflow-hidden bg-slate-50 dark:bg-slate-900 selection:bg-teal-600/30">
-        <BackgroundScene />
+        <BackgroundScene isDark={isDark} />
 
         {/* Sticky Header */}
         <header className="sticky top-0 z-50 backdrop-blur-2xl bg-white/10 dark:bg-slate-900/10 border-b border-slate-200/50 dark:border-slate-800/50">
@@ -279,7 +279,7 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
   // ═══════════════════════ MAIN DASHBOARD LAYOUT ═══════════════════════
   return (
     <div className="min-h-screen relative overflow-hidden bg-slate-50 dark:bg-slate-900 selection:bg-teal-600/30">
-      <BackgroundScene />
+      <BackgroundScene isDark={isDark} />
 
       {/* ═══════════════ NAVBAR ═══════════════ */}
       <nav className="w-full px-4 md:px-8 lg:px-12 xl:px-24 2xl:px-32 py-5 flex justify-between items-center relative z-50">

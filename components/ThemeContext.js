@@ -11,7 +11,6 @@ export function ThemeProvider({ children }) {
   useEffect(() => {
     const saved = localStorage.getItem("mantau-theme");
     if (saved === "light" || saved === "dark") {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setTheme(saved);
     }
     setMounted(true);

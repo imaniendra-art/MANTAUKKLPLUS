@@ -167,7 +167,7 @@ export default function LandingMitraList() {
         <div className="text-center py-16 bg-white/50 rounded-3xl border border-slate-200 border-dashed backdrop-blur-sm max-w-2xl mx-auto">
           <div className="text-5xl mb-4">🔍</div>
           <h3 className="text-xl font-bold text-slate-800 mb-2">Tidak ditemukan</h3>
-          <p className="text-slate-500 mb-6">Kami tidak menemukan mitra atau posisi KKL Plus yang cocok dengan pencarian "<span className="font-semibold text-slate-700">{searchQuery}</span>"</p>
+          <p className="text-slate-500 mb-6">Kami tidak menemukan mitra atau posisi KKL Plus yang cocok dengan pencarian &quot;<span className="font-semibold text-slate-700">{searchQuery}</span>&quot;</p>
           <button 
             onClick={() => setSearchQuery("")}
             className="px-6 py-2.5 bg-teal-50 hover:bg-teal-100 text-teal-600 font-bold rounded-xl transition-colors border border-teal-200 shadow-sm"

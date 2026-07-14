@@ -13,10 +13,6 @@ export default function RekapitulasiNilai() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all"); // all, lengkap, belum
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -31,6 +27,10 @@ export default function RekapitulasiNilai() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const filteredData = data.filter((item) => {
     const matchSearch = 

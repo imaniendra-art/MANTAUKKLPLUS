@@ -16,16 +16,6 @@ export default function DplPenilaianPage() {
   // Group Details (per-proker)
   const [detailKelompokDPL, setDetailKelompokDPL] = useState({});
 
-  useEffect(() => {
-    fetchData();
-  }, [params.pokjaId]);
-
-  const copyMentorLink = () => {
-    const link = `${window.location.origin}/penilaian-mentor/${params.pokjaId}`;
-    navigator.clipboard.writeText(link);
-    alert('Link form penilaian Mentor berhasil disalin! Silakan kirimkan link tersebut ke Mentor via WhatsApp.');
-  };
-
   const fetchData = async () => {
     try {
       const res = await fetch(`/api/penilaian?pokjaId=${params.pokjaId}`);
@@ -53,6 +43,16 @@ export default function DplPenilaianPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [params.pokjaId]);
+
+  const copyMentorLink = () => {
+    const link = `${window.location.origin}/penilaian-mentor/${params.pokjaId}`;
+    navigator.clipboard.writeText(link);
+    alert('Link form penilaian Mentor berhasil disalin! Silakan kirimkan link tersebut ke Mentor via WhatsApp.');
   };
 
   const handleIndividuDetailChange = (id, field, value) => {

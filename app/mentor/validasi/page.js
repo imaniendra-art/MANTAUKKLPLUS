@@ -24,6 +24,7 @@ export default function MentorValidasi() {
   };
 
   const fetchData = useCallback(async () => {
+    if (!session?.user?.id) return;
     setLoading(true);
     try {
       const [antreanRes, historiRes] = await Promise.all([
@@ -47,17 +48,22 @@ export default function MentorValidasi() {
 
   // Reset selection when tab changes
   useEffect(() => {
-    setSelectedLogs([]);
+    let mounted = true;
+    if (mounted) {
+      setSelectedLogs([]);
+    }
+    return () => { mounted = false; };
   }, [activeTab]);
 
   useEffect(() => {
-    const load = async () => {
-      await fetchData();
-    };
+    let mounted = true;
     if (session?.user?.id) {
-      fetchData();
+      fetchData().then(() => {
+        // done
+      });
     }
-  }, [fetchData, session]);
+    return () => { mounted = false; };
+  }, [fetchData, session?.user?.id]);
 
   const showToast = (msg) => {
     setToastMessage(msg);

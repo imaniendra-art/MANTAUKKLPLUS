@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -15,7 +15,8 @@ export default function BursaMitra() {
   const [submitting, setSubmitting] = useState(false);
   const [isKetua, setIsKetua] = useState(false);
 
-  const fetchInit = async () => {
+  const fetchInit = useCallback(async () => {
+    if (!session?.user?.id) return;
     try {
       const [resPokja, resMitra] = await Promise.all([
         fetch(`/api/pokja?mhsId=${session.user.id}`),
@@ -30,11 +31,17 @@ export default function BursaMitra() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [session]);
 
   useEffect(() => {
-    if (session?.user?.id) fetchInit();
-  }, [session]);
+    let mounted = true;
+    if (session?.user?.id) {
+      fetchInit().then(() => {
+        // done
+      });
+    }
+    return () => { mounted = false; };
+  }, [fetchInit, session?.user?.id]);
 
   const handleFileUpload = async (e, documentType) => {
     const file = e.target.files[0];
