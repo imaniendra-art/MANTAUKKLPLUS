@@ -83,7 +83,7 @@ export default function CetakLaporan() {
         @media print {
           @page {
             size: A4;
-            margin: 1in;
+            margin: 4cm 3cm 3cm 4cm; /* Atas 4cm, Kanan 3cm, Bawah 3cm, Kiri 4cm */
           }
           body {
             -webkit-print-color-adjust: exact;
