@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "./ThemeContext";
 import { useState, useRef, useEffect } from "react";
-import { Users, Database, ClipboardCheck, Monitor, Award, Archive, CloudSync, Settings, FileSignature, BookOpen, FileBadge, CheckSquare, FileCheck, Book, LogOut } from "lucide-react";;
+import { Users, Database, ClipboardCheck, Monitor, Award, Archive, CloudSync, Settings, FileSignature, BookOpen, FileBadge, CheckSquare, FileCheck, Book, LogOut, Camera } from "lucide-react";
 
 // ═══════════════════════ ICON COMPONENTS ═══════════════════════
 function SunIcon() {
@@ -111,8 +111,8 @@ function UserMenu({ nama, role }) {
   );
 }
 
-// ═══════════════════════ MENU CONFIG ═══════════════════════
-const MENU_CONFIG = {
+// ═══════════════════════ MENU CONFIGURATION ═══════════════════════
+export const MENU_CONFIG = {
   admin: {
     greeting: "Admin & Prodi",
     subtitle: "Kelola master data, monitoring seluruh aktivitas KKL Plus, dan pantau DPL serta Mahasiswa.",
@@ -142,6 +142,7 @@ const MENU_CONFIG = {
     menus: [
       { name: "Daftar Bimbingan", href: "/dpl/bimbingan", icon: <Users className="w-6 h-6" />, desc: "Pantau dan konfirmasi penyerahan mahasiswa", color: "from-teal-600 to-teal-600" },
       { name: "Validasi Logbook", href: "/dpl/validasi", icon: <CheckSquare className="w-6 h-6" />, desc: "Review dan validasi logbook harian mahasiswa", color: "from-teal-500 to-teal-600" },
+      { name: "Monev Lapangan", href: "/dpl/monev", icon: <Camera className="w-6 h-6" />, desc: "Upload dokumentasi kunjungan lapangan", color: "from-teal-500 to-teal-600" },
       { name: "Validasi Laporan & Penilaian", href: "/dpl/validasi-laporan", icon: <FileCheck className="w-6 h-6" />, desc: "Persetujuan Laporan Akhir", color: "from-teal-500 to-teal-600" },
       { name: "Petunjuk KKL Plus", href: "/dpl/petunjuk", icon: <Book className="w-6 h-6" />, desc: "Panduan pembimbingan dan rincian target CPMK", color: "from-amber-500 to-amber-600" },
     ],
@@ -171,7 +172,7 @@ const SUB_PAGE_TITLES = {
 };
 
 // ═══════════════════════ MAIN EXPORT ═══════════════════════
-export default function DashboardLayout({ children, title = "Dashboard", notifications = null, backPath = null }) {
+export default function DashboardLayout({ children, title = "Dashboard", notifications = null, backPath = null, customMenus = null }) {
   const { data: session, status } = useSession();
   const pathname = usePathname();
   const router = useRouter();
@@ -339,8 +340,8 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
           <div className="w-1 h-6 bg-teal-600 rounded-full shadow-sm shadow-teal-600/50" />
           <h2 className="text-xl font-bold tracking-tight text-slate-800 dark:text-slate-100 drop-shadow-sm">Menu Utama</h2>
         </div>
-        <div className={`grid grid-cols-1 sm:grid-cols-2 ${config.menus.length >= 4 ? 'lg:grid-cols-4' : config.menus.length === 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-2'} gap-5 lg:gap-6`}>
-          {config.menus.map((menu, index) => (
+        <div className={`grid grid-cols-1 sm:grid-cols-2 ${customMenus ? (customMenus.length >= 4 ? 'lg:grid-cols-4' : customMenus.length === 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-2') : (config.menus.length >= 4 ? 'lg:grid-cols-4' : config.menus.length === 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-2')} gap-5 lg:gap-6`}>
+          {(customMenus || config.menus).map((menu, index) => (
             <Link
               key={menu.href}
               href={menu.href}

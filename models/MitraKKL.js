@@ -18,6 +18,7 @@ const MitraKKLSchema = new mongoose.Schema({
 
   // Detail Fields (Mahasiswa)
   alamat_lengkap: { type: String, default: '' },
+  desa_kelurahan: { type: String, default: '' },
   kecamatan: { type: String, default: '' },
   kabupaten_kota: { type: String, default: '' },
   titik_koordinat: { type: String, default: '' },

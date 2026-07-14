@@ -225,7 +225,10 @@ export default function LogbookPage() {
     const isKetua = pokja.ketua_id?._id === session.user.id || pokja.ketua_id === session.user.id;
     
     return prokers.filter(p => {
-      const isPIC = p.pic_id?._id === session.user.id || p.pic_id === session.user.id;
+      const isPIC = Array.isArray(p.pic_id) 
+        ? p.pic_id.some(pic => String(pic._id || pic) === String(session.user.id))
+        : String(p.pic_id?._id || p.pic_id) === String(session.user.id);
+        
       if (p.jenis_proker === 'Utama') {
         return isKetua;
       } else {
@@ -380,8 +383,19 @@ export default function LogbookPage() {
               </div>
             ) : (
               <div className="space-y-4">
-                {displayedLogbooks.map(log => (
-                  <div key={log._id} className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-6 rounded-2xl border border-white/60 dark:border-slate-700 shadow-sm transition-all hover:shadow-md">
+                {displayedLogbooks.map(log => {
+                  const isUnvalidated = log.status_validasi === 'menunggu_dpl' || log.status_validasi === 'menunggu_mentor';
+                  const isValidated = log.status_validasi === 'selesai' || log.status_validasi === 'selesai_tanpa_mentor';
+                  
+                  let cardBg = "bg-white/40 dark:bg-slate-800/40 border-white/60 dark:border-slate-700";
+                  if (isUnvalidated) {
+                    cardBg = "bg-rose-50/50 dark:bg-rose-900/10 border-rose-200 dark:border-rose-900/50";
+                  } else if (isValidated) {
+                    cardBg = "bg-teal-50/30 dark:bg-teal-900/10 border-teal-200 dark:border-teal-900/50";
+                  }
+
+                  return (
+                  <div key={log._id} className={`${cardBg} backdrop-blur-xl p-6 rounded-2xl border shadow-sm transition-all hover:shadow-md`}>
                     <div className="flex justify-between items-start gap-4 mb-3">
                       <div>
                         <p className="text-sm font-bold text-slate-800 dark:text-white">{new Date(log.tanggal).toLocaleDateString('id-ID', { weekday: 'long', month: 'short', year: 'numeric' })}</p>
@@ -407,7 +421,8 @@ export default function LogbookPage() {
                       {log.kendala_solusi && <p><strong>Kendala/Solusi:</strong> {log.kendala_solusi}</p>}
                     </div>
                   </div>
-                ))}
+                  );
+                })}
 
                 {/* PAGINATION UI */}
                 <div className="flex flex-col sm:flex-row items-center justify-between mt-6 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-4 rounded-2xl border border-white/60 dark:border-slate-700 gap-4">

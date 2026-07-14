@@ -127,7 +127,7 @@ export default function MagicLinkValidasi() {
           <div>
             <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Lokasi KKL Plus</p>
             <p className="font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
-              <span>📍</span> Desa {data.pokja_id?.desa_kelurahan}, Kec. {data.pokja_id?.kecamatan}
+              <span>📍</span> Desa {data.pokja_id?.mitra_id?.desa_kelurahan || '—'}, Kec. {data.pokja_id?.mitra_id?.kecamatan || '—'}
             </p>
           </div>
           <div className="sm:text-right">

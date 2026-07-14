@@ -3,6 +3,7 @@ import dbConnect from '@/lib/db';
 import Pokja from '@/models/Pokja';
 import LaporanAkhir from '@/models/LaporanAkhir';
 import Logbook from '@/models/Logbook';
+import Proker from '@/models/Proker';
 import { generatePresignedUrl } from '@/lib/minio';
 
 async function processLaporanUrls(laporanDoc) {
@@ -22,6 +23,19 @@ async function processLaporanUrls(laporanDoc) {
 
 async function processLaporanArray(laporans) {
   return await Promise.all(laporans.map(l => processLaporanUrls(l)));
+}
+
+async function processLogbookUrls(logbookDoc) {
+  if (!logbookDoc) return logbookDoc;
+  const logbook = logbookDoc.toObject ? logbookDoc.toObject() : logbookDoc;
+  if (logbook.bukti_kegiatan) {
+    logbook.bukti_kegiatan = await generatePresignedUrl(logbook.bukti_kegiatan);
+  }
+  return logbook;
+}
+
+async function processLogbookArray(logbooks) {
+  return await Promise.all(logbooks.map(l => processLogbookUrls(l)));
 }
 
 export async function GET(request) {
@@ -55,12 +69,36 @@ export async function GET(request) {
       const processed = await processLaporanUrls(laporan);
       
       // Ambil logbooks jika ini laporan individu
-      let logbooks = [];
+      let rawLogbooks = [];
       if (laporan.tipe_laporan === 'individu' && laporan.mahasiswa_id) {
-        logbooks = await Logbook.find({ mahasiswa_id: laporan.mahasiswa_id._id, status: 'disetujui' }).sort({ tanggal: 1 });
+        rawLogbooks = await Logbook.find({ mahasiswa_id: laporan.mahasiswa_id._id, status_validasi: 'selesai' }).populate('proker_id').sort({ tanggal: 1 });
+      } else if (laporan.tipe_laporan === 'pokja' && laporan.pokja_id) {
+        let pokjaData = laporan.pokja_id;
+        if (!pokjaData.anggota) {
+          pokjaData = await Pokja.findById(laporan.pokja_id._id || laporan.pokja_id).select('ketua_id anggota');
+        }
+        const userIds = [pokjaData.ketua_id];
+        if (pokjaData.anggota) {
+           pokjaData.anggota.forEach(a => userIds.push(a.user_id));
+        }
+        rawLogbooks = await Logbook.find({ mahasiswa_id: { $in: userIds }, status_validasi: 'selesai' }).populate('proker_id').sort({ tanggal: 1 });
+      }
+      const logbooks = await processLogbookArray(rawLogbooks);
+
+      // Ambil dokumentasi DPL (Monev) untuk dilampirkan
+      const Monev = require('@/models/Monev').default || require('@/models/Monev');
+      let monevList = [];
+      if (laporan.pokja_id) {
+        const rawMonev = await Monev.find({ pokja_id: laporan.pokja_id._id }).sort({ tanggal_kunjungan: 1 }).lean();
+        for (let i = 0; i < rawMonev.length; i++) {
+          if (rawMonev[i].foto_url) {
+            rawMonev[i].foto_url = await generatePresignedUrl(rawMonev[i].foto_url);
+          }
+          monevList.push(rawMonev[i]);
+        }
       }
 
-      return NextResponse.json({ laporan: processed, pengajuan: laporan.pokja_id, logbooks });
+      return NextResponse.json({ laporan: processed, pengajuan: laporan.pokja_id, logbooks, monev: monevList });
     }
 
     // Jika dipanggil oleh DPL
@@ -138,7 +176,8 @@ export async function GET(request) {
       const processed_kelompok = await processLaporanUrls(laporan_kelompok);
 
       // 5. Ambil logbook yang sudah disetujui (untuk mahasiswa ybs)
-      const logbooks = await Logbook.find({ mahasiswa_id: mhsId, status: 'disetujui' }).sort({ tanggal: 1 });
+      const rawLogbooks = await Logbook.find({ mahasiswa_id: mhsId, status_validasi: 'selesai' }).populate('proker_id').sort({ tanggal: 1 });
+      const logbooks = await processLogbookArray(rawLogbooks);
 
       return NextResponse.json({
         laporan: processed_individu, // Keep backward compatibility

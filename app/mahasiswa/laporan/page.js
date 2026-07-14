@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import DashboardLayout from '@/components/DashboardLayout';
 import Link from 'next/link';
-import { Check, X, FileSignature, Building, User, Users, BookOpen, Paperclip, Printer, PenTool, Mail, FileCheck, FileBadge, FileText, Award, Download, Clock, AlertTriangle, CheckCircle } from "lucide-react";
+import { Check, X, FileSignature, Building, User, Users, BookOpen, Paperclip, Printer, PenTool, Mail, FileCheck, FileBadge, FileText, Award, Download, Clock, AlertTriangle, CheckCircle, Lock } from "lucide-react";
 
 const DEFAULT_SECTIONS_INDIVIDU = {
   bab1: [
@@ -196,6 +196,34 @@ export default function LaporanAkhirPage() {
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [isDirty]);
+
+  const getWordLimits = (id) => {
+    switch(id) {
+      // Bab 1
+      case '1_1': return { min: 300, max: 600 };
+      case '1_2': return { min: 150, max: 400 };
+      // Bab 2
+      case '2_1': return { min: 400, max: 800 };
+      case '2_2': return { min: 400, max: 800 };
+      case '2_3': return { min: 400, max: 800 };
+      // Bab 3
+      case '3_1': return { min: 400, max: 800 };
+      case '3_2': return { min: 400, max: 800 };
+      case '3_3': return { min: 400, max: 800 };
+      // Bab 4
+      case '4_1': return { min: 400, max: 1000 };
+      case '4_2': return { min: 400, max: 1000 };
+      // Kata Pengantar
+      case 'kata_pengantar': return { min: 200, max: 500 };
+      default: return { min: 200, max: 1000 };
+    }
+  };
+
+  const countWords = (str) => {
+    if (!str) return 0;
+    return str.trim().split(/\s+/).filter(Boolean).length;
+  };
+
 
   const currentForm = activeMode === 'individu' ? formIndividu : formKelompok;
   const setCurrentForm = activeMode === 'individu' ? setFormIndividu : setFormKelompok;
@@ -625,39 +653,41 @@ export default function LaporanAkhirPage() {
                 )}
               </div>
 
-              <div>
-                <h3 className="text-xl font-bold text-slate-800 border-b pb-2 mb-4">Template & Referensi Dokumen</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Link href={`/mahasiswa/laporan/templates/pengesahan?id=${currentForm.id || ''}`} target="_blank" className="flex items-center gap-3 p-4 border rounded-xl hover:bg-teal-50 transition-colors">
-                    <div className="p-3 bg-teal-100 rounded-lg text-teal-600"><PenTool className="w-6 h-6" /></div>
-                    <div>
-                      <div className="font-bold">Lembar Pengesahan</div>
-                      <div className="text-xs text-slate-500">Template Cetak & TTD</div>
-                    </div>
-                  </Link>
-                  <Link href={`/mahasiswa/laporan/templates/pengantar?id=${currentForm.id || ''}`} target="_blank" className="flex items-center gap-3 p-4 border rounded-xl hover:bg-teal-50 transition-colors">
-                    <div className="p-3 bg-teal-100 rounded-lg text-teal-600"><Mail className="w-6 h-6" /></div>
-                    <div>
-                      <div className="font-bold">Surat Pengantar KKL Plus</div>
-                      <div className="text-xs text-slate-500">Template Cetak & TTD</div>
-                    </div>
-                  </Link>
-                  <Link href={`/mahasiswa/laporan/templates/penerimaan?id=${currentForm.id || ''}`} target="_blank" className="flex items-center gap-3 p-4 border rounded-xl hover:bg-teal-50 transition-colors">
-                    <div className="p-3 bg-teal-100 rounded-lg text-teal-600"><FileCheck className="w-6 h-6" /></div>
-                    <div>
-                      <div className="font-bold">Surat Penerimaan KKL Plus</div>
-                      <div className="text-xs text-slate-500">Template Cetak & TTD</div>
-                    </div>
-                  </Link>
-                  <Link href={`/mahasiswa/laporan/templates/keterangan?id=${currentForm.id || ''}`} target="_blank" className="flex items-center gap-3 p-4 border rounded-xl hover:bg-amber-50 transition-colors">
-                    <div className="p-3 bg-amber-100 rounded-lg text-amber-600"><FileBadge className="w-6 h-6" /></div>
-                    <div>
-                      <div className="font-bold">Surat Keterangan Selesai KKL Plus</div>
-                      <div className="text-xs text-slate-500">Template Cetak & TTD</div>
-                    </div>
-                  </Link>
+              {isKetua && (
+                <div>
+                  <h3 className="text-xl font-bold text-slate-800 border-b pb-2 mb-4">Template & Referensi Dokumen</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Link href={`/mahasiswa/laporan/templates/pengesahan?id=${currentForm.id || ''}`} target="_blank" className="flex items-center gap-3 p-4 border rounded-xl hover:bg-teal-50 transition-colors">
+                      <div className="p-3 bg-teal-100 rounded-lg text-teal-600"><PenTool className="w-6 h-6" /></div>
+                      <div>
+                        <div className="font-bold">Lembar Pengesahan</div>
+                        <div className="text-xs text-slate-500">Template Cetak & TTD</div>
+                      </div>
+                    </Link>
+                    <Link href={`/mahasiswa/laporan/templates/pengantar?id=${currentForm.id || ''}`} target="_blank" className="flex items-center gap-3 p-4 border rounded-xl hover:bg-teal-50 transition-colors">
+                      <div className="p-3 bg-teal-100 rounded-lg text-teal-600"><Mail className="w-6 h-6" /></div>
+                      <div>
+                        <div className="font-bold">Surat Pengantar KKL Plus</div>
+                        <div className="text-xs text-slate-500">Template Cetak & TTD</div>
+                      </div>
+                    </Link>
+                    <Link href={`/mahasiswa/laporan/templates/penerimaan?id=${currentForm.id || ''}`} target="_blank" className="flex items-center gap-3 p-4 border rounded-xl hover:bg-teal-50 transition-colors">
+                      <div className="p-3 bg-teal-100 rounded-lg text-teal-600"><FileCheck className="w-6 h-6" /></div>
+                      <div>
+                        <div className="font-bold">Surat Penerimaan KKL Plus</div>
+                        <div className="text-xs text-slate-500">Template Cetak & TTD</div>
+                      </div>
+                    </Link>
+                    <Link href={`/mahasiswa/laporan/templates/keterangan?id=${currentForm.id || ''}`} target="_blank" className="flex items-center gap-3 p-4 border rounded-xl hover:bg-amber-50 transition-colors">
+                      <div className="p-3 bg-amber-100 rounded-lg text-amber-600"><FileBadge className="w-6 h-6" /></div>
+                      <div>
+                        <div className="font-bold">Surat Keterangan Selesai KKL Plus</div>
+                        <div className="text-xs text-slate-500">Template Cetak & TTD</div>
+                      </div>
+                    </Link>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           )}
 
@@ -702,6 +732,14 @@ export default function LaporanAkhirPage() {
                     className="w-full h-48 border-slate-300 rounded-xl p-4 focus:ring-2 focus:ring-teal-500 text-sm"
                     placeholder="Puji dan syukur ke hadirat Tuhan Yang Maha Esa... (Tuliskan ungkapan rasa syukur, tujuan penulisan laporan KKL Plus, serta ucapan terima kasih kepada pihak-pihak yang telah membantu kelancaran kegiatan)"
                   ></textarea>
+                  <div className="flex justify-between items-center text-xs mt-2 px-1">
+                    <span className={`font-semibold ${countWords(currentForm.kata_pengantar) < getWordLimits('kata_pengantar').min ? 'text-amber-600' : countWords(currentForm.kata_pengantar) > getWordLimits('kata_pengantar').max ? 'text-red-600' : 'text-teal-600'}`}>
+                      Minimal {getWordLimits('kata_pengantar').min} kata, Maksimal {getWordLimits('kata_pengantar').max} kata
+                    </span>
+                    <span className={`font-bold ${countWords(currentForm.kata_pengantar) < getWordLimits('kata_pengantar').min ? 'text-amber-600' : countWords(currentForm.kata_pengantar) > getWordLimits('kata_pengantar').max ? 'text-red-600' : 'text-slate-600'}`}>
+                      {countWords(currentForm.kata_pengantar)} kata
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -736,6 +774,14 @@ export default function LaporanAkhirPage() {
                         className="w-full h-32 border-slate-300 rounded-xl p-4 focus:ring-2 focus:ring-teal-500 text-sm"
                         placeholder={(activeMode === 'individu' ? DEFAULT_SECTIONS_INDIVIDU.bab1 : DEFAULT_SECTIONS_KELOMPOK.bab1).find(s => s.id === sec.id)?.placeholder || 'Ketik di sini...'}
                       ></textarea>
+                      <div className="flex justify-between items-center text-xs mt-2 px-1">
+                        <span className={`font-semibold ${countWords(sec.content) < getWordLimits(sec.id).min ? 'text-amber-600' : countWords(sec.content) > getWordLimits(sec.id).max ? 'text-red-600' : 'text-teal-600'}`}>
+                          Minimal {getWordLimits(sec.id).min} kata, Maksimal {getWordLimits(sec.id).max} kata
+                        </span>
+                        <span className={`font-bold ${countWords(sec.content) < getWordLimits(sec.id).min ? 'text-amber-600' : countWords(sec.content) > getWordLimits(sec.id).max ? 'text-red-600' : 'text-slate-600'}`}>
+                          {countWords(sec.content)} kata
+                        </span>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -772,6 +818,14 @@ export default function LaporanAkhirPage() {
                         className="w-full h-32 border-slate-300 rounded-xl p-4 focus:ring-2 focus:ring-teal-500 text-sm"
                         placeholder={(activeMode === 'individu' ? DEFAULT_SECTIONS_INDIVIDU.bab2 : DEFAULT_SECTIONS_KELOMPOK.bab2).find(s => s.id === sec.id)?.placeholder || 'Ketik di sini...'}
                       ></textarea>
+                      <div className="flex justify-between items-center text-xs mt-2 px-1 mb-1">
+                        <span className={`font-semibold ${countWords(sec.content) < getWordLimits(sec.id).min ? 'text-amber-600' : countWords(sec.content) > getWordLimits(sec.id).max ? 'text-red-600' : 'text-teal-600'}`}>
+                          Minimal {getWordLimits(sec.id).min} kata, Maksimal {getWordLimits(sec.id).max} kata
+                        </span>
+                        <span className={`font-bold ${countWords(sec.content) < getWordLimits(sec.id).min ? 'text-amber-600' : countWords(sec.content) > getWordLimits(sec.id).max ? 'text-red-600' : 'text-slate-600'}`}>
+                          {countWords(sec.content)} kata
+                        </span>
+                      </div>
                       {sec.id === '2_2' && (
                         <div className="mt-2 text-xs text-slate-600 bg-teal-50 border border-teal-100 p-2 rounded-lg flex gap-2 items-start">
                           <span className="font-semibold text-teal-700 shrink-0">💡 Tips:</span>
@@ -827,6 +881,14 @@ export default function LaporanAkhirPage() {
                         className="w-full h-32 border-slate-300 rounded-xl p-4 focus:ring-2 focus:ring-teal-500 text-sm"
                         placeholder={(activeMode === 'individu' ? DEFAULT_SECTIONS_INDIVIDU.bab3 : DEFAULT_SECTIONS_KELOMPOK.bab3).find(s => s.id === sec.id)?.placeholder || 'Ketik di sini...'}
                       ></textarea>
+                      <div className="flex justify-between items-center text-xs mt-2 px-1">
+                        <span className={`font-semibold ${countWords(sec.content) < getWordLimits(sec.id).min ? 'text-amber-600' : countWords(sec.content) > getWordLimits(sec.id).max ? 'text-red-600' : 'text-teal-600'}`}>
+                          Minimal {getWordLimits(sec.id).min} kata, Maksimal {getWordLimits(sec.id).max} kata
+                        </span>
+                        <span className={`font-bold ${countWords(sec.content) < getWordLimits(sec.id).min ? 'text-amber-600' : countWords(sec.content) > getWordLimits(sec.id).max ? 'text-red-600' : 'text-slate-600'}`}>
+                          {countWords(sec.content)} kata
+                        </span>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -863,6 +925,14 @@ export default function LaporanAkhirPage() {
                         className="w-full h-32 border-slate-300 rounded-xl p-4 focus:ring-2 focus:ring-teal-500 text-sm"
                         placeholder={(activeMode === 'individu' ? DEFAULT_SECTIONS_INDIVIDU.bab4 : DEFAULT_SECTIONS_KELOMPOK.bab4).find(s => s.id === sec.id)?.placeholder || 'Ketik di sini...'}
                       ></textarea>
+                      <div className="flex justify-between items-center text-xs mt-2 px-1">
+                        <span className={`font-semibold ${countWords(sec.content) < getWordLimits(sec.id).min ? 'text-amber-600' : countWords(sec.content) > getWordLimits(sec.id).max ? 'text-red-600' : 'text-teal-600'}`}>
+                          Minimal {getWordLimits(sec.id).min} kata, Maksimal {getWordLimits(sec.id).max} kata
+                        </span>
+                        <span className={`font-bold ${countWords(sec.content) < getWordLimits(sec.id).min ? 'text-amber-600' : countWords(sec.content) > getWordLimits(sec.id).max ? 'text-red-600' : 'text-slate-600'}`}>
+                          {countWords(sec.content)} kata
+                        </span>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -881,25 +951,45 @@ export default function LaporanAkhirPage() {
               <div className="border border-slate-200 rounded-2xl p-6">
                 <h4 className="font-bold text-slate-800 mb-1">1. Surat Pengantar</h4>
                 <input disabled={['submitted', 'disetujui'].includes(currentForm.status)} type="file" accept="image/*,application/pdf" onChange={(e) => handleFileChange(e, 'file_pengantar')} className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100" />
-                {currentForm.file_pengantar && <span className="ml-4 text-xs font-bold text-teal-600">✓ Berkas Tersimpan</span>}
+                {currentForm.file_pengantar && (
+                  <div className="mt-3 flex items-center gap-3">
+                    <span className="text-xs font-bold text-teal-600">✓ Berkas Tersimpan</span>
+                    <a href={currentForm.file_pengantar} target="_blank" rel="noreferrer" className="text-xs font-bold text-blue-600 hover:text-blue-800 underline">Lihat Lampiran</a>
+                  </div>
+                )}
               </div>
 
               <div className="border border-slate-200 rounded-2xl p-6">
                 <h4 className="font-bold text-slate-800 mb-1">2. Surat Penerimaan</h4>
                 <input disabled={['submitted', 'disetujui'].includes(currentForm.status)} type="file" accept="image/*,application/pdf" onChange={(e) => handleFileChange(e, 'file_penerimaan')} className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100" />
-                {currentForm.file_penerimaan && <span className="ml-4 text-xs font-bold text-teal-600">✓ Berkas Tersimpan</span>}
+                {currentForm.file_penerimaan && (
+                  <div className="mt-3 flex items-center gap-3">
+                    <span className="text-xs font-bold text-teal-600">✓ Berkas Tersimpan</span>
+                    <a href={currentForm.file_penerimaan} target="_blank" rel="noreferrer" className="text-xs font-bold text-blue-600 hover:text-blue-800 underline">Lihat Lampiran</a>
+                  </div>
+                )}
               </div>
 
               <div className="border border-slate-200 rounded-2xl p-6">
                 <h4 className="font-bold text-slate-800 mb-1">3. Surat Keterangan Selesai</h4>
                 <input disabled={['submitted', 'disetujui'].includes(currentForm.status)} type="file" accept="image/*,application/pdf" onChange={(e) => handleFileChange(e, 'file_keterangan')} className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100" />
-                {currentForm.file_keterangan && <span className="ml-4 text-xs font-bold text-teal-600">✓ Berkas Tersimpan</span>}
+                {currentForm.file_keterangan && (
+                  <div className="mt-3 flex items-center gap-3">
+                    <span className="text-xs font-bold text-teal-600">✓ Berkas Tersimpan</span>
+                    <a href={currentForm.file_keterangan} target="_blank" rel="noreferrer" className="text-xs font-bold text-blue-600 hover:text-blue-800 underline">Lihat Lampiran</a>
+                  </div>
+                )}
               </div>
 
               <div className="border border-slate-200 rounded-2xl p-6">
                 <h4 className="font-bold text-slate-800 mb-1">4. Gambar Struktur Organisasi (Opsional)</h4>
                 <input disabled={['submitted', 'disetujui'].includes(currentForm.status)} type="file" accept="image/*" onChange={(e) => handleFileChange(e, 'file_struktur_organisasi')} className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100" />
-                {currentForm.file_struktur_organisasi && <span className="ml-4 text-xs font-bold text-teal-600">✓ Gambar Tersimpan</span>}
+                {currentForm.file_struktur_organisasi && (
+                  <div className="mt-3 flex items-center gap-3">
+                    <span className="text-xs font-bold text-teal-600">✓ Gambar Tersimpan</span>
+                    <a href={currentForm.file_struktur_organisasi} target="_blank" rel="noreferrer" className="text-xs font-bold text-blue-600 hover:text-blue-800 underline">Lihat Lampiran</a>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -929,9 +1019,19 @@ export default function LaporanAkhirPage() {
                     <div className="mx-auto w-16 h-16 bg-amber-100 text-amber-600 flex items-center justify-center rounded-2xl mb-4 group-hover:scale-110 transition-transform"><Award className="w-8 h-8" /></div>
                     <h3 className="font-black text-xl text-slate-800 mb-2">Sertifikat Mahasiswa</h3>
                     <p className="text-sm text-slate-500 mb-6">Sertifikat kelulusan KKL Plus dengan Validasi QR Code SKPI.</p>
-                    <Link href={`/mahasiswa/laporan/cetak/sertifikat-mahasiswa?id=${currentForm.id || ''}`} target="_blank" className="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold shadow-md shadow-amber-500/30 flex items-center justify-center gap-2">
-                      <Download className="w-5 h-5" /> Download Sertifikat
-                    </Link>
+                    
+                    {formIndividu.status !== 'disetujui' || formKelompok.status !== 'disetujui' ? (
+                      <div className="w-full py-3 rounded-xl bg-slate-100 text-slate-400 font-bold flex items-center justify-center gap-2 cursor-not-allowed">
+                        <Lock className="w-5 h-5" /> 
+                        <span className="text-xs text-left leading-tight">
+                          Terkunci.<br/>Laporan Individu & Kelompok Harus Di-ACC
+                        </span>
+                      </div>
+                    ) : (
+                      <Link href={`/mahasiswa/laporan/cetak/sertifikat-mahasiswa?id=${currentForm.id || ''}`} target="_blank" className="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold shadow-md shadow-amber-500/30 flex items-center justify-center gap-2">
+                        <Download className="w-5 h-5" /> Download Sertifikat
+                      </Link>
+                    )}
                   </div>
 
                 </div>
@@ -941,7 +1041,7 @@ export default function LaporanAkhirPage() {
         </div>
 
         {/* Aksi Bawah */}
-        {currentForm.status !== 'submitted' && activeTab === 'bab' && (
+        {!['submitted', 'disetujui'].includes(currentForm.status) && activeTab !== 'cetak' && (
           <div className="mt-8 flex justify-end gap-4">
             <button onClick={() => handleSave(false)} disabled={isSaving} className="px-8 py-3 rounded-xl border border-slate-300 bg-white font-bold text-slate-700 hover:bg-slate-50 shadow-sm disabled:opacity-50 transition-colors">
               {isSaving ? 'Menyimpan...' : `Simpan Draf ${activeMode}`}

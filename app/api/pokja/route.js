@@ -119,6 +119,7 @@ export async function GET(req) {
       .populate({ path: 'ketua_id', select: 'nama_lengkap nim_nidn' })
       .populate({ path: 'anggota.user_id', select: 'nama_lengkap nim_nidn' })
       .populate({ path: 'dpl_id', select: 'nama_lengkap nomor_hp' })
+      .populate({ path: 'mentor_id', select: 'nama_lengkap nomor_hp' })
       .populate('mitra_id')
       .sort({ createdAt: -1 });
       
@@ -140,6 +141,7 @@ export async function GET(req) {
       })
         .populate({ path: 'ketua_id', select: 'nama_lengkap nim_nidn' })
         .populate('mitra_id')
+        .populate({ path: 'mentor_id', select: 'nama_lengkap nomor_hp' })
         .sort({ createdAt: -1 });
         
       const processed = await Promise.all(pokjas.map(p => processPokjaUrls(p)));

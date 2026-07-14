@@ -4,7 +4,7 @@ import { uploadToMinio } from '@/lib/minio';
 
 export async function POST(req) {
   try {
-    const { imageBase64 } = await req.json();
+    const { imageBase64, prefix = 'logbook' } = await req.json();
 
     if (!imageBase64) {
       return NextResponse.json({ error: "No image provided" }, { status: 400 });
@@ -20,7 +20,7 @@ export async function POST(req) {
     const buffer = Buffer.from(matches[2], 'base64');
     
     const extension = mimeType.split('/')[1] || 'jpg';
-    const filename = `logbook_${Date.now()}_${crypto.randomBytes(4).toString('hex')}.${extension}`;
+    const filename = `${prefix}_${Date.now()}_${crypto.randomBytes(4).toString('hex')}.${extension}`;
 
     const publicUrl = await uploadToMinio(buffer, filename, mimeType);
 

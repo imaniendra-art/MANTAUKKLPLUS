@@ -102,7 +102,14 @@ export async function GET(req) {
         ]
       })
       .populate({ path: 'dpl_id', select: 'nama_lengkap' })
-      .populate({ path: 'pokja_id', select: 'nama_pokja desa_kelurahan kecamatan kabupaten_kota' });
+      .populate({ 
+        path: 'pokja_id', 
+        select: 'nama_pokja mitra_id',
+        populate: {
+          path: 'mitra_id',
+          select: 'desa_kelurahan kecamatan kabupaten_kota'
+        }
+      });
 
     if (!magicLink) {
       return NextResponse.json({ error: "Link tidak valid" }, { status: 404 });

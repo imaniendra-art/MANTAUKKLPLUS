@@ -48,6 +48,12 @@ export async function PUT(req) {
       if (data.daftar_periode) {
         settings.daftar_periode = data.daftar_periode;
       }
+      if (data.kaprodi_nama !== undefined) {
+        settings.kaprodi_nama = data.kaprodi_nama;
+      }
+      if (data.kaprodi_nip !== undefined) {
+        settings.kaprodi_nip = data.kaprodi_nip;
+      }
       await settings.save();
     }
 

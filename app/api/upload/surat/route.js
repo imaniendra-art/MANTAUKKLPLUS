@@ -31,9 +31,18 @@ export async function POST(req) {
         const MitraKKL = (await import('@/models/MitraKKL')).default;
         
         const mitraUpdate = {};
-        if (documentType === 'mou') mitraUpdate.file_mou = fileUrl;
-        if (documentType === 'moa') mitraUpdate.file_moa = fileUrl;
-        if (documentType === 'ia') mitraUpdate.file_ia = fileUrl;
+        if (documentType === 'mou') {
+          mitraUpdate.file_mou = fileUrl;
+          mitraUpdate.status_kerjasama = 'Memorandum of Understanding (MoU)';
+        }
+        if (documentType === 'moa') {
+          mitraUpdate.file_moa = fileUrl;
+          mitraUpdate.status_kerjasama = 'Memorandum of Agreement (MoA)';
+        }
+        if (documentType === 'ia') {
+          mitraUpdate.file_ia = fileUrl;
+          mitraUpdate.status_kerjasama = 'Implementation Arrangement (IA)';
+        }
         if (documentType === 'foto_kantor_desa') mitraUpdate.foto_kantor_desa = fileUrl;
         if (documentType === 'foto_kantor_bumdes') mitraUpdate.foto_kantor_bumdes = fileUrl;
         if (documentType === 'logo_mitra') mitraUpdate.logo_mitra = fileUrl;

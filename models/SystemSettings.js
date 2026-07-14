@@ -20,6 +20,14 @@ const SystemSettingsSchema = new mongoose.Schema({
   daftar_periode: {
     type: [String],
     default: ["Ganjil 2026/2027"],
+  },
+  kaprodi_nama: {
+    type: String,
+    default: "Dr. Jhon Doe, SE., M.Si",
+  },
+  kaprodi_nip: {
+    type: String,
+    default: "198001012005011001",
   }
 }, { timestamps: true });
 

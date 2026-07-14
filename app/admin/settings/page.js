@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import DashboardLayout from '@/components/DashboardLayout';
-import { Settings as SettingsIcon, User, Save, CheckCircle, AlertTriangle } from 'lucide-react';
+import { Settings as SettingsIcon, User, Save, CheckCircle, AlertTriangle, FileSignature } from 'lucide-react';
 
 export default function AdminSettingsPage() {
   const { data: session, update } = useSession();
@@ -40,6 +40,8 @@ export default function AdminSettingsPage() {
           pendaftaran_buka: data.pendaftaran_buka ?? true,
           pengisian_logbook_buka: data.pengisian_logbook_buka ?? true,
           pengumpulan_laporan_buka: data.pengumpulan_laporan_buka ?? true,
+          kaprodi_nama: data.kaprodi_nama || 'Dr. Jhon Doe, SE., M.Si',
+          kaprodi_nip: data.kaprodi_nip || '198001012005011001',
         });
       }
     } catch (error) {
@@ -150,14 +152,25 @@ export default function AdminSettingsPage() {
             <SettingsIcon className="w-4 h-4" /> Pengaturan Aplikasi
           </button>
           <button 
-            onClick={() => { setActiveTab('account'); setMessage(null); }}
+            onClick={() => { setActiveTab('arsip'); setMessage(null); }}
             className={`flex items-center gap-2 px-6 py-2.5 text-sm font-bold rounded-lg transition-all ${
-              activeTab === 'account' 
+              activeTab === 'arsip' 
                 ? 'bg-teal-600 text-amber-300 shadow-sm' 
                 : 'text-slate-500 hover:text-teal-600 dark:text-slate-400 dark:hover:text-teal-400'
             }`}
           >
-            <User className="w-4 h-4" /> Akun Admin
+            <FileSignature className="w-4 h-4" /> Penandatangan Dokumen
+          </button>
+
+          <button 
+            onClick={() => { setActiveTab('profile'); setMessage(null); }}
+            className={`flex items-center gap-2 px-6 py-2.5 text-sm font-bold rounded-lg transition-all ${
+              activeTab === 'profile' 
+                ? 'bg-teal-600 text-amber-300 shadow-sm' 
+                : 'text-slate-500 hover:text-teal-600 dark:text-slate-400 dark:hover:text-teal-400'
+            }`}
+          >
+            <User className="w-4 h-4" /> Profil Saya
           </button>
         </div>
 
@@ -269,7 +282,49 @@ export default function AdminSettingsPage() {
             </form>
           )}
 
-          {activeTab === 'account' && (
+          {activeTab === 'arsip' && (
+            <form onSubmit={handleSaveSystem} className="space-y-8">
+              <div>
+                <h3 className="text-xl font-black text-slate-800 mb-2">Penandatangan Dokumen</h3>
+                <p className="text-slate-500 text-sm mb-6">Nama dan identitas pejabat yang berwenang menandatangani dokumen-dokumen resmi KKL Plus.</p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl">
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-2">Nama Ketua Program Studi</label>
+                    <input 
+                      type="text" 
+                      value={systemSettings.kaprodi_nama}
+                      onChange={(e) => setSystemSettings({...systemSettings, kaprodi_nama: e.target.value})}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring focus:ring-teal-200 focus:ring-opacity-50 transition-all bg-slate-50"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-2">NIP / NIDN Kaprodi</label>
+                    <input 
+                      type="text" 
+                      value={systemSettings.kaprodi_nip}
+                      onChange={(e) => setSystemSettings({...systemSettings, kaprodi_nip: e.target.value})}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring focus:ring-teal-200 focus:ring-opacity-50 transition-all bg-slate-50"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-6 flex justify-end">
+                <button 
+                  type="submit" 
+                  disabled={isSaving}
+                  className="px-8 py-3 bg-teal-600 text-white font-bold rounded-xl shadow-lg shadow-teal-500/30 hover:bg-teal-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+                >
+                  <Save className="w-5 h-5" /> {isSaving ? 'Menyimpan...' : 'Simpan Pengaturan'}
+                </button>
+              </div>
+            </form>
+          )}
+
+          {activeTab === 'profile' && (
             <form onSubmit={handleSaveProfile} className="space-y-8">
               <div>
                 <h3 className="text-xl font-black text-slate-800 mb-2">Profil Admin</h3>

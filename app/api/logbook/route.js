@@ -84,7 +84,7 @@ export async function GET(req) {
         pokja_id: { $in: pokjaIds }
       })
         .populate({ path: 'mahasiswa_id', select: 'nama_lengkap nim_nidn' })
-        .populate({ path: 'pokja_id', select: 'nama_pokja' })
+        .populate({ path: 'pokja_id', select: 'nama_pokja tanggal_mulai' })
         .populate({ path: 'proker_id', select: 'judul_proker' })
         .sort({ tanggal: 1 });
       const processedLogs = await processLogbookArray(logs);
@@ -101,7 +101,7 @@ export async function GET(req) {
         pokja_id: { $in: pokjaIds }
       })
         .populate({ path: 'mahasiswa_id', select: 'nama_lengkap nim_nidn' })
-        .populate({ path: 'pokja_id', select: 'nama_pokja' })
+        .populate({ path: 'pokja_id', select: 'nama_pokja tanggal_mulai' })
         .populate({ path: 'proker_id', select: 'judul_proker' })
         .sort({ tanggal: -1 });
       const processedLogs = await processLogbookArray(logs);
@@ -117,7 +117,7 @@ export async function GET(req) {
         pokja_id: { $in: pokjaIds }
       })
       .populate({ path: 'mahasiswa_id', select: 'nama_lengkap nim_nidn' })
-      .populate({ path: 'pokja_id', select: 'nama_pokja' })
+      .populate({ path: 'pokja_id', select: 'nama_pokja tanggal_mulai' })
       .populate({ path: 'proker_id', select: 'judul_proker' })
       .sort({ tanggal: 1 });
 

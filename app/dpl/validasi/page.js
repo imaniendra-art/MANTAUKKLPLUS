@@ -16,7 +16,8 @@ export default function DplValidasi() {
   const [activeTab, setActiveTab] = useState('antrean'); // 'antrean' or 'histori'
   const [viewMode, setViewMode] = useState('individu');
   const [expandedPokja, setExpandedPokja] = useState(null);
-  const [expandedSubGroup, setExpandedSubGroup] = useState(null);
+  const [expandedEntity, setExpandedEntity] = useState(null);
+  const [expandedWeek, setExpandedWeek] = useState(null);
   const [lastGeneratedLink, setLastGeneratedLink] = useState(null);
 
   const fetchData = useCallback(async () => {
@@ -226,27 +227,57 @@ const toggleSelectLog = (id) => {
         };
       }
       
-      let subGroupKey = 'Lainnya';
+      let entityId = 'unknown';
+      let entityName = 'Lainnya';
+      
+      const startDate = new Date(log.pokja_id?.tanggal_mulai || log.tanggal);
+      const logDate = new Date(log.tanggal);
+      const diffDays = Math.floor((logDate - startDate) / (1000 * 60 * 60 * 24));
+      const weekNumber = Math.max(1, Math.floor(diffDays / 7) + 1);
+      
       if (viewMode === 'individu') {
-        subGroupKey = log.mahasiswa_id?.nama_lengkap || 'Anonim';
+        entityId = log.mahasiswa_id?._id || 'unknown';
+        entityName = log.mahasiswa_id?.nama_lengkap || 'Anonim';
       } else {
-        subGroupKey = log.proker_id?.judul_proker || 'Proker Umum';
+        entityId = log.proker_id?._id || 'unknown';
+        entityName = log.proker_id?.judul_proker || 'Proker Umum';
       }
 
-      if (!pokjaGroups[pokjaId].subGroups[subGroupKey]) {
-        pokjaGroups[pokjaId].subGroups[subGroupKey] = [];
+      if (!pokjaGroups[pokjaId].entities) {
+        pokjaGroups[pokjaId].entities = {};
       }
-      pokjaGroups[pokjaId].subGroups[subGroupKey].push(log);
+
+      if (!pokjaGroups[pokjaId].entities[entityId]) {
+        pokjaGroups[pokjaId].entities[entityId] = {
+          name: entityName,
+          weeks: {}
+        };
+      }
+
+      const weekKey = `Minggu ke-${weekNumber}`;
+      if (!pokjaGroups[pokjaId].entities[entityId].weeks[weekKey]) {
+        pokjaGroups[pokjaId].entities[entityId].weeks[weekKey] = [];
+      }
+      
+      pokjaGroups[pokjaId].entities[entityId].weeks[weekKey].push(log);
     });
     
     return Object.entries(pokjaGroups).map(([pokjaId, data]) => ({
       pokjaId,
       pokjaName: data.name,
-      subGroups: Object.entries(data.subGroups).map(([name, logs]) => ({
-        name,
-        logs
-      }))
-    }));
+      entities: Object.entries(data.entities || {}).map(([entityId, entityData]) => ({
+        entityId,
+        entityName: entityData.name,
+        weeks: Object.entries(entityData.weeks).map(([weekName, logs]) => ({
+          weekName,
+          logs
+        })).sort((a, b) => {
+           const weekA = parseInt(a.weekName.replace(/\\D/g, '')) || 0;
+           const weekB = parseInt(b.weekName.replace(/\\D/g, '')) || 0;
+           return weekA - weekB;
+        })
+      })).sort((a, b) => a.entityName.localeCompare(b.entityName))
+    })).sort((a, b) => a.pokjaName.localeCompare(b.pokjaName));
   }, [filteredLogs, viewMode]);
 
 
@@ -344,7 +375,7 @@ const toggleSelectLog = (id) => {
                       <div>
                         <h3 className="font-black text-slate-800 dark:text-white text-lg lg:text-xl">{pokja.pokjaName}</h3>
                         <p className="text-sm text-slate-500 font-medium mt-0.5">
-                          {pokja.subGroups.length} {viewMode === 'individu' ? 'Mahasiswa' : 'Proker'} aktif
+                          {pokja.entities.length} {viewMode === 'individu' ? 'Mahasiswa' : 'Proker'} aktif
                         </p>
                       </div>
                     </div>
@@ -356,135 +387,184 @@ const toggleSelectLog = (id) => {
                   {/* POKJA CONTENT */}
                   {expandedPokja === pokja.pokjaId && (
                     <div className="border-t border-slate-200 dark:border-slate-700 p-4 md:p-6 bg-slate-50/50 dark:bg-slate-900/20 space-y-4">
-                      {pokja.subGroups.map(subGroup => {
-                        const subGroupId = `${pokja.pokjaId}-${subGroup.name}`;
-                        const isSubExpanded = expandedSubGroup === subGroupId;
-                        const unvalidatedCount = subGroup.logs.filter(l => l.status_validasi === 'menunggu_dpl').length;
+                      {pokja.entities.map(entity => {
+                        const entityId = `${pokja.pokjaId}-${entity.entityId}`;
+                        const isEntityExpanded = expandedEntity === entityId;
+                        
+                        // Count unvalidated for this entity across all weeks
+                        const allEntityLogs = entity.weeks.flatMap(w => w.logs);
+                        const entityUnvalidatedCount = allEntityLogs.filter(l => l.status_validasi === 'menunggu_dpl').length;
+                        const hasEntityUnvalidated = allEntityLogs.some(l => l.status_validasi === 'menunggu_dpl' || l.status_validasi === 'menunggu_mentor');
+                        const isEntityAllValidated = allEntityLogs.every(l => l.status_validasi === 'selesai' || l.status_validasi === 'selesai_tanpa_mentor');
+                        
+                        let entityBg = "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700";
+                        if (hasEntityUnvalidated) {
+                          entityBg = "bg-rose-50/50 dark:bg-rose-900/10 border-rose-200 dark:border-rose-900/50";
+                        } else if (isEntityAllValidated && allEntityLogs.length > 0) {
+                          entityBg = "bg-teal-50/30 dark:bg-teal-900/10 border-teal-200 dark:border-teal-900/50";
+                        }
                         
                         return (
-                          <div key={subGroup.name} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm transition-all hover:shadow-md">
+                          <div key={entityId} className={`${entityBg} rounded-2xl border overflow-hidden shadow-sm transition-all hover:shadow-md`}>
                             
-                            {/* SUBGROUP HEADER */}
+                            {/* ENTITY HEADER */}
                             <div 
-                              className="px-5 py-4 flex items-center justify-between cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
-                              onClick={() => setExpandedSubGroup(isSubExpanded ? null : subGroupId)}
+                              className="px-5 py-4 flex items-center justify-between cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                              onClick={() => setExpandedEntity(isEntityExpanded ? null : entityId)}
                             >
                               <div className="flex items-center gap-4">
                                 <div className="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0">
                                   {viewMode === 'individu' ? <User className="w-5 h-5" /> : <ClipboardList className="w-5 h-5" />}
                                 </div>
                                 <div>
-                                  <h4 className="font-bold text-slate-700 dark:text-slate-100 text-base">{subGroup.name}</h4>
-                                  {unvalidatedCount > 0 && activeTab === 'antrean' && (
+                                  <h4 className="font-bold text-slate-700 dark:text-slate-100 text-base">{entity.entityName}</h4>
+                                  {entityUnvalidatedCount > 0 && activeTab === 'antrean' && (
                                     <span className="inline-block mt-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[10px] font-bold px-2.5 py-0.5 rounded-md border border-amber-200 dark:border-amber-800/50">
-                                      {unvalidatedCount} menunggu validasi
+                                      {entityUnvalidatedCount} menunggu validasi
                                     </span>
                                   )}
                                 </div>
                               </div>
-                              <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${isSubExpanded ? 'rotate-180' : ''}`} />
+                              <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${isEntityExpanded ? 'rotate-180' : ''}`} />
                             </div>
 
-                            {/* LOGS GRID */}
-                            {isSubExpanded && (
-                              <div className="p-4 md:p-6 border-t border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
-                                
-                                <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
-                                  <span className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
-                                    <FileSignature className="w-4 h-4 text-teal-500" />
-                                    Total {subGroup.logs.length} Logbook
-                                  </span>
-                                  {activeTab === 'antrean' && subGroup.logs.some(l => l.status_validasi === 'menunggu_dpl') && (
-                                    <button 
-                                      onClick={() => handleSelectSubGroup(subGroup.logs)}
-                                      className="text-xs font-bold px-4 py-2 bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400 rounded-lg border border-teal-200 dark:border-teal-800/50 hover:bg-teal-100 dark:hover:bg-teal-900/50 transition-colors flex items-center justify-center gap-2"
-                                    >
-                                      <CheckCircle2 className="w-3.5 h-3.5" /> Pilih Semua di Grup Ini
-                                    </button>
-                                  )}
+                            {/* WEEKS ACCORDIONS */}
+                            {isEntityExpanded && (
+                              <div className="p-4 bg-slate-50 dark:bg-slate-900/50 space-y-3 border-t border-slate-100 dark:border-slate-700">
+                                {entity.weeks.map(week => {
+                                  const weekId = `${entityId}-${week.weekName}`;
+                                  const isWeekExpanded = expandedWeek === weekId;
                                   
-                                  {activeTab === 'histori' && subGroup.logs.some(l => l.status_validasi === 'menunggu_mentor') && (
-                                    <div className="flex gap-2">
-                                      <button 
-                                        onClick={() => handleCopyLinkMentor(subGroup.logs)}
-                                        disabled={submitting}
-                                        className="text-xs font-bold px-4 py-2 bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors flex items-center justify-center gap-2"
-                                      >
-                                        <Copy className="w-3.5 h-3.5" /> Copy Link
-                                      </button>
-                                      <button 
-                                        onClick={() => handleForceValidate(subGroup.logs)}
-                                        disabled={submitting}
-                                        className="text-xs font-bold px-4 py-2 bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400 rounded-lg border border-teal-200 dark:border-teal-800/50 hover:bg-teal-100 dark:hover:bg-teal-900/50 transition-colors flex items-center justify-center gap-2"
-                                      >
-                                        <Check className="w-3.5 h-3.5" /> Bantu Validasi
-                                      </button>
-                                    </div>
-                                  )}
-                                </div>
+                                  const weekUnvalidatedCount = week.logs.filter(l => l.status_validasi === 'menunggu_dpl').length;
+                                  const hasWeekUnvalidated = week.logs.some(l => l.status_validasi === 'menunggu_dpl' || l.status_validasi === 'menunggu_mentor');
+                                  const isWeekAllValidated = week.logs.every(l => l.status_validasi === 'selesai' || l.status_validasi === 'selesai_tanpa_mentor');
+                                  
+                                  let weekBg = "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700";
+                                  if (hasWeekUnvalidated) weekBg = "bg-rose-50/50 dark:bg-rose-900/10 border-rose-200 dark:border-rose-900/50";
+                                  else if (isWeekAllValidated && week.logs.length > 0) weekBg = "bg-teal-50/30 dark:bg-teal-900/10 border-teal-200 dark:border-teal-900/50";
 
-                                <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
-                                  {subGroup.logs.map(log => {
-                                    const isSelected = selectedLogs.includes(log._id);
-                                    return (
+                                  return (
+                                    <div key={weekId} className={`${weekBg} rounded-xl border overflow-hidden shadow-sm`}>
+                                      {/* WEEK HEADER */}
                                       <div 
-                                        key={log._id} 
-                                        className={`bg-white dark:bg-slate-800 rounded-2xl p-5 shadow-sm border transition-all ${
-                                          isSelected ? 'border-teal-400 dark:border-teal-500 ring-2 ring-teal-400/20 dark:ring-teal-500/20 shadow-md' : 'border-slate-200 dark:border-slate-700 hover:border-teal-300 dark:hover:border-teal-600'
-                                        }`}
+                                        className="px-4 py-3 flex items-center justify-between cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                                        onClick={() => setExpandedWeek(isWeekExpanded ? null : weekId)}
                                       >
-                                        <div className="flex justify-between items-start mb-4 gap-3">
-                                          <div className="flex items-start gap-3">
-                                            {activeTab === 'antrean' && log.status_validasi === 'menunggu_dpl' && (
-                                              <input 
-                                                type="checkbox" 
-                                                className="w-5 h-5 rounded border-slate-300 text-teal-600 focus:ring-teal-600 mt-0.5 cursor-pointer"
-                                                checked={isSelected}
-                                                onChange={() => toggleSelectLog(log._id)}
-                                              />
-                                            )}
-                                            <div>
-                                              <p className="text-sm font-black text-slate-700 dark:text-slate-200 flex items-center gap-2">
-                                                <Calendar className="w-4 h-4 text-teal-500" /> 
-                                                {new Date(log.tanggal).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
-                                              </p>
-                                            </div>
+                                        <div className="flex items-center gap-3">
+                                          <div className="w-8 h-8 rounded-lg bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0">
+                                            <Calendar className="w-4 h-4" />
                                           </div>
-                                          
-                                          <div className="flex items-center gap-2 shrink-0">
-                                            {log.bukti_kegiatan && (
+                                          <div>
+                                            <h5 className="font-bold text-slate-700 dark:text-slate-100 text-sm">{week.weekName}</h5>
+                                            {weekUnvalidatedCount > 0 && activeTab === 'antrean' && (
+                                              <span className="inline-block mt-0.5 text-amber-600 dark:text-amber-400 text-[10px] font-bold">
+                                                {weekUnvalidatedCount} antrean
+                                              </span>
+                                            )}
+                                          </div>
+                                        </div>
+                                        <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-300 ${isWeekExpanded ? 'rotate-180' : ''}`} />
+                                      </div>
+
+                                      {/* LOGS LIST */}
+                                      {isWeekExpanded && (
+                                        <div className="p-4 border-t border-slate-100 dark:border-slate-700 bg-white/50 dark:bg-slate-900/30">
+                                          <div className="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                            <span className="text-xs font-bold text-slate-600 dark:text-slate-400">Total {week.logs.length} Logbook</span>
+                                            {activeTab === 'antrean' && week.logs.some(l => l.status_validasi === 'menunggu_dpl') && (
                                               <button 
-                                                onClick={(e) => { e.stopPropagation(); handleViewFile(log.bukti_kegiatan); }} 
-                                                className="text-[10px] font-bold text-teal-600 bg-teal-50 dark:bg-teal-900/20 dark:text-teal-400 px-2 py-1 rounded-md hover:bg-teal-100 dark:hover:bg-teal-900/40 transition-colors border border-teal-200 dark:border-teal-800/50 flex items-center gap-1"
-                                                title="Lihat Bukti Kegiatan"
+                                                onClick={() => handleSelectSubGroup(week.logs)}
+                                                className="text-xs font-bold px-3 py-1.5 bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400 rounded-lg border border-teal-200 dark:border-teal-800/50 hover:bg-teal-100 dark:hover:bg-teal-900/50 transition-colors flex items-center justify-center gap-2"
                                               >
-                                                🖼️ Bukti
+                                                <CheckCircle2 className="w-3.5 h-3.5" /> Pilih Semua di Minggu Ini
                                               </button>
                                             )}
-                                            {log.status_validasi === 'menunggu_dpl' && <span className="px-2 py-1 bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 text-[10px] font-bold rounded-md border border-amber-200 dark:border-amber-800/50">Menunggu DPL</span>}
-                                            {log.status_validasi === 'menunggu_mentor' && <span className="px-2 py-1 bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400 text-[10px] font-bold rounded-md border border-teal-200 dark:border-teal-800/50 animate-pulse">Di Mentor</span>}
-                                            {log.status_validasi === 'selesai' && <span className="px-2 py-1 bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400 text-[10px] font-bold rounded-md border border-teal-200 dark:border-teal-800/50">Selesai</span>}
+                                            
+                                            {activeTab === 'histori' && week.logs.some(l => l.status_validasi === 'menunggu_mentor') && (
+                                              <div className="flex flex-wrap gap-2">
+                                                <button 
+                                                  onClick={() => handleCopyLinkMentor(week.logs)}
+                                                  disabled={submitting}
+                                                  className="text-xs font-bold px-3 py-1.5 bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors flex items-center justify-center gap-2"
+                                                >
+                                                  <Copy className="w-3.5 h-3.5" /> Copy Link
+                                                </button>
+                                                <button 
+                                                  onClick={() => handleForceValidate(week.logs)}
+                                                  disabled={submitting}
+                                                  className="text-xs font-bold px-3 py-1.5 bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400 rounded-lg border border-teal-200 dark:border-teal-800/50 hover:bg-teal-100 dark:hover:bg-teal-900/50 transition-colors flex items-center justify-center gap-2"
+                                                >
+                                                  <Check className="w-3.5 h-3.5" /> Bantu Validasi
+                                                </button>
+                                              </div>
+                                            )}
+                                          </div>
+
+                                          <div className="grid grid-cols-1 gap-4">
+                                            {week.logs.map(log => {
+                                              const isSelected = selectedLogs.includes(log._id);
+                                              return (
+                                                <div 
+                                                  key={log._id} 
+                                                  className={`bg-white dark:bg-slate-800 rounded-xl p-4 shadow-sm border transition-all ${
+                                                    isSelected ? 'border-teal-400 dark:border-teal-500 ring-2 ring-teal-400/20 dark:ring-teal-500/20 shadow-md' : 'border-slate-200 dark:border-slate-700 hover:border-teal-300 dark:hover:border-teal-600'
+                                                  }`}
+                                                >
+                                                  <div className="flex justify-between items-start mb-3 gap-3">
+                                                    <div className="flex items-start gap-3">
+                                                      {activeTab === 'antrean' && log.status_validasi === 'menunggu_dpl' && (
+                                                        <input 
+                                                          type="checkbox" 
+                                                          className="w-4 h-4 rounded border-slate-300 text-teal-600 focus:ring-teal-600 mt-0.5 cursor-pointer"
+                                                          checked={isSelected}
+                                                          onChange={() => toggleSelectLog(log._id)}
+                                                        />
+                                                      )}
+                                                      <div>
+                                                        <p className="text-xs font-black text-slate-700 dark:text-slate-200">
+                                                          {new Date(log.tanggal).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                                                        </p>
+                                                      </div>
+                                                    </div>
+                                                    
+                                                    <div className="flex items-center gap-2 shrink-0">
+                                                      {log.bukti_kegiatan && (
+                                                        <button 
+                                                          onClick={(e) => { e.stopPropagation(); handleViewFile(log.bukti_kegiatan); }} 
+                                                          className="text-[10px] font-bold text-teal-600 bg-teal-50 dark:bg-teal-900/20 dark:text-teal-400 px-2 py-1 rounded-md hover:bg-teal-100 transition-colors border border-teal-200 dark:border-teal-800/50"
+                                                        >
+                                                          🖼️ Bukti
+                                                        </button>
+                                                      )}
+                                                      {log.status_validasi === 'menunggu_dpl' && <span className="px-2 py-1 bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 text-[10px] font-bold rounded-md border border-amber-200 dark:border-amber-800/50">Menunggu DPL</span>}
+                                                      {log.status_validasi === 'menunggu_mentor' && <span className="px-2 py-1 bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400 text-[10px] font-bold rounded-md border border-teal-200 dark:border-teal-800/50 animate-pulse">Di Mentor</span>}
+                                                      {log.status_validasi === 'selesai' && <span className="px-2 py-1 bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400 text-[10px] font-bold rounded-md border border-teal-200 dark:border-teal-800/50">Selesai</span>}
+                                                    </div>
+                                                  </div>
+
+                                                  <div className="space-y-1.5 bg-slate-50/50 dark:bg-slate-900/20 p-3 rounded-lg border border-slate-100 dark:border-slate-800">
+                                                    <p className="text-xs text-slate-700 dark:text-slate-300">
+                                                      <span className="font-bold text-teal-600 dark:text-teal-400 mr-2">Rencana:</span> 
+                                                      {log.rencana_target}
+                                                    </p>
+                                                    <p className="text-xs text-slate-700 dark:text-slate-300 whitespace-pre-wrap">
+                                                      <span className="font-bold text-teal-600 dark:text-teal-400 mr-2">Uraian:</span> 
+                                                      {log.uraian_kegiatan}
+                                                    </p>
+                                                    <p className="text-xs text-teal-700 dark:text-teal-400 font-medium">
+                                                      <span className="font-bold text-teal-600 dark:text-teal-500 mr-2">Hasil:</span> 
+                                                      {log.hasil_output}
+                                                    </p>
+                                                  </div>
+                                                </div>
+                                              );
+                                            })}
                                           </div>
                                         </div>
-
-                                        <div className="space-y-2 mb-2 bg-slate-50/50 dark:bg-slate-900/20 p-4 rounded-xl border border-slate-100 dark:border-slate-800">
-                                          <p className="text-sm text-slate-700 dark:text-slate-300">
-                                            <span className="font-bold text-teal-600 dark:text-teal-400 mr-2">Rencana Target:</span> 
-                                            {log.rencana_target}
-                                          </p>
-                                          <p className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap">
-                                            <span className="font-bold text-teal-600 dark:text-teal-400 mr-2">Uraian Kegiatan:</span> 
-                                            {log.uraian_kegiatan}
-                                          </p>
-                                          <p className="text-sm text-teal-700 dark:text-teal-400 font-medium">
-                                            <span className="font-bold text-teal-600 dark:text-teal-500 mr-2">Hasil / Output:</span> 
-                                            {log.hasil_output}
-                                          </p>
-                                        </div>
-                                      </div>
-                                    );
-                                  })}
-                                </div>
+                                      )}
+                                    </div>
+                                  );
+                                })}
                               </div>
                             )}
                           </div>

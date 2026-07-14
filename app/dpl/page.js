@@ -66,7 +66,7 @@ export default function DPLDashboard() {
     }
   };
 
-  const hasNotifications = session?.user?.isFirstLogin || pendingPokjas.length > 0 || stats.prokerMenungguValidasi > 0 || stats.pokjaBelumIA > 0;
+  const hasNotifications = session?.user?.isFirstLogin || pendingPokjas.length > 0 || stats.prokerMenungguValidasi > 0 || stats.pokjaBelumIA > 0 || stats.laporanMenungguValidasi > 0;
 
   const dashboardContent = loading ? (
     <>

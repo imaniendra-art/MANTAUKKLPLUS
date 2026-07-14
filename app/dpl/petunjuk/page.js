@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
-import { Eye, School } from "lucide-react";
+import { Eye, School, Car, UserCheck, Target, FileText, MapPin, Link as LinkIcon, Award, GraduationCap } from "lucide-react";
 
 export default function PetunjukDPL() {
   return (
@@ -16,7 +16,7 @@ export default function PetunjukDPL() {
             </div>
             <div className="relative z-10">
               <h1 className="text-3xl font-black mb-4 flex items-center gap-3">
-                <span>👨‍🏫</span> Selamat Datang, Dosen Pembimbing Lapangan!
+                <GraduationCap className="w-9 h-9 text-teal-200" /> Selamat Datang, Dosen Pembimbing Lapangan!
               </h1>
               <p className="text-teal-50 text-sm md:text-base leading-relaxed max-w-3xl font-medium mb-4">
                 Sebagai <strong>Dosen Pembimbing Lapangan (DPL)</strong>, Anda memiliki peran penting dalam memastikan KKL Plus berjalan dengan lancar dan memberikan dampak nyata. Panduan ringkas ini akan membantu Anda menavigasi seluruh alur KKL Plus, mulai dari pemantauan harian hingga tahap penilaian akhir.
@@ -27,29 +27,87 @@ export default function PetunjukDPL() {
           <div className="p-8 space-y-8 text-slate-700">
             {/* Bagian 1: Alur Validasi */}
             <section>
-              <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2"><span className="text-teal-600">1.</span> Alur Utama DPL</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-slate-50 border border-slate-200 p-5 rounded-xl">
+              <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2"><span className="text-teal-600">1.</span> Alur Pelaksanaan KKL Plus bagi DPL</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                
+                {/* A */}
+                <div className="bg-slate-50 border border-slate-200 p-5 rounded-xl hover:shadow-md transition">
                   <h3 className="font-bold text-slate-800 mb-2 flex items-center gap-2">
-                    <span className="text-xl">📝</span> A. Validasi Logbook Harian
+                    <Car className="w-5 h-5 text-slate-500" /> A. Pengantaran Mahasiswa
                   </h3>
-                  <p className="text-sm text-slate-600 leading-relaxed mb-2">
-                    Mahasiswa akan melaporkan kegiatan mereka setiap hari melalui logbook. Anda diharapkan untuk mengecek, memberikan catatan revisi, dan menyetujui logbook tersebut secara rutin melalui menu <strong>Validasi Logbook</strong>.
+                  <p className="text-sm text-slate-600 leading-relaxed">
+                    DPL wajib membawa dan mengantarkan mahasiswa ke lokasi KKL Plus, serta secara resmi menyerahkan mahasiswa kepada pihak pimpinan instansi/mitra.
                   </p>
                 </div>
-                
-                <div className="bg-amber-50 border border-amber-300 p-5 rounded-xl shadow-sm relative">
-                  <h3 className="font-bold text-amber-900 mb-2 flex items-center gap-2">
-                    <span className="text-xl">🚀</span> B. Validasi Laporan & Link Mentor
+
+                {/* B */}
+                <div className="bg-slate-50 border border-slate-200 p-5 rounded-xl hover:shadow-md transition">
+                  <h3 className="font-bold text-slate-800 mb-2 flex items-center gap-2">
+                    <UserCheck className="w-5 h-5 text-slate-500" /> B. Menunjuk Mentor Lapangan
                   </h3>
-                  <p className="text-sm text-amber-800 leading-relaxed mb-3">
-                    Pada akhir periode KKL, DPL wajib memeriksa Laporan Akhir kelompok di menu <strong>Validasi Laporan</strong>. Menekan tombol "Validasi" adalah syarat utama agar form penilaian terbuka.
+                  <p className="text-sm text-slate-600 leading-relaxed">
+                    DPL berkoordinasi dengan instansi untuk menunjuk Mentor Lapangan, lalu mendaftarkan nama dan kontak mentor tersebut ke dalam sistem.
                   </p>
-                  <div className="bg-white p-3 rounded-lg border border-amber-300 text-xs md:text-sm font-semibold text-amber-900 shadow-inner">
-                    <span className="text-red-600 font-bold uppercase tracking-wider block mb-1">🚨 Sangat Penting!</span>
-                    Setelah Anda menekan tombol Validasi, sebuah pop-up berisi <strong>Magic Link (Tautan Penilaian Mentor)</strong> akan otomatis muncul. Anda <u className="decoration-red-500 decoration-2">wajib meng-copy link tersebut dan mengirimkannya langsung ke Mentor Eksternal</u> agar mereka bisa memberikan nilai dari instansi.
+                </div>
+
+                {/* C */}
+                <div className="bg-slate-50 border border-slate-200 p-5 rounded-xl hover:shadow-md transition">
+                  <h3 className="font-bold text-slate-800 mb-2 flex items-center gap-2">
+                    <Target className="w-5 h-5 text-slate-500" /> C. Validasi Program Kerja
+                  </h3>
+                  <p className="text-sm text-slate-600 leading-relaxed">
+                    Membantu menyusun dan memvalidasi usulan Proker. Proker wajib dibagi menjadi dua kategori utama: <strong>Proker Core (Inti)</strong> dan <strong>Proker Pendukung</strong>.
+                  </p>
+                </div>
+
+                {/* D */}
+                <div className="bg-slate-50 border border-slate-200 p-5 rounded-xl hover:shadow-md transition">
+                  <h3 className="font-bold text-slate-800 mb-2 flex items-center gap-2">
+                    <FileText className="w-5 h-5 text-slate-500" /> D. Validasi Logbook
+                  </h3>
+                  <p className="text-sm text-slate-600 leading-relaxed">
+                    Memantau kegiatan mahasiswa setiap minggu. DPL mengecek, memberi catatan revisi, dan menyetujui logbook harian melalui menu <strong>Validasi Logbook</strong>.
+                  </p>
+                </div>
+
+                {/* E */}
+                <div className="bg-teal-50 border border-teal-300 p-5 rounded-xl shadow-sm relative">
+                  <h3 className="font-bold text-teal-900 mb-2 flex items-center gap-2">
+                    <MapPin className="w-5 h-5 text-teal-600" /> E. Kunjungan Lapangan
+                  </h3>
+                  <div className="text-sm text-teal-800 leading-relaxed">
+                    DPL <strong>wajib melakukan minimal 3 kali kunjungan</strong> ke lokasi:
+                    <ul className="list-disc list-inside mt-2 space-y-1 font-semibold">
+                      <li>Kunjungan Pengantaran (Awal)</li>
+                      <li>Kunjungan Pertengahan (Monev)</li>
+                      <li>Kunjungan Penarikan (Akhir)</li>
+                    </ul>
                   </div>
                 </div>
+
+                {/* F */}
+                <div className="bg-amber-50 border border-amber-300 p-5 rounded-xl shadow-sm relative flex flex-col">
+                  <h3 className="font-bold text-amber-900 mb-2 flex items-center gap-2">
+                    <LinkIcon className="w-5 h-5 text-amber-600" /> F. Laporan & Link Mentor
+                  </h3>
+                  <p className="text-sm text-amber-800 leading-relaxed mb-3 flex-grow">
+                    Validasi Laporan Akhir adalah syarat agar form Penilaian terbuka.
+                  </p>
+                  <div className="bg-white p-2.5 rounded-lg border border-amber-300 text-xs font-semibold text-amber-900 mt-auto">
+                    <span className="text-red-600 font-bold">🚨 SANGAT PENTING:</span> Setelah memvalidasi, copy pop-up <strong>Magic Link</strong> dan berikan langsung ke Mentor Eksternal!
+                  </div>
+                </div>
+
+                {/* G */}
+                <div className="bg-indigo-50 border border-indigo-200 p-5 rounded-xl hover:shadow-md transition">
+                  <h3 className="font-bold text-indigo-900 mb-2 flex items-center gap-2">
+                    <Award className="w-5 h-5 text-indigo-600" /> G. Evaluasi & Penilaian
+                  </h3>
+                  <p className="text-sm text-indigo-800 leading-relaxed">
+                    Setelah validasi selesai dan Mentor memberikan nilai, DPL mengkalkulasi dan menetapkan <strong>Nilai Akhir</strong> untuk mahasiswa di menu <strong>Evaluasi</strong>.
+                  </p>
+                </div>
+
               </div>
             </section>
 
