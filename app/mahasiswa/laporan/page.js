@@ -724,6 +724,10 @@ export default function LaporanAkhirPage() {
                   )}
                   <textarea
                     disabled={['submitted', 'disetujui'].includes(currentForm.status)}
+                    onPaste={(e) => {
+                      e.preventDefault();
+                      alert('Mohon maaf, demi objektivitas dan orisinalitas, fitur Copy-Paste dinonaktifkan. Silakan ketik laporan Anda secara manual ✌️');
+                    }}
                     value={currentForm.kata_pengantar}
                     onChange={(e) => {
                       setIsDirty(true);
@@ -764,6 +768,10 @@ export default function LaporanAkhirPage() {
                       )}
                       <textarea
                         disabled={['submitted', 'disetujui'].includes(currentForm.status)}
+                        onPaste={(e) => {
+                          e.preventDefault();
+                          alert('Mohon maaf, demi objektivitas dan orisinalitas, fitur Copy-Paste dinonaktifkan. Silakan ketik laporan Anda secara manual ✌️');
+                        }}
                         value={sec.content}
                         onChange={(e) => {
                           setIsDirty(true);
@@ -808,6 +816,10 @@ export default function LaporanAkhirPage() {
                       )}
                       <textarea
                         disabled={['submitted', 'disetujui'].includes(currentForm.status)}
+                        onPaste={(e) => {
+                          e.preventDefault();
+                          alert('Mohon maaf, demi objektivitas dan orisinalitas, fitur Copy-Paste dinonaktifkan. Silakan ketik laporan Anda secara manual ✌️');
+                        }}
                         value={sec.content}
                         onChange={(e) => {
                           setIsDirty(true);
@@ -871,6 +883,10 @@ export default function LaporanAkhirPage() {
                       )}
                       <textarea
                         disabled={['submitted', 'disetujui'].includes(currentForm.status)}
+                        onPaste={(e) => {
+                          e.preventDefault();
+                          alert('Mohon maaf, demi objektivitas dan orisinalitas, fitur Copy-Paste dinonaktifkan. Silakan ketik laporan Anda secara manual ✌️');
+                        }}
                         value={sec.content}
                         onChange={(e) => {
                           setIsDirty(true);
@@ -915,6 +931,10 @@ export default function LaporanAkhirPage() {
                       )}
                       <textarea
                         disabled={['submitted', 'disetujui'].includes(currentForm.status)}
+                        onPaste={(e) => {
+                          e.preventDefault();
+                          alert('Mohon maaf, demi objektivitas dan orisinalitas, fitur Copy-Paste dinonaktifkan. Silakan ketik laporan Anda secara manual ✌️');
+                        }}
                         value={sec.content}
                         onChange={(e) => {
                           setIsDirty(true);
