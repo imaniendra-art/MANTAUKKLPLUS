@@ -243,7 +243,7 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
 
         {/* Sticky Header */}
         <header className="sticky top-0 z-50 backdrop-blur-2xl bg-white/10 dark:bg-slate-900/10 border-b border-slate-200/50 dark:border-slate-800/50">
-          <div className="w-full max-w-7xl mx-auto px-6 lg:px-8 py-4 flex items-center justify-between">
+          <div className="w-full px-4 md:px-8 lg:px-12 xl:px-24 2xl:px-32 py-4 flex items-center justify-between">
             <div className="flex items-center gap-4">
               <button
                 onClick={() => router.push(parentPath)}
@@ -267,7 +267,7 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
         </header>
 
         {/* Sub-page Content */}
-        <main className="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-8 py-8">
+        <main className="relative z-10 w-full px-4 md:px-8 lg:px-12 xl:px-24 2xl:px-32 py-8">
           <div className="w-full">
             {children}
           </div>
@@ -282,7 +282,7 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
       <BackgroundScene />
 
       {/* ═══════════════ NAVBAR ═══════════════ */}
-      <nav className="w-full max-w-7xl mx-auto px-6 lg:px-8 py-5 flex justify-between items-center relative z-50">
+      <nav className="w-full px-4 md:px-8 lg:px-12 xl:px-24 2xl:px-32 py-5 flex justify-between items-center relative z-50">
         <Link href="/" className="flex items-center gap-3 lg:gap-4 bg-white/40 dark:bg-slate-800/40 backdrop-blur-md py-2 px-3 lg:px-4 rounded-2xl border border-white/60 dark:border-slate-700/50 shadow-sm transition-all hover:bg-white/60 dark:hover:bg-slate-800/60">
           <img src="/mk_terang.png" alt="Mantau KKL Plus Logo" className="h-8 lg:h-10 w-auto object-contain drop-shadow-sm block dark:hidden" />
           <img src="/mk_gelap.png" alt="Mantau KKL Plus Logo" className="h-8 lg:h-10 w-auto object-contain drop-shadow-sm hidden dark:block" />
@@ -301,7 +301,7 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
       </nav>
 
       {/* ═══════════════ HERO SECTION ═══════════════ */}
-      <section className="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-8 pt-6">
+      <section className="relative z-10 w-full px-4 md:px-8 lg:px-12 xl:px-24 2xl:px-32 pt-6">
         <div className="relative rounded-[2rem] shadow-lg overflow-hidden group border border-white/20">
           {/* Background Image */}
           <div 
@@ -329,13 +329,13 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
 
       {/* ═══════════════ NOTIFICATION CARDS / HIGHLIGHTS ═══════════════ */}
       {notifications && (
-        <section className="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-8 mt-6 mb-10">
+        <section className="relative z-10 w-full px-4 md:px-8 lg:px-12 xl:px-24 2xl:px-32 mt-6 mb-10">
           {notifications}
         </section>
       )}
 
       {/* ═══════════════ MENU CARDS ═══════════════ */}
-      <section className="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-8 pb-20">
+      <section className="relative z-10 w-full px-4 md:px-8 lg:px-12 xl:px-24 2xl:px-32 pb-20">
         <div className="flex items-center gap-3 mb-8">
           <div className="w-1 h-6 bg-teal-600 rounded-full shadow-sm shadow-teal-600/50" />
           <h2 className="text-xl font-bold tracking-tight text-slate-800 dark:text-slate-100 drop-shadow-sm">Menu Utama</h2>
@@ -370,7 +370,7 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
 
       {/* ═══════════════ EXTRA CONTENT (CHILDREN) ═══════════════ */}
       {children && (
-        <section className="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-8 pb-20">
+        <section className="relative z-10 w-full px-4 md:px-8 lg:px-12 xl:px-24 2xl:px-32 pb-20">
           {children}
         </section>
       )}
