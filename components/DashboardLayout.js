@@ -248,11 +248,7 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
         </div>
 
         {/* Sticky Header */}
-<<<<<<< HEAD
-        <header className="sticky top-0 z-30 backdrop-blur-2xl bg-white/10 dark:bg-slate-900/10 border-b border-slate-200/50 dark:border-slate-800/50">
-=======
         <header className="sticky top-0 z-50 backdrop-blur-2xl bg-white/10 dark:bg-slate-900/10 border-b border-slate-200/50 dark:border-slate-800/50 print:hidden">
->>>>>>> ac99867 (Fix print margins, Laporan DPL data mapping, and add DPL to Arsip)
           <div className="w-full px-4 md:px-8 lg:px-12 xl:px-24 2xl:px-32 py-4 flex items-center justify-between">
             <div className="flex items-center gap-4">
               <button
