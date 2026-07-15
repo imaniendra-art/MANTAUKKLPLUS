@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/components/AuthProvider";
 import { Plus, X } from "lucide-react";
 
 export default function DaftarProker() {
@@ -263,7 +263,7 @@ export default function DaftarProker() {
 
       {/* MODAL FORM PROKER */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
           <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 md:p-8 shadow-2xl w-full max-w-2xl border border-slate-200 dark:border-slate-700 relative max-h-[90vh] overflow-y-auto">
             <button 
               onClick={() => setIsModalOpen(false)}

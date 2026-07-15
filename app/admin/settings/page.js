@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { useSession } from "@/components/AuthProvider";
 import DashboardLayout from '@/components/DashboardLayout';
 import { Settings as SettingsIcon, User, Save, CheckCircle, AlertTriangle, FileSignature } from 'lucide-react';
 

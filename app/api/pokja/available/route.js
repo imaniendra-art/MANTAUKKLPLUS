@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { getServerSession } from "@/lib/auth";
+
 import connectToDatabase from '@/lib/db';
 import Pokja from '@/models/Pokja';
 import User from '@/models/User';
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession();
 
     if (!session || session.user.role !== 'mahasiswa') {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });

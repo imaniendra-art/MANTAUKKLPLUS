@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/components/AuthProvider";
 import { Check, FileSignature, GraduationCap, Briefcase, Bell, AlertTriangle, Clock, FileEdit, FileText } from "lucide-react";
 
 export default function DPLDashboard() {

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/components/AuthProvider";
 import { Check, X, Calendar, User, Briefcase, FileSignature, Loader2, Clock, History, ChevronDown, ClipboardList, CheckCircle2, Copy } from "lucide-react";
 
 export default function DplValidasi() {
@@ -634,8 +634,8 @@ const toggleSelectLog = (id) => {
       `}</style>
     
       {lastGeneratedLink && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 md:p-8 max-w-lg w-full shadow-2xl border border-slate-200 dark:border-slate-700 animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 md:p-8 max-w-lg w-full shadow-2xl border border-slate-200 dark:border-slate-700 animate-in fade-in zoom-in-95 duration-200 max-h-[95vh] overflow-y-auto">
             <div className="w-12 h-12 rounded-full bg-teal-100 dark:bg-teal-900/40 text-teal-600 dark:text-teal-400 flex items-center justify-center mb-5 mx-auto">
               <CheckCircle2 className="w-6 h-6" />
             </div>

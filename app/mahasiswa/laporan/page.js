@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { useSession } from "@/components/AuthProvider";
 import DashboardLayout from '@/components/DashboardLayout';
 import Link from 'next/link';
 import { Check, X, FileSignature, Building, User, Users, BookOpen, Paperclip, Printer, PenTool, Mail, FileCheck, FileBadge, FileText, Award, Download, Clock, AlertTriangle, CheckCircle, Lock } from "lucide-react";

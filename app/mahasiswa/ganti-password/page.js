@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { signOut } from 'next-auth/react';
+import { signOut } from "@/components/AuthProvider";
 
 export default function GantiPassword() {
   const router = useRouter();

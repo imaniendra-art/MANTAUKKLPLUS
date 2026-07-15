@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mantau_web
+    restart: unless-stopped
+    ports:
+      - "3020:3020"
+    environment:
+      - NODE_ENV=production
+      - REDIS_URL=redis://redis:6379
+      # Tambahkan variabel environment lain jika perlu,
+      # atau Docker akan otomatis membaca file .env.local jika dikonfigurasi.
+    env_file:
+      - .env.local
+    depends_on:
+      - redis
+    networks:
+      - mantau_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: mantau_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - mantau_network
+
+volumes:
+  redis_data:
+
+networks:
+  mantau_network:
+    driver: bridge

@@ -4,15 +4,15 @@ import dbConnect from '@/lib/db';
 import Pokja from '@/models/Pokja';
 import User from '@/models/User';
 import MitraKKL from '@/models/MitraKKL';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { getServerSession } from "@/lib/auth";
+
 import bcrypt from 'bcryptjs';
 import Proker from '@/models/Proker';
 
 export async function GET(req) {
   await dbConnect();
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession();
     if (!session || session.user.role !== 'dpl') {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -53,7 +53,7 @@ export async function GET(req) {
 export async function PATCH(req) {
   await dbConnect();
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession();
     if (!session || session.user.role !== 'dpl') {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -84,7 +84,7 @@ export async function PATCH(req) {
 export async function POST(req) {
   await dbConnect();
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession();
     if (!session || session.user.role !== 'dpl') {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

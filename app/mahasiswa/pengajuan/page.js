@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/components/AuthProvider";
 import { useRouter } from "next/navigation";
 
 export default function BursaMitra() {

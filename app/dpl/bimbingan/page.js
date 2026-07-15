@@ -631,8 +631,8 @@ export default function DaftarBimbinganPage() {
 
       {/* Modal Add Mentor */}
       {showModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-3xl p-8 w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-200 border border-white/60 dark:border-slate-700">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-slate-800 backdrop-blur-xl rounded-3xl p-8 w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-200 border border-white/60 dark:border-slate-700 max-h-[95vh] overflow-y-auto">
             <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-2">Tugaskan Mentor Lapangan</h2>
             <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
               Buatkan akun untuk perwakilan instansi yang akan menjadi mentor. Mereka bisa login menggunakan <strong>Nomor HP</strong> sebagai password default.
@@ -701,8 +701,8 @@ export default function DaftarBimbinganPage() {
 
       {/* Modal Penolakan Instansi */}
       {showRejectModal && selectedPengajuan && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-3xl p-8 w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-200 border border-white/60 dark:border-slate-700">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-slate-800 backdrop-blur-xl rounded-3xl p-8 w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-200 border border-white/60 dark:border-slate-700 max-h-[95vh] overflow-y-auto">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-xl shrink-0">
                 🚫
@@ -749,8 +749,8 @@ export default function DaftarBimbinganPage() {
       )}
       {/* Modal Info Status Kerja Sama */}
       {showStatusInfo && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 w-full max-w-lg shadow-2xl">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 w-full max-w-lg shadow-2xl max-h-[95vh] overflow-y-auto">
             <h3 className="text-lg font-black text-slate-800 dark:text-white mb-4 flex items-center gap-2">
               <Info className="w-5 h-5 text-sky-500" /> Panduan Status Kerja Sama
             </h3>

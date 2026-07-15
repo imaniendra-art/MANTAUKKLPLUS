@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession, signOut } from "next-auth/react";
+import { useSession, signOut } from "@/components/AuthProvider";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "./ThemeContext";
@@ -75,7 +75,7 @@ function UserMenu({ nama, role }) {
   }, []);
 
   return (
-    <div className="relative z-[100]" ref={menuRef}>
+    <div className="relative z-40" ref={menuRef}>
       <button 
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-3 px-3 py-2 rounded-2xl border transition-all duration-300 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl hover:bg-white/60 dark:hover:bg-slate-700/60 border-white/50 dark:border-slate-600/50 shadow-sm"
@@ -218,7 +218,7 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
   if (status === "loading") {
     return (
       <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-slate-50 dark:bg-slate-900">
-        <div className="relative z-10 flex flex-col items-center gap-4">
+        <div className="relative flex flex-col items-center gap-4">
           <div className="w-12 h-12 border-3 rounded-full animate-spin border-teal-600/30 border-t-teal-600" />
           <div className="text-lg font-bold animate-pulse text-slate-500 dark:text-slate-400">Memuat data...</div>
         </div>
@@ -242,7 +242,7 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
         <BackgroundScene isDark={isDark} />
 
         {/* Sticky Header */}
-        <header className="sticky top-0 z-50 backdrop-blur-2xl bg-white/10 dark:bg-slate-900/10 border-b border-slate-200/50 dark:border-slate-800/50">
+        <header className="sticky top-0 z-30 backdrop-blur-2xl bg-white/10 dark:bg-slate-900/10 border-b border-slate-200/50 dark:border-slate-800/50">
           <div className="w-full px-4 md:px-8 lg:px-12 xl:px-24 2xl:px-32 py-4 flex items-center justify-between">
             <div className="flex items-center gap-4">
               <button
@@ -267,7 +267,7 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
         </header>
 
         {/* Sub-page Content */}
-        <main className="relative z-10 w-full px-4 md:px-8 lg:px-12 xl:px-24 2xl:px-32 py-8">
+        <main className="relative w-full px-4 md:px-8 lg:px-12 xl:px-24 2xl:px-32 py-8">
           <div className="w-full">
             {children}
           </div>
@@ -282,7 +282,7 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
       <BackgroundScene isDark={isDark} />
 
       {/* ═══════════════ NAVBAR ═══════════════ */}
-      <nav className="w-full px-4 md:px-8 lg:px-12 xl:px-24 2xl:px-32 py-5 flex justify-between items-center relative z-50">
+      <nav className="w-full px-4 md:px-8 lg:px-12 xl:px-24 2xl:px-32 py-5 flex justify-between items-center relative z-30">
         <Link href="/" className="flex items-center gap-3 lg:gap-4 bg-white/40 dark:bg-slate-800/40 backdrop-blur-md py-2 px-3 lg:px-4 rounded-2xl border border-white/60 dark:border-slate-700/50 shadow-sm transition-all hover:bg-white/60 dark:hover:bg-slate-800/60">
           <img src="/mk_terang.png" alt="Mantau KKL Plus Logo" className="h-8 lg:h-10 w-auto object-contain drop-shadow-sm block dark:hidden" />
           <img src="/mk_gelap.png" alt="Mantau KKL Plus Logo" className="h-8 lg:h-10 w-auto object-contain drop-shadow-sm hidden dark:block" />
@@ -301,7 +301,7 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
       </nav>
 
       {/* ═══════════════ HERO SECTION ═══════════════ */}
-      <section className="relative z-10 w-full px-4 md:px-8 lg:px-12 xl:px-24 2xl:px-32 pt-6">
+      <section className="relative w-full px-4 md:px-8 lg:px-12 xl:px-24 2xl:px-32 pt-6">
         <div className="relative rounded-[2rem] shadow-lg overflow-hidden group border border-white/20">
           {/* Background Image */}
           <div 
@@ -313,7 +313,7 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
           {/* Accent Gradient Overlay */}
           <div className="absolute inset-0 bg-gradient-to-r from-teal-600/90 to-teal-600/20 dark:from-teal-900/90 dark:to-transparent"></div>
           
-          <div className="relative z-10 p-8 lg:p-12">
+          <div className="relative p-8 lg:p-12">
             <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white shadow-sm mb-6">
               <span className="text-xs font-bold uppercase tracking-widest">{config.greeting} Panel</span>
             </div>
@@ -329,13 +329,13 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
 
       {/* ═══════════════ NOTIFICATION CARDS / HIGHLIGHTS ═══════════════ */}
       {notifications && (
-        <section className="relative z-10 w-full px-4 md:px-8 lg:px-12 xl:px-24 2xl:px-32 mt-6 mb-10">
+        <section className="relative w-full px-4 md:px-8 lg:px-12 xl:px-24 2xl:px-32 mt-6 mb-10">
           {notifications}
         </section>
       )}
 
       {/* ═══════════════ MENU CARDS ═══════════════ */}
-      <section className="relative z-10 w-full px-4 md:px-8 lg:px-12 xl:px-24 2xl:px-32 pb-20">
+      <section className="relative w-full px-4 md:px-8 lg:px-12 xl:px-24 2xl:px-32 pb-20">
         <div className="flex items-center gap-3 mb-8">
           <div className="w-1 h-6 bg-teal-600 rounded-full shadow-sm shadow-teal-600/50" />
           <h2 className="text-xl font-bold tracking-tight text-slate-800 dark:text-slate-100 drop-shadow-sm">Menu Utama</h2>
@@ -347,7 +347,7 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
               href={menu.href}
               className="group relative rounded-2xl p-7 lg:p-8 transition-all duration-500 hover:-translate-y-1 border bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl hover:bg-white/70 dark:hover:bg-slate-700/80 border-white/60 dark:border-slate-700 hover:border-amber-400 dark:hover:border-amber-400 shadow-sm hover:shadow-xl hover:shadow-amber-400/20 dark:shadow-none dark:hover:shadow-[0_0_30px_-5px_rgba(251,191,36,0.2)] transform-gpu will-change-transform"
             >
-              <div className="relative z-10">
+              <div className="relative">
                 <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${menu.color} text-white shadow-lg flex items-center justify-center text-2xl mb-5 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500`}>
                   {menu.icon}
                 </div>
@@ -370,7 +370,7 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
 
       {/* ═══════════════ EXTRA CONTENT (CHILDREN) ═══════════════ */}
       {children && (
-        <section className="relative z-10 w-full px-4 md:px-8 lg:px-12 xl:px-24 2xl:px-32 pb-20">
+        <section className="relative w-full px-4 md:px-8 lg:px-12 xl:px-24 2xl:px-32 pb-20">
           {children}
         </section>
       )}

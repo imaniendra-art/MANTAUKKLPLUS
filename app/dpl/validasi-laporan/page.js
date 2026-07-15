@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/components/AuthProvider";
 import { Check, X, ChevronDown, ChevronUp, Award, Link, MessageCircle } from "lucide-react";
 
 const DEFAULT_SECTIONS_INDIVIDU = {

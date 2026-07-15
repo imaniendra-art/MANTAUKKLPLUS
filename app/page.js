@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import LandingMitraList from '@/components/LandingMitraList';
-import { useSession } from 'next-auth/react';
+import { useSession } from "@/components/AuthProvider";
 import { Users, ClipboardCheck, MapPin, BarChart3, GraduationCap, Building } from "lucide-react";;
 export default function Home() {
   const { data: session, status } = useSession();

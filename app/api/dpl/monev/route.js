@@ -3,13 +3,13 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import Pokja from '@/models/Pokja';
 import Monev from '@/models/Monev';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { getServerSession } from "@/lib/auth";
+
 
 export async function GET(req) {
   await dbConnect();
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession();
     if (!session || session.user.role !== 'dpl') {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -43,7 +43,7 @@ export async function GET(req) {
 export async function POST(req) {
   await dbConnect();
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession();
     if (!session || session.user.role !== 'dpl') {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

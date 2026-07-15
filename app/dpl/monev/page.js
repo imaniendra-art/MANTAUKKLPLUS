@@ -266,8 +266,8 @@ export default function MonevDPLPage() {
 
       {/* Modal Form */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-slate-900/50 backdrop-blur-sm">
-          <div className="bg-white w-full max-w-xl rounded-2xl shadow-xl overflow-hidden">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center px-4 bg-slate-900/50 backdrop-blur-sm">
+          <div className="bg-white w-full max-w-xl rounded-2xl shadow-xl overflow-hidden max-h-[95vh] overflow-y-auto">
             <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
               <h3 className="font-bold text-slate-800 text-lg">Upload Dokumentasi {selectedJenis}</h3>
               <button onClick={handleCloseModal} className="text-slate-400 hover:text-slate-600">

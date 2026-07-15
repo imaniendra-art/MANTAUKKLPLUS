@@ -461,8 +461,8 @@ export default function ValidasiPokja() {
 
       {/* Modal Penolakan */}
       {showRejectModal && selectedPokja && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-3xl p-6 w-full max-w-lg shadow-2xl">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white dark:bg-slate-800 backdrop-blur-xl rounded-3xl p-6 w-full max-w-lg shadow-2xl">
             <h3 className="text-lg font-black text-red-500 mb-4">Tolak POKJA</h3>
             <form onSubmit={handleRejectSubmit}>
               <label className="block text-sm font-bold text-slate-500 mb-2">Alasan Penolakan</label>
@@ -484,8 +484,8 @@ export default function ValidasiPokja() {
 
       {/* Modal Penugasan DPL */}
       {showModal && selectedPokja && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-3xl p-6 w-full max-w-lg shadow-2xl">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white dark:bg-slate-800 backdrop-blur-xl rounded-3xl p-6 w-full max-w-lg shadow-2xl">
             <h3 className="text-lg font-black text-slate-800 dark:text-white mb-4">Validasi & Tugaskan DPL</h3>
             <form onSubmit={handleSubmit}>
               <div className="bg-teal-50 dark:bg-teal-900/20 p-4 rounded-xl mb-4">
@@ -515,8 +515,8 @@ export default function ValidasiPokja() {
       )}
       {/* Modal Kelola Dokumen */}
       {showDokumenModal && selectedPokja && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
-          <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-3xl p-6 w-full max-w-4xl shadow-2xl my-8">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
+          <div className="bg-white dark:bg-slate-800 backdrop-blur-xl rounded-3xl p-6 w-full max-w-4xl shadow-2xl my-8">
             <h3 className="text-2xl font-black text-slate-800 dark:text-white mb-6">Kelola Dokumen - {selectedPokja.nama_pokja}</h3>
             
             <div className="space-y-6">
@@ -641,8 +641,8 @@ export default function ValidasiPokja() {
 
       {/* Modal Plotting Kelompok */}
       {showPlotModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
-          <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-3xl p-6 w-full max-w-2xl shadow-2xl my-8">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
+          <div className="bg-white dark:bg-slate-800 backdrop-blur-xl rounded-3xl p-6 w-full max-w-2xl shadow-2xl my-8">
             <h3 className="text-xl font-black text-slate-800 dark:text-white mb-6">Plotting Kelompok Baru</h3>
             
             <form onSubmit={handlePlotSubmit} className="space-y-5">

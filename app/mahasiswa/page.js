@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import DashboardLayout, { MENU_CONFIG } from "@/components/DashboardLayout";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/components/AuthProvider";
 import { useRouter } from "next/navigation";
 import { Users, Building, Plus, CheckCircle, Clock, Edit, MapPin, User, Handshake, CheckCircle2 } from "lucide-react";
 import { Suspense } from "react";
@@ -207,8 +207,8 @@ function MahasiswaDashboardContent() {
         </div>
 
         {showCreateModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-            <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-6 rounded-2xl w-full max-w-md shadow-2xl">
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+            <div className="bg-white dark:bg-slate-800 backdrop-blur-xl p-6 rounded-2xl w-full max-w-md shadow-2xl max-h-[95vh] overflow-y-auto">
               <h3 className="text-xl font-bold mb-4">Buat Kelompok KKL Plus</h3>
               <form onSubmit={handleCreatePokja}>
                 <label className="block text-sm font-bold text-slate-700 mb-2">Nama Kelompok (Opsional)</label>
@@ -537,8 +537,8 @@ function MahasiswaDashboardContent() {
 
         {/* Mitra Profile Modal */}
         {showMitraProfileModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm overflow-y-auto">
-            <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl w-full max-w-4xl shadow-2xl my-8">
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm ">
+            <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl w-full max-w-4xl shadow-2xl  max-h-[95vh] overflow-y-auto">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-xl font-bold text-slate-800 dark:text-white">Lengkapi Profil Mitra</h3>
                 <button onClick={() => setShowMitraProfileModal(false)} className="text-slate-500 hover:text-red-500 text-2xl font-bold">&times;</button>
@@ -696,8 +696,8 @@ function MahasiswaDashboardContent() {
         
       {/* Modal Edit Nama Kelompok */}
       {showEditNamaModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-3xl p-6 max-w-md w-full shadow-2xl">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white dark:bg-slate-800 backdrop-blur-xl rounded-3xl p-6 max-w-md w-full shadow-2xl max-h-[95vh] overflow-y-auto">
             <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-4">Ganti Nama Kelompok</h3>
             <form onSubmit={handleEditNama}>
               <div className="mb-4">

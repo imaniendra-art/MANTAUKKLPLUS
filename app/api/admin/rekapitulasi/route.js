@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '../../auth/[...nextauth]/route';
+import { getServerSession } from "@/lib/auth";
+
 import connectDB from '@/lib/db';
 import Penilaian from '@/models/Penilaian';
 import User from '@/models/User';
@@ -9,7 +9,7 @@ import MitraKKL from '@/models/MitraKKL';
 
 export async function GET(req) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession();
     if (!session || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

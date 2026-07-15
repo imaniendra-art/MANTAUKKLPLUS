@@ -1,10 +1,10 @@
 import { redirect } from "next/navigation";
 import { getServerSession } from "@/lib/auth";
 
-export default async function MahasiswaLayout({ children }) {
+export default async function MentorLayout({ children }) {
   const session = await getServerSession();
 
-  if (!session || !session.user || session.user.role !== "mahasiswa") {
+  if (!session || !session.user || session.user.role !== "mentor") {
     redirect("/login");
   }
 

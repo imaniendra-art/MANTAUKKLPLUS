@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/components/AuthProvider";
 import { Search, Download, Award, CheckCircle, Clock } from "lucide-react";
 import * as XLSX from 'xlsx';
 

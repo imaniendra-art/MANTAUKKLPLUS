@@ -594,8 +594,8 @@ export default function ManajemenPenggunaPage() {
 
       {/* IMPORT MODAL */}
       {showImportModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/60 dark:border-slate-700 w-full max-w-2xl overflow-hidden relative scale-in-95 duration-200">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-slate-800 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/60 dark:border-slate-700 w-full max-w-2xl overflow-hidden relative scale-in-95 duration-200 max-h-[95vh] overflow-y-auto">
             <div className="p-8 border-b border-white/60 dark:border-slate-700">
               <h2 className="text-xl font-bold text-slate-900 dark:white flex items-center gap-2">
                 <Download className="w-4 h-4 inline-block mr-1.5 -mt-0.5" /> Import Data Mahasiswa (SIAM)
@@ -678,8 +678,8 @@ export default function ManajemenPenggunaPage() {
 
       {/* ADD USER MODAL */}
       {showAddModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/60 dark:border-slate-700 w-full max-w-lg overflow-hidden relative scale-in-95 duration-200">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-slate-800 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/60 dark:border-slate-700 w-full max-w-lg overflow-hidden relative scale-in-95 duration-200 max-h-[95vh] overflow-y-auto">
             <div className="p-8 border-b border-white/60 dark:border-slate-700">
               <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100">
                 Tambah {activeTab === 'dpl' ? 'DPL' : activeTab === 'mentor' ? 'Mentor' : activeTab === 'admin' ? 'Admin' : 'Mahasiswa'}
@@ -794,8 +794,8 @@ export default function ManajemenPenggunaPage() {
 
       {/* EDIT USER MODAL */}
       {showEditModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/60 dark:border-slate-700 w-full max-w-lg overflow-hidden relative scale-in-95 duration-200">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-slate-800 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/60 dark:border-slate-700 w-full max-w-lg overflow-hidden relative scale-in-95 duration-200 max-h-[95vh] overflow-y-auto">
             <div className="p-8 border-b border-white/60 dark:border-slate-700">
               <h2 className="text-xl font-bold text-slate-900 dark:text-white">
                 Edit Pengguna

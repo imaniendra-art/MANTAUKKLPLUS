@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, Suspense } from 'react';
-import { signOut } from 'next-auth/react';
+import { signOut } from "@/components/AuthProvider";
 import { Eye, EyeOff } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 
@@ -106,7 +106,7 @@ function SetupAkunContent() {
 
       setSuccess('Profil dan kelompok berhasil disimpan. Mengalihkan ke halaman login...');
       
-      // Logout secara bersih menggunakan callbackUrl NextAuth
+      // Logout secara bersih
       setTimeout(async () => {
         await signOut({ callbackUrl: '/login' });
       }, 2000);

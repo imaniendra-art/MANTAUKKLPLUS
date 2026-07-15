@@ -1,12 +1,12 @@
 "use client";
 
-import { SessionProvider } from "next-auth/react";
+import { AuthProvider } from "./AuthProvider";
 import { ThemeProvider } from "./ThemeContext";
 
 export function Providers({ children }) {
   return (
-    <SessionProvider>
+    <AuthProvider>
       <ThemeProvider>{children}</ThemeProvider>
-    </SessionProvider>
+    </AuthProvider>
   );
 }

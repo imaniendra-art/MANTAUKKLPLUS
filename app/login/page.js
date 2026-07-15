@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { signIn } from 'next-auth/react';
+import { signIn } from '@/components/AuthProvider';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Eye, EyeOff } from 'lucide-react';
@@ -20,18 +20,13 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const res = await signIn('credentials', {
-        email,
-        password,
-        redirect: false,
-      });
+      const res = await signIn({ email, password });
 
       if (res?.error) {
         setError(res.error);
         setLoading(false);
       } else {
-        const sessionRes = await fetch('/api/auth/session');
-        const session = await sessionRes.json();
+        const session = { user: res.user };
         
         if (session?.user?.role) {
           if (session.user.role === 'mahasiswa') {

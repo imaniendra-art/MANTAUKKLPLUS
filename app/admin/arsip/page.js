@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/components/AuthProvider";
 import { Search, FolderOpen, FileText, Award, Book, FileSignature, Download, Printer } from "lucide-react";
 import Link from "next/link";
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
+import { useSession } from "@/components/AuthProvider";
 import { CheckCircle } from 'lucide-react';
 
 export default function CetakPengesahan() {

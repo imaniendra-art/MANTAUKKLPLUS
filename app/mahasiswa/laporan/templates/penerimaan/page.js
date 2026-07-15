@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
+import { useSession } from "@/components/AuthProvider";
 
 export default function CetakPenerimaan() {
   const { data: session } = useSession();

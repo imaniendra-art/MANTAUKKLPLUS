@@ -2,7 +2,7 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import { useSession } from "@/components/AuthProvider";
 import { Check, X, Users, AlertCircle } from 'lucide-react';
 
 function JoinPokjaContent() {
