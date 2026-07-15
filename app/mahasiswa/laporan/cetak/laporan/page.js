@@ -11,6 +11,8 @@ export default function CetakLaporan() {
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
     const mhsId = params.get('mhsId') || session?.user?.id;
+    const pokjaId = params.get('pokjaId');
+    const tipe = params.get('tipe');
     
     if (id) {
       fetch(`/api/laporan-akhir?id=${id}`)
@@ -18,6 +20,27 @@ export default function CetakLaporan() {
         .then(d => {
           if (d.laporan && d.pengajuan) {
             setData(d);
+          }
+        });
+    } else if (pokjaId && tipe) {
+      let url = `/api/laporan-akhir?pokjaId=${pokjaId}&tipe=${tipe}`;
+      if (tipe === 'individu' && params.get('mhsId')) {
+        url += `&mhsId=${params.get('mhsId')}`;
+      }
+      fetch(url)
+        .then(res => res.json())
+        .then(d => {
+          // api returns the processed laporan directly for pokjaId & tipe query, 
+          // wait, let's look at what api returns.
+          // In route.js: return NextResponse.json(processed);
+          // processed is just the laporan object. It has .pokja_id populated!
+          if (d) {
+            setData({
+              laporan: d,
+              pengajuan: d.pokja_id,
+              // for logbooks and monev we might need to fetch them separately, 
+              // or just rely on what is there. Actually, the print page needs them if it's there.
+            });
           }
         });
     } else if (mhsId) {

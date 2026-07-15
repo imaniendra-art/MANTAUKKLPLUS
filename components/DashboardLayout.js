@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "./ThemeContext";
 import { useState, useRef, useEffect } from "react";
-import { Users, Database, ClipboardCheck, Monitor, Award, Archive, CloudSync, Settings, FileSignature, BookOpen, FileBadge, CheckSquare, FileCheck, Book, LogOut, Camera } from "lucide-react";
+import { Users, Database, ClipboardCheck, Monitor, Award, Archive, CloudSync, Settings, FileSignature, BookOpen, FileBadge, CheckSquare, FileCheck, Book, LogOut, Camera, FileText } from "lucide-react";
 
 // ═══════════════════════ ICON COMPONENTS ═══════════════════════
 function SunIcon() {
@@ -120,6 +120,7 @@ export const MENU_CONFIG = {
       { name: "Manajemen Pengguna", href: "/admin/pengguna", icon: <Users className="w-6 h-6" />, desc: "Kelola akun Mahasiswa, DPL, dan Mentor.", color: "from-teal-600 to-teal-700" },
       { name: "Master Data", href: "/admin/master-data", icon: <Database className="w-6 h-6" />, desc: "Kelola Instansi Mitra dan Posisi.", color: "from-teal-500 to-teal-600" },
       { name: "Validasi dan Data Pengajuan", href: "/admin/validasi", icon: <ClipboardCheck className="w-6 h-6" />, desc: "Persetujuan KKL Plus & plotting DPL.", color: "from-teal-500 to-teal-600" },
+      { name: "Validasi Laporan DPL", href: "/admin/laporan-dpl", icon: <FileCheck className="w-6 h-6" />, desc: "Validasi laporan DPL dan terbitkan QR.", color: "from-amber-500 to-amber-600" },
       { name: "Monitoring KKL Plus", href: "/admin/monitoring", icon: <Monitor className="w-6 h-6" />, desc: "Pantau logbook dan kendala lapangan.", color: "from-amber-500 to-amber-600" },
       { name: "Rekapitulasi Nilai", href: "/admin/rekapitulasi", icon: <Award className="w-6 h-6" />, desc: "Hasil akhir dan konversi SKS.", color: "from-teal-500 to-teal-600" },
       { name: "Arsip & Dokumen", href: "/admin/arsip", icon: <Archive className="w-6 h-6" />, desc: "Cetak surat pengantar & sertifikat.", color: "from-amber-500 to-amber-600" },
@@ -144,7 +145,8 @@ export const MENU_CONFIG = {
       { name: "Validasi Logbook", href: "/dpl/validasi", icon: <CheckSquare className="w-6 h-6" />, desc: "Review dan validasi logbook harian mahasiswa", color: "from-teal-500 to-teal-600" },
       { name: "Monev Lapangan", href: "/dpl/monev", icon: <Camera className="w-6 h-6" />, desc: "Upload dokumentasi kunjungan lapangan", color: "from-teal-500 to-teal-600" },
       { name: "Validasi Laporan & Penilaian", href: "/dpl/validasi-laporan", icon: <FileCheck className="w-6 h-6" />, desc: "Persetujuan Laporan Akhir", color: "from-teal-500 to-teal-600" },
-      { name: "Petunjuk KKL Plus", href: "/dpl/petunjuk", icon: <Book className="w-6 h-6" />, desc: "Panduan pembimbingan dan rincian target CPMK", color: "from-amber-500 to-amber-600" },
+      { name: "Laporan Akhir DPL", href: "/dpl/laporan", icon: <FileText className="w-6 h-6" />, desc: "Buat laporan evaluasi pelaksanaan KKL Plus.", color: "from-amber-500 to-amber-600" },
+      { name: "Petunjuk KKL Plus", href: "/dpl/petunjuk", icon: <Book className="w-6 h-6" />, desc: "Panduan pembimbingan dan rincian target CPMK", color: "from-slate-500 to-slate-600" },
     ],
   },
   mentor: {
@@ -162,11 +164,13 @@ const SUB_PAGE_TITLES = {
   "/admin/master-data": "Manajemen Data",
   "/admin/settings": "Pengaturan",
   "/admin/monitoring": "Monitoring KKL Plus",
+  "/admin/laporan-dpl": "Validasi Laporan DPL",
   "/mahasiswa/pengajuan": "Pengajuan KKL Plus",
   "/mahasiswa/logbook": "Logbook Harian",
   "/mahasiswa/laporan": "Laporan & Sertifikat",
   "/dpl/validasi": "Validasi Logbook",
   "/dpl/validasi-laporan": "Validasi Laporan Akhir",
+  "/dpl/laporan": "Laporan Akhir DPL",
   "/dpl/evaluasi": "Evaluasi Akhir",
   "/mentor/validasi": "Validasi Logbook",
 };
@@ -238,11 +242,17 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
   // ═══════════════════════ SUB-PAGE LAYOUT ═══════════════════════
   if (!isMainDashboard) {
     return (
-      <div className="min-h-screen relative overflow-hidden bg-slate-50 dark:bg-slate-900 selection:bg-teal-600/30">
-        <BackgroundScene isDark={isDark} />
+      <div className="min-h-screen relative overflow-hidden bg-slate-50 dark:bg-slate-900 selection:bg-teal-600/30 print:bg-white print:overflow-visible">
+        <div className="print:hidden">
+          <BackgroundScene isDark={isDark} />
+        </div>
 
         {/* Sticky Header */}
+<<<<<<< HEAD
         <header className="sticky top-0 z-30 backdrop-blur-2xl bg-white/10 dark:bg-slate-900/10 border-b border-slate-200/50 dark:border-slate-800/50">
+=======
+        <header className="sticky top-0 z-50 backdrop-blur-2xl bg-white/10 dark:bg-slate-900/10 border-b border-slate-200/50 dark:border-slate-800/50 print:hidden">
+>>>>>>> ac99867 (Fix print margins, Laporan DPL data mapping, and add DPL to Arsip)
           <div className="w-full px-4 md:px-8 lg:px-12 xl:px-24 2xl:px-32 py-4 flex items-center justify-between">
             <div className="flex items-center gap-4">
               <button
@@ -267,8 +277,8 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
         </header>
 
         {/* Sub-page Content */}
-        <main className="relative w-full px-4 md:px-8 lg:px-12 xl:px-24 2xl:px-32 py-8">
-          <div className="w-full">
+<main className="relative w-full px-4 md:px-8 lg:px-12 xl:px-24 2xl:px-32 py-8 print:p-0 print:m-0">
+          <div className="w-full print:p-0">
             {children}
           </div>
         </main>

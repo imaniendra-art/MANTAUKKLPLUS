@@ -7,6 +7,7 @@ import User from '@/models/User';
 import MitraKKL from '@/models/MitraKKL';
 import Monev from '@/models/Monev';
 import Logbook from '@/models/Logbook';
+import LaporanDpl from '@/models/LaporanDpl';
 
 export async function GET(req) {
   try {
@@ -20,7 +21,7 @@ export async function GET(req) {
     // 1. Ambil data Pokja beserta anggotanya (untuk cetak Surat, Sertifikat Mitra, Laporan Kelompok)
     const pokjas = await Pokja.find({})
       .populate('dpl_id', 'nama_lengkap nidn')
-      .populate('mitra_id', 'nama_instansi alamat desa_kelurahan kecamatan kabupaten_kota provinsi foto_kantor_desa foto_kantor_bumdes logo_mitra')
+      .populate('mitra_id', 'nama_instansi alamat desa_kelurahan kecamatan kabupaten_kota provinsi foto_kantor_desa foto_kantor_bumdes logo_mitra file_mou file_moa file_ia status_kerjasama')
       .populate('anggota.user_id', 'nama_lengkap nim_nidn program_studi')
       .populate('ketua_id', 'nama_lengkap nim_nidn program_studi')
       .sort({ createdAt: -1 })
@@ -66,11 +67,18 @@ export async function GET(req) {
       .limit(100)
       .lean();
 
+    // 5. Fetch Laporan DPL
+    const laporanDpls = await LaporanDpl.find({ status: { $in: ['submitted', 'disetujui'] } })
+      .populate('dpl_id', 'nama_lengkap nim_nidn nidn')
+      .sort({ updatedAt: -1 })
+      .lean();
+
     return NextResponse.json({
       pokjas,
       pengajuans,
       monevs,
-      logbooks
+      logbooks,
+      laporanDpls
     });
   } catch (error) {
     console.error('Error fetching arsip:', error);

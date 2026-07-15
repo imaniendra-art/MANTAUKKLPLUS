@@ -11,6 +11,7 @@ export default function CetakSertifikatMitra() {
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
     const mhsId = params.get('mhsId') || session?.user?.id;
+    const pokjaId = params.get('pokjaId');
 
     if (id) {
       fetch(`/api/laporan-akhir?id=${id}`)
@@ -18,6 +19,17 @@ export default function CetakSertifikatMitra() {
         .then(d => {
           if (d.laporan && d.pengajuan) {
             setData(d);
+          }
+        });
+    } else if (pokjaId) {
+      fetch(`/api/laporan-akhir?pokjaId=${pokjaId}&tipe=pokja`)
+        .then(res => res.json())
+        .then(d => {
+          if (d) {
+            setData({
+              laporan: d,
+              pengajuan: d.pokja_id
+            });
           }
         });
     } else if (mhsId) {

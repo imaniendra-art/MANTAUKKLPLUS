@@ -3,6 +3,7 @@ import dbConnect from '@/lib/db';
 import MitraKKL from '@/models/MitraKKL';
 import Pokja from '@/models/Pokja';
 import LogAktivitas from '@/models/LogAktivitas';
+import LaporanDpl from '@/models/LaporanDpl';
 
 export async function GET() {
   await dbConnect();
@@ -12,6 +13,7 @@ export async function GET() {
     const totalAjuan = await Pokja.countDocuments();
     const antreanValidasi = await Pokja.countDocuments({ status_pokja: 'menunggu_persetujuan_admin' });
     const posisiTerisi = await Pokja.countDocuments({ status_pokja: { $in: ['disetujui_admin', 'berjalan', 'selesai'] } });
+    const antreanLaporanDpl = await LaporanDpl.countDocuments({ status: 'submitted' });
 
     // Aktivitas Cepat: 5 Log Terbaru
     const aktivitasTerbaru = await LogAktivitas.find()
@@ -32,6 +34,7 @@ export async function GET() {
       totalAjuan,
       antreanValidasi,
       posisiTerisi,
+      antreanLaporanDpl,
       aktivitasTerbaru: safeAktivitas
     });
   } catch (error) {

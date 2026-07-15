@@ -12,6 +12,7 @@ export default function ArsipDokumen() {
   const [dataPengajuan, setDataPengajuan] = useState([]);
   const [dataMonev, setDataMonev] = useState([]);
   const [dataLogbook, setDataLogbook] = useState([]);
+  const [dataLaporanDpl, setDataLaporanDpl] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("surat"); // surat, laporan, sertifikat, galeri
   const [searchTerm, setSearchTerm] = useState("");
@@ -25,6 +26,7 @@ export default function ArsipDokumen() {
       if (json.pengajuans) setDataPengajuan(json.pengajuans);
       if (json.monevs) setDataMonev(json.monevs);
       if (json.logbooks) setDataLogbook(json.logbooks);
+      if (json.laporanDpls) setDataLaporanDpl(json.laporanDpls);
     } catch (error) {
       console.error(error);
     } finally {
@@ -38,6 +40,7 @@ export default function ArsipDokumen() {
 
   const TABS = [
     { id: "surat", label: "Surat & SK", icon: <FileSignature className="w-4 h-4" /> },
+    { id: "kerjasama", label: "Dok. Kerjasama", icon: <FileText className="w-4 h-4" /> },
     { id: "laporan", label: "Laporan Akhir", icon: <FileText className="w-4 h-4" /> },
     { id: "sertifikat", label: "Sertifikat", icon: <Award className="w-4 h-4" /> },
     { id: "galeri", label: "Galeri Foto", icon: <FolderOpen className="w-4 h-4" /> }
@@ -106,7 +109,87 @@ export default function ArsipDokumen() {
     );
   };
 
-  // ================= TAB 2: LAPORAN AKHIR =================
+  // ================= TAB KERJASAMA =================
+  const renderTabKerjasama = () => {
+    // Unique mitra
+    const mitras = [];
+    dataPokja.forEach(p => {
+      if (p.mitra_id && !mitras.some(m => m._id === p.mitra_id._id)) {
+        mitras.push(p.mitra_id);
+      }
+    });
+
+    const filteredMitras = mitras.filter(m => 
+      m.nama_instansi?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    return (
+      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+        <h3 className="font-bold text-slate-800 text-lg border-b pb-2">Dokumen Kerjasama Mitra</h3>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {filteredMitras.map(mitra => (
+            <div key={mitra._id} className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-shadow">
+              <h3 className="font-bold text-lg text-slate-800 mb-1">{mitra.nama_instansi}</h3>
+              <p className="text-sm text-slate-600 mb-4 flex items-center gap-1.5">
+                Status: <span className="font-bold text-teal-600">{mitra.status_kerjasama || 'Belum Ada'}</span>
+              </p>
+              
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-700">Memorandum of Understanding (MoU)</p>
+                    <p className="text-xs text-slate-500">Kesepakatan Tingkat Universitas</p>
+                  </div>
+                  {mitra.file_mou ? (
+                    <a href={mitra.file_mou} target="_blank" rel="noreferrer" className="px-3 py-1.5 text-teal-700 bg-teal-100 hover:bg-teal-200 rounded-lg text-xs font-bold transition-colors">
+                      Buka Dokumen
+                    </a>
+                  ) : (
+                    <span className="text-xs text-rose-500 italic">Belum Ada</span>
+                  )}
+                </div>
+                
+                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-700">Memorandum of Agreement (MoA)</p>
+                    <p className="text-xs text-slate-500">Kesepakatan Tingkat Fakultas</p>
+                  </div>
+                  {mitra.file_moa ? (
+                    <a href={mitra.file_moa} target="_blank" rel="noreferrer" className="px-3 py-1.5 text-teal-700 bg-teal-100 hover:bg-teal-200 rounded-lg text-xs font-bold transition-colors">
+                      Buka Dokumen
+                    </a>
+                  ) : (
+                    <span className="text-xs text-rose-500 italic">Belum Ada</span>
+                  )}
+                </div>
+
+                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-700">Implementation Arrangement (IA)</p>
+                    <p className="text-xs text-slate-500">Surat Keterangan Implementasi Program</p>
+                  </div>
+                  {mitra.file_ia ? (
+                    <a href={mitra.file_ia} target="_blank" rel="noreferrer" className="px-3 py-1.5 text-teal-700 bg-teal-100 hover:bg-teal-200 rounded-lg text-xs font-bold transition-colors">
+                      Buka Dokumen
+                    </a>
+                  ) : (
+                    <span className="text-xs text-rose-500 italic">Belum Ada</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+          {filteredMitras.length === 0 && (
+            <div className="col-span-full py-10 text-center text-slate-500">
+              Tidak ada data mitra ditemukan.
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  // ================= TAB LAPORAN AKHIR =================
   const renderTabLaporan = () => {
     const filteredIndividu = dataPengajuan.filter(p => 
       p.mahasiswa_id?.nama_lengkap?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -123,7 +206,7 @@ export default function ArsipDokumen() {
                 <p className="font-bold text-sm text-slate-800 truncate">{pokja.nama_pokja}</p>
                 <p className="text-xs text-slate-500 truncate">{pokja.mitra_id?.nama_instansi}</p>
               </div>
-              <Link href={`/mahasiswa/laporan/cetak/laporan?tipe=pokja&id=${pokja._id}`} target="_blank" className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 text-teal-700 hover:bg-teal-100 font-semibold text-xs rounded-lg transition-colors">
+              <Link href={`/mahasiswa/laporan/cetak/laporan?tipe=pokja&pokjaId=${pokja._id}`} target="_blank" className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 text-teal-700 hover:bg-teal-100 font-semibold text-xs rounded-lg transition-colors">
                 <FileText className="w-4 h-4" /> Buka
               </Link>
             </div>
@@ -139,11 +222,30 @@ export default function ArsipDokumen() {
                 <p className="text-xs font-mono text-slate-500">{pengajuan.mahasiswa_id?.nim_nidn}</p>
                 <p className="text-xs text-teal-600 font-semibold mt-1 bg-teal-50 inline-block px-2 py-0.5 rounded">{pengajuan.pokja_id?.nama_pokja}</p>
               </div>
-              <Link href={`/mahasiswa/laporan/cetak/laporan?tipe=individu&id=${pengajuan._id}`} target="_blank" className="flex items-center justify-center gap-1.5 px-3 py-2 bg-slate-800 text-white hover:bg-slate-700 font-semibold text-xs rounded-lg transition-colors w-full">
+              <Link href={`/mahasiswa/laporan/cetak/laporan?tipe=individu&pokjaId=${pengajuan.pokja_id?._id}&mhsId=${pengajuan.mahasiswa_id?._id}`} target="_blank" className="flex items-center justify-center gap-1.5 px-3 py-2 bg-slate-800 text-white hover:bg-slate-700 font-semibold text-xs rounded-lg transition-colors w-full">
                 <FileText className="w-4 h-4" /> Lihat Laporan Individu
               </Link>
             </div>
           ))}
+        </div>
+
+        <h3 className="font-bold text-slate-800 text-lg border-b pb-2 mt-8">Laporan Dosen Pembimbing (DPL)</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {dataLaporanDpl.filter(l => l.dpl_id?.nama_lengkap?.toLowerCase().includes(searchTerm.toLowerCase())).map(laporan => (
+            <div key={laporan._id} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-3 justify-between">
+              <div>
+                <p className="font-bold text-sm text-slate-800 truncate">{laporan.dpl_id?.nama_lengkap}</p>
+                <p className="text-xs font-mono text-slate-500">{laporan.dpl_id?.nidn || laporan.dpl_id?.nim_nidn}</p>
+                <p className={`text-xs font-semibold mt-1 inline-block px-2 py-0.5 rounded uppercase ${laporan.status === 'disetujui' ? 'bg-teal-50 text-teal-600' : 'bg-blue-50 text-blue-600'}`}>{laporan.status}</p>
+              </div>
+              <Link href={`/dpl/laporan?id=${laporan._id}`} target="_blank" className="flex items-center justify-center gap-1.5 px-3 py-2 bg-blue-600 text-white hover:bg-blue-700 font-semibold text-xs rounded-lg transition-colors w-full">
+                <FileText className="w-4 h-4" /> Cetak Laporan
+              </Link>
+            </div>
+          ))}
+          {dataLaporanDpl.length === 0 && (
+            <div className="col-span-full py-6 text-center text-slate-500 text-sm">Belum ada laporan DPL yang masuk.</div>
+          )}
         </div>
       </div>
     );
@@ -164,7 +266,7 @@ export default function ArsipDokumen() {
                 <p className="font-bold text-sm text-slate-800 line-clamp-1">{pengajuan.mahasiswa_id?.nama_lengkap}</p>
                 <p className="text-xs text-slate-500">{pengajuan.mahasiswa_id?.nim_nidn}</p>
               </div>
-              <Link href={`/mahasiswa/laporan/cetak/sertifikat-mahasiswa?id=${pengajuan._id}`} target="_blank" className="mt-2 w-full flex items-center justify-center gap-2 px-3 py-2 bg-white border-2 border-amber-500 text-amber-700 hover:bg-amber-50 font-bold text-xs rounded-lg transition-colors">
+              <Link href={`/mahasiswa/laporan/cetak/sertifikat-mahasiswa?mhsId=${pengajuan._id}`} target="_blank" className="mt-2 w-full flex items-center justify-center gap-2 px-3 py-2 bg-white border-2 border-amber-500 text-amber-700 hover:bg-amber-50 font-bold text-xs rounded-lg transition-colors">
                 <Printer className="w-4 h-4" /> Cetak
               </Link>
             </div>
@@ -184,7 +286,7 @@ export default function ArsipDokumen() {
                   <p className="text-xs text-slate-500 mt-1">Diberikan via Kelompok: {pokja.nama_pokja}</p>
                 </div>
               </div>
-              <Link href={`/mahasiswa/laporan/cetak/sertifikat-mitra?id=${pokja._id}`} target="_blank" className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs rounded-lg transition-colors shadow-sm">
+              <Link href={`/mahasiswa/laporan/cetak/sertifikat-mitra?pokjaId=${pokja._id}`} target="_blank" className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs rounded-lg transition-colors shadow-sm">
                 <Printer className="w-4 h-4" /> Cetak Sertifikat Mitra
               </Link>
             </div>
@@ -346,6 +448,7 @@ export default function ArsipDokumen() {
         ) : (
           <>
             {activeTab === "surat" && renderTabSurat()}
+            {activeTab === "kerjasama" && renderTabKerjasama()}
             {activeTab === "laporan" && renderTabLaporan()}
             {activeTab === "sertifikat" && renderTabSertifikat()}
             {activeTab === "galeri" && renderTabGaleri()}
