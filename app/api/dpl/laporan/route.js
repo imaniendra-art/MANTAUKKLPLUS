@@ -3,15 +3,14 @@ import dbConnect from '@/lib/db';
 import LaporanDpl from '@/models/LaporanDpl';
 import Pokja from '@/models/Pokja';
 import Proker from '@/models/Proker';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { getServerSession } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(req) {
   await dbConnect();
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession();
     if (!session || (session.user.role !== 'dpl' && session.user.role !== 'admin')) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -59,7 +58,7 @@ export async function GET(req) {
 export async function POST(req) {
   await dbConnect();
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession();
     if (!session || session.user.role !== 'dpl') {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
