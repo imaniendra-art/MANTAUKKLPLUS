@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Loader2, FileText, CheckCircle, Info, AlertTriangle, FileSignature, Printer, BookOpen, Award } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
-import { useSession } from 'next-auth/react';
+import { useSession } from '@/components/AuthProvider';
 import DashboardLayout from "@/components/DashboardLayout";
 
 export default function LaporanDplPage() {

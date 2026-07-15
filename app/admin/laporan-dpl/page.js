@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Loader2, CheckCircle, XCircle, FileCheck, Eye, X } from 'lucide-react';
-import { useSession } from 'next-auth/react';
+import { useSession } from '@/components/AuthProvider';
 import DashboardLayout from "@/components/DashboardLayout";
 
 export default function AdminLaporanDplPage() {
