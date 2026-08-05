@@ -139,15 +139,19 @@ export default function ProfilPage() {
                 
                 <form onSubmit={handleKonsentrasiSubmit} className="space-y-5">
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Pilih/Ketik Konsentrasi</label>
-                    <input 
-                      type="text" 
+                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Pilih Konsentrasi</label>
+                    <select 
                       required
                       value={konsentrasi}
                       onChange={(e) => setKonsentrasi(e.target.value)}
-                      className="w-full px-5 py-3.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white/60 dark:bg-slate-800/60 backdrop-blur-md text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-600 transition-all font-medium placeholder-slate-400"
-                      placeholder="Misal: Manajemen Keuangan"
-                    />
+                      className="w-full px-5 py-3.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white/60 dark:bg-slate-800/60 backdrop-blur-md text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-600 transition-all font-medium"
+                    >
+                      <option value="" disabled>-- Pilih Konsentrasi Anda --</option>
+                      <option value="Sumber Daya Manusia">Sumber Daya Manusia</option>
+                      <option value="Keuangan">Keuangan</option>
+                      <option value="Pemasaran">Pemasaran</option>
+                      <option value="Pengembangan Bisnis">Pengembangan Bisnis</option>
+                    </select>
                   </div>
                   <div className="pt-2">
                     <button 
