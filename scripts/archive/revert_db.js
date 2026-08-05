@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const LaporanAkhir = require('./models/LaporanAkhir.js').default;
 
 async function run() {
-  await mongoose.connect('mongodb://mantaukklp:makassar123@ac-udrhelw-shard-00-00.qlx3gje.mongodb.net:27017,ac-udrhelw-shard-00-01.qlx3gje.mongodb.net:27017,ac-udrhelw-shard-00-02.qlx3gje.mongodb.net:27017/?ssl=true&replicaSet=atlas-nugn23-shard-0&authSource=admin&appName=Cluster0');
+  await mongoose.connect(process.env.MONGODB_URI);
   
   // Revert both to revisi so user can test
   await LaporanAkhir.updateMany(

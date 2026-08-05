@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const uri = "mongodb://mantaumagang:makassar123@ac-h9l3nb7-shard-00-00.uoswd69.mongodb.net:27017,ac-h9l3nb7-shard-00-01.uoswd69.mongodb.net:27017,ac-h9l3nb7-shard-00-02.uoswd69.mongodb.net:27017/mantaumagang?ssl=true&replicaSet=atlas-79ogl7-shard-0&authSource=admin&appName=Cluster0";
+const uri = process.env.MONGODB_URI;
 
 const CpmkSchema = new mongoose.Schema({
   nama_cpmk: { type: String, required: true },
