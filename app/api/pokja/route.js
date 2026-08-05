@@ -203,7 +203,17 @@ export async function PATCH(req) {
       return NextResponse.json({ success: true, pokja: targetPokja });
     }
 
-    // Handle Admin actions
+    // Handle Admin actions / Location Application
+    if (mitra_id && status_pokja === 'menunggu_persetujuan_admin') {
+      const targetPokja = await Pokja.findById(id);
+      if (targetPokja) {
+        const activeMembers = targetPokja.anggota.filter(a => a.status_undangan === 'bergabung').length;
+        if (activeMembers < 2) {
+          return NextResponse.json({ error: "Minimal 2 anggota (selain ketua) harus bergabung sebelum mengajukan lokasi." }, { status: 400 });
+        }
+      }
+    }
+
     const updatePayload = {};
     if (status_pokja) updatePayload.status_pokja = status_pokja;
     if (dpl_id) updatePayload.dpl_id = dpl_id;

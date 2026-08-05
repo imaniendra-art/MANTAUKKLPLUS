@@ -304,7 +304,24 @@ function MahasiswaDashboardContent() {
                 <div className="p-6 bg-white/20 dark:bg-slate-900/20 rounded-2xl border border-slate-200 border-dashed text-center h-full flex flex-col justify-center">
                   <p className="text-slate-500 mb-4">Lokasi instansi belum dipilih.</p>
                   {isKetua && (
-                    <button onClick={() => router.push('/mahasiswa/pengajuan')} className="px-6 py-2 bg-teal-600 text-white font-bold rounded-xl shadow-sm mx-auto">Pilih Lokasi Mitra</button>
+                    <div className="flex flex-col items-center gap-2">
+                      <button 
+                        onClick={() => router.push('/mahasiswa/pengajuan')} 
+                        disabled={pokja.anggota?.filter(a => a.status_undangan === 'bergabung').length < 2}
+                        className={`px-6 py-2 font-bold rounded-xl shadow-sm mx-auto transition-colors ${
+                          pokja.anggota?.filter(a => a.status_undangan === 'bergabung').length >= 2 
+                            ? "bg-teal-600 text-white hover:bg-teal-700" 
+                            : "bg-slate-300 text-slate-500 cursor-not-allowed"
+                        }`}
+                      >
+                        Pilih Lokasi Mitra
+                      </button>
+                      {pokja.anggota?.filter(a => a.status_undangan === 'bergabung').length < 2 && (
+                        <p className="text-xs text-amber-600 font-medium max-w-[280px] mx-auto leading-tight mt-2">
+                          * Kelompok harus memiliki minimal 2 anggota (selain ketua) untuk dapat mengajukan lokasi.
+                        </p>
+                      )}
+                    </div>
                   )}
                 </div>
               ) : (
