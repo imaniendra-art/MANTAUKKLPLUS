@@ -9,8 +9,22 @@ export async function POST(req) {
     const payload = await req.json();
     const { pokja_id, judul_proker, deskripsi, target_dampak, jenis_proker, pic_id, tanggal_mulai, tanggal_selesai } = payload;
 
-    if (!pokja_id || !judul_proker || !jenis_proker || !pic_id || !tanggal_mulai || !tanggal_selesai || (Array.isArray(pic_id) && pic_id.length === 0)) {
-      return NextResponse.json({ error: "Pokja ID, Judul, Jenis, PIC, dan Tanggal wajib diisi" }, { status: 400 });
+    if (!pokja_id || !judul_proker || !jenis_proker || !target_dampak || !pic_id || !tanggal_mulai || !tanggal_selesai || (Array.isArray(pic_id) && pic_id.length === 0)) {
+      return NextResponse.json({ error: "Pokja ID, Judul, Jenis, Target Dampak, PIC, dan Tanggal wajib diisi" }, { status: 400 });
+    }
+
+    if (new Date(tanggal_selesai) < new Date(tanggal_mulai)) {
+      return NextResponse.json({ error: "Tanggal selesai tidak boleh lebih awal dari tanggal mulai." }, { status: 400 });
+    }
+
+    const existingProker = await Proker.findOne({
+      pokja_id,
+      judul_proker: { $regex: new RegExp(`^${judul_proker}$`, 'i') },
+      status: { $ne: 'ditolak' }
+    });
+
+    if (existingProker) {
+      return NextResponse.json({ error: "Judul Program Kerja sudah digunakan." }, { status: 400 });
     }
 
     const proker = await Proker.create({
@@ -76,6 +90,22 @@ export async function PATCH(req) {
     
     if (!id) return NextResponse.json({ error: "ID wajib diisi" }, { status: 400 });
 
+    const targetProker = await Proker.findById(id);
+    if (!targetProker) return NextResponse.json({ error: "Proker tidak ditemukan" }, { status: 404 });
+
+    if (!['usulan', 'revisi'].includes(targetProker.status?.toLowerCase())) {
+      if (judul_proker || deskripsi || target_dampak || jenis_proker || pic_id || tanggal_mulai || tanggal_selesai) {
+        return NextResponse.json({ error: "Program kerja yang telah disetujui tidak dapat diubah. Ajukan revisi kepada DPL." }, { status: 400 });
+      }
+    }
+
+    const checkMulai = tanggal_mulai || targetProker.tanggal_mulai;
+    const checkSelesai = tanggal_selesai || targetProker.tanggal_selesai;
+
+    if (checkMulai && checkSelesai && new Date(checkSelesai) < new Date(checkMulai)) {
+      return NextResponse.json({ error: "Tanggal selesai tidak boleh lebih awal dari tanggal mulai." }, { status: 400 });
+    }
+
     const updatePayload = {};
     if (status) updatePayload.status = status;
     if (catatan_revisi !== undefined) updatePayload.catatan_revisi = catatan_revisi;
@@ -114,6 +144,13 @@ export async function DELETE(req) {
     const id = searchParams.get('id');
 
     if (!id) return NextResponse.json({ error: "ID wajib diisi" }, { status: 400 });
+
+    const targetProker = await Proker.findById(id);
+    if (!targetProker) return NextResponse.json({ error: "Proker tidak ditemukan" }, { status: 404 });
+
+    if (!['usulan', 'revisi'].includes(targetProker.status?.toLowerCase())) {
+      return NextResponse.json({ error: "Program kerja yang sudah disetujui atau berjalan tidak dapat dihapus." }, { status: 400 });
+    }
 
     await Proker.findByIdAndDelete(id);
     return NextResponse.json({ success: true });

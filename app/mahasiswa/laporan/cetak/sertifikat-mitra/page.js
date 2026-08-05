@@ -45,6 +45,20 @@ export default function CetakSertifikatMitra() {
 
   if (!data) return <div className="p-10 text-center">Memuat Sertifikat...</div>;
 
+  if (data?.laporan?.status !== 'disetujui') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-100 font-sans p-8 print:p-0">
+        <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md text-center border-t-4 border-red-500 print:shadow-none print:border-none">
+          <div className="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+             <span className="text-3xl">⚠️</span>
+          </div>
+          <h2 className="text-xl font-bold text-slate-800 mb-2">Akses Ditolak</h2>
+          <p className="text-slate-600 mb-6">Sertifikat belum dapat dicetak karena Laporan Akhir belum berstatus Disetujui.</p>
+        </div>
+      </div>
+    );
+  }
+
   const { laporan, pengajuan } = data;
   const mitra = pengajuan.mitra_id?.nama_perusahaan || pengajuan.detail_tempat?.nama;
 

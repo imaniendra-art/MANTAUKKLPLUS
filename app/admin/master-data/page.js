@@ -3,16 +3,12 @@
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import DashboardLayout from "@/components/DashboardLayout";
-import * as XLSX from "xlsx";
 import { Check, Edit2, Trash2, FileText, CheckCircle, XCircle } from "lucide-react";
 
 export default function MasterData() {
   const [mounted, setMounted] = useState(false);
-  const [expandedMatkulId, setExpandedMatkulId] = useState(null);
-  
   // Data State
   const [mitras, setMitras] = useState([]);
-  const [pakets, setPakets] = useState([]);
   const [mentors, setMentors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("mitra");
@@ -20,20 +16,7 @@ export default function MasterData() {
   
   // Modals State
   const [showMitraModal, setShowMitraModal] = useState(false);
-  const [showAddMatkulModal, setShowAddMatkulModal] = useState(false);
-  const [showEditMatkulModal, setShowEditMatkulModal] = useState(false);
-  const [showAddCpmkModal, setShowAddCpmkModal] = useState(false);
-  const [showAddIndikatorModal, setShowAddIndikatorModal] = useState(false);
-  
-  const [selectedMatkul, setSelectedMatkul] = useState(null);
-  const [selectedCPMK, setSelectedCPMK] = useState(null);
-  const [generatingAIId, setGeneratingAIId] = useState(null);
-  
   // AI Preview Modal State
-  const [showSaranModal, setShowSaranModal] = useState(false);
-  const [saranPreview, setSaranPreview] = useState("");
-  const [saranTarget, setSaranTarget] = useState(null);
-  
   // Toast State
   const [toastMessage, setToastMessage] = useState("");
 
@@ -49,10 +32,6 @@ export default function MasterData() {
     id: null, nama_posisi: "", konsentrasi: "SDM", kuota: 1, 
     deskripsi_pekerjaan: "", kriteria_kandidat: "", sistem_kerja: "WFO" 
   });
-  const [matkulForm, setMatkulForm] = useState({ kode: "", nama: "", sks: 3 });
-  const [cpmkForm, setCpmkForm] = useState({ nama_cpmk: "" });
-  const [indikatorForm, setIndikatorForm] = useState({ indikator: "" });
-
   // Pagination State for Mitra
   const [currentPageMitra, setCurrentPageMitra] = useState(1);
   const itemsPerPage = 8;
@@ -60,17 +39,14 @@ export default function MasterData() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [mitraRes, paketRes, mentorRes] = await Promise.all([
+      const [mitraRes, mentorRes] = await Promise.all([
         fetch('/api/mitra'),
-        fetch('/api/paket-matkul'),
         fetch('/api/admin/pengguna?role=mentor')
       ]);
       const mitraData = await mitraRes.json();
-      const paketData = await paketRes.json();
       const mentorData = await mentorRes.json();
       
       if (Array.isArray(mitraData)) setMitras(mitraData);
-      if (Array.isArray(paketData)) setPakets(paketData);
       if (Array.isArray(mentorData)) setMentors(mentorData);
     } catch (error) {
       console.error("Gagal mengambil data", error);
@@ -132,63 +108,9 @@ export default function MasterData() {
   };
 
 
-  const handleGenerateAI = async (paketId, matkulId, cpmkId) => {
-    setGeneratingAIId(cpmkId);
-    try {
-      const res = await fetch('/api/ai/translate-cpmk', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ paket_id: paketId, matkul_id: matkulId, cpmk_id: cpmkId })
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setSaranPreview(data.saran_kegiatan);
-        setSaranTarget({ paketId, matkulId, cpmkId });
-        setShowSaranModal(true);
-      } else {
-        showToast("Gagal: " + data.error);
-      }
-    } catch (error) {
-      showToast("Terjadi kesalahan sistem.");
-    } finally {
-      setGeneratingAIId(null);
-    }
-  };
+  ;
 
-  const handleSaveSaran = async () => {
-    if (!saranTarget) return;
-    try {
-      // Parse saranPreview into array of strings
-      const newIndikators = saranPreview.split('\n')
-        .map(line => line.replace(/^[-*•\d.\s]+/, '').trim())
-        .filter(line => line.length > 5);
-
-      if (newIndikators.length === 0) {
-        return showToast("Tidak ada saran valid untuk disimpan.");
-      }
-
-      const res = await fetch('/api/paket-matkul', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          action: 'save_saran', 
-          paketId: saranTarget.paketId, 
-          matkulId: saranTarget.matkulId, 
-          cpmkId: saranTarget.cpmkId,
-          indikators: newIndikators
-        })
-      });
-      if (res.ok) {
-        setShowSaranModal(false);
-        showToast("Saran kegiatan berhasil disimpan!");
-        fetchData();
-      } else {
-        showToast("Gagal menyimpan saran.");
-      }
-    } catch (error) {
-      showToast("Terjadi kesalahan saat menyimpan.");
-    }
-  };
+  ;
 
   useEffect(() => {
     const load = async () => {
@@ -291,372 +213,42 @@ export default function MasterData() {
     } catch (error) { console.error(error); }
   };
 
-  const handleMatkulSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const paketId = pakets[0]?._id;
-      if (!paketId) return showToast("Paket utama tidak ditemukan");
-      const res = await fetch('/api/paket-matkul', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'add_matkul', paketId, ...matkulForm })
-      });
-      if (res.ok) {
-        setShowAddMatkulModal(false);
-        setMatkulForm({ kode: "", nama: "", sks: 3 });
-        showToast("Mata Kuliah berhasil ditambahkan!");
-        fetchData();
-      }
-    } catch (error) { console.error(error); }
-  };
+  ;
 
-  const handleEditMatkulSubmit = async (e) => {
-    e.preventDefault();
-    if (!selectedMatkul) return;
-    try {
-      const res = await fetch('/api/paket-matkul', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'edit_matkul',
-          paketId: selectedMatkul.paketId,
-          matkulId: selectedMatkul.matkulId,
-          ...matkulForm
-        })
-      });
-      if (res.ok) {
-        setShowEditMatkulModal(false);
-        setMatkulForm({ kode: "", nama: "", sks: 3 });
-        showToast("Mata Kuliah berhasil diperbarui!");
-        fetchData();
-      }
-    } catch (error) { console.error(error); }
-  };
+  ;
 
   // Dynamic form handlers for CPMK & Indikator
-  const handleAddCpmkField = () => {
-    setMatkulForm(prev => ({
-      ...prev,
-      cpmk: [...(prev.cpmk || []), { nama_cpmk: "", indikator: [] }]
-    }));
-  };
+  ;
 
-  const handleUpdateCpmkField = (index, value) => {
-    setMatkulForm(prev => {
-      const newCpmk = [...(prev.cpmk || [])];
-      newCpmk[index].nama_cpmk = value;
-      return { ...prev, cpmk: newCpmk };
-    });
-  };
+  ;
 
-  const handleRemoveCpmkField = (index) => {
-    if (!window.confirm("Hapus CPMK ini beserta semua indikatornya?")) return;
-    setMatkulForm(prev => {
-      const newCpmk = [...(prev.cpmk || [])];
-      newCpmk.splice(index, 1);
-      return { ...prev, cpmk: newCpmk };
-    });
-  };
+  ;
 
-  const handleAddIndikatorField = (cpmkIndex) => {
-    setMatkulForm(prev => {
-      const newCpmk = [...(prev.cpmk || [])];
-      newCpmk[cpmkIndex].indikator.push("");
-      return { ...prev, cpmk: newCpmk };
-    });
-  };
+  ;
 
-  const handleUpdateIndikatorField = (cpmkIndex, indIndex, value) => {
-    setMatkulForm(prev => {
-      const newCpmk = [...(prev.cpmk || [])];
-      newCpmk[cpmkIndex].indikator[indIndex] = value;
-      return { ...prev, cpmk: newCpmk };
-    });
-  };
+  ;
 
-  const handleRemoveIndikatorField = (cpmkIndex, indIndex) => {
-    setMatkulForm(prev => {
-      const newCpmk = [...(prev.cpmk || [])];
-      newCpmk[cpmkIndex].indikator.splice(indIndex, 1);
-      return { ...prev, cpmk: newCpmk };
-    });
-  };
+  ;
 
-  const handleAddCpmkSubmit = async (e) => {
-    e.preventDefault();
-    if (!selectedMatkul) return;
-    try {
-      const res = await fetch('/api/paket-matkul', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'add_cpmk',
-          paketId: selectedMatkul.paketId,
-          matkulId: selectedMatkul.matkulId,
-          nama_cpmk: cpmkForm.nama_cpmk
-        })
-      });
-      if (res.ok) {
-        setShowAddCpmkModal(false);
-        setCpmkForm({ nama_cpmk: "" });
-        showToast("CPMK berhasil ditambahkan!");
-        fetchData();
-      }
-    } catch (error) { console.error(error); }
-  };
+  ;
 
-  const handleAddIndikatorSubmit = async (e) => {
-    e.preventDefault();
-    if (!selectedCPMK) return;
-    try {
-      const res = await fetch('/api/paket-matkul', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'add_indikator',
-          paketId: selectedCPMK.paketId,
-          matkulId: selectedCPMK.matkulId,
-          cpmkId: selectedCPMK.cpmkId,
-          indikator: indikatorForm.indikator
-        })
-      });
-      if (res.ok) {
-        setShowAddIndikatorModal(false);
-        setIndikatorForm({ indikator: "" });
-        showToast("Indikator berhasil ditambahkan!");
-        fetchData();
-      }
-    } catch (error) { console.error(error); }
-  };
+  ;
 
-  const handleDeleteMatkul = async (paketId, matkulId) => {
-    if (!window.confirm("Apakah Anda yakin ingin menghapus Mata Kuliah ini? Tindakan ini tidak dapat dibatalkan.")) return;
-    try {
-      const res = await fetch('/api/paket-matkul', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'delete_matkul', paketId, matkulId })
-      });
-      if (res.ok) { showToast("Mata Kuliah berhasil dihapus!"); fetchData(); }
-    } catch (error) { console.error(error); }
-  };
+  ;
 
-  const handleDeleteCpmk = async (paketId, matkulId, cpmkId) => {
-    if (!window.confirm("Apakah Anda yakin ingin menghapus CPMK ini? Tindakan ini tidak dapat dibatalkan.")) return;
-    try {
-      const res = await fetch('/api/paket-matkul', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'delete_cpmk', paketId, matkulId, cpmkId })
-      });
-      if (res.ok) { showToast("CPMK berhasil dihapus!"); fetchData(); }
-    } catch (error) { console.error(error); }
-  };
+  ;
 
-  const handleDeleteIndikator = async (paketId, matkulId, cpmkId, indikatorIndex) => {
-    if (!window.confirm("Hapus indikator ini?")) return;
-    try {
-      const res = await fetch('/api/paket-matkul', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'delete_indikator', paketId, matkulId, cpmkId, indikatorIndex })
-      });
-      if (res.ok) { showToast("Indikator berhasil dihapus!"); fetchData(); }
-    } catch (error) { console.error(error); }
-  };
+  ;
 
   // Ekstrak semua matkul untuk ditampilkan di UI
-  const allMatkuls = pakets.flatMap(paket => 
-    (paket.mata_kuliah || []).map(mk => ({ ...mk, paketId: paket._id, matkulId: mk._id }))
-  );
+  
+  ;
 
-  const getPetunjukSheet = () => {
-    const sheetData = [
-      ["PETUNJUK PENGISIAN FORMAT EXCEL CAPAIAN PEMBELAJARAN (KKL PLUS BERDAMPAK)"],
-      [],
-      ["Langkah 1:", "Isi 'Kode Mata Kuliah', 'Nama Mata Kuliah', 'SKS', dan 'Dosen Pengampu' pada baris yang telah disediakan."],
-      ["Langkah 2:", "Tentukan CPMK (Capaian Pembelajaran Mata Kuliah)."],
-      ["", "Contoh penulisan baris: CPMK 1: Mahasiswa mampu mengevaluasi strategi pemasaran digital."],
-      ["Langkah 3:", "Di bawah CPMK, berikan baris bertuliskan 'Indikator:'."],
-      ["Langkah 4:", "Di bawah baris 'Indikator:', jabarkan 3-5 Indikator (Aktivitas Nyata di lapangan) yang harus dicapai mahasiswa."],
-      ["", "PENTING: Gunakan bahasa yang mudah dipahami mahasiswa! Semakin spesifik kegiatan di lapangan, semakin mudah AI mencocokkan logbook mahasiswa."],
-      ["", "Contoh Indikator yang BAIK: 1. Membantu membuat konten sosial media."],
-      ["", "                            2. Merekap insight/statistik penjualan di Instagram."],
-      ["", "Contoh Indikator yang BURUK (Terlalu Akademis): 1. Memahami konsep segmentasi pasar."],
-      [],
-      ["CATATAN:", "Buat Sheet baru untuk setiap Mata Kuliah yang berbeda. Jangan ubah nama Sheet PETUNJUK ini."],
-    ];
-    const ws = XLSX.utils.aoa_to_sheet(sheetData);
-    ws['!cols'] = [{ wch: 15 }, { wch: 100 }];
-    return ws;
-  };
+  ;
 
-  const handleExportExcel = () => {
-    if (!allMatkuls || allMatkuls.length === 0) {
-      return showToast("Tidak ada data mata kuliah untuk diexport!");
-    }
-    
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, getPetunjukSheet(), "PETUNJUK");
-    
-    allMatkuls.forEach((mk) => {
-      const sheetData = [];
-      
-      sheetData.push(["Kode Mata Kuliah", mk.kode]);
-      sheetData.push(["Nama Mata Kuliah", mk.nama]);
-      sheetData.push(["SKS", mk.sks]);
-      sheetData.push(["Dosen Pengampu", mk.dosen_pengampu || ""]);
-      sheetData.push([]);
-      
-      if (mk.cpmk && mk.cpmk.length > 0) {
-        mk.cpmk.forEach((cpmk, index) => {
-          let cpmkText = cpmk.nama_cpmk;
-          if (!cpmkText.toUpperCase().startsWith("CPMK")) {
-            cpmkText = `CPMK ${index + 1}: ${cpmkText}`;
-          }
-          sheetData.push([cpmkText]);
-          sheetData.push(["Indikator:"]);
-          
-          if (cpmk.indikator && cpmk.indikator.length > 0) {
-            cpmk.indikator.forEach((ind, i) => {
-              sheetData.push(["", `${i+1}. ${ind}`]);
-            });
-          } else {
-            sheetData.push(["", "(Belum ada indikator)"]);
-          }
-          sheetData.push([]);
-        });
-      } else {
-        sheetData.push(["(Belum ada CPMK)"]);
-      }
-      
-      const ws = XLSX.utils.aoa_to_sheet(sheetData);
-      
-      // Auto-size columns slightly
-      ws['!cols'] = [{ wch: 40 }, { wch: 80 }];
-      
-      let sheetName = mk.kode ? mk.kode.toString().replace(/[?*/\[\]\\]/g, "") : `MK_${mk.matkulId.substring(0,6)}`;
-      sheetName = sheetName.substring(0, 31);
-      
-      XLSX.utils.book_append_sheet(wb, ws, sheetName);
-    });
-    
-    XLSX.writeFile(wb, "DAFTAR MATKUL DI KONVERSI.xlsx");
-  };
+  ;
 
-  const handleDownloadTemplate = () => {
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, getPetunjukSheet(), "PETUNJUK");
-    
-    const templateData = [
-      ["Kode Mata Kuliah", "MK.001"],
-      ["Nama Mata Kuliah", "Contoh Mata Kuliah"],
-      ["SKS", 3],
-      ["Dosen Pengampu", ""],
-      [],
-      ["CPMK 1: Mahasiswa mampu melakukan analisis dasar."],
-      ["Indikator:"],
-      ["", "1. Mahasiswa mengumpulkan data lapangan."],
-      ["", "2. Mahasiswa menyusun laporan mingguan."],
-    ];
-    const ws = XLSX.utils.aoa_to_sheet(templateData);
-    ws['!cols'] = [{ wch: 40 }, { wch: 80 }];
-    XLSX.utils.book_append_sheet(wb, ws, "MK.001");
-    
-    XLSX.writeFile(wb, "Template_Kurikulum.xlsx");
-  };
-
-  const handleImportExcel = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    
-    const paketId = pakets[0]?._id;
-    if (!paketId) {
-      e.target.value = null;
-      return showToast("Paket utama tidak ditemukan, silakan buat paket terlebih dahulu!");
-    }
-
-    const reader = new FileReader();
-    reader.onload = async (evt) => {
-      try {
-        const bstr = evt.target.result;
-        const wb = XLSX.read(bstr, { type: 'binary' });
-        
-        const mata_kuliah_list = [];
-        
-        wb.SheetNames.forEach(sheetName => {
-          if (sheetName.toUpperCase() === "PETUNJUK") return;
-          
-          const ws = wb.Sheets[sheetName];
-          const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
-          
-          let kode = sheetName;
-          let nama = "Mata Kuliah Baru";
-          let sks = 2;
-          let dosen_pengampu = "";
-          const cpmkList = [];
-          
-          let currentCpmk = null;
-          
-          data.forEach(row => {
-            if (!row || row.length === 0) return;
-            const col1 = row[0] ? row[0].toString().trim() : "";
-            const col2 = row[1] ? row[1].toString().trim() : "";
-            
-            if (col1.toLowerCase() === "kode mata kuliah" && col2) kode = col2;
-            else if (col1.toLowerCase() === "nama mata kuliah" && col2) nama = col2;
-            else if (col1.toLowerCase() === "sks" && col2) sks = Number(col2) || 2;
-            else if (col1.toLowerCase() === "dosen pengampu" && col2) dosen_pengampu = col2;
-            else if (col1.toUpperCase().startsWith("CPMK")) {
-              currentCpmk = { nama_cpmk: col1, indikator: [] };
-              cpmkList.push(currentCpmk);
-            }
-            else if (col1.toLowerCase() === "indikator:" || col1.toLowerCase() === "indikator" || col1.toLowerCase() === "indikator :") {
-              // Abaikan header indikator
-            }
-            else if (currentCpmk) {
-              // Ambil teks apapun yang ada di kolom 1 atau kolom 2 setelah CPMK ditemukan (kecuali header)
-              let text = col2 || col1;
-              if (text && text.length > 4) {
-                // Bersihkan prefix umum seperti "-> ", "- ", "* ", "1. ", "1) ", dll.
-                text = text.replace(/^(\s*(->|=>|-|\*|\d+[\.\)]|\u2022)\s*)+/g, "").trim();
-                if (text) currentCpmk.indikator.push(text);
-              }
-            }
-          });
-          
-          mata_kuliah_list.push({ kode, nama, sks, dosen_pengampu, cpmk: cpmkList });
-        });
-        
-        if (mata_kuliah_list.length === 0) {
-          e.target.value = null;
-          return showToast("Tidak ada data mata kuliah valid yang ditemukan di file!");
-        }
-
-        const res = await fetch('/api/paket-matkul', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'batch_import',
-            paketId,
-            mata_kuliah_list
-          })
-        });
-        
-        if (res.ok) {
-          showToast(`Berhasil mengimpor ${mata_kuliah_list.length} Mata Kuliah!`);
-          fetchData();
-        } else {
-          showToast("Gagal mengimpor data");
-        }
-      } catch (err) {
-        console.error(err);
-        showToast("Terjadi kesalahan saat memproses file Excel.");
-      }
-      e.target.value = null;
-    };
-    reader.readAsBinaryString(file);
-  };
+  ;
 
   // Pagination Calculations
   const indexOfLastMitra = currentPageMitra * itemsPerPage;
@@ -909,7 +501,6 @@ export default function MasterData() {
 
       {/* MODALS */}
 
-      {/* Modal Preview Saran AI */}
       {mounted && showSaranModal && createPortal(
         <div  className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white dark:bg-slate-800 backdrop-blur-xl rounded-3xl shadow-sm w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200 border border-white/60 dark:border-slate-700 max-h-[95vh] overflow-y-auto">
@@ -977,238 +568,6 @@ export default function MasterData() {
               <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/80 border-t border-white/50 dark:border-slate-600 flex justify-end gap-3">
                 <button type="button" onClick={() => setShowMitraModal(false)} className="px-5 py-2.5 text-sm font-bold text-slate-500 dark:text-slate-400 hover:bg-slate-200 rounded-xl transition-colors">Batal</button>
                 <button type="submit" className="px-5 py-2.5 text-sm font-bold text-slate-800 dark:text-slate-100 bg-teal-600 hover:bg-teal-700 rounded-xl shadow-md transition-colors">Simpan Data</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Modal Tambah Matakuliah */}
-      {showAddMatkulModal && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-slate-800 backdrop-blur-xl rounded-3xl shadow-sm w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 max-h-[95vh] overflow-y-auto">
-            <div className="px-6 py-5 border-b border-white/50 dark:border-slate-600 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50">
-              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Tambah Mata Kuliah</h3>
-              <button onClick={() => { setShowAddMatkulModal(false); setMatkulForm({ kode: "", nama: "", sks: 3 }); }} className="text-slate-500 dark:text-slate-400 hover:text-red-500 font-bold text-xl">&times;</button>
-            </div>
-            <form onSubmit={handleMatkulSubmit}>
-              <div className="p-6 space-y-4">
-                <div className="flex gap-4">
-                  <div className="w-1/3">
-                    <label className="block text-sm font-bold text-slate-800 dark:text-slate-100 mb-2">Kode</label>
-                    <input required value={matkulForm.kode} onChange={(e) => setMatkulForm({...matkulForm, kode: e.target.value})} type="text" placeholder="MK.001" className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl/80" />
-                  </div>
-                  <div className="w-2/3">
-                    <label className="block text-sm font-bold text-slate-800 dark:text-slate-100 mb-2">SKS</label>
-                    <input required value={matkulForm.sks} onChange={(e) => setMatkulForm({...matkulForm, sks: e.target.value})} type="number" min="1" max="6" className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl/80" />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-slate-800 dark:text-slate-100 mb-2">Nama Mata Kuliah</label>
-                  <input required value={matkulForm.nama} onChange={(e) => setMatkulForm({...matkulForm, nama: e.target.value})} type="text" placeholder="Contoh: Manajemen Bisnis" className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl/80" />
-                </div>
-              </div>
-              <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/80 border-t border-white/50 dark:border-slate-600 flex justify-end gap-3">
-                <button type="button" onClick={() => { setShowAddMatkulModal(false); setMatkulForm({ kode: "", nama: "", sks: 3 }); }} className="px-5 py-2.5 text-sm font-bold text-slate-500 dark:text-slate-400 hover:bg-slate-200 rounded-xl transition-colors">Batal</button>
-                <button type="submit" className="px-5 py-2.5 text-sm font-bold text-slate-800 dark:text-slate-100 bg-teal-600 hover:bg-teal-700 rounded-xl shadow-md transition-colors">Simpan Matkul</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Modal Edit Matakuliah (Besar dengan CPMK) */}
-      {showEditMatkulModal && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-white/60 dark:border-slate-700 w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200">
-            <div className="px-6 py-5 border-b border-slate-300 dark:border-slate-700 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50 shrink-0">
-              <div>
-                <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100">Edit Mata Kuliah</h3>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Ubah detail dan kelola CPMK & Indikator sekaligus.</p>
-              </div>
-              <button onClick={() => { setShowEditMatkulModal(false); setMatkulForm({ kode: "", nama: "", sks: 3 }); }} className="text-slate-500 dark:text-slate-400 hover:text-red-500 font-bold text-2xl">&times;</button>
-            </div>
-            
-            <div className="overflow-y-auto flex-1 p-6">
-              <form id="form-edit-matkul" onSubmit={handleEditMatkulSubmit} className="space-y-8">
-                
-                {/* Informasi Dasar */}
-                <div className="space-y-4">
-                  <h4 className="text-sm font-bold text-teal-600 dark:text-teal-400 uppercase tracking-wider">Informasi Dasar</h4>
-                  <div className="flex gap-4">
-                    <div className="w-1/4">
-                      <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Kode</label>
-                      <input required value={matkulForm.kode} onChange={(e) => setMatkulForm({...matkulForm, kode: e.target.value})} type="text" className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-slate-50 dark:bg-slate-800" />
-                    </div>
-                    <div className="w-1/4">
-                      <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">SKS</label>
-                      <input required value={matkulForm.sks} onChange={(e) => setMatkulForm({...matkulForm, sks: e.target.value})} type="number" min="1" max="6" className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-slate-50 dark:bg-slate-800" />
-                    </div>
-                    <div className="w-2/4">
-                      <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Nama Mata Kuliah</label>
-                      <input required value={matkulForm.nama} onChange={(e) => setMatkulForm({...matkulForm, nama: e.target.value})} type="text" className="w-full px-4 py-3 rounded-xl border border-white/50 dark:border-slate-600 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-slate-50 dark:bg-slate-800" />
-                    </div>
-                  </div>
-                </div>
-
-                <hr className="border-white/60 dark:border-slate-700" />
-
-                {/* Pengelolaan CPMK & Indikator */}
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <h4 className="text-sm font-bold text-teal-600 dark:text-teal-400 uppercase tracking-wider">Pengelolaan CPMK & Indikator</h4>
-                  </div>
-
-                  <div className="space-y-6">
-                    {(!matkulForm.cpmk || matkulForm.cpmk.length === 0) && (
-                      <div className="p-8 text-center border-2 border-dashed border-white/50 dark:border-slate-600 rounded-2xl">
-                        <p className="text-slate-500 dark:text-slate-400 font-medium">Belum ada CPMK untuk mata kuliah ini.</p>
-                      </div>
-                    )}
-
-                    {(matkulForm.cpmk || []).map((cpmk, cpmkIndex) => (
-                      <div key={cpmkIndex} className="bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-white/50 dark:border-slate-600 p-5 space-y-4 relative group">
-                        
-                        <div className="flex gap-3 items-start">
-                          <div className="w-8 h-8 rounded-lg bg-teal-100 dark:bg-teal-900/40 text-teal-600 dark:text-teal-400 flex items-center justify-center font-bold shrink-0 mt-1 shadow-sm">
-                            C{cpmkIndex + 1}
-                          </div>
-                          <div className="flex-1">
-                            <textarea 
-                              required
-                              value={cpmk.nama_cpmk} 
-                              onChange={(e) => handleUpdateCpmkField(cpmkIndex, e.target.value)}
-                              placeholder="Nama/Deskripsi CPMK..."
-                              rows="2"
-                              className="w-full px-4 py-2.5 rounded-xl border border-white/50 dark:border-slate-600 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl font-semibold text-slate-800 dark:text-slate-100 shadow-sm transition-colors"
-                            />
-                          </div>
-                          <button 
-                            type="button"
-                            onClick={() => handleRemoveCpmkField(cpmkIndex)}
-                            className="w-10 h-10 rounded-xl bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl border border-red-200 dark:border-red-900/50 text-red-500 hover:bg-red-50 hover:border-red-300 flex items-center justify-center transition-colors shadow-sm mt-1"
-                            title="Hapus CPMK"
-                          >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                          </button>
-                        </div>
-
-                        {/* Indikator List per CPMK */}
-                        <div className="pl-11 space-y-3">
-                          <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Indikator Penilaian:</p>
-                          
-                          {(!cpmk.indikator || cpmk.indikator.length === 0) && (
-                            <p className="text-sm text-slate-400 italic">Belum ada indikator.</p>
-                          )}
-
-                          {cpmk.indikator.map((ind, indIndex) => (
-                            <div key={indIndex} className="flex gap-2 items-start group/ind">
-                              <div className="w-6 flex items-center justify-center shrink-0 mt-2">
-                                <div className="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-slate-500"></div>
-                              </div>
-                              <input 
-                                required
-                                value={ind}
-                                onChange={(e) => handleUpdateIndikatorField(cpmkIndex, indIndex, e.target.value)}
-                                type="text"
-                                placeholder="Detail indikator..."
-                                className="flex-1 px-3 py-2 rounded-lg border border-white/50 dark:border-slate-600 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl text-sm shadow-sm transition-colors"
-                              />
-                              <button 
-                                type="button"
-                                onClick={() => handleRemoveIndikatorField(cpmkIndex, indIndex)}
-                                className="w-9 h-9 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 flex items-center justify-center transition-colors"
-                                title="Hapus Indikator"
-                              >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                              </button>
-                            </div>
-                          ))}
-                          
-                          <button 
-                            type="button"
-                            onClick={() => handleAddIndikatorField(cpmkIndex)}
-                            className="mt-2 px-3 py-1.5 bg-white dark:bg-slate-700 border border-white/50 dark:border-slate-600 hover:border-teal-400 hover:text-teal-600 dark:hover:text-teal-400 text-slate-600 dark:text-slate-300 text-xs font-bold rounded-lg transition-colors flex items-center gap-1 shadow-sm"
-                          >
-                            + Tambah Indikator
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-
-                    <div className="flex justify-center pt-2">
-                      <button 
-                        type="button"
-                        onClick={handleAddCpmkField}
-                        className="px-6 py-3 bg-teal-50 dark:bg-teal-900/20 border-2 border-dashed border-teal-200 dark:border-teal-800 hover:border-teal-400 hover:bg-teal-100 dark:hover:bg-teal-900/40 text-teal-600 dark:text-teal-400 text-sm font-bold rounded-xl transition-all flex items-center gap-2"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg>
-                        Tambah CPMK Baru
-                      </button>
-                    </div>
-
-                  </div>
-                </div>
-              </form>
-            </div>
-            
-            <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/80 border-t border-slate-300 dark:border-slate-700 flex justify-end gap-3 shrink-0">
-              <button type="button" onClick={() => { setShowEditMatkulModal(false); setMatkulForm({ kode: "", nama: "", sks: 3 }); }} className="px-6 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-700 border border-white/50 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-600 rounded-xl transition-colors shadow-sm">Batal</button>
-              <button form="form-edit-matkul" type="submit" className="px-8 py-2.5 text-sm font-bold text-white bg-teal-600 hover:bg-teal-700 rounded-xl shadow-md shadow-teal-600/20 transition-all">Simpan Perubahan</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Modal Tambah CPMK */}
-      {showAddCpmkModal && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-slate-800 backdrop-blur-xl rounded-3xl shadow-sm w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 max-h-[95vh] overflow-y-auto">
-            <div className="px-6 py-5 border-b border-white/50 dark:border-slate-600 flex justify-between items-center">
-              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Tambah CPMK</h3>
-              <button onClick={() => setShowAddCpmkModal(false)} className="text-slate-500 dark:text-slate-400 hover:text-red-500 font-bold text-xl">&times;</button>
-            </div>
-            <form onSubmit={handleAddCpmkSubmit}>
-              <div className="p-6 space-y-4">
-                <div className="bg-teal-50 text-teal-700 p-4 rounded-xl text-sm mb-2 border border-teal-100">
-                  Menambah CPMK untuk matkul: <br/><strong className="text-base">{selectedMatkul?.nama}</strong>
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-slate-800 dark:text-slate-100 mb-2">Nama CPMK</label>
-                  <textarea required value={cpmkForm.nama_cpmk} onChange={(e) => setCpmkForm({nama_cpmk: e.target.value})} rows="3" placeholder="Contoh: CPMK 1: Mampu mengidentifikasi..." className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-slate-50 dark:bg-slate-800/80"></textarea>
-                </div>
-              </div>
-              <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/80 border-t border-white/50 dark:border-slate-600 flex justify-end gap-3">
-                <button type="button" onClick={() => setShowAddCpmkModal(false)} className="px-5 py-2.5 text-sm font-bold text-slate-500 dark:text-slate-400 hover:bg-slate-200 rounded-xl transition-colors">Batal</button>
-                <button type="submit" className="px-5 py-2.5 text-sm font-bold text-slate-800 dark:text-slate-100 bg-teal-600 hover:bg-teal-700 rounded-xl shadow-md transition-colors">Simpan CPMK</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Modal Tambah Indikator CPMK */}
-      {showAddIndikatorModal && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-slate-800 backdrop-blur-xl rounded-3xl shadow-sm w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 max-h-[95vh] overflow-y-auto">
-            <div className="px-6 py-5 border-b border-white/50 dark:border-slate-600 flex justify-between items-center">
-              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Tambah Indikator OBE</h3>
-              <button onClick={() => setShowAddIndikatorModal(false)} className="text-slate-500 dark:text-slate-400 hover:text-red-500 font-bold text-xl">&times;</button>
-            </div>
-            <form onSubmit={handleAddIndikatorSubmit}>
-              <div className="p-6 space-y-4">
-                <div className="bg-teal-50 text-teal-700 p-4 rounded-xl text-sm mb-2 border border-teal-100">
-                  Menambah indikator untuk: <br/><strong className="text-base">{selectedCPMK?.nama_cpmk}</strong>
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-slate-800 dark:text-slate-100 mb-2">Deskripsi Indikator</label>
-                  <textarea required value={indikatorForm.indikator} onChange={(e) => setIndikatorForm({indikator: e.target.value})} rows="4" placeholder="Mahasiswa mampu..." className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-slate-50 dark:bg-slate-800/80"></textarea>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">Indikator ini akan digunakan DPL dan Mentor saat memvalidasi logbook harian.</p>
-                </div>
-              </div>
-              <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/80 border-t border-white/50 dark:border-slate-600 flex justify-end gap-3">
-                <button type="button" onClick={() => setShowAddIndikatorModal(false)} className="px-5 py-2.5 text-sm font-bold text-slate-500 dark:text-slate-400 hover:bg-slate-200 rounded-xl transition-colors">Batal</button>
-                <button type="submit" className="px-5 py-2.5 text-sm font-bold text-slate-800 dark:text-slate-100 bg-teal-600 hover:bg-teal-700 rounded-xl shadow-md transition-colors">Simpan Indikator</button>
               </div>
             </form>
           </div>

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import Pokja from '@/models/Pokja';
 import User from '@/models/User';
+import SystemSettings from '@/models/SystemSettings';
 
 export async function POST(req) {
   await dbConnect();
@@ -52,9 +53,16 @@ export async function POST(req) {
       catatan_evaluasi: ''
     }));
 
-    // 4. Buat POKJA baru
+    // 4. Ambil periode_aktif dari SystemSettings jika frontend tidak mengirimkan periode
+    let activePeriode = periode;
+    if (!activePeriode) {
+      const settings = await SystemSettings.findOne({});
+      activePeriode = settings?.periode_aktif || "Ganjil 2026/2027";
+    }
+
+    // 5. Buat POKJA baru
     const newPokja = await Pokja.create({
-      periode: periode || "Ganjil 2026/2027",
+      periode: activePeriode,
       nama_pokja,
       ketua_id,
       anggota,

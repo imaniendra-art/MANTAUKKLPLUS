@@ -18,11 +18,8 @@ async function main() {
         );
         console.log(`Reset ${updateRes.modifiedCount} mahasiswa accounts.`);
 
-        // 2. Delete non-admin and non-mahasiswa accounts
-        const deleteRes = await db.collection('users').deleteMany({
-            role: { $nin: ['mahasiswa', 'admin'] }
-        });
-        console.log(`Deleted ${deleteRes.deletedCount} non-mahasiswa/non-admin accounts.`);
+        // 2. Delete non-admin and non-mahasiswa accounts (DIHAPUS - Sesuai permintaan untuk menyimpan DPL & Mitra)
+        // console.log(`Mempertahankan akun DPL, Mitra (Mentor), dan Admin.`);
 
         // 3. Drop all other collections except 'users' and 'systemsettings'
         const collections = await db.listCollections().toArray();

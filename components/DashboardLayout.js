@@ -130,7 +130,7 @@ export const MENU_CONFIG = {
   },
   mahasiswa: {
     greeting: "Mahasiswa",
-    subtitle: "Kumpulkan poin dengan menyelesaikan indikator CPMK setiap harinya.",
+    subtitle: "Pilih menu untuk melihat aktivitas KKL Plus Anda.",
     menus: [
       { name: "Pengajuan KKL Plus", href: "/mahasiswa/pengajuan", icon: <FileSignature className="w-6 h-6" />, desc: "Ajukan dan kelola pengajuan KKL Plus baru", color: "from-teal-600 to-teal-600" },
       { name: "Logbook Harian", href: "/mahasiswa/logbook", icon: <BookOpen className="w-6 h-6" />, desc: "Catat kegiatan harian dan kumpulkan poin kinerja", color: "from-teal-500 to-teal-600" },
@@ -146,7 +146,7 @@ export const MENU_CONFIG = {
       { name: "Monev Lapangan", href: "/dpl/monev", icon: <Camera className="w-6 h-6" />, desc: "Upload dokumentasi kunjungan lapangan", color: "from-teal-500 to-teal-600" },
       { name: "Validasi Laporan & Penilaian", href: "/dpl/validasi-laporan", icon: <FileCheck className="w-6 h-6" />, desc: "Persetujuan Laporan Akhir", color: "from-teal-500 to-teal-600" },
       { name: "Laporan Akhir DPL", href: "/dpl/laporan", icon: <FileText className="w-6 h-6" />, desc: "Buat laporan evaluasi pelaksanaan KKL Plus.", color: "from-amber-500 to-amber-600" },
-      { name: "Petunjuk KKL Plus", href: "/dpl/petunjuk", icon: <Book className="w-6 h-6" />, desc: "Panduan pembimbingan dan rincian target CPMK", color: "from-slate-500 to-slate-600" },
+      { name: "Petunjuk KKL Plus", href: "/dpl/petunjuk", icon: <Book className="w-6 h-6" />, desc: "Panduan pembimbingan", color: "from-slate-500 to-slate-600" },
     ],
   },
   mentor: {
@@ -154,7 +154,7 @@ export const MENU_CONFIG = {
     subtitle: "Validasi logbook harian dan pantau perkembangan mahasiswa KKL Plus.",
     menus: [
       { name: "Validasi Logbook", href: "/mentor/validasi", icon: <CheckSquare className="w-6 h-6" />, desc: "Review dan validasi logbook harian mahasiswa", color: "from-teal-600 to-teal-600" },
-      { name: "Petunjuk KKL Plus", href: "/mentor/petunjuk", icon: <Book className="w-6 h-6" />, desc: "Panduan mentoring dan rincian target CPMK", color: "from-teal-500 to-teal-600" },
+      { name: "Petunjuk KKL Plus", href: "/mentor/petunjuk", icon: <Book className="w-6 h-6" />, desc: "Panduan mentoring", color: "from-teal-500 to-teal-600" },
     ],
   },
 };

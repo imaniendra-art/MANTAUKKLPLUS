@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import Logbook from '@/models/Logbook';
 import Pokja from '@/models/Pokja';
-import User from '@/models/User'; 
+import User from '@/models/User';
+import Proker from '@/models/Proker';
 import { generatePresignedUrl } from '@/lib/minio';
 
 async function processLogbookUrls(logbookDoc) {
@@ -135,6 +136,54 @@ export async function POST(req) {
   await dbConnect();
   try {
     const data = await req.json();
+
+    // PERBAIKAN 3: Validasi Tanggal (Tidak boleh masa depan)
+    const inputDate = new Date(data.tanggal);
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
+    if (inputDate > today) {
+      return NextResponse.json({ error: "Tanggal logbook tidak boleh melebihi hari ini." }, { status: 400 });
+    }
+
+    // PERBAIKAN 2: Cegah Double Submit (1 logbook per hari per tipe)
+    const startOfDay = new Date(inputDate);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(inputDate);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const queryDuplicate = {
+      tanggal: { $gte: startOfDay, $lte: endOfDay },
+      tipe_logbook: data.tipe_logbook
+    };
+
+    if (data.tipe_logbook === 'individu') {
+      queryDuplicate.mahasiswa_id = data.mahasiswa_id;
+      const exists = await Logbook.findOne(queryDuplicate);
+      if (exists) {
+        return NextResponse.json({ error: "Logbook individu pada tanggal tersebut sudah ada." }, { status: 400 });
+      }
+    } else if (data.tipe_logbook === 'pokja') {
+      queryDuplicate.pokja_id = data.pokja_id;
+      const exists = await Logbook.findOne(queryDuplicate);
+      if (exists) {
+        return NextResponse.json({ error: "Logbook Pokja pada tanggal tersebut sudah ada." }, { status: 400 });
+      }
+
+      // PERBAIKAN 5: Validasi Logbook Pokja (wajib proker, proker sesuai, proker disetujui)
+      if (!data.proker_id) {
+        return NextResponse.json({ error: "Program kerja wajib dipilih." }, { status: 400 });
+      }
+
+      const proker = await Proker.findById(data.proker_id);
+      if (!proker || proker.pokja_id.toString() !== data.pokja_id.toString()) {
+        return NextResponse.json({ error: "Program kerja tidak sesuai dengan Pokja." }, { status: 400 });
+      }
+
+      if (proker.status !== 'disetujui_dpl' && proker.status !== 'selesai') {
+        return NextResponse.json({ error: "Program kerja belum disetujui." }, { status: 400 });
+      }
+    }
+
     const newLog = await Logbook.create(data);
     return NextResponse.json(newLog, { status: 201 });
   } catch (error) {
@@ -164,15 +213,32 @@ export async function PATCH(req) {
       return NextResponse.json({ error: "Missing Logbook ID" }, { status: 400 });
     }
     
+    const logbook = await Logbook.findById(id);
+    if (!logbook) {
+      return NextResponse.json({ error: "Logbook tidak ditemukan." }, { status: 404 });
+    }
+
+    // PERBAIKAN 4: Logbook Approved Tidak Bisa Diubah (kontennya)
+    const isEditingContent = rencana_target !== undefined || uraian_kegiatan !== undefined || 
+                             hasil_output !== undefined || kendala_solusi !== undefined || 
+                             bukti_link !== undefined || bukti_kegiatan !== undefined || 
+                             keterangan_bukti !== undefined;
+
+    const isApproved = ['divalidasi_mentor', 'divalidasi_dpl', 'selesai'].includes(logbook.status_validasi);
+
+    if (isApproved && isEditingContent) {
+      return NextResponse.json({ error: "Logbook yang telah divalidasi tidak dapat diubah." }, { status: 400 });
+    }
+
     let updateData = {};
     if (status_validasi) updateData.status_validasi = status_validasi;
     if (catatan_revisi !== undefined) updateData.catatan_revisi = catatan_revisi;
-    if (rencana_target) updateData.rencana_target = rencana_target;
-    if (uraian_kegiatan) updateData.uraian_kegiatan = uraian_kegiatan;
-    if (hasil_output) updateData.hasil_output = hasil_output;
+    if (rencana_target !== undefined) updateData.rencana_target = rencana_target;
+    if (uraian_kegiatan !== undefined) updateData.uraian_kegiatan = uraian_kegiatan;
+    if (hasil_output !== undefined) updateData.hasil_output = hasil_output;
     if (kendala_solusi !== undefined) updateData.kendala_solusi = kendala_solusi;
     if (bukti_link !== undefined) updateData.bukti_link = bukti_link;
-    if (bukti_kegiatan) updateData.bukti_kegiatan = bukti_kegiatan;
+    if (bukti_kegiatan !== undefined) updateData.bukti_kegiatan = bukti_kegiatan;
     if (keterangan_bukti !== undefined) updateData.keterangan_bukti = keterangan_bukti;
     
     const updated = await Logbook.findByIdAndUpdate(
@@ -182,6 +248,34 @@ export async function PATCH(req) {
     );
     
     return NextResponse.json(updated);
+  } catch (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
+export async function DELETE(req) {
+  await dbConnect();
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json({ error: "ID Logbook wajib diisi." }, { status: 400 });
+    }
+
+    const logbook = await Logbook.findById(id);
+    if (!logbook) {
+      return NextResponse.json({ error: "Logbook tidak ditemukan." }, { status: 404 });
+    }
+
+    // PERBAIKAN 1: Logbook Approved Tidak Bisa Dihapus
+    const isApproved = ['divalidasi_mentor', 'divalidasi_dpl', 'selesai'].includes(logbook.status_validasi);
+    if (isApproved) {
+      return NextResponse.json({ error: "Logbook yang telah divalidasi tidak dapat dihapus." }, { status: 400 });
+    }
+
+    await Logbook.findByIdAndDelete(id);
+    return NextResponse.json({ success: true, message: "Logbook berhasil dihapus." });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

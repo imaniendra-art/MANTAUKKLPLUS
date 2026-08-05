@@ -41,6 +41,21 @@ export async function PUT(req) {
     if (!settings) {
       settings = await SystemSettings.create(data);
     } else {
+      // Validasi pergantian periode
+      if (data.periode_aktif && data.periode_aktif !== settings.periode_aktif) {
+        const Pokja = (await import('@/models/Pokja')).default;
+        const activePokjasCount = await Pokja.countDocuments({
+          periode: settings.periode_aktif,
+          status_pokja: { $nin: ['selesai', 'ditolak_admin'] }
+        });
+
+        if (activePokjasCount > 0) {
+          return NextResponse.json({ 
+            error: "Masih terdapat Pokja aktif (belum selesai/ditolak) pada periode berjalan. Selesaikan seluruh proses atau ubah statusnya terlebih dahulu sebelum mengganti periode aktif." 
+          }, { status: 400 });
+        }
+      }
+
       settings.periode_aktif = data.periode_aktif;
       settings.pendaftaran_buka = data.pendaftaran_buka;
       settings.pengisian_logbook_buka = data.pengisian_logbook_buka;

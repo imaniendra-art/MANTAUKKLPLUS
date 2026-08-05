@@ -43,13 +43,27 @@ export default function CetakSertifikatMahasiswa() {
 
   if (!data) return <div className="p-10 text-center">Memuat Sertifikat...</div>;
 
+  if (data?.laporan?.status !== 'disetujui') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-100 font-sans p-8 print:p-0">
+        <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md text-center border-t-4 border-red-500 print:shadow-none print:border-none">
+          <div className="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+             <span className="text-3xl">⚠️</span>
+          </div>
+          <h2 className="text-xl font-bold text-slate-800 mb-2">Akses Ditolak</h2>
+          <p className="text-slate-600 mb-6">Sertifikat belum dapat dicetak karena Laporan Akhir belum berstatus Disetujui.</p>
+        </div>
+      </div>
+    );
+  }
   const { laporan, pengajuan } = data;
   const mhs = session.user;
   const mitra = pengajuan.mitra_id?.nama_instansi || pengajuan.mitra_id?.nama_perusahaan || pengajuan.detail_tempat?.nama || '-';
   const lokasiMitra = pengajuan.mitra_id?.kabupaten_kota ? ` - ${pengajuan.mitra_id.kabupaten_kota}` : '';
 
   // URL validasi untuk QR Code
-  const verifyUrl = `http://localhost:3020/verify/${laporan._id}`;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const verifyUrl = `${baseUrl}/verify/${laporan._id}`;
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(verifyUrl)}`;
 
   return (
@@ -360,7 +374,7 @@ export default function CetakSertifikatMahasiswa() {
               
               {/* Barcode sebagai TTD Elektronik */}
               <div className="flex-1 flex items-center justify-center">
-                {mhs.nomor_sertifikat && (
+                {pengajuan._id && (
                   <img src={qrCodeUrl} alt="TTD QR" className="h-[1.8cm] w-[1.8cm] opacity-80 mix-blend-multiply" />
                 )}
               </div>
@@ -376,7 +390,7 @@ export default function CetakSertifikatMahasiswa() {
               
               {/* Barcode sebagai TTD Elektronik */}
               <div className="flex-1 flex items-center justify-center">
-                {mhs.nomor_sertifikat && (
+                {pengajuan._id && (
                   <img src={qrCodeUrl} alt="TTD QR" className="h-[1.8cm] w-[1.8cm] opacity-80 mix-blend-multiply" />
                 )}
               </div>

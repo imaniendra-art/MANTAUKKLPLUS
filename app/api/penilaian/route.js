@@ -64,7 +64,17 @@ export async function GET(req) {
     // Ambil daftar Proker dari kelompok ini
     const prokers = await Proker.find({ pokja_id: pokjaId }).lean();
 
-    return NextResponse.json({ success: true, penilaians, prokers });
+    // PERBAIKAN 2 & 3: Filter Ghost Student dan Tambah nilai_final_tersedia
+    const stringActiveIds = mahasiswaIds.map(id => id.toString());
+    const filteredPenilaians = penilaians
+      .filter(p => p.mahasiswa_id && stringActiveIds.includes(p.mahasiswa_id._id.toString()))
+      .map(p => {
+        const pObj = p.toObject ? p.toObject() : p;
+        pObj.nilai_final_tersedia = pObj.mentor_sudah_menilai === true && pObj.dpl_sudah_menilai === true;
+        return pObj;
+      });
+
+    return NextResponse.json({ success: true, penilaians: filteredPenilaians, prokers });
 
   } catch (error) {
     console.error(error);
@@ -79,6 +89,15 @@ export async function PATCH(req) {
 
     if (!['mentor', 'dpl'].includes(role) || !Array.isArray(updates)) {
       return NextResponse.json({ error: 'Invalid payload' }, { status: 400 });
+    }
+
+    // PERBAIKAN 1: Validasi Nilai (0 - 100)
+    for (const data of updates) {
+      const nk = Number(data.nilai_kelompok) || 0;
+      const ni = Number(data.nilai_individu) || 0;
+      if (nk < 0 || nk > 100 || ni < 0 || ni > 100) {
+        return NextResponse.json({ error: "Nilai harus berada pada rentang 0 sampai 100." }, { status: 400 });
+      }
     }
 
     // Process each update

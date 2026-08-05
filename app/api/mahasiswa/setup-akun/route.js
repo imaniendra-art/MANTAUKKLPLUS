@@ -4,6 +4,7 @@ import { getServerSession } from "@/lib/auth";
 import connectToDatabase from '@/lib/db';
 import User from '@/models/User';
 import bcrypt from 'bcryptjs';
+import SystemSettings from '@/models/SystemSettings';
 
 export async function POST(req) {
   try {
@@ -46,8 +47,12 @@ export async function POST(req) {
         if (existingPokja) {
           // Just update it if they are already ketua, or ignore
         } else {
+          const settings = await SystemSettings.findOne({});
+          const activePeriode = settings?.periode_aktif || "Ganjil 2026/2027";
+          
           const Pokja = (await import('@/models/Pokja')).default;
           await Pokja.create({
+            periode: activePeriode,
             nama_pokja: namaKelompok,
             ketua_id: user._id,
             status_pokja: 'draft',

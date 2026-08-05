@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import Pokja from '@/models/Pokja';
-import PaketMatkul from '@/models/PaketMatkul';
 import LogAktivitas from '@/models/LogAktivitas';
 import fs from 'fs';
 import path from 'path';
@@ -44,10 +43,6 @@ export async function POST(req) {
 
     // Fallback required fields for existing schema
     let paket_matkul_id = formData.get('paket_matkul_id');
-    if (!paket_matkul_id) {
-      const paket = await PaketMatkul.findOne();
-      if (paket) paket_matkul_id = paket._id;
-    }
     
     const User = (await import('@/models/User')).default;
     

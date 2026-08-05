@@ -235,6 +235,12 @@ export async function POST(request) {
       return NextResponse.json({ error: "Missing pokja_id or tipe_laporan" }, { status: 400 });
     }
 
+    // BUG FIX: Validasi Prerequisite (is_laporan_unlocked dari Pokja)
+    const pokjaRef = await Pokja.findById(final_pokja_id);
+    if (!pokjaRef || !pokjaRef.is_laporan_unlocked) {
+      return NextResponse.json({ error: "Laporan belum dibuka oleh DPL. Tidak dapat disubmit." }, { status: 400 });
+    }
+
     let query = { pokja_id: final_pokja_id, tipe_laporan: final_tipe };
     if (final_tipe === 'individu') {
       query.mahasiswa_id = final_mhs_id;
@@ -243,6 +249,21 @@ export async function POST(request) {
     let laporan = await LaporanAkhir.findOne(query);
     
     if (laporan) {
+      // BUG FIX: Tolak perubahan jika laporan sudah disetujui (State Final)
+      if (laporan.status === 'disetujui') {
+        return NextResponse.json({ error: "Laporan sudah disetujui dan tidak dapat diubah." }, { status: 400 });
+      }
+
+      // BUG FIX: Validasi loncat status dan hak akses mahasiswa
+      if (status && status !== laporan.status) {
+        if (status !== 'submitted' && status !== 'draft') {
+          return NextResponse.json({ error: "Mahasiswa hanya dapat mengubah status menjadi draft atau diajukan." }, { status: 400 });
+        }
+        if (status === 'submitted' && !['draft', 'revisi'].includes(laporan.status)) {
+          return NextResponse.json({ error: "Hanya laporan berstatus draft atau revisi yang dapat diajukan." }, { status: 400 });
+        }
+      }
+
       // Update
       laporan.kata_pengantar = kata_pengantar ?? laporan.kata_pengantar;
       laporan.bab1_pendahuluan = bab1_pendahuluan ?? laporan.bab1_pendahuluan;
@@ -298,6 +319,15 @@ export async function PATCH(request) {
     const laporan = await LaporanAkhir.findById(id);
     if (!laporan) {
       return NextResponse.json({ error: "Laporan not found" }, { status: 404 });
+    }
+
+    // BUG FIX: Validasi DPL Bypass State
+    if (laporan.status === 'disetujui' && status !== 'disetujui') {
+      return NextResponse.json({ error: "Laporan sudah disetujui. Status tidak dapat diubah kembali." }, { status: 400 });
+    }
+    
+    if (laporan.status !== 'submitted' && laporan.status !== 'disetujui') {
+      return NextResponse.json({ error: "Laporan belum diajukan oleh mahasiswa." }, { status: 400 });
     }
 
     laporan.status = status;

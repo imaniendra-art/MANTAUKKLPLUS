@@ -53,6 +53,18 @@ export async function POST(req) {
     const settings = await SystemSettings.findOne({});
     const activePeriode = settings?.periode_aktif || "Ganjil 2026/2027";
 
+    const existingPokja = await Pokja.findOne({
+      periode: activePeriode,
+      $or: [
+        { ketua_id },
+        { anggota: { $elemMatch: { user_id: ketua_id, status_undangan: 'bergabung' } } }
+      ]
+    });
+
+    if (existingPokja) {
+      return NextResponse.json({ error: "Anda sudah memiliki Pokja atau tergabung dalam Pokja lain pada periode ini" }, { status: 400 });
+    }
+
     const pokja = await Pokja.create({
       nama_pokja: nama_pokja || 'Pokja Baru',
       ketua_id,
@@ -164,7 +176,7 @@ export async function PATCH(req) {
   await dbConnect();
   try {
     const data = await req.json();
-    const { id, dpl_id, status_pokja, catatan_admin, action, mhs_id, mitra_id } = data;
+    const { id, dpl_id, mentor_id, status_pokja, catatan_admin, action, mhs_id, mitra_id } = data;
     
     if (!id) return NextResponse.json({ error: "ID wajib diisi" }, { status: 400 });
 
@@ -193,6 +205,22 @@ export async function PATCH(req) {
       const targetPokja = await Pokja.findById(id);
       if (!targetPokja) return NextResponse.json({ error: "Kelompok tidak ditemukan" }, { status: 404 });
       
+      if (targetPokja.ketua_id.toString() === mhs_id.toString()) {
+        return NextResponse.json({ error: "Ketua tidak dapat menjadi anggota di Pokjanya sendiri" }, { status: 400 });
+      }
+
+      const existingPokja = await Pokja.findOne({
+        periode: targetPokja.periode,
+        $or: [
+          { ketua_id: mhs_id },
+          { anggota: { $elemMatch: { user_id: mhs_id, status_undangan: 'bergabung' } } }
+        ]
+      });
+
+      if (existingPokja) {
+        return NextResponse.json({ error: "Anda sudah memiliki Pokja atau tergabung dalam Pokja lain" }, { status: 400 });
+      }
+
       if (targetPokja.anggota.length >= 4) {
         return NextResponse.json({ error: "Kelompok sudah penuh (maksimal 5 orang termasuk ketua)" }, { status: 400 });
       }
@@ -225,6 +253,7 @@ export async function PATCH(req) {
     if (dpl_id) updatePayload.dpl_id = dpl_id;
     if (catatan_admin) updatePayload.catatan_admin = catatan_admin;
     if (mitra_id) updatePayload.mitra_id = mitra_id;
+    if (mentor_id !== undefined) updatePayload.mentor_id = mentor_id;
 
     const updated = await Pokja.findByIdAndUpdate(
       id,
@@ -253,14 +282,12 @@ export async function DELETE(req) {
 
     // Hapus data terkait agar tidak menjadi sampah (orphaned data)
     try {
-      const Absensi = (await import('@/models/Absensi')).default;
       const Proker = (await import('@/models/Proker')).default;
       const LaporanAkhir = (await import('@/models/LaporanAkhir')).default;
       const Penilaian = (await import('@/models/Penilaian')).default;
       const Logbook = (await import('@/models/Logbook')).default;
       
       await Promise.all([
-        Absensi.deleteMany({ pokja_id: id }),
         Proker.deleteMany({ pokja_id: id }),
         LaporanAkhir.deleteMany({ pokja_id: id }),
         Penilaian.deleteMany({ pokja_id: id }),

@@ -144,7 +144,8 @@ export default function LaporanDplPage() {
   );
 
   const isReadonly = laporan?.status === 'submitted' || laporan?.status === 'disetujui';
-  const qrCodeUrl = laporan?.qr_code_validasi ? `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(`http://localhost:3020/verify/${laporan.qr_code_validasi}`)}` : '';
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const qrCodeUrl = laporan?.qr_code_validasi ? `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(`${baseUrl}/verify/${laporan.qr_code_validasi}`)}` : '';
 
   return (
     <DashboardLayout>

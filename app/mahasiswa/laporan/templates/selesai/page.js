@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSession } from "@/components/AuthProvider";
 
-export default function CetakPenerimaan() {
+export default function CetakSelesai() {
   const { data: session } = useSession();
   const [data, setData] = useState(null);
 
@@ -74,7 +74,7 @@ export default function CetakPenerimaan() {
                   <tr>
                     <td>Perihal</td>
                     <td>:</td>
-                    <td className="font-bold underline">Surat Balasan Penerimaan KKL Plus</td>
+                    <td className="font-bold underline">Surat Keterangan Telah Menyelesaikan KKL Plus</td>
                   </tr>
                 </tbody>
               </table>
@@ -93,7 +93,7 @@ export default function CetakPenerimaan() {
           <div className="text-justify leading-relaxed space-y-4 mb-8">
             <p>Dengan hormat,</p>
             <p>
-              Menindaklanjuti Surat Permohonan Izin KKL Plus dari STIMI YAPMI Makassar, maka dengan ini kami sampaikan bahwa kami <strong>menerima</strong> mahasiswa tersebut di bawah ini untuk melaksanakan kegiatan KKL Plus di tempat kami:
+              Dengan ini kami selaku pimpinan instansi / perusahaan menerangkan bahwa mahasiswa tersebut di bawah ini:
             </p>
             
             <table className="w-full ml-4 mb-2">
@@ -117,10 +117,10 @@ export default function CetakPenerimaan() {
             </table>
 
             <p>
-              Kegiatan KKL Plus akan dilaksanakan mulai tanggal <strong>{pengajuan.tanggal_mulai ? new Date(pengajuan.tanggal_mulai).toLocaleDateString('id-ID') : '.....'}</strong> sampai dengan <strong>{pengajuan.tanggal_selesai ? new Date(pengajuan.tanggal_selesai).toLocaleDateString('id-ID') : '.....'}</strong>. Selama pelaksanaannya, mahasiswa tersebut akan ditempatkan di bagian/divisi .................................................... dan dibimbing oleh mentor perusahaan.
+              Telah <strong>menyelesaikan</strong> kegiatan Kuliah Kerja Lapangan (KKL) Plus dengan baik pada instansi / perusahaan kami, terhitung mulai tanggal <strong>{pengajuan.tanggal_mulai ? new Date(pengajuan.tanggal_mulai).toLocaleDateString('id-ID') : '.....'}</strong> sampai dengan <strong>{pengajuan.tanggal_selesai ? new Date(pengajuan.tanggal_selesai).toLocaleDateString('id-ID') : '.....'}</strong>.
             </p>
             <p>
-              Demikian surat balasan penerimaan KKL Plus ini kami sampaikan agar dapat dipergunakan sebagaimana mestinya. Atas kerja sama yang baik kami ucapkan terima kasih.
+              Demikian surat keterangan ini dibuat dengan sesungguhnya untuk dapat dipergunakan sebagaimana mestinya. Atas perhatian dan kerja samanya, kami ucapkan terima kasih.
             </p>
           </div>
 
