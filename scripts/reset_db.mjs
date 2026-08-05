@@ -26,7 +26,7 @@ async function main() {
 
         // 3. Drop all other collections except 'users' and 'systemsettings'
         const collections = await db.listCollections().toArray();
-        const keepCollections = ['users', 'systemsettings'];
+        const keepCollections = ['users', 'systemsettings', 'mitrakkls'];
         
         for (let colInfo of collections) {
             if (!keepCollections.includes(colInfo.name.toLowerCase())) {
