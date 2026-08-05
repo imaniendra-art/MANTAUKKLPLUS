@@ -38,7 +38,7 @@ export default function MasterData() {
   const [toastMessage, setToastMessage] = useState("");
 
   // Form State
-  const [mitraForm, setMitraForm] = useState({ id: null, nama_instansi: "", kategori: "Pemerintahan & Desa (Sektor Publik)", deskripsi_singkat: "" });
+  const [mitraForm, setMitraForm] = useState({ id: null, nama_instansi: "", kategori: "Pemerintahan & Desa (Sektor Publik)", deskripsi_singkat: "", kuota_maksimal: 0 });
   
   // Posisi State
   const [showKelolaPosisiModal, setShowKelolaPosisiModal] = useState(false);
@@ -210,7 +210,8 @@ export default function MasterData() {
       const body = {
         nama_instansi: mitraForm.nama_instansi,
         kategori: mitraForm.kategori,
-        deskripsi_singkat: mitraForm.deskripsi_singkat
+        deskripsi_singkat: mitraForm.deskripsi_singkat,
+        kuota_maksimal: mitraForm.kuota_maksimal
       };
       if (mitraForm.id) body.id = mitraForm.id;
 
@@ -221,7 +222,7 @@ export default function MasterData() {
       });
       if (res.ok) {
         setShowMitraModal(false);
-        setMitraForm({ id: null, nama_instansi: "", kategori: "Pemerintahan & Desa (Sektor Publik)", deskripsi_singkat: "" });
+        setMitraForm({ id: null, nama_instansi: "", kategori: "Pemerintahan & Desa (Sektor Publik)", deskripsi_singkat: "", kuota_maksimal: 0 });
         showToast(mitraForm.id ? "Data Mitra berhasil diperbarui!" : "Data Mitra berhasil disimpan!");
         fetchData();
       }
@@ -697,7 +698,7 @@ export default function MasterData() {
                 </div>
                 <button 
                   onClick={() => {
-                    setMitraForm({ id: null, nama_instansi: "", kategori: "Pemerintahan & Desa (Sektor Publik)", deskripsi_singkat: "" });
+                    setMitraForm({ id: null, nama_instansi: "", kategori: "Pemerintahan & Desa (Sektor Publik)", deskripsi_singkat: "", kuota_maksimal: 0 });
                     setShowMitraModal(true);
                   }}
                   className="px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm rounded-xl transition-all shadow-md shadow-teal-200/50"
@@ -767,7 +768,7 @@ export default function MasterData() {
                           </td>
                           <td className="py-4 px-6">
                             <div className="flex justify-center gap-3">
-                              <button onClick={() => { setMitraForm({ id: mitra._id, nama_instansi: mitra.nama_instansi, kategori: mitra.kategori || "Pemerintahan & Desa (Sektor Publik)", deskripsi_singkat: mitra.deskripsi_singkat || "" }); setShowMitraModal(true); }} className="text-slate-400 hover:text-teal-600 transition-colors" title="Edit Mitra">
+                              <button onClick={() => { setMitraForm({ id: mitra._id, nama_instansi: mitra.nama_instansi, kategori: mitra.kategori || "Pemerintahan & Desa (Sektor Publik)", deskripsi_singkat: mitra.deskripsi_singkat || "", kuota_maksimal: mitra.kuota_maksimal || 0 }); setShowMitraModal(true); }} className="text-slate-400 hover:text-teal-600 transition-colors" title="Edit Mitra">
                                 <Edit2 className="w-4 h-4" />
                               </button>
                               <button onClick={() => handleDeleteMitra(mitra._id)} className="text-slate-400 hover:text-red-600 transition-colors" title="Hapus Mitra">
@@ -967,6 +968,10 @@ export default function MasterData() {
                 <div>
                   <label className="block text-sm font-bold text-slate-800 dark:text-slate-100 mb-2">Deskripsi Singkat (Opsional)</label>
                   <textarea value={mitraForm.deskripsi_singkat} onChange={(e) => setMitraForm({...mitraForm, deskripsi_singkat: e.target.value})} rows="3" placeholder="Tentang instansi/perusahaan ini secara singkat..." className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-slate-50 dark:bg-slate-800/80"></textarea>
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-slate-800 dark:text-slate-100 mb-2">Kuota Penerimaan Mahasiswa</label>
+                  <input required value={mitraForm.kuota_maksimal} onChange={(e) => setMitraForm({...mitraForm, kuota_maksimal: parseInt(e.target.value) || 0})} type="number" min="0" placeholder="0" className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-slate-50 dark:bg-slate-800/80" />
                 </div>
               </div>
               <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/80 border-t border-white/50 dark:border-slate-600 flex justify-end gap-3">

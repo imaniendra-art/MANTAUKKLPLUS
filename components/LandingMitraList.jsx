@@ -103,7 +103,7 @@ export default function LandingMitraList() {
       ) : displayMitra.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6">
           {displayMitra.map((m) => {
-            const totalKuota = m.posisi_list?.reduce((sum, pos) => sum + (pos.kuota || 0), 0) || 0;
+            const totalKuota = m.kuota_maksimal || (m.posisi_list?.reduce((sum, pos) => sum + (pos.kuota || 0), 0) || 0);
             return (
               <div key={m._id} className="bg-white p-5 rounded-3xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border border-slate-100 hover:border-teal-300 hover:shadow-[0_20px_40px_-15px_rgba(59,130,246,0.15)] hover:-translate-y-2 transition-all duration-300 flex flex-col group relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-teal-50 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none transition-all group-hover:bg-teal-100"></div>
@@ -126,25 +126,10 @@ export default function LandingMitraList() {
                 </div>
                 
                 <div className="mb-4 flex-grow relative z-10">
-                  <p className="text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-widest">Posisi / Divisi Tersedia:</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {m.posisi_list?.length > 0 ? (
-                      <>
-                        {m.posisi_list.slice(0, 3).map(pos => (
-                          <span key={pos._id} className="inline-flex items-center px-2 py-1 bg-slate-50/80 border border-slate-200 text-slate-600 text-[11px] font-semibold rounded-lg hover:border-slate-300 transition-colors">
-                            {pos.nama_posisi}
-                          </span>
-                        ))}
-                        {m.posisi_list.length > 3 && (
-                          <span className="inline-flex items-center px-2 py-1 bg-slate-100/80 text-slate-500 text-[11px] font-bold rounded-lg border border-transparent">
-                            +{m.posisi_list.length - 3} lainnya
-                          </span>
-                        )}
-                      </>
-                    ) : (
-                      <span className="text-xs text-slate-400 italic">Belum ada posisi</span>
-                    )}
-                  </div>
+                  <p className="text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-widest">Deskripsi Mitra:</p>
+                  <p className="text-xs text-slate-500 line-clamp-3 leading-relaxed">
+                    {m.deskripsi_singkat ? m.deskripsi_singkat : <span className="italic text-slate-400">Deskripsi belum tersedia</span>}
+                  </p>
                 </div>
 
                 <div className="flex items-center justify-between mt-auto pt-3 border-t border-slate-100 relative z-10">

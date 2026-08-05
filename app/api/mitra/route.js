@@ -13,7 +13,7 @@ export async function GET(req) {
     const mitra = await MitraKKL.aggregate([
       {
         $lookup: {
-          from: "posisimagangs",
+          from: "posisikkls",
           localField: "_id",
           foreignField: "mitra_id",
           as: "posisi_list"
@@ -41,7 +41,7 @@ export async function GET(req) {
       const filteredMitra = finalMitra.map(m => {
         // Just return all positions for public view for now
         return m;
-      }).filter(m => m.posisi_list.length > 0);
+      }).filter(m => (m.posisi_list && m.posisi_list.length > 0) || (m.kuota_maksimal && m.kuota_maksimal > 0));
 
       return NextResponse.json(filteredMitra);
     }

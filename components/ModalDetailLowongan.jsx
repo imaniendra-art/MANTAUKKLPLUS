@@ -80,19 +80,19 @@ export default function ModalDetailLowongan({ isOpen, onClose, mitra }) {
               Tentang Instansi / Perusahaan
             </h3>
             <div className="text-slate-600 text-[15px] leading-relaxed bg-slate-50/50 p-5 rounded-2xl border border-slate-100">
-              {mitra.deskripsi_mitra ? (
-                <p className="whitespace-pre-line">{mitra.deskripsi_mitra}</p>
+              {mitra.deskripsi_singkat ? (
+                <p className="whitespace-pre-line">{mitra.deskripsi_singkat}</p>
               ) : (
-                <p className="italic text-slate-400">Profil perusahaan belum ditambahkan.</p>
+                <p className="italic text-slate-400">Profil instansi/mitra belum ditambahkan.</p>
               )}
             </div>
           </section>
 
-          {/* Section 2: Posisi */}
+          {/* Section 2: Pendaftaran */}
           <section>
             <h3 className="text-[17px] font-extrabold text-slate-900 mb-5 flex items-center gap-2">
               <Briefcase size={20} className="text-teal-600" />
-              Posisi & Lowongan Tersedia
+              Informasi Pendaftaran KKL Plus
             </h3>
             
             {mitra.posisi_list?.length > 0 ? (
@@ -157,8 +157,25 @@ export default function ModalDetailLowongan({ isOpen, onClose, mitra }) {
               </div>
             ) : (
               <div className="text-center py-10 bg-slate-50 rounded-3xl border border-slate-200 border-dashed">
-                <div className="text-3xl mb-3 opacity-50">📭</div>
-                <p className="text-slate-500 font-medium">Belum ada posisi yang dibuka untuk mitra ini.</p>
+                <div className="text-4xl mb-4 opacity-70">📍</div>
+                <p className="text-slate-600 font-medium mb-2 text-lg">Pendaftaran Lokasi KKL Dibuka</p>
+                <p className="text-slate-500 text-sm mb-6 max-w-md mx-auto">
+                  Mitra ini menerima kelompok mahasiswa (Pokja) dengan kuota maksimal <span className="font-bold text-teal-600">{mitra.kuota_maksimal} orang</span>. Silakan daftarkan kelompok Anda ke lokasi ini.
+                </p>
+                {mitra.kuota_maksimal > 0 && (
+                  <button 
+                    onClick={() => {
+                      localStorage.setItem('target_kkl', JSON.stringify({
+                        mitra_id: mitra._id,
+                        posisi_id: null
+                      }));
+                      window.location.href = '/login';
+                    }}
+                    className="px-8 py-3 rounded-xl bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white font-extrabold text-sm transition-all shadow-lg shadow-teal-500/30 hover:shadow-teal-500/50 hover:-translate-y-1 inline-flex items-center gap-2"
+                  >
+                    Daftar Lokasi KKL Ini
+                  </button>
+                )}
               </div>
             )}
           </section>
