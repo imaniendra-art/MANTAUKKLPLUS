@@ -48,12 +48,18 @@ export async function POST(req) {
     
     // Ketua sudah ada di ketua_id, tidak perlu dimasukkan ke dalam array anggota
 
+    // Get active periode
+    const SystemSettings = (await import('@/models/SystemSettings')).default;
+    const settings = await SystemSettings.findOne({});
+    const activePeriode = settings?.periode_aktif || "Ganjil 2026/2027";
+
     const pokja = await Pokja.create({
       nama_pokja: nama_pokja || 'Pokja Baru',
       ketua_id,
       anggota,
       mitra_id: mitra_id || null,
-      status_pokja: 'menunggu_persetujuan_admin'
+      status_pokja: 'menunggu_persetujuan_admin',
+      periode: activePeriode
     });
     
     return NextResponse.json(pokja, { status: 201 });
