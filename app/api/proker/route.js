@@ -1,16 +1,37 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
-import Proker from '@/models/Proker';
 import Pokja from '@/models/Pokja';
+import User from '@/models/User';
+import Proker from '@/models/Proker';
+import { getServerSession } from "@/lib/auth";
 
 export async function POST(req) {
   await dbConnect();
   try {
+    const session = await getServerSession();
+    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
     const payload = await req.json();
     const { pokja_id, judul_proker, deskripsi, target_dampak, jenis_proker, pic_id, tanggal_mulai, tanggal_selesai } = payload;
 
     if (!pokja_id || !judul_proker || !jenis_proker || !target_dampak || !pic_id || !tanggal_mulai || !tanggal_selesai || (Array.isArray(pic_id) && pic_id.length === 0)) {
       return NextResponse.json({ error: "Pokja ID, Judul, Jenis, Target Dampak, PIC, dan Tanggal wajib diisi" }, { status: 400 });
+    }
+
+    if (session.user.role === 'mahasiswa') {
+      const pokja = await Pokja.findById(pokja_id);
+      if (!pokja) return NextResponse.json({ error: "Pokja tidak ditemukan" }, { status: 404 });
+
+      const isKetua = pokja.ketua_id.toString() === session.user.id;
+      if (!isKetua) {
+        return NextResponse.json({ error: "Hanya Ketua POKJA yang berhak merancang dan menambahkan Program Kerja." }, { status: 403 });
+      }
+
+      // Cek apakah seluruh proker sudah disetujui DPL
+      const allProkers = await Proker.find({ pokja_id });
+      if (allProkers.length > 0 && allProkers.every(p => p.status === 'disetujui_dpl' || p.status === 'selesai')) {
+        return NextResponse.json({ error: "Program Kerja kelompok Anda telah disetujui DPL dan telah dikunci. Penambahan proker baru tidak diizinkan." }, { status: 400 });
+      }
     }
 
     if (new Date(tanggal_selesai) < new Date(tanggal_mulai)) {
@@ -85,6 +106,9 @@ export async function GET(req) {
 export async function PATCH(req) {
   await dbConnect();
   try {
+    const session = await getServerSession();
+    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
     const data = await req.json();
     const { id, status, catatan_revisi, status_pelaksanaan, judul_proker, deskripsi, target_dampak, jenis_proker, pic_id, tanggal_mulai, tanggal_selesai } = data;
     
@@ -92,6 +116,14 @@ export async function PATCH(req) {
 
     const targetProker = await Proker.findById(id);
     if (!targetProker) return NextResponse.json({ error: "Proker tidak ditemukan" }, { status: 404 });
+
+    if (session.user.role === 'mahasiswa') {
+      const pokja = await Pokja.findById(targetProker.pokja_id);
+      const isKetua = pokja && pokja.ketua_id.toString() === session.user.id;
+      if (!isKetua) {
+        return NextResponse.json({ error: "Hanya Ketua POKJA yang berhak mengubah Program Kerja." }, { status: 403 });
+      }
+    }
 
     if (!['usulan', 'revisi'].includes(targetProker.status?.toLowerCase())) {
       if (judul_proker || deskripsi || target_dampak || jenis_proker || pic_id || tanggal_mulai || tanggal_selesai) {
@@ -140,6 +172,9 @@ export async function PATCH(req) {
 export async function DELETE(req) {
   await dbConnect();
   try {
+    const session = await getServerSession();
+    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
 
@@ -147,6 +182,14 @@ export async function DELETE(req) {
 
     const targetProker = await Proker.findById(id);
     if (!targetProker) return NextResponse.json({ error: "Proker tidak ditemukan" }, { status: 404 });
+
+    if (session.user.role === 'mahasiswa') {
+      const pokja = await Pokja.findById(targetProker.pokja_id);
+      const isKetua = pokja && pokja.ketua_id.toString() === session.user.id;
+      if (!isKetua) {
+        return NextResponse.json({ error: "Hanya Ketua POKJA yang berhak menghapus Program Kerja." }, { status: 403 });
+      }
+    }
 
     if (!['usulan', 'revisi'].includes(targetProker.status?.toLowerCase())) {
       return NextResponse.json({ error: "Program kerja yang sudah disetujui atau berjalan tidak dapat dihapus." }, { status: 400 });

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { useSession } from "@/components/AuthProvider";
 import { useRouter } from "next/navigation";
@@ -15,10 +15,26 @@ export default function ProfilPage() {
     newPassword: "",
     confirmPassword: ""
   });
-  const [konsentrasi, setKonsentrasi] = useState(session?.user?.konsentrasi || "");
+  const [konsentrasi, setKonsentrasi] = useState("");
+  const [nomorHp, setNomorHp] = useState("");
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+
+  useEffect(() => {
+    if (session?.user) {
+      if (session.user.konsentrasi) setKonsentrasi(session.user.konsentrasi);
+      if (session.user.nomor_hp) setNomorHp(session.user.nomor_hp);
+      if (session.user.email) setEmail(session.user.email);
+      if (session.user.nim_nidn) setUsername(session.user.nim_nidn);
+    }
+  }, [session]);
+  
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
   const [messageKonsentrasi, setMessageKonsentrasi] = useState(null);
+  const [messageNomorHp, setMessageNomorHp] = useState(null);
+  const [messageEmail, setMessageEmail] = useState(null);
+  const [messageUsername, setMessageUsername] = useState(null);
 
   const role = session?.user?.role;
   let dashboardPath = "/";
@@ -81,9 +97,82 @@ export default function ProfilPage() {
         setMessageKonsentrasi({ type: "error", text: data.error || "Gagal memperbarui konsentrasi." });
       } else {
         setMessageKonsentrasi({ type: "success", text: "Konsentrasi berhasil diperbarui!" });
+        router.refresh();
       }
     } catch (error) {
       setMessageKonsentrasi({ type: "error", text: "Terjadi kesalahan sistem." });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleNomorHpSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessageNomorHp(null);
+    try {
+      const res = await fetch("/api/profil", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "update_nomor_hp", nomor_hp: nomorHp })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setMessageNomorHp({ type: "error", text: data.error || "Gagal memperbarui nomor HP." });
+      } else {
+        setMessageNomorHp({ type: "success", text: "Nomor HP berhasil diperbarui!" });
+        router.refresh();
+      }
+    } catch (error) {
+      setMessageNomorHp({ type: "error", text: "Terjadi kesalahan sistem." });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEmailSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessageEmail(null);
+    try {
+      const res = await fetch("/api/profil", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "update_email", email })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setMessageEmail({ type: "error", text: data.error || "Gagal memperbarui email." });
+      } else {
+        setMessageEmail({ type: "success", text: "Email berhasil diperbarui!" });
+        router.refresh();
+      }
+    } catch (error) {
+      setMessageEmail({ type: "error", text: "Terjadi kesalahan sistem." });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUsernameSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessageUsername(null);
+    try {
+      const res = await fetch("/api/profil", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "update_username", username })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setMessageUsername({ type: "error", text: data.error || "Gagal memperbarui Username." });
+      } else {
+        setMessageUsername({ type: "success", text: "Username/ID Pengguna berhasil diperbarui!" });
+        router.refresh();
+      }
+    } catch (error) {
+      setMessageUsername({ type: "error", text: "Terjadi kesalahan sistem." });
     } finally {
       setLoading(false);
     }
@@ -106,7 +195,15 @@ export default function ProfilPage() {
               </div>
               <div className="p-5 bg-teal-50/50 dark:bg-teal-900/20 rounded-2xl border border-teal-100/50 dark:border-teal-800/50 shadow-sm">
                 <p className="text-xs font-bold text-teal-500 dark:text-teal-400 uppercase tracking-wider mb-1">Role / Peran</p>
-                <p className="text-lg font-black text-teal-700 dark:text-teal-300 uppercase">{session?.user?.role}</p>
+                <p className="text-lg font-black text-teal-700 dark:text-teal-300 uppercase">
+                  {session?.user?.role === 'admin'
+                    ? (session?.user?.tipe_admin === 'superadmin' 
+                        ? 'Superadmin' 
+                        : session?.user?.tipe_admin 
+                          ? `Admin ${session?.user?.tipe_admin}` 
+                          : 'Admin')
+                    : session?.user?.role}
+                </p>
               </div>
               <div className="p-5 bg-white/40 dark:bg-slate-800/40 rounded-2xl border border-white/60 dark:border-slate-700 shadow-sm">
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
@@ -120,6 +217,14 @@ export default function ProfilPage() {
                   <p className="text-lg font-black text-slate-800 dark:text-white">{session?.user?.nidn}</p>
                 </div>
               )}
+              <div className="p-5 bg-white/40 dark:bg-slate-800/40 rounded-2xl border border-white/60 dark:border-slate-700 shadow-sm overflow-hidden">
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Alamat Email</p>
+                <p className="text-lg font-black text-slate-800 dark:text-white truncate">{session?.user?.email || '-'}</p>
+              </div>
+              <div className="p-5 bg-white/40 dark:bg-slate-800/40 rounded-2xl border border-white/60 dark:border-slate-700 shadow-sm">
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Nomor Handphone</p>
+                <p className="text-lg font-black text-slate-800 dark:text-white">{session?.user?.nomor_hp || '-'}</p>
+              </div>
             </div>
             
             {role === 'mahasiswa' && (
@@ -163,6 +268,137 @@ export default function ProfilPage() {
                         <>
                           <Check className="w-5 h-5" />
                           Simpan Konsentrasi
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+            
+            <div className="bg-white/40 dark:bg-slate-900/20 p-6 rounded-3xl border border-white/60 dark:border-slate-700 shadow-inner mb-8">
+              <div className="mb-6">
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <span className="text-teal-600">📱</span> Nomor Handphone (WhatsApp)
+                </h3>
+                <p className="text-sm text-slate-500 mt-1">Lengkapi nomor HP aktif Anda agar mudah dihubungi.</p>
+              </div>
+              
+              {messageNomorHp && (
+                <div className={`p-4 rounded-xl mb-6 font-bold text-sm flex items-center gap-2 ${messageNomorHp.type === 'error' ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-teal-50 text-teal-700 border border-teal-200'}`}>
+                  {messageNomorHp.type === 'error' ? '⚠️ ' : '✅ '}{messageNomorHp.text}
+                </div>
+              )}
+              
+              <form onSubmit={handleNomorHpSubmit} className="space-y-5">
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Nomor HP</label>
+                  <input 
+                    type="text" 
+                    required
+                    value={nomorHp}
+                    onChange={(e) => setNomorHp(e.target.value)}
+                    className="w-full px-5 py-3.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white/60 dark:bg-slate-800/60 backdrop-blur-md text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-600 transition-all font-medium placeholder-slate-400"
+                    placeholder="Contoh: 081234567890"
+                  />
+                </div>
+                <div className="pt-2">
+                  <button 
+                    type="submit" 
+                    disabled={loading}
+                    className="w-full sm:w-auto px-8 py-3.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl shadow-lg shadow-teal-500/30 hover:shadow-teal-500/40 hover:-translate-y-0.5 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {loading ? 'Menyimpan...' : (
+                      <>
+                        <Check className="w-5 h-5" />
+                        Simpan Nomor HP
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+            
+            <div className="bg-white/40 dark:bg-slate-900/20 p-6 rounded-3xl border border-white/60 dark:border-slate-700 shadow-inner mb-8">
+              <div className="mb-6">
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <span className="text-teal-600">✉️</span> Alamat Email
+                </h3>
+                <p className="text-sm text-slate-500 mt-1">Ubah alamat email akun Anda jika diperlukan.</p>
+              </div>
+              
+              {messageEmail && (
+                <div className={`p-4 rounded-xl mb-6 font-bold text-sm flex items-center gap-2 ${messageEmail.type === 'error' ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-teal-50 text-teal-700 border border-teal-200'}`}>
+                  {messageEmail.type === 'error' ? '⚠️ ' : '✅ '}{messageEmail.text}
+                </div>
+              )}
+              
+              <form onSubmit={handleEmailSubmit} className="space-y-5">
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Email Aktif</label>
+                  <input 
+                    type="email" 
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full px-5 py-3.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white/60 dark:bg-slate-800/60 backdrop-blur-md text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-600 transition-all font-medium placeholder-slate-400"
+                    placeholder="Contoh: user@example.com"
+                  />
+                </div>
+                <div className="pt-2">
+                  <button 
+                    type="submit" 
+                    disabled={loading}
+                    className="w-full sm:w-auto px-8 py-3.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl shadow-lg shadow-teal-500/30 hover:shadow-teal-500/40 hover:-translate-y-0.5 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {loading ? 'Menyimpan...' : (
+                      <>
+                        <Check className="w-5 h-5" />
+                        Simpan Email
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+            
+            {role === 'dpl' && (
+              <div className="bg-white/40 dark:bg-slate-900/20 p-6 rounded-3xl border border-white/60 dark:border-slate-700 shadow-inner mb-8">
+                <div className="mb-6">
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <span className="text-teal-600">🆔</span> ID Pengguna (Username)
+                  </h3>
+                  <p className="text-sm text-slate-500 mt-1">Ubah ID Pengguna yang Anda gunakan untuk login.</p>
+                </div>
+                
+                {messageUsername && (
+                  <div className={`p-4 rounded-xl mb-6 font-bold text-sm flex items-center gap-2 ${messageUsername.type === 'error' ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-teal-50 text-teal-700 border border-teal-200'}`}>
+                    {messageUsername.type === 'error' ? '⚠️ ' : '✅ '}{messageUsername.text}
+                  </div>
+                )}
+                
+                <form onSubmit={handleUsernameSubmit} className="space-y-5">
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">ID Pengguna Baru</label>
+                    <input 
+                      type="text" 
+                      required
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      className="w-full px-5 py-3.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white/60 dark:bg-slate-800/60 backdrop-blur-md text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-600 transition-all font-medium placeholder-slate-400"
+                      placeholder="Masukkan ID Pengguna baru"
+                    />
+                  </div>
+                  <div className="pt-2">
+                    <button 
+                      type="submit" 
+                      disabled={loading}
+                      className="w-full sm:w-auto px-8 py-3.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl shadow-lg shadow-teal-500/30 hover:shadow-teal-500/40 hover:-translate-y-0.5 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                    >
+                      {loading ? 'Menyimpan...' : (
+                        <>
+                          <Check className="w-5 h-5" />
+                          Simpan ID Pengguna
                         </>
                       )}
                     </button>

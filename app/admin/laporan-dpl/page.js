@@ -11,10 +11,6 @@ export default function AdminLaporanDplPage() {
   const [loading, setLoading] = useState(true);
   const [selectedLaporan, setSelectedLaporan] = useState(null);
 
-  useEffect(() => {
-    fetchLaporans();
-  }, []);
-
   const fetchLaporans = async () => {
     try {
       const res = await fetch('/api/admin/laporan-dpl');
@@ -28,6 +24,10 @@ export default function AdminLaporanDplPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchLaporans();
+  }, []);
 
   const handleAction = async (id, action) => {
     if (!confirm(`Apakah Anda yakin ingin melakukan ${action} pada laporan ini?`)) return;

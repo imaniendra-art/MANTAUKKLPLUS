@@ -69,6 +69,12 @@ export async function PUT(req) {
       if (data.kaprodi_nip !== undefined) {
         settings.kaprodi_nip = data.kaprodi_nip;
       }
+      if (data.ketua_lppm_nama !== undefined) {
+        settings.ketua_lppm_nama = data.ketua_lppm_nama;
+      }
+      if (data.ketua_lppm_nidn !== undefined) {
+        settings.ketua_lppm_nidn = data.ketua_lppm_nidn;
+      }
       await settings.save();
     }
 

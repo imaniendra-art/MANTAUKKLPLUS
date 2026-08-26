@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { useSession } from "@/components/AuthProvider";
-import { Check, X, ChevronDown, ChevronUp, Award, Link, MessageCircle } from "lucide-react";
+import { Check, X, ChevronDown, ChevronUp, Award, Link, MessageCircle, CheckCircle2, AlertCircle, Lock } from "lucide-react";
 
 const DEFAULT_SECTIONS_INDIVIDU = {
   bab1: [
@@ -128,6 +128,9 @@ export default function DplValidasiLaporan() {
         setExpandedRow(null);
         setCatatanDraft({});
         fetchData();
+        if (newStatus === 'disetujui') {
+          setActiveTab('penilaian');
+        }
       } else {
         const errorData = await res.json();
         alert(`Gagal mengupdate laporan: ${errorData.error || 'Server error'}`);
@@ -174,6 +177,57 @@ export default function DplValidasiLaporan() {
   }, {});
   const groupedLaporansArr = Object.values(groupedLaporans);
 
+  const getPokjaReportStatus = (pokja) => {
+    // 1. Laporan Kelompok
+    const lapKelompok = laporans.find(l => 
+      (l.pokja_id?._id === pokja._id || l.pokja_id === pokja._id) && 
+      l.tipe_laporan === 'pokja'
+    );
+    const isKelompokApproved = lapKelompok?.status === 'disetujui';
+
+    // 2. Daftar anggota aktif (ketua + anggota aktif)
+    const activeMembers = [];
+    if (pokja.ketua_id) {
+      const kId = typeof pokja.ketua_id === 'object' ? pokja.ketua_id._id : pokja.ketua_id;
+      if (kId) activeMembers.push(kId.toString());
+    }
+    if (Array.isArray(pokja.anggota)) {
+      pokja.anggota.forEach(a => {
+        if (a.status_undangan === 'bergabung' || !a.status_undangan) {
+          const mId = a.user_id && typeof a.user_id === 'object' ? a.user_id._id : a.user_id;
+          if (mId && !activeMembers.includes(mId.toString())) {
+            activeMembers.push(mId.toString());
+          }
+        }
+      });
+    }
+
+    const totalExpectedIndividu = activeMembers.length;
+    
+    // Hitung berapa laporan individu yang sudah disetujui
+    const approvedIndividuCount = laporans.filter(l => 
+      (l.pokja_id?._id === pokja._id || l.pokja_id === pokja._id) &&
+      l.tipe_laporan === 'individu' &&
+      l.status === 'disetujui' &&
+      activeMembers.includes((l.mahasiswa_id?._id || l.mahasiswa_id)?.toString())
+    ).length;
+
+    const isIndividuComplete = totalExpectedIndividu > 0 && approvedIndividuCount >= totalExpectedIndividu;
+    const isAllApproved = isKelompokApproved && isIndividuComplete;
+
+    return {
+      isKelompokApproved,
+      hasKelompok: !!lapKelompok,
+      kelompokStatus: lapKelompok?.status || 'belum_ada',
+      approvedIndividuCount,
+      totalExpectedIndividu,
+      isIndividuComplete,
+      isAllApproved
+    };
+  };
+
+  const readyPokjaCount = pokjas.filter(p => getPokjaReportStatus(p).isAllApproved).length;
+
   return (
     <DashboardLayout title="Validasi Laporan Akhir (DPL)">
       {toastMessage && (
@@ -195,6 +249,9 @@ export default function DplValidasiLaporan() {
           className={`px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${activeTab === 'penilaian' ? 'bg-fuchsia-100 text-fuchsia-800' : 'text-slate-500 hover:bg-slate-50'}`}
         >
           <Award className="w-4 h-4" /> Penilaian Mahasiswa
+          <span className={`text-xs px-2.5 py-0.5 rounded-full font-bold transition-all ${readyPokjaCount > 0 ? 'bg-teal-600 text-white' : 'bg-slate-200 text-slate-600'}`}>
+            {readyPokjaCount} / {pokjas.length} Siap
+          </span>
         </button>
       </div>
 
@@ -299,9 +356,9 @@ export default function DplValidasiLaporan() {
                                   href={`/mahasiswa/laporan/cetak/laporan?id=${laporan._id}`} 
                                   target="_blank" 
                                   rel="noreferrer"
-                                  className="text-xs font-bold text-teal-700 bg-teal-50 hover:bg-teal-100 px-3 py-2 rounded-lg transition-colors border border-teal-200"
+                                  className="text-xs font-bold text-teal-700 bg-teal-50 hover:bg-teal-100 px-3 py-2 rounded-lg transition-colors border border-teal-200 inline-flex items-center gap-1.5"
                                 >
-                                  📄 Cetak PDF
+                                  📄 Lihat Laporan
                                 </a>
                                 
                                 <button 
@@ -522,13 +579,13 @@ export default function DplValidasiLaporan() {
         </div>
       ) : (
         <div className="space-y-6">
-          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6 shadow-sm">
-            <h3 className="font-bold text-amber-800 text-lg flex items-center gap-2 mb-2">
+          <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50 rounded-2xl p-6 shadow-sm">
+            <h3 className="font-bold text-amber-900 dark:text-amber-300 text-lg flex items-center gap-2 mb-2">
               <Award className="w-5 h-5" /> Penilaian KKL Plus (DPL)
             </h3>
-            <p className="text-amber-700 text-sm">
-              Berikan penilaian untuk capaian kelompok dan capaian individu mahasiswa (Skala 0-100).<br/>
-              <b>Bantuan untuk Mentor:</b> Nilai Mentor (Bobot 20%) diisi secara terpisah. Anda dapat membantu Mentor dengan mengirimkan link form penilaian mereka:
+            <p className="text-amber-800 dark:text-amber-400 text-sm leading-relaxed">
+              <strong>Ketentuan:</strong> Pengisian nilai mahasiswa baru dapat dibuka setelah DPL menyetujui seluruh <strong>Laporan Kelompok</strong> dan <strong>Laporan Individu</strong> mahasiswa binaan pada tab <em>Validasi Laporan</em>.<br/>
+              <span className="block mt-1"><b>Bantuan untuk Mentor:</b> Nilai Mentor (Bobot 20%) diisi secara terpisah. Anda dapat mengirimkan tautan form penilaian kepada Mentor melalui WhatsApp.</span>
             </p>
           </div>
 
@@ -537,79 +594,116 @@ export default function DplValidasiLaporan() {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-200 text-xs uppercase tracking-wider text-slate-500">
-                    <th className="py-4 px-6 font-bold w-[15%]">Nama Kelompok</th>
-                    <th className="py-4 px-6 font-bold w-[15%]">Ketua Kelompok</th>
-                    <th className="py-4 px-6 font-bold w-[20%]">Lokasi / Mitra</th>
-                    <th className="py-4 px-6 font-bold w-[15%]">Nama Mentor</th>
-                    <th className="py-4 px-6 font-bold w-[15%]">No WA</th>
+                    <th className="py-4 px-6 font-bold w-[16%]">Nama Kelompok</th>
+                    <th className="py-4 px-6 font-bold w-[14%]">Ketua Kelompok</th>
+                    <th className="py-4 px-6 font-bold w-[16%]">Lokasi / Mitra</th>
+                    <th className="py-4 px-6 font-bold w-[18%]">Status Laporan</th>
+                    <th className="py-4 px-6 font-bold w-[16%]">Nama Mentor</th>
                     <th className="py-4 px-6 font-bold text-right w-[20%]">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {pokjas.length === 0 ? (
                     <tr>
-                      <td colSpan="5" className="py-12 text-center text-slate-500 font-medium">
+                      <td colSpan="6" className="py-12 text-center text-slate-500 font-medium">
                         Belum ada kelompok bimbingan yang terdaftar.
                       </td>
                     </tr>
                   ) : (
-                    pokjas.map((pokja) => (
-                      <tr key={pokja._id} className="hover:bg-slate-50 transition-colors">
-                        <td className="py-4 px-6 align-middle">
-                          <p className="font-bold text-sm text-slate-800">{pokja.nama_pokja}</p>
-                        </td>
-                        <td className="py-4 px-6 align-middle">
-                          <p className="text-sm text-slate-700">{pokja.ketua_id?.nama_lengkap || '-'}</p>
-                        </td>
-                        <td className="py-4 px-6 align-middle">
-                          <p className="text-sm font-medium text-slate-700">{pokja.mitra_id?.nama_instansi || '-'}</p>
-                        </td>
-                        <td className="py-4 px-6 align-middle">
-                          <p className="text-sm text-slate-700">{pokja.mentor_id?.nama_lengkap || '-'}</p>
-                        </td>
-                        <td className="py-4 px-6 align-middle">
-                          {pokja.mentor_id?.nomor_hp ? (
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <p className="text-sm text-slate-700">{pokja.mentor_id.nomor_hp}</p>
-                              <button
+                    pokjas.map((pokja) => {
+                      const repStatus = getPokjaReportStatus(pokja);
+
+                      return (
+                        <tr key={pokja._id} className="hover:bg-slate-50 transition-colors">
+                          <td className="py-4 px-6 align-middle">
+                            <p className="font-bold text-sm text-slate-800">{pokja.nama_pokja}</p>
+                          </td>
+                          <td className="py-4 px-6 align-middle">
+                            <p className="text-sm text-slate-700">{pokja.ketua_id?.nama_lengkap || '-'}</p>
+                          </td>
+                          <td className="py-4 px-6 align-middle">
+                            <p className="text-sm font-medium text-slate-700">{pokja.mitra_id?.nama_instansi || '-'}</p>
+                          </td>
+                          <td className="py-4 px-6 align-middle">
+                            {repStatus.isAllApproved ? (
+                              <div className="space-y-1">
+                                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-700 bg-teal-50 border border-teal-200 px-2.5 py-1 rounded-lg">
+                                  <CheckCircle2 className="w-3.5 h-3.5 text-teal-600" /> Semua Disetujui
+                                </span>
+                                <p className="text-[11px] text-slate-500">
+                                  Kelompok: ✅ • Individu: {repStatus.approvedIndividuCount}/{repStatus.totalExpectedIndividu}
+                                </p>
+                              </div>
+                            ) : (
+                              <div className="space-y-1">
+                                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-800 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-lg">
+                                  <AlertCircle className="w-3.5 h-3.5 text-amber-600" /> Menunggu Persetujuan
+                                </span>
+                                <p className="text-[11px] text-slate-500">
+                                  Kelompok: {repStatus.isKelompokApproved ? '✅' : '⏳ Belum'} • Individu: {repStatus.approvedIndividuCount}/{repStatus.totalExpectedIndividu}
+                                </p>
+                              </div>
+                            )}
+                          </td>
+                          <td className="py-4 px-6 align-middle">
+                            {pokja.mentor_id?.nomor_hp ? (
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <p className="text-sm text-slate-700">{pokja.mentor_id.nama_lengkap || '-'}</p>
+                                <button
+                                  onClick={() => {
+                                    const url = `${window.location.origin}/penilaian-mentor/${pokja._id}`;
+                                    let phone = pokja.mentor_id.nomor_hp.replace(/[^0-9]/g, '');
+                                    if (phone.startsWith('0')) phone = '62' + phone.substring(1);
+                                    const msg = `Halo Bapak/Ibu ${pokja.mentor_id.nama_lengkap},\n\nBerikut adalah link untuk mengisi form penilaian KKL Plus mahasiswa kelompok *${pokja.nama_pokja}*:\n\n${url}\n\nTerima kasih.`;
+                                    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+                                  }}
+                                  className="text-[10px] bg-green-50 hover:bg-green-100 text-green-700 px-2 py-1 rounded transition-colors border border-green-200 flex items-center gap-1 shrink-0"
+                                >
+                                  <MessageCircle className="w-3 h-3" /> WhatsApp
+                                </button>
+                              </div>
+                            ) : (
+                              <p className="text-sm text-slate-700">{pokja.mentor_id?.nama_lengkap || '-'}</p>
+                            )}
+                          </td>
+                          <td className="py-4 px-6 align-middle text-right">
+                            <div className="flex justify-end gap-2 flex-wrap items-center">
+                              <button 
                                 onClick={() => {
                                   const url = `${window.location.origin}/penilaian-mentor/${pokja._id}`;
-                                  let phone = pokja.mentor_id.nomor_hp.replace(/[^0-9]/g, '');
-                                  if (phone.startsWith('0')) phone = '62' + phone.substring(1);
-                                  const msg = `Halo Bapak/Ibu ${pokja.mentor_id.nama_lengkap},\n\nBerikut adalah link untuk mengisi form penilaian KKL Plus mahasiswa kelompok *${pokja.nama_pokja}*:\n\n${url}\n\nTerima kasih.`;
-                                  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+                                  navigator.clipboard.writeText(url);
+                                  showToast("Link Penilaian Mentor disalin!");
                                 }}
-                                className="text-[10px] bg-green-50 hover:bg-green-100 text-green-700 px-2 py-1 rounded transition-colors border border-green-200 flex items-center gap-1 shrink-0"
+                                className="inline-flex text-[10px] font-bold bg-slate-50 hover:bg-slate-100 text-slate-600 px-2.5 py-2.5 rounded-lg transition-colors border border-slate-200 items-center gap-1"
                               >
-                                <MessageCircle className="w-3 h-3" /> WhatsApp
+                                <Link className="w-3.5 h-3.5" /> Copy Link
                               </button>
+                              
+                              {repStatus.isAllApproved ? (
+                                <a
+                                  href={`/dpl/penilaian/${pokja._id}`}
+                                  className="inline-flex text-xs font-bold text-white bg-teal-600 hover:bg-teal-700 px-4 py-2.5 rounded-xl transition-all shadow-md shadow-teal-600/20 items-center gap-1.5"
+                                >
+                                  <Award className="w-4 h-4" /> Nilai Kelompok Ini
+                                </a>
+                              ) : (
+                                <button
+                                  onClick={() => {
+                                    setActiveTab('validasi');
+                                    setExpandedPokja(pokja._id);
+                                    showToast("Silakan periksa & setujui laporan kelompok ini terlebih dahulu.");
+                                  }}
+                                  className="inline-flex text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 px-3.5 py-2.5 rounded-xl transition-all border border-slate-200 items-center gap-1.5 cursor-pointer"
+                                  title="Penilaian terkunci: Laporan kelompok dan seluruh laporan individu harus disetujui DPL terlebih dahulu"
+                                >
+                                  <Lock className="w-3.5 h-3.5 text-slate-400" /> Penilaian Terkunci
+                                </button>
+                              )}
                             </div>
-                          ) : (
-                            <p className="text-sm text-slate-700">-</p>
-                          )}
-                        </td>
-                        <td className="py-4 px-6 align-middle text-right">
-                          <div className="flex justify-end gap-2 flex-wrap">
-                            <button 
-                              onClick={() => {
-                                const url = `${window.location.origin}/penilaian-mentor/${pokja._id}`;
-                                navigator.clipboard.writeText(url);
-                                showToast("Link Penilaian Mentor disalin!");
-                              }}
-                              className="inline-flex text-[10px] font-bold bg-slate-50 hover:bg-slate-100 text-slate-600 px-3 py-2.5 rounded-lg transition-colors border border-slate-200 items-center gap-1.5"
-                            >
-                              <Link className="w-3.5 h-3.5" /> Copy Link
-                            </button>
-                            <a
-                              href={`/dpl/penilaian/${pokja._id}`}
-                              className="inline-flex text-xs font-bold text-fuchsia-700 bg-fuchsia-50 hover:bg-fuchsia-100 px-4 py-2.5 rounded-lg transition-colors border border-fuchsia-200 items-center gap-1.5"
-                            >
-                              <Award className="w-4 h-4" /> Nilai Kelompok Ini
-                            </a>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
+                          </td>
+                        </tr>
+                      );
+                    })
                   )}
                 </tbody>
               </table>

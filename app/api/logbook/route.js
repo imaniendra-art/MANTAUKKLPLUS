@@ -5,6 +5,7 @@ import Pokja from '@/models/Pokja';
 import User from '@/models/User';
 import Proker from '@/models/Proker';
 import { generatePresignedUrl } from '@/lib/minio';
+import { getServerSession } from "@/lib/auth";
 
 async function processLogbookUrls(logbookDoc) {
   if (!logbookDoc) return logbookDoc;
@@ -22,12 +23,26 @@ async function processLogbookArray(logs) {
 export async function GET(req) {
   await dbConnect();
   try {
+    const session = await getServerSession();
+    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
     const { searchParams } = new URL(req.url);
     const mhsId = searchParams.get('mhsId');
     const pokjaId = searchParams.get('pokjaId');
     const tipe = searchParams.get('tipe'); // 'individu' | 'pokja'
     const role = searchParams.get('role');
     const userId = searchParams.get('userId'); 
+
+    // Mencegah Spoofing Identitas (IDOR)
+    if (session.user.role === 'mahasiswa' && mhsId && mhsId !== session.user.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    if (role === 'admin' && session.user.role !== 'admin') {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    if (userId && session.user.id !== userId && session.user.role !== 'admin') {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     
     const pageStr = searchParams.get('page');
     const limitStr = searchParams.get('limit');
@@ -135,7 +150,17 @@ export async function GET(req) {
 export async function POST(req) {
   await dbConnect();
   try {
+    const session = await getServerSession();
+    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
     const data = await req.json();
+
+    // IDOR Prevention: Mahasiswa hanya boleh submit logbook atas namanya sendiri
+    if (session.user.role === 'mahasiswa') {
+        if (data.tipe_logbook === 'individu' && data.mahasiswa_id !== session.user.id) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+    }
 
     // PERBAIKAN 3: Validasi Tanggal (Tidak boleh masa depan)
     const inputDate = new Date(data.tanggal);
@@ -163,13 +188,7 @@ export async function POST(req) {
         return NextResponse.json({ error: "Logbook individu pada tanggal tersebut sudah ada." }, { status: 400 });
       }
     } else if (data.tipe_logbook === 'pokja') {
-      queryDuplicate.pokja_id = data.pokja_id;
-      const exists = await Logbook.findOne(queryDuplicate);
-      if (exists) {
-        return NextResponse.json({ error: "Logbook Pokja pada tanggal tersebut sudah ada." }, { status: 400 });
-      }
-
-      // PERBAIKAN 5: Validasi Logbook Pokja (wajib proker, proker sesuai, proker disetujui)
+      // Validasi Logbook Pokja (wajib proker, proker sesuai, proker disetujui)
       if (!data.proker_id) {
         return NextResponse.json({ error: "Program kerja wajib dipilih." }, { status: 400 });
       }
@@ -180,7 +199,16 @@ export async function POST(req) {
       }
 
       if (proker.status !== 'disetujui_dpl' && proker.status !== 'selesai') {
-        return NextResponse.json({ error: "Program kerja belum disetujui." }, { status: 400 });
+        return NextResponse.json({ error: "Program kerja belum disetujui DPL." }, { status: 400 });
+      }
+
+      // Cegah duplicate submit untuk proker yang sama oleh mahasiswa/PIC yang sama di hari yang sama
+      queryDuplicate.pokja_id = data.pokja_id;
+      queryDuplicate.proker_id = data.proker_id;
+      queryDuplicate.mahasiswa_id = data.mahasiswa_id;
+      const exists = await Logbook.findOne(queryDuplicate);
+      if (exists) {
+        return NextResponse.json({ error: "Logbook untuk Program Kerja ini pada tanggal tersebut sudah Anda buat." }, { status: 400 });
       }
     }
 
@@ -194,11 +222,17 @@ export async function POST(req) {
 export async function PATCH(req) {
   await dbConnect();
   try {
+    const session = await getServerSession();
+    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
     const data = await req.json();
     const { id, status_validasi, catatan_revisi, rencana_target, uraian_kegiatan, hasil_output, kendala_solusi, bukti_link, bukti_kegiatan, keterangan_bukti, ids } = data;
     
     // Bulk Update
     if (ids && Array.isArray(ids) && ids.length > 0) {
+      if (session.user.role === 'mahasiswa') {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
       if (!status_validasi) {
         return NextResponse.json({ error: "Missing status_validasi for bulk update" }, { status: 400 });
       }
@@ -230,9 +264,16 @@ export async function PATCH(req) {
       return NextResponse.json({ error: "Logbook yang telah divalidasi tidak dapat diubah." }, { status: 400 });
     }
 
+    // Cegah mahasiswa validasi logbook sendiri atau edit logbook orang lain
+    if (session.user.role === 'mahasiswa') {
+        if (logbook.mahasiswa_id?.toString() !== session.user.id && logbook.tipe_logbook === 'individu') {
+             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+    }
+
     let updateData = {};
-    if (status_validasi) updateData.status_validasi = status_validasi;
-    if (catatan_revisi !== undefined) updateData.catatan_revisi = catatan_revisi;
+    if (status_validasi && session.user.role !== 'mahasiswa') updateData.status_validasi = status_validasi;
+    if (catatan_revisi !== undefined && session.user.role !== 'mahasiswa') updateData.catatan_revisi = catatan_revisi;
     if (rencana_target !== undefined) updateData.rencana_target = rencana_target;
     if (uraian_kegiatan !== undefined) updateData.uraian_kegiatan = uraian_kegiatan;
     if (hasil_output !== undefined) updateData.hasil_output = hasil_output;
@@ -256,6 +297,9 @@ export async function PATCH(req) {
 export async function DELETE(req) {
   await dbConnect();
   try {
+    const session = await getServerSession();
+    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
 
@@ -272,6 +316,15 @@ export async function DELETE(req) {
     const isApproved = ['divalidasi_mentor', 'divalidasi_dpl', 'selesai'].includes(logbook.status_validasi);
     if (isApproved) {
       return NextResponse.json({ error: "Logbook yang telah divalidasi tidak dapat dihapus." }, { status: 400 });
+    }
+
+    // IDOR Prevention: Cegah mahasiswa menghapus logbook orang lain, cegah DPL menghapus logbook
+    if (session.user.role === 'mahasiswa') {
+        if (logbook.mahasiswa_id?.toString() !== session.user.id && logbook.tipe_logbook === 'individu') {
+             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+    } else if (session.user.role !== 'admin') {
+        return NextResponse.json({ error: "Unauthorized: Hanya admin atau mahasiswa pemilik yang dapat menghapus" }, { status: 401 });
     }
 
     await Logbook.findByIdAndDelete(id);

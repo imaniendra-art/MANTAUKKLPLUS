@@ -10,21 +10,27 @@ export default function SuratPengantarPage({ params }) {
   const { id } = unwrappedParams;
   const router = useRouter();
   const [pokja, setPokja] = useState(null);
+  const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchPokja = async () => {
+    const fetchData = async () => {
       try {
-        const res = await fetch(`/api/pokja?pokjaId=${id}`);
-        const data = await res.json();
-        setPokja(data);
+        const [resPokja, resSettings] = await Promise.all([
+          fetch(`/api/pokja?pokjaId=${id}`),
+          fetch(`/api/admin/settings`)
+        ]);
+        const dataPokja = await resPokja.json();
+        const dataSettings = resSettings.ok ? await resSettings.json() : {};
+        setPokja(dataPokja);
+        setSettings(dataSettings);
       } catch (err) {
         console.error(err);
       } finally {
         setLoading(false);
       }
     };
-    fetchPokja();
+    fetchData();
   }, [id]);
 
   if (loading) {
@@ -38,6 +44,12 @@ export default function SuratPengantarPage({ params }) {
   const currentDate = new Date().toLocaleDateString('id-ID', {
     day: 'numeric', month: 'long', year: 'numeric'
   });
+  
+  const romanMonths = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
+  const currentMonthRoman = romanMonths[new Date().getMonth()];
+  const currentYear = new Date().getFullYear();
+  const noUrutStr = id ? String(parseInt(id.slice(-4), 16) % 1000).padStart(3, '0') : "001";
+  const nomorSurat = `${noUrutStr}/SPIO-KKLPlus/LPPM/${currentMonthRoman}/${currentYear}`;
 
   return (
     <div className="bg-slate-200 min-h-screen py-8 print:py-0 print:bg-white flex justify-center">
@@ -60,20 +72,20 @@ export default function SuratPengantarPage({ params }) {
       </div>
 
       {/* Kertas A4 */}
-      <div className="bg-white w-[210mm] min-h-[297mm] px-[20mm] py-[20mm] shadow-2xl print:shadow-none print:m-0 font-serif text-[12pt] text-black leading-relaxed">
+      <div className="bg-white w-[210mm] min-h-[297mm] px-[20mm] pt-[5mm] pb-[20mm] shadow-2xl print:shadow-none print:m-0 font-serif text-[12pt] text-black leading-relaxed">
         
         {/* KOP SURAT */}
         <KopSurat />
 
         {/* INFO SURAT */}
-        <div className="flex justify-between mb-8">
+        <div className="flex justify-between items-start mb-8">
           <div>
             <table className="text-[12pt]">
               <tbody>
                 <tr>
                   <td className="pr-4 py-1">Nomor</td>
                   <td className="pr-2">:</td>
-                  <td>..... /UN.../Admin/KKL/{new Date().getFullYear()}</td>
+                  <td>{nomorSurat}</td>
                 </tr>
                 <tr>
                   <td className="pr-4 py-1">Lampiran</td>
@@ -88,7 +100,7 @@ export default function SuratPengantarPage({ params }) {
               </tbody>
             </table>
           </div>
-          <div className="text-right">
+          <div className="text-right whitespace-nowrap ml-4">
             <p>{currentDate}</p>
           </div>
         </div>
@@ -143,6 +155,10 @@ export default function SuratPengantarPage({ params }) {
           </table>
 
           <p className="mt-4">
+            Kelompok mahasiswa tersebut juga berada di bawah bimbingan Dosen Pembimbing Lapangan (DPL) yaitu <strong>{pokja.dpl_id?.nama_lengkap || "-"}</strong> (No. HP: {pokja.dpl_id?.nomor_hp || "-"}).
+          </p>
+
+          <p className="mt-4">
             Kami sangat mengharapkan kesediaan Bapak/Ibu untuk menerima mahasiswa kami. Demikian permohonan ini kami sampaikan, atas perhatian dan kerja sama yang baik kami ucapkan terima kasih.
           </p>
         </div>
@@ -150,9 +166,9 @@ export default function SuratPengantarPage({ params }) {
         {/* TTD */}
         <div className="mt-16 flex justify-end">
           <div className="w-64 text-center">
-            <p className="mb-20">Ketua Admin,</p>
-            <p className="font-bold underline">Prof. Dr. Akademisi Hebat, M.Si.</p>
-            <p>NIP. 19800101 200501 1 001</p>
+            <p className="mb-20">Ketua LPPM,</p>
+            <p className="font-bold underline">{settings?.ketua_lppm_nama || 'Dr. Jane Doe, M.Pd'}</p>
+            <p>NIDN. {settings?.ketua_lppm_nidn || '0912345678'}</p>
           </div>
         </div>
 

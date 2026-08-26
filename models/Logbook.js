@@ -61,5 +61,11 @@ const LogbookSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
+// Indeks untuk skalabilitas query riwayat dan validasi
+LogbookSchema.index({ pokja_id: 1, tanggal: -1 });
+LogbookSchema.index({ mahasiswa_id: 1, tanggal: -1 });
+LogbookSchema.index({ pokja_id: 1, proker_id: 1, mahasiswa_id: 1, tanggal: 1 });
+LogbookSchema.index({ status_validasi: 1 });
+
 delete mongoose.models.Logbook;
 export default mongoose.models.Logbook || mongoose.model('Logbook', LogbookSchema);

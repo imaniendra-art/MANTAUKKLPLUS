@@ -42,6 +42,8 @@ export default function AdminSettingsPage() {
           pengumpulan_laporan_buka: data.pengumpulan_laporan_buka ?? true,
           kaprodi_nama: data.kaprodi_nama || 'Dr. Jhon Doe, SE., M.Si',
           kaprodi_nip: data.kaprodi_nip || '198001012005011001',
+          ketua_lppm_nama: data.ketua_lppm_nama || 'Dr. Jane Doe, M.Pd',
+          ketua_lppm_nidn: data.ketua_lppm_nidn || '0912345678',
         });
       }
     } catch (error) {
@@ -111,17 +113,17 @@ export default function AdminSettingsPage() {
       
       const data = await res.json();
       if (res.ok) {
-        setMessage({ type: 'success', text: data.message });
-        if (profileData.nama_lengkap !== session.user.nama_lengkap || profileData.email !== session.user.email) {
-          // If name or email changed, try updating the session
-          update({ nama_lengkap: profileData.nama_lengkap, email: profileData.email });
+        setMessage({ type: 'success', text: data.message || 'Profil berhasil diperbarui.' });
+        if (typeof update === 'function') {
+          await update({ nama_lengkap: profileData.nama_lengkap, email: profileData.email });
         }
         setProfileData(prev => ({ ...prev, password: '', confirm_password: '' }));
       } else {
         setMessage({ type: 'error', text: data.error || 'Gagal memperbarui profil.' });
       }
     } catch (error) {
-      setMessage({ type: 'error', text: 'Terjadi kesalahan sistem.' });
+      console.error('Error saving profile:', error);
+      setMessage({ type: 'error', text: error.message || 'Terjadi kesalahan sistem.' });
     } finally {
       setIsSaving(false);
     }
@@ -305,6 +307,29 @@ export default function AdminSettingsPage() {
                       type="text" 
                       value={systemSettings.kaprodi_nip}
                       onChange={(e) => setSystemSettings({...systemSettings, kaprodi_nip: e.target.value})}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring focus:ring-teal-200 focus:ring-opacity-50 transition-all bg-slate-50"
+                      required
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mt-6">
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-2">Nama Ketua LPPM</label>
+                    <input 
+                      type="text" 
+                      value={systemSettings.ketua_lppm_nama || ''}
+                      onChange={(e) => setSystemSettings({...systemSettings, ketua_lppm_nama: e.target.value})}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring focus:ring-teal-200 focus:ring-opacity-50 transition-all bg-slate-50"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-2">NIDN / NUPTK Ketua LPPM</label>
+                    <input 
+                      type="text" 
+                      value={systemSettings.ketua_lppm_nidn || ''}
+                      onChange={(e) => setSystemSettings({...systemSettings, ketua_lppm_nidn: e.target.value})}
                       className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring focus:ring-teal-200 focus:ring-opacity-50 transition-all bg-slate-50"
                       required
                     />

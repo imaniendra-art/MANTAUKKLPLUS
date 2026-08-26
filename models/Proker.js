@@ -22,4 +22,9 @@ const ProkerSchema = new mongoose.Schema({
   catatan_revisi: { type: String, default: '' },
 }, { timestamps: true });
 
+// Indeks untuk pengambilan cepat daftar proker pokja & PIC
+ProkerSchema.index({ pokja_id: 1, status: 1 });
+ProkerSchema.index({ pic_id: 1 });
+
+delete mongoose.models.Proker;
 export default mongoose.models.Proker || mongoose.model('Proker', ProkerSchema);

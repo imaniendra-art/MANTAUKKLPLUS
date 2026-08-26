@@ -56,7 +56,7 @@ export default function CetakLaporan() {
 
   if (!data) return <div className="p-10 text-center">Memuat dokumen cetak...</div>;
 
-  const { laporan, pengajuan, logbooks = [], monev = [] } = data;
+  const { laporan, pengajuan, logbooks = [], monev = [], prokers = [] } = data;
   const mhs = laporan.mahasiswa_id || pengajuan.mahasiswa_id || session.user;
   const mitraObj = pengajuan.pokja_id?.mitra_id || pengajuan.mitra_id;
   let mitra = mitraObj?.nama_instansi || pengajuan.detail_tempat?.nama || '';
@@ -106,6 +106,54 @@ export default function CetakLaporan() {
     return acc;
   }, {});
 
+  // Perhitungan Tanggal Pelaksanaan (Opsi 3: Hierarki Cerdas Logbook/Proker/2 Bulan)
+  const candidateDates = [];
+  logbooks.forEach(l => {
+    if (l.tanggal) {
+      const d = new Date(l.tanggal);
+      if (!isNaN(d.getTime())) candidateDates.push(d);
+    }
+  });
+  prokers.forEach(p => {
+    if (p.tanggal_mulai) {
+      const d = new Date(p.tanggal_mulai);
+      if (!isNaN(d.getTime())) candidateDates.push(d);
+    }
+    if (p.tanggal_selesai) {
+      const d = new Date(p.tanggal_selesai);
+      if (!isNaN(d.getTime())) candidateDates.push(d);
+    }
+  });
+
+  candidateDates.sort((a, b) => a.getTime() - b.getTime());
+
+  let tglMulai = null;
+  let tglSelesai = null;
+
+  if (candidateDates.length > 0) {
+    tglMulai = candidateDates[0];
+    tglSelesai = candidateDates[candidateDates.length - 1];
+  }
+
+  if (!tglMulai) {
+    tglMulai = pengajuan.tanggal_mulai ? new Date(pengajuan.tanggal_mulai) : new Date();
+  }
+
+  const diffDays = tglSelesai ? Math.round((tglSelesai.getTime() - tglMulai.getTime()) / (1000 * 60 * 60 * 24)) : 0;
+  if (!tglSelesai || diffDays < 30) {
+    const dEnd = new Date(tglMulai);
+    dEnd.setMonth(dEnd.getMonth() + 2);
+    tglSelesai = dEnd;
+  }
+
+  const waktuPelaksanaanStr = `${tglMulai.toLocaleDateString('id-ID')} s.d. ${tglSelesai.toLocaleDateString('id-ID')}`;
+  const tahunSelesai = tglSelesai.getFullYear();
+
+  const mentorName = pengajuan.mentor_id?.nama_lengkap || pengajuan.mentor_nama || '';
+  const namaMitraLokasi = mitraObj?.nama_instansi || pengajuan.detail_tempat?.nama || pengajuan.mentor_id?.instansi || 'Instansi / Mitra';
+  const dplName = pengajuan.dpl_id?.nama_lengkap || '';
+  const dplNidnRaw = pengajuan.dpl_id?.nidn || (pengajuan.dpl_id?.nim_nidn && /^\d+$/.test(pengajuan.dpl_id.nim_nidn) ? pengajuan.dpl_id.nim_nidn : '') || '';
+
   return (
     <div className="bg-slate-200 min-h-screen font-serif text-black">
       <style jsx global>{`
@@ -120,9 +168,12 @@ export default function CetakLaporan() {
         }
       `}</style>
       
-      {/* Tombol Print (Sembunyi saat diprint) */}
-      <div className="fixed top-5 right-5 print:hidden">
-        <button onClick={() => window.print()} className="px-6 py-3 bg-teal-600 text-white font-bold rounded-lg shadow-lg hover:bg-teal-700">
+      {/* Floating Action Button untuk Download PDF */}
+      <div className="fixed bottom-6 right-6 z-50 flex gap-2 print:hidden">
+        <button
+          onClick={() => window.print()}
+          className="bg-teal-600 hover:bg-teal-700 text-white font-sans font-bold px-6 py-3 rounded-full shadow-2xl flex items-center gap-2 border-2 border-white transition-all transform hover:scale-105"
+        >
           🖨️ Cetak PDF
         </button>
       </div>
@@ -176,7 +227,7 @@ export default function CetakLaporan() {
           <div className="space-y-1 font-bold uppercase text-lg w-full pb-4">
             <p>PROGRAM STUDI MANAJEMEN</p>
             <p>STIMI YAPMI MAKASSAR</p>
-            <p>{new Date(pengajuan.tanggal_selesai).getFullYear()}</p>
+            <p>{tahunSelesai}</p>
           </div>
         </div>
 
@@ -192,7 +243,7 @@ export default function CetakLaporan() {
                 <tbody>
                   <tr><td className="w-48 font-bold">Program Studi</td><td className="w-4">:</td><td className="uppercase">Manajemen</td></tr>
                   <tr><td className="font-bold">Tempat KKL Plus</td><td>:</td><td className="uppercase">{mitra}</td></tr>
-                  <tr><td className="font-bold">Waktu Pelaksanaan</td><td>:</td><td>{new Date(pengajuan.tanggal_mulai).toLocaleDateString('id-ID')} s.d. {new Date(pengajuan.tanggal_selesai).toLocaleDateString('id-ID')}</td></tr>
+                  <tr><td className="font-bold">Waktu Pelaksanaan</td><td>:</td><td>{waktuPelaksanaanStr}</td></tr>
                   <tr>
                     <td className="font-bold align-top pt-2">Anggota Kelompok</td>
                     <td className="align-top pt-2">:</td>
@@ -217,7 +268,7 @@ export default function CetakLaporan() {
                 <tr><td className="font-bold">NIM/NIDN</td><td>:</td><td>{mhs.nim_nidn}</td></tr>
                 <tr><td className="font-bold">Program Studi</td><td>:</td><td className="uppercase">{mhs.program_studi || 'Manajemen'}</td></tr>
                 <tr><td className="font-bold">Tempat KKL Plus</td><td>:</td><td className="uppercase">{mitra}</td></tr>
-                <tr><td className="font-bold">Waktu Pelaksanaan</td><td>:</td><td>{new Date(pengajuan.tanggal_mulai).toLocaleDateString('id-ID')} s.d. {new Date(pengajuan.tanggal_selesai).toLocaleDateString('id-ID')}</td></tr>
+                <tr><td className="font-bold">Waktu Pelaksanaan</td><td>:</td><td>{waktuPelaksanaanStr}</td></tr>
               </tbody>
             </table>
           )}
@@ -232,8 +283,8 @@ export default function CetakLaporan() {
                   <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Validasi Digital</p>
                 </div>
               )}
-              <p className="font-bold underline uppercase">{pengajuan.mentor_nama || '_________________________'}</p>
-              <p>{pengajuan.mentor_jabatan || 'Instansi/Perusahaan'}</p>
+              <p className="font-bold underline uppercase">{mentorName || '_________________________'}</p>
+              <p>{namaMitraLokasi}</p>
             </div>
             <div className="flex flex-col items-center">
               <p className={isDisetujui ? "mb-4" : "mb-24"}>Mengesahkan,<br/>Dosen Pembimbing Lapangan (DPL)</p>
@@ -243,8 +294,8 @@ export default function CetakLaporan() {
                   <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Validasi Digital</p>
                 </div>
               )}
-              <p className="font-bold underline uppercase">{pengajuan.dpl_id?.nama_lengkap || '_________________________'}</p>
-              <p>NIDN: {pengajuan.dpl_id?.nim_nidn || '__________________'}</p>
+              <p className="font-bold underline uppercase">{dplName || '_________________________'}</p>
+              <p>NIDN: {dplNidnRaw || '__________________'}</p>
             </div>
           </div>
         </div>

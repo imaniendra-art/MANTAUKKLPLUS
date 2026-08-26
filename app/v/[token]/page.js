@@ -177,6 +177,35 @@ export default function MagicLinkValidasi() {
                   <span className="font-bold text-slate-700 dark:text-slate-300 min-w-[80px]">Hasil:</span>
                   <span className="text-teal-600 dark:text-teal-500 font-medium leading-relaxed">{log.hasil_output}</span>
                 </div>
+                {log.kendala_solusi && (
+                  <div className="flex gap-2 text-sm">
+                    <span className="font-bold text-slate-700 dark:text-slate-300 min-w-[80px]">Kendala:</span>
+                    <span className="text-amber-600 dark:text-amber-500 leading-relaxed">{log.kendala_solusi}</span>
+                  </div>
+                )}
+                {log.bukti_link && (
+                  <div className="flex gap-2 text-sm">
+                    <span className="font-bold text-slate-700 dark:text-slate-300 min-w-[80px]">Link Bukti:</span>
+                    <a href={log.bukti_link} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline break-all">
+                      {log.bukti_link}
+                    </a>
+                  </div>
+                )}
+                {log.bukti_kegiatan && (
+                  <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                    <p className="font-bold text-slate-700 dark:text-slate-300 text-sm mb-2">Foto / Dokumentasi:</p>
+                    <div className="relative h-48 sm:h-64 w-full rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800">
+                      <img 
+                        src={log.bukti_kegiatan} 
+                        alt="Dokumentasi Kegiatan" 
+                        className="object-contain w-full h-full"
+                      />
+                    </div>
+                    {log.keterangan_bukti && (
+                      <p className="text-xs text-slate-500 mt-2 text-center italic">&ldquo;{log.keterangan_bukti}&rdquo;</p>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           ))}

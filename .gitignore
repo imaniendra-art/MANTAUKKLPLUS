@@ -39,4 +39,5 @@ next-env.d.ts
 scratch/
 report/
 knip-report.json
+*.log
 

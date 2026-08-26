@@ -200,6 +200,22 @@ const toggleSelectLog = (id) => {
   // -------------------------------------------------------------
   // Data Grouping Logic
   // -------------------------------------------------------------
+  const unvalidatedIndividuCount = useMemo(() => {
+    return logbooks.filter(l => l.tipe_logbook === 'individu' && l.status_validasi === 'menunggu_dpl').length;
+  }, [logbooks]);
+
+  const unvalidatedPokjaCount = useMemo(() => {
+    return logbooks.filter(l => l.tipe_logbook === 'pokja' && l.status_validasi === 'menunggu_dpl').length;
+  }, [logbooks]);
+
+  const totalAntreanCount = useMemo(() => {
+    return logbooks.filter(l => l.status_validasi === 'menunggu_dpl').length;
+  }, [logbooks]);
+
+  const totalHistoriCount = useMemo(() => {
+    return logbooks.filter(l => l.status_validasi !== 'menunggu_dpl').length;
+  }, [logbooks]);
+
   const filteredLogs = useMemo(() => {
     return logbooks.filter(log => {
       // Filter tipe (individu vs pokja)
@@ -310,20 +326,30 @@ const toggleSelectLog = (id) => {
               {/* Type Switcher */}
               <div className="flex bg-slate-100 dark:bg-slate-900 rounded-xl p-1 border border-slate-200 dark:border-slate-700/50">
                 <button
-                  className={`px-5 py-2 text-sm font-bold rounded-lg transition-all flex items-center gap-2 ${
+                  className={`px-4 py-2 text-sm font-bold rounded-lg transition-all flex items-center gap-2 ${
                     viewMode === 'individu' ? 'bg-white dark:bg-slate-700 text-teal-600 dark:text-teal-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
                   }`}
                   onClick={() => setViewMode('individu')}
                 >
                   <User className="w-4 h-4" /> Per Mahasiswa
+                  {unvalidatedIndividuCount > 0 && activeTab === 'antrean' && (
+                    <span className="px-2 py-0.5 text-xs bg-amber-500 text-white rounded-full font-bold">
+                      {unvalidatedIndividuCount}
+                    </span>
+                  )}
                 </button>
                 <button
-                  className={`px-5 py-2 text-sm font-bold rounded-lg transition-all flex items-center gap-2 ${
+                  className={`px-4 py-2 text-sm font-bold rounded-lg transition-all flex items-center gap-2 ${
                     viewMode === 'pokja' ? 'bg-white dark:bg-slate-700 text-teal-600 dark:text-teal-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
                   }`}
                   onClick={() => setViewMode('pokja')}
                 >
                   <Briefcase className="w-4 h-4" /> Per Proker
+                  {unvalidatedPokjaCount > 0 && activeTab === 'antrean' && (
+                    <span className="px-2 py-0.5 text-xs bg-teal-600 text-white rounded-full font-bold">
+                      {unvalidatedPokjaCount}
+                    </span>
+                  )}
                 </button>
               </div>
 
@@ -332,20 +358,30 @@ const toggleSelectLog = (id) => {
               {/* Status Switcher */}
               <div className="flex bg-slate-100 dark:bg-slate-900 rounded-xl p-1 border border-slate-200 dark:border-slate-700/50">
                 <button
-                  className={`px-5 py-2 text-sm font-bold rounded-lg transition-all flex items-center gap-2 ${
+                  className={`px-4 py-2 text-sm font-bold rounded-lg transition-all flex items-center gap-2 ${
                     activeTab === 'antrean' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
                   }`}
                   onClick={() => setActiveTab('antrean')}
                 >
                   <Clock className="w-4 h-4" /> Perlu Perhatian
+                  {totalAntreanCount > 0 && (
+                    <span className="px-2 py-0.5 text-xs bg-amber-600 text-white rounded-full font-bold">
+                      {totalAntreanCount}
+                    </span>
+                  )}
                 </button>
                 <button
-                  className={`px-5 py-2 text-sm font-bold rounded-lg transition-all flex items-center gap-2 ${
+                  className={`px-4 py-2 text-sm font-bold rounded-lg transition-all flex items-center gap-2 ${
                     activeTab === 'histori' ? 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
                   }`}
                   onClick={() => setActiveTab('histori')}
                 >
                   <History className="w-4 h-4" /> Riwayat
+                  {totalHistoriCount > 0 && (
+                    <span className="px-2 py-0.5 text-xs bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-full font-bold">
+                      {totalHistoriCount}
+                    </span>
+                  )}
                 </button>
               </div>
             </div>
@@ -524,6 +560,14 @@ const toggleSelectLog = (id) => {
                                                         <p className="text-xs font-black text-slate-700 dark:text-slate-200">
                                                           {new Date(log.tanggal).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
                                                         </p>
+                                                        <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                                                          Oleh: <span className="font-bold text-slate-700 dark:text-slate-300">{log.mahasiswa_id?.nama_lengkap || 'Mahasiswa'}</span>
+                                                          {log.proker_id?.judul_proker && (
+                                                            <span className="ml-1.5 font-medium text-teal-600 dark:text-teal-400">
+                                                              • {log.proker_id.judul_proker}
+                                                            </span>
+                                                          )}
+                                                        </p>
                                                       </div>
                                                     </div>
                                                     
@@ -579,34 +623,38 @@ const toggleSelectLog = (id) => {
         </div>
       )}
 
-      {/* Sticky Action Bar */}
+      {/* Floating Action Island / Bar */}
       {selectedLogs.length > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 lg:left-64 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] p-4 sm:p-5 transform transition-transform duration-300 animate-in slide-in-from-bottom-full">
-          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-full bg-teal-100 dark:bg-teal-900/40 text-teal-600 dark:text-teal-400 flex items-center justify-center font-black">
+        <div className="fixed bottom-6 inset-x-4 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 z-50 max-w-2xl w-full bg-slate-900/95 dark:bg-slate-950/95 text-white backdrop-blur-2xl border border-slate-700/80 shadow-[0_20px_50px_rgba(0,0,0,0.4)] rounded-2xl p-4 sm:p-5 transform transition-all duration-300 animate-in slide-in-from-bottom-8">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5 w-full sm:w-auto">
+              <div className="w-10 h-10 rounded-xl bg-teal-500 text-slate-950 flex items-center justify-center font-black text-base shrink-0 shadow-sm">
                 {selectedLogs.length}
               </div>
               <div>
-                <p className="font-bold text-slate-800 dark:text-slate-100 text-sm">Kegiatan Terpilih</p>
-                <p className="text-xs text-slate-500 font-medium">Langkah selanjutnya adalah meminta validasi Kepala Desa.</p>
+                <p className="font-bold text-white text-sm">
+                  {selectedLogs.length} Logbook Terpilih
+                </p>
+                <p className="text-xs text-slate-400 font-medium">
+                  Siap divalidasi oleh DPL
+                </p>
               </div>
             </div>
             
-            <div className="flex gap-3 w-full sm:w-auto">
+            <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
               <button 
                 onClick={() => setSelectedLogs([])}
-                className="px-5 py-3 font-bold text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
+                className="px-4 py-2.5 font-bold text-xs sm:text-sm text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl transition-colors"
               >
                 Batal
               </button>
               <button 
                 onClick={handleBulkValidasi}
                 disabled={submitting}
-                className="flex-1 sm:flex-none px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 flex items-center justify-center gap-2"
+                className="px-6 py-2.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs sm:text-sm rounded-xl transition-all shadow-lg hover:shadow-teal-500/25 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2 shrink-0"
               >
-                {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-                Validasi
+                {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4 stroke-[3]" />}
+                Validasi Terpilih ({selectedLogs.length})
               </button>
             </div>
           </div>

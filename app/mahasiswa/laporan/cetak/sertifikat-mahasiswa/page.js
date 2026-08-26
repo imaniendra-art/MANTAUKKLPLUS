@@ -6,6 +6,12 @@ import { useSession } from "@/components/AuthProvider";
 export default function CetakSertifikatMahasiswa() {
   const { data: session } = useSession();
   const [data, setData] = useState(null);
+  const [settings, setSettings] = useState({
+    kaprodi_nama: "Dr Anwar, S.Ag.,M.Ag",
+    kaprodi_nip: "198001012005011001",
+    ketua_lppm_nama: "Andi Arwinda Wildam, S.E.,M.M",
+    ketua_lppm_nidn: "0912345678"
+  });
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -14,6 +20,22 @@ export default function CetakSertifikatMahasiswa() {
 
     const load = async () => {
       try {
+        // Fetch System Settings (Kaprodi / LPPM)
+        try {
+          const resS = await fetch('/api/admin/settings');
+          if (resS.ok) {
+            const dataS = await resS.json();
+            if (dataS && !dataS.error) {
+              setSettings(prev => ({
+                ...prev,
+                ...dataS
+              }));
+            }
+          }
+        } catch (errS) {
+          console.error("Error fetching settings:", errS);
+        }
+
         let fetchUrl = '';
         if (id) fetchUrl = `/api/laporan-akhir?id=${id}`;
         else if (mhsId) fetchUrl = `/api/laporan-akhir?mhsId=${mhsId}`;
@@ -369,35 +391,41 @@ export default function CetakSertifikatMahasiswa() {
 
         {/* TTD Transkrip */}
         <div className="flex justify-between px-8 mt-2 mb-[0.5cm]">
-            <div className="flex flex-col justify-between items-center w-56 h-[3cm]">
+            <div className="flex flex-col justify-between items-center w-60 min-h-[3.2cm]">
               <p className="text-xs text-slate-600">Ketua Program Studi</p>
               
               {/* Barcode sebagai TTD Elektronik */}
-              <div className="flex-1 flex items-center justify-center">
+              <div className="flex-1 flex items-center justify-center my-1">
                 {pengajuan._id && (
                   <img src={qrCodeUrl} alt="TTD QR" className="h-[1.8cm] w-[1.8cm] opacity-80 mix-blend-multiply" />
                 )}
               </div>
 
               <div className="w-full text-center">
-                <div className="border-b border-slate-800 w-full mb-1"></div>
-                <p className="font-bold text-slate-900 text-xs">Ketua Program Studi</p>
+                <div className="border-b border-slate-800 w-full mb-0.5"></div>
+                <p className="font-bold text-slate-900 text-xs leading-tight">{settings.kaprodi_nama || 'Ketua Program Studi'}</p>
+                {settings.kaprodi_nip && (
+                  <p className="text-[10px] text-slate-600 leading-tight mt-0.5">NIP/NIDN. {settings.kaprodi_nip}</p>
+                )}
               </div>
             </div>
 
-            <div className="flex flex-col justify-between items-center w-64 h-[3cm]">
+            <div className="flex flex-col justify-between items-center w-64 min-h-[3.2cm]">
               <p className="text-xs text-slate-600">Dosen Pembimbing Lapangan</p>
               
               {/* Barcode sebagai TTD Elektronik */}
-              <div className="flex-1 flex items-center justify-center">
+              <div className="flex-1 flex items-center justify-center my-1">
                 {pengajuan._id && (
                   <img src={qrCodeUrl} alt="TTD QR" className="h-[1.8cm] w-[1.8cm] opacity-80 mix-blend-multiply" />
                 )}
               </div>
 
               <div className="w-full text-center">
-                <div className="border-b border-slate-800 w-full mb-1"></div>
-                <p className="font-bold text-slate-900 text-xs">{pengajuan.dpl_id?.nama_lengkap || 'DPL'}</p>
+                <div className="border-b border-slate-800 w-full mb-0.5"></div>
+                <p className="font-bold text-slate-900 text-xs leading-tight">{pengajuan.dpl_id?.nama_lengkap || 'DPL'}</p>
+                {(pengajuan.dpl_id?.nidn || pengajuan.dpl_id?.nim_nidn) && (
+                  <p className="text-[10px] text-slate-600 leading-tight mt-0.5">NIDN. {pengajuan.dpl_id?.nidn || pengajuan.dpl_id?.nim_nidn}</p>
+                )}
               </div>
             </div>
           </div>

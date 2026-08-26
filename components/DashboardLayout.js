@@ -59,10 +59,25 @@ function ThemeToggle({ toggleTheme, isDark }) {
   );
 }
 
+function getDisplayRole(role, tipeAdmin) {
+  if (role === 'admin') {
+    if (tipeAdmin === 'superadmin') return 'Superadmin';
+    if (tipeAdmin === 'lppm') return 'Admin LPPM';
+    if (tipeAdmin === 'prodi') return 'Admin Prodi';
+    if (tipeAdmin === 'fakultas') return 'Admin Fakultas';
+    return 'Admin';
+  }
+  if (role === 'dpl') return 'Dosen Pembimbing';
+  if (role === 'mahasiswa') return 'Mahasiswa';
+  if (role === 'mentor') return 'Mentor Mitra';
+  return role ? role.replace('_', ' ') : 'Pengguna';
+}
+
 // ═══════════════════════ USER MENU BUTTON ═══════════════════════
-function UserMenu({ nama, role }) {
+function UserMenu({ nama, role, tipeAdmin }) {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef();
+  const displayRole = getDisplayRole(role, tipeAdmin);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -82,7 +97,7 @@ function UserMenu({ nama, role }) {
       >
         <div className="text-right hidden sm:block">
           <p className="text-sm font-bold leading-tight text-slate-800 dark:text-slate-100">{nama}</p>
-          <p className="text-xs font-semibold text-teal-600 dark:text-teal-400 uppercase tracking-wider mt-0.5">{role.replace('_', ' ')}</p>
+          <p className="text-xs font-semibold text-teal-600 dark:text-teal-400 uppercase tracking-wider mt-0.5">{displayRole}</p>
         </div>
         <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-600 to-teal-700 text-white flex items-center justify-center font-bold text-lg shadow-inner">
           {nama ? nama.charAt(0).toUpperCase() : 'U'}
@@ -93,7 +108,7 @@ function UserMenu({ nama, role }) {
         <div className="absolute right-0 mt-2 w-56 bg-white/90 dark:bg-slate-800/95 backdrop-blur-xl rounded-2xl shadow-xl border border-white/50 dark:border-slate-700 overflow-hidden animate-in slide-in-from-top-2 duration-200">
           <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-700/50 sm:hidden">
             <p className="text-sm font-bold leading-tight text-slate-800 dark:text-slate-100">{nama}</p>
-            <p className="text-xs font-semibold text-teal-600 dark:text-teal-400 uppercase tracking-wider mt-0.5">{role.replace('_', ' ')}</p>
+            <p className="text-xs font-semibold text-teal-600 dark:text-teal-400 uppercase tracking-wider mt-0.5">{displayRole}</p>
           </div>
           <Link href="/profil" onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-4 py-3.5 text-sm font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100/50 dark:hover:bg-slate-700/50 transition-colors">
             <Settings className="w-4 h-4 inline-block mr-1.5 -mt-0.5" /> Pengaturan Profil
@@ -231,6 +246,7 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
   }
 
   const role = session?.user?.role || "guest";
+  const tipeAdmin = session?.user?.tipe_admin;
   const nama = session?.user?.nama_lengkap || "Pengguna";
   const config = MENU_CONFIG[role] || MENU_CONFIG.mahasiswa;
 
@@ -267,7 +283,7 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
                 <span className="text-sm font-bold text-slate-800 dark:text-slate-100">{activePeriode}</span>
               </div>
               <ThemeToggle toggleTheme={toggleTheme} isDark={isDark} />
-              <UserMenu nama={nama} role={role} />
+              <UserMenu nama={nama} role={role} tipeAdmin={tipeAdmin} />
             </div>
           </div>
         </header>
@@ -302,7 +318,7 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
             <span className="text-sm font-bold text-slate-800 dark:text-slate-100">{activePeriode}</span>
           </div>
           <ThemeToggle toggleTheme={toggleTheme} isDark={isDark} />
-          <UserMenu nama={nama} role={role} />
+          <UserMenu nama={nama} role={role} tipeAdmin={tipeAdmin} />
         </div>
       </nav>
 

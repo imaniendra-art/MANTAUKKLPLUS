@@ -28,6 +28,14 @@ const SystemSettingsSchema = new mongoose.Schema({
   kaprodi_nip: {
     type: String,
     default: "198001012005011001",
+  },
+  ketua_lppm_nama: {
+    type: String,
+    default: "Dr. Jane Doe, M.Pd",
+  },
+  ketua_lppm_nidn: {
+    type: String,
+    default: "0912345678",
   }
 }, { timestamps: true });
 

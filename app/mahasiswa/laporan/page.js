@@ -118,6 +118,7 @@ export default function LaporanAkhirPage() {
 
   const [formIndividu, setFormIndividu] = useState({ ...initialFormState, bab1_sections: DEFAULT_SECTIONS_INDIVIDU.bab1, bab2_sections: DEFAULT_SECTIONS_INDIVIDU.bab2, bab3_sections: DEFAULT_SECTIONS_INDIVIDU.bab3, bab4_sections: DEFAULT_SECTIONS_INDIVIDU.bab4 });
   const [formKelompok, setFormKelompok] = useState({ ...initialFormState, bab1_sections: DEFAULT_SECTIONS_KELOMPOK.bab1, bab2_sections: DEFAULT_SECTIONS_KELOMPOK.bab2, bab3_sections: DEFAULT_SECTIONS_KELOMPOK.bab3, bab4_sections: DEFAULT_SECTIONS_KELOMPOK.bab4 });
+  const [penilaian, setPenilaian] = useState(null);
 
   const isKetua = pengajuan && (pengajuan.ketua_id?._id === session?.user?.id || pengajuan.ketua_id === session?.user?.id);
 
@@ -135,6 +136,7 @@ export default function LaporanAkhirPage() {
       setLaporanIndividu(data.laporan_individu);
       setLaporanKelompok(data.laporan_kelompok);
       setPengajuan(data.pengajuan);
+      setPenilaian(data.penilaian || null);
 
       if (data.laporan_individu) {
         setFormIndividu({
@@ -229,6 +231,13 @@ export default function LaporanAkhirPage() {
   const setCurrentForm = activeMode === 'individu' ? setFormIndividu : setFormKelompok;
 
   const handleSave = async (submitFinal = false, isAutoSave = false) => {
+    if (submitFinal) {
+      if (!currentForm.file_pengantar || !currentForm.file_penerimaan || !currentForm.file_keterangan || !currentForm.file_struktur_organisasi) {
+        alert("Gagal Submit: Anda harus mengupload seluruh lampiran dokumen (Surat Pengantar, Penerimaan, Keterangan, dan Struktur Organisasi) terlebih dahulu sebelum dapat mengirimkan laporan ke DPL.");
+        return;
+      }
+    }
+    
     if (!isAutoSave) setIsSaving(true);
     try {
       const payload = {
@@ -657,28 +666,28 @@ export default function LaporanAkhirPage() {
                 <div>
                   <h3 className="text-xl font-bold text-slate-800 border-b pb-2 mb-4">Template & Referensi Dokumen</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Link href={`/mahasiswa/laporan/templates/pengesahan?id=${currentForm.id || ''}`} target="_blank" className="flex items-center gap-3 p-4 border rounded-xl hover:bg-teal-50 transition-colors">
+                    <Link href={`/mahasiswa/laporan/templates/pengesahan?id=${currentForm.id || ''}&pokjaId=${pengajuan?._id || ''}`} target="_blank" className="flex items-center gap-3 p-4 border rounded-xl hover:bg-teal-50 transition-colors">
                       <div className="p-3 bg-teal-100 rounded-lg text-teal-600"><PenTool className="w-6 h-6" /></div>
                       <div>
                         <div className="font-bold">Lembar Pengesahan</div>
                         <div className="text-xs text-slate-500">Template Cetak & TTD</div>
                       </div>
                     </Link>
-                    <Link href={`/mahasiswa/laporan/templates/pengantar?id=${currentForm.id || ''}`} target="_blank" className="flex items-center gap-3 p-4 border rounded-xl hover:bg-teal-50 transition-colors">
+                    <Link href={`/mahasiswa/laporan/templates/pengantar?id=${currentForm.id || ''}&pokjaId=${pengajuan?._id || ''}`} target="_blank" className="flex items-center gap-3 p-4 border rounded-xl hover:bg-teal-50 transition-colors">
                       <div className="p-3 bg-teal-100 rounded-lg text-teal-600"><Mail className="w-6 h-6" /></div>
                       <div>
                         <div className="font-bold">Surat Pengantar KKL Plus</div>
                         <div className="text-xs text-slate-500">Template Cetak & TTD</div>
                       </div>
                     </Link>
-                    <Link href={`/mahasiswa/laporan/templates/penerimaan?id=${currentForm.id || ''}`} target="_blank" className="flex items-center gap-3 p-4 border rounded-xl hover:bg-teal-50 transition-colors">
+                    <Link href={`/mahasiswa/laporan/templates/penerimaan?id=${currentForm.id || ''}&pokjaId=${pengajuan?._id || ''}`} target="_blank" className="flex items-center gap-3 p-4 border rounded-xl hover:bg-teal-50 transition-colors">
                       <div className="p-3 bg-teal-100 rounded-lg text-teal-600"><FileCheck className="w-6 h-6" /></div>
                       <div>
                         <div className="font-bold">Surat Penerimaan KKL Plus</div>
                         <div className="text-xs text-slate-500">Template Cetak & TTD</div>
                       </div>
                     </Link>
-                    <Link href={`/mahasiswa/laporan/templates/keterangan?id=${currentForm.id || ''}`} target="_blank" className="flex items-center gap-3 p-4 border rounded-xl hover:bg-amber-50 transition-colors">
+                    <Link href={`/mahasiswa/laporan/templates/keterangan?id=${currentForm.id || ''}&pokjaId=${pengajuan?._id || ''}`} target="_blank" className="flex items-center gap-3 p-4 border rounded-xl hover:bg-amber-50 transition-colors">
                       <div className="p-3 bg-amber-100 rounded-lg text-amber-600"><FileBadge className="w-6 h-6" /></div>
                       <div>
                         <div className="font-bold">Surat Keterangan Selesai KKL Plus</div>
@@ -724,10 +733,7 @@ export default function LaporanAkhirPage() {
                   )}
                   <textarea
                     disabled={['submitted', 'disetujui'].includes(currentForm.status)}
-                    onPaste={(e) => {
-                      e.preventDefault();
-                      alert('Mohon maaf, demi objektivitas dan orisinalitas, fitur Copy-Paste dinonaktifkan. Silakan ketik laporan Anda secara manual ✌️');
-                    }}
+
                     value={currentForm.kata_pengantar}
                     onChange={(e) => {
                       setIsDirty(true);
@@ -768,10 +774,7 @@ export default function LaporanAkhirPage() {
                       )}
                       <textarea
                         disabled={['submitted', 'disetujui'].includes(currentForm.status)}
-                        onPaste={(e) => {
-                          e.preventDefault();
-                          alert('Mohon maaf, demi objektivitas dan orisinalitas, fitur Copy-Paste dinonaktifkan. Silakan ketik laporan Anda secara manual ✌️');
-                        }}
+
                         value={sec.content}
                         onChange={(e) => {
                           setIsDirty(true);
@@ -816,10 +819,7 @@ export default function LaporanAkhirPage() {
                       )}
                       <textarea
                         disabled={['submitted', 'disetujui'].includes(currentForm.status)}
-                        onPaste={(e) => {
-                          e.preventDefault();
-                          alert('Mohon maaf, demi objektivitas dan orisinalitas, fitur Copy-Paste dinonaktifkan. Silakan ketik laporan Anda secara manual ✌️');
-                        }}
+
                         value={sec.content}
                         onChange={(e) => {
                           setIsDirty(true);
@@ -883,10 +883,7 @@ export default function LaporanAkhirPage() {
                       )}
                       <textarea
                         disabled={['submitted', 'disetujui'].includes(currentForm.status)}
-                        onPaste={(e) => {
-                          e.preventDefault();
-                          alert('Mohon maaf, demi objektivitas dan orisinalitas, fitur Copy-Paste dinonaktifkan. Silakan ketik laporan Anda secara manual ✌️');
-                        }}
+
                         value={sec.content}
                         onChange={(e) => {
                           setIsDirty(true);
@@ -931,10 +928,7 @@ export default function LaporanAkhirPage() {
                       )}
                       <textarea
                         disabled={['submitted', 'disetujui'].includes(currentForm.status)}
-                        onPaste={(e) => {
-                          e.preventDefault();
-                          alert('Mohon maaf, demi objektivitas dan orisinalitas, fitur Copy-Paste dinonaktifkan. Silakan ketik laporan Anda secara manual ✌️');
-                        }}
+
                         value={sec.content}
                         onChange={(e) => {
                           setIsDirty(true);
@@ -1017,45 +1011,49 @@ export default function LaporanAkhirPage() {
           {/* TAB 3: CETAK */}
           {activeTab === 'cetak' && (
             <div className="space-y-6">
-              {currentForm.status !== 'disetujui' ? (
-                <div className="bg-red-50 text-red-700 p-6 rounded-2xl border border-red-100 text-center">
-                  <div className="text-4xl mb-3">⚠️</div>
-                  <h3 className="font-bold text-lg">Dokumen Belum Bisa Dicetak</h3>
-                  <p className="text-sm mt-1">Laporan <b>{activeMode}</b> Anda harus berstatus <strong>Disetujui</strong> oleh DPL sebelum dapat dicetak menjadi dokumen PDF resmi.</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              
+              {/* Laporan Akhir Card */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <div className="border border-slate-200 rounded-2xl p-8 hover:shadow-lg transition-all text-center group bg-white">
+                  <div className="mx-auto w-16 h-16 bg-teal-100 text-teal-600 flex items-center justify-center rounded-2xl mb-4 group-hover:scale-110 transition-transform"><FileText className="w-8 h-8" /></div>
+                  <h3 className="font-black text-xl text-slate-800 mb-2">Laporan Akhir ({activeMode === 'individu' ? 'Individu' : 'Kelompok'})</h3>
+                  <p className="text-sm text-slate-500 mb-6">Dokumen lengkap beserta lampiran surat.</p>
                   
-                  <div className="border border-slate-200 rounded-2xl p-8 hover:shadow-lg transition-all text-center group bg-white">
-                    <div className="mx-auto w-16 h-16 bg-teal-100 text-teal-600 flex items-center justify-center rounded-2xl mb-4 group-hover:scale-110 transition-transform"><FileText className="w-8 h-8" /></div>
-                    <h3 className="font-black text-xl text-slate-800 mb-2">Laporan Akhir ({activeMode === 'individu' ? 'Individu' : 'Kelompok'})</h3>
-                    <p className="text-sm text-slate-500 mb-6">Dokumen lengkap beserta lampiran surat.</p>
+                  {(!currentForm.file_pengantar || !currentForm.file_penerimaan || !currentForm.file_keterangan || !currentForm.file_struktur_organisasi) ? (
+                    <div className="w-full py-3 rounded-xl bg-slate-100 text-slate-400 font-bold flex items-center justify-center gap-2 cursor-not-allowed">
+                      <Lock className="w-5 h-5" /> 
+                      <span className="text-xs text-left leading-tight">
+                        Terkunci.<br/>Upload Seluruh Lampiran Terlebih Dahulu
+                      </span>
+                    </div>
+                  ) : (
                     <Link href={`/mahasiswa/laporan/cetak/laporan?id=${currentForm.id || ''}`} target="_blank" className="w-full py-3 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold shadow-md shadow-teal-500/30 flex items-center justify-center gap-2">
                       <Download className="w-5 h-5" /> Download PDF Laporan
                     </Link>
-                  </div>
-
-                  <div className="border border-slate-200 rounded-2xl p-8 hover:shadow-lg transition-all text-center group bg-white">
-                    <div className="mx-auto w-16 h-16 bg-amber-100 text-amber-600 flex items-center justify-center rounded-2xl mb-4 group-hover:scale-110 transition-transform"><Award className="w-8 h-8" /></div>
-                    <h3 className="font-black text-xl text-slate-800 mb-2">Sertifikat Mahasiswa</h3>
-                    <p className="text-sm text-slate-500 mb-6">Sertifikat kelulusan KKL Plus dengan Validasi QR Code SKPI.</p>
-                    
-                    {formIndividu.status !== 'disetujui' || formKelompok.status !== 'disetujui' ? (
-                      <div className="w-full py-3 rounded-xl bg-slate-100 text-slate-400 font-bold flex items-center justify-center gap-2 cursor-not-allowed">
-                        <Lock className="w-5 h-5" /> 
-                        <span className="text-xs text-left leading-tight">
-                          Terkunci.<br/>Laporan Individu & Kelompok Harus Di-ACC
-                        </span>
-                      </div>
-                    ) : (
-                      <Link href={`/mahasiswa/laporan/cetak/sertifikat-mahasiswa?id=${currentForm.id || ''}`} target="_blank" className="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold shadow-md shadow-amber-500/30 flex items-center justify-center gap-2">
-                        <Download className="w-5 h-5" /> Download Sertifikat
-                      </Link>
-                    )}
-                  </div>
-
+                  )}
                 </div>
-              )}
+
+                <div className="border border-slate-200 rounded-2xl p-8 hover:shadow-lg transition-all text-center group bg-white">
+                  <div className="mx-auto w-16 h-16 bg-amber-100 text-amber-600 flex items-center justify-center rounded-2xl mb-4 group-hover:scale-110 transition-transform"><Award className="w-8 h-8" /></div>
+                  <h3 className="font-black text-xl text-slate-800 mb-2">Sertifikat Mahasiswa</h3>
+                  <p className="text-sm text-slate-500 mb-6">Sertifikat kelulusan KKL Plus dengan Validasi QR Code SKPI.</p>
+                  
+                  {!penilaian?.dpl_sudah_menilai ? (
+                    <div className="w-full py-3 rounded-xl bg-slate-100 text-slate-400 font-bold flex items-center justify-center gap-2 cursor-not-allowed">
+                      <Lock className="w-5 h-5" /> 
+                      <span className="text-xs text-left leading-tight">
+                        Terkunci.<br/>DPL Belum Memberikan Penilaian
+                      </span>
+                    </div>
+                  ) : (
+                    <Link href={`/mahasiswa/laporan/cetak/sertifikat-mahasiswa?id=${currentForm.id || ''}`} target="_blank" className="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold shadow-md shadow-amber-500/30 flex items-center justify-center gap-2">
+                      <Download className="w-5 h-5" /> Download Sertifikat
+                    </Link>
+                  )}
+                </div>
+
+              </div>
             </div>
           )}
         </div>

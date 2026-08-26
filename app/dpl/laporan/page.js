@@ -16,6 +16,12 @@ export default function LaporanDplPage() {
   const [success, setSuccess] = useState('');
   const [activeTab, setActiveTab] = useState('panduan'); 
   const reportRef = useRef(null);
+  const [settings, setSettings] = useState({
+    kaprodi_nama: "Dr Anwar, S.Ag.,M.Ag",
+    kaprodi_nip: "198001012005011001",
+    ketua_lppm_nama: "Andi Arwinda Wildam, S.E.,M.M",
+    ketua_lppm_nidn: "0912345678"
+  });
 
   const [formData, setFormData] = useState({
     latar_belakang: '',
@@ -34,12 +40,24 @@ export default function LaporanDplPage() {
     saran: ''
   });
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
   const fetchData = async () => {
     try {
+      // Fetch settings
+      try {
+        const sRes = await fetch('/api/admin/settings');
+        if (sRes.ok) {
+          const sData = await sRes.json();
+          if (sData && !sData.error) {
+            setSettings(prev => ({
+              ...prev,
+              ...sData
+            }));
+          }
+        }
+      } catch (errS) {
+        console.error("Error fetching settings in DPL laporan:", errS);
+      }
+
       const params = new URLSearchParams(window.location.search);
       const id = params.get('id');
       const url = id ? `/api/dpl/laporan?id=${id}` : '/api/dpl/laporan';
@@ -78,6 +96,10 @@ export default function LaporanDplPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const handleSave = async (isSubmit = false) => {
     setSubmitting(true);
@@ -820,25 +842,31 @@ export default function LaporanDplPage() {
                     <div className="flex-1"></div>
 
                     <div className="flex justify-between px-8 mt-4 mb-[0.5cm]">
-                      <div className="flex flex-col justify-between items-center w-56 h-[3cm]">
+                      <div className="flex flex-col justify-between items-center w-60 min-h-[3.2cm]">
                         <p className="text-xs text-slate-600">Ketua LPPM</p>
-                        <div className="flex-1 flex items-center justify-center">
+                        <div className="flex-1 flex items-center justify-center my-1">
                           {qrCodeUrl && <img src={qrCodeUrl} alt="TTD QR" className="h-[1.8cm] w-[1.8cm] opacity-80 mix-blend-multiply" />}
                         </div>
                         <div className="w-full text-center">
-                          <div className="border-b border-slate-800 w-full mb-1"></div>
-                          <p className="font-bold text-slate-900 text-xs">Andi Arwinda Wildam, SE.,MM</p>
+                          <div className="border-b border-slate-800 w-full mb-0.5"></div>
+                          <p className="font-bold text-slate-900 text-xs leading-tight">{settings.ketua_lppm_nama || 'Andi Arwinda Wildam, S.E.,M.M'}</p>
+                          {settings.ketua_lppm_nidn && (
+                            <p className="text-[10px] text-slate-600 leading-tight mt-0.5">NIDN. {settings.ketua_lppm_nidn}</p>
+                          )}
                         </div>
                       </div>
 
-                      <div className="flex flex-col justify-between items-center w-64 h-[3cm]">
+                      <div className="flex flex-col justify-between items-center w-60 min-h-[3.2cm]">
                         <p className="text-xs text-slate-600">Ketua Program Studi</p>
-                        <div className="flex-1 flex items-center justify-center">
+                        <div className="flex-1 flex items-center justify-center my-1">
                           {qrCodeUrl && <img src={qrCodeUrl} alt="TTD QR" className="h-[1.8cm] w-[1.8cm] opacity-80 mix-blend-multiply" />}
                         </div>
                         <div className="w-full text-center">
-                          <div className="border-b border-slate-800 w-full mb-1"></div>
-                          <p className="font-bold text-slate-900 text-xs">Ketua Program Studi</p>
+                          <div className="border-b border-slate-800 w-full mb-0.5"></div>
+                          <p className="font-bold text-slate-900 text-xs leading-tight">{settings.kaprodi_nama || 'Ketua Program Studi'}</p>
+                          {settings.kaprodi_nip && (
+                            <p className="text-[10px] text-slate-600 leading-tight mt-0.5">NIP/NIDN. {settings.kaprodi_nip}</p>
+                          )}
                         </div>
                       </div>
                     </div>

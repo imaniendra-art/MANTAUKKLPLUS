@@ -42,9 +42,11 @@ export async function POST(req) {
       nim_nidn: user.nim_nidn,
       nidn: user.nidn,
       role: user.role,
+      tipe_admin: user.tipe_admin || (user.role === 'admin' ? 'lppm' : undefined),
       isFirstLogin: user.isFirstLogin,
       konsentrasi: user.konsentrasi || "Manajemen SDM (Default)",
       program_studi: user.program_studi || "Manajemen (S1)",
+      nomor_hp: user.nomor_hp || "",
     };
 
     const token = signToken(payload);

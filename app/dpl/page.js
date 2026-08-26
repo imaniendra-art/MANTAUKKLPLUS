@@ -7,7 +7,7 @@ import { Check, FileSignature, GraduationCap, Briefcase, Bell, AlertTriangle, Cl
 
 export default function DPLDashboard() {
   const { data: session } = useSession();
-  const [stats, setStats] = useState({ prokerMenungguValidasi: 0, pokjaBelumIA: 0, laporanMenungguValidasi: 0 });
+  const [stats, setStats] = useState({ prokerMenungguValidasi: 0, logbookMenungguValidasi: 0, pokjaBelumIA: 0, laporanMenungguValidasi: 0 });
   const [pendingPokjas, setPendingPokjas] = useState([]);
   const [activePokjas, setActivePokjas] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,10 +17,12 @@ export default function DPLDashboard() {
       Promise.all([
         fetch(`/api/pokja?dplId=${session.user.id}`).then(r => r.json()),
         fetch(`/api/logbook?role=dpl&userId=${session.user.id}`).then(r => r.json()),
-        fetch(`/api/laporan-akhir?role=dpl&dplId=${session.user.id}`).then(r => r.json())
-      ]).then(([pokjasList, logs, laporans]) => {
+        fetch(`/api/laporan-akhir?role=dpl&dplId=${session.user.id}`).then(r => r.json()),
+        fetch(`/api/proker?dplId=${session.user.id}`).then(r => r.json())
+      ]).then(([pokjasList, logs, laporans, prokers]) => {
         let pokjaBelumIA = 0;
         let prokerMenungguValidasi = 0;
+        let logbookMenungguValidasi = 0;
         let laporanMenungguValidasi = 0;
 
         if (Array.isArray(pokjasList)) {
@@ -31,14 +33,18 @@ export default function DPLDashboard() {
         }
 
         if (Array.isArray(logs)) {
-          prokerMenungguValidasi = logs.filter(l => l.status_validasi === 'menunggu_dpl').length;
+          logbookMenungguValidasi = logs.filter(l => l.status_validasi === 'menunggu_dpl').length;
         }
 
         if (Array.isArray(laporans)) {
           laporanMenungguValidasi = laporans.filter(l => l.status === 'submitted').length;
         }
 
-        setStats({ prokerMenungguValidasi, pokjaBelumIA, laporanMenungguValidasi });
+        if (Array.isArray(prokers)) {
+          prokerMenungguValidasi = prokers.filter(p => p.status === 'usulan').length;
+        }
+
+        setStats({ prokerMenungguValidasi, logbookMenungguValidasi, pokjaBelumIA, laporanMenungguValidasi });
         setLoading(false);
       }).catch((err) => {
         console.error(err);
@@ -136,8 +142,33 @@ export default function DPLDashboard() {
               </div>
             ))}
 
-            {/* Notifikasi Logbook */}
+            {/* Notifikasi Proker */}
             {stats.prokerMenungguValidasi > 0 && (
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl transition-all hover:shadow-md">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-900/40 flex items-center justify-center text-amber-600 dark:text-amber-400 shrink-0">
+                    <FileText className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <h4 className="font-bold text-slate-800 dark:text-white text-lg">Validasi Program Kerja</h4>
+                    </div>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                      Terdapat <strong>{stats.prokerMenungguValidasi}</strong> usulan program kerja yang menunggu persetujuan Anda.
+                    </p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => window.location.href = '/dpl/bimbingan'}
+                  className="w-full sm:w-auto px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl shadow-sm transition-all shrink-0 whitespace-nowrap"
+                >
+                  Lihat Proker
+                </button>
+              </div>
+            )}
+
+            {/* Notifikasi Logbook */}
+            {stats.logbookMenungguValidasi > 0 && (
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl transition-all hover:shadow-md">
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 rounded-xl bg-teal-50 dark:bg-teal-900/40 flex items-center justify-center text-teal-600 dark:text-teal-400 shrink-0">
@@ -148,7 +179,7 @@ export default function DPLDashboard() {
                       <h4 className="font-bold text-slate-800 dark:text-white text-lg">Validasi Logbook Mingguan</h4>
                     </div>
                     <p className="text-sm text-slate-500 dark:text-slate-400">
-                      Terdapat <strong>{stats.prokerMenungguValidasi}</strong> catatan logbook kegiatan mahasiswa yang menunggu divalidasi oleh Anda minggu ini.
+                      Terdapat <strong>{stats.logbookMenungguValidasi}</strong> catatan logbook kegiatan mahasiswa yang menunggu divalidasi oleh Anda minggu ini.
                     </p>
                   </div>
                 </div>

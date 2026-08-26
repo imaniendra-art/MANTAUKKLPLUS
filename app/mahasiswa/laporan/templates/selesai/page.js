@@ -16,16 +16,22 @@ export default function CetakSelesai() {
       fetch(`/api/laporan-akhir?id=${id}`)
         .then(res => res.json())
         .then(d => {
-          if (d.laporan && d.pengajuan) {
-            setData(d);
+          if (d.pengajuan) {
+            setData({
+              pengajuan: d.pengajuan,
+              laporan: d.laporan || d.laporan_kelompok || d.laporan_individu || {}
+            });
           }
         });
     } else if (mhsId) {
       fetch(`/api/laporan-akhir?mhsId=${mhsId}`)
         .then(res => res.json())
         .then(d => {
-          if (d.laporan && d.pengajuan) {
-            setData(d);
+          if (d.pengajuan) {
+            setData({
+              pengajuan: d.pengajuan,
+              laporan: d.laporan || d.laporan_kelompok || d.laporan_individu || {}
+            });
           }
         });
     }
@@ -117,7 +123,7 @@ export default function CetakSelesai() {
             </table>
 
             <p>
-              Telah <strong>menyelesaikan</strong> kegiatan Kuliah Kerja Lapangan (KKL) Plus dengan baik pada instansi / perusahaan kami, terhitung mulai tanggal <strong>{pengajuan.tanggal_mulai ? new Date(pengajuan.tanggal_mulai).toLocaleDateString('id-ID') : '.....'}</strong> sampai dengan <strong>{pengajuan.tanggal_selesai ? new Date(pengajuan.tanggal_selesai).toLocaleDateString('id-ID') : '.....'}</strong>.
+              Telah <strong>menyelesaikan</strong> kegiatan Kuliah Kerja Lapangan (KKL) Plus dengan baik pada instansi / perusahaan kami, terhitung mulai tanggal <strong>{pengajuan.tanggal_mulai ? new Date(pengajuan.tanggal_mulai).toLocaleDateString('id-ID') : '.....'}</strong> sampai dengan <strong>{pengajuan.tanggal_mulai ? new Date(new Date(pengajuan.tanggal_mulai).setMonth(new Date(pengajuan.tanggal_mulai).getMonth() + 2)).toLocaleDateString('id-ID') : '.....'}</strong>.
             </p>
             <p>
               Demikian surat keterangan ini dibuat dengan sesungguhnya untuk dapat dipergunakan sebagaimana mestinya. Atas perhatian dan kerja samanya, kami ucapkan terima kasih.
@@ -126,8 +132,7 @@ export default function CetakSelesai() {
 
           <div className="flex justify-end mt-16 text-center">
             <div className="w-1/2">
-              <p>Hormat Kami,</p>
-              <p className="mb-24 mt-2">(Stempel & Tanda Tangan)</p>
+              <p className="mb-24">Hormat Kami,</p>
               <p className="font-bold underline">(..................................................)</p>
               <p>Pimpinan / HRD</p>
             </div>

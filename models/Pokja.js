@@ -33,4 +33,13 @@ const PokjaSchema = new mongoose.Schema({
   file_surat_selesai: { type: String, default: '' },
 }, { timestamps: true });
 
+// Indeks performa pencarian kelompok, pembimbing, dan periode aktif
+PokjaSchema.index({ ketua_id: 1 });
+PokjaSchema.index({ 'anggota.user_id': 1 });
+PokjaSchema.index({ dpl_id: 1 });
+PokjaSchema.index({ mentor_id: 1 });
+PokjaSchema.index({ mitra_id: 1 });
+PokjaSchema.index({ periode: 1, status_pokja: 1 });
+
+delete mongoose.models.Pokja;
 export default mongoose.models.Pokja || mongoose.model('Pokja', PokjaSchema);

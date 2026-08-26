@@ -56,6 +56,10 @@ const UserSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
+// Indeks untuk pencarian role pengguna & tipe admin
+UserSchema.index({ role: 1 });
+UserSchema.index({ role: 1, tipe_admin: 1 });
+
 if (mongoose.models.User) {
   delete mongoose.models.User;
 }

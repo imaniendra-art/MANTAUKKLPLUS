@@ -4,6 +4,7 @@ import Pokja from '@/models/Pokja';
 import LaporanAkhir from '@/models/LaporanAkhir';
 import Logbook from '@/models/Logbook';
 import Proker from '@/models/Proker';
+import Penilaian from '@/models/Penilaian';
 import { generatePresignedUrl } from '@/lib/minio';
 
 async function processLaporanUrls(laporanDoc) {
@@ -52,18 +53,27 @@ export async function GET(request) {
     // Jika dipanggil langsung menggunakan ID Laporan Akhir (misal untuk cetak PDF)
     if (laporanId) {
       let laporan = await LaporanAkhir.findById(laporanId)
-        .populate({ path: 'mahasiswa_id', select: 'nama_lengkap nim_nidn program_studi' })
-        .populate({ path: 'pokja_id', select: 'nama_pokja mitra_id dpl_id ketua_id anggota mentor_nama mentor_jabatan tanggal_mulai tanggal_selesai detail_tempat', populate: { path: 'mitra_id' } });
+        .populate({ path: 'mahasiswa_id', select: 'nama_lengkap nim_nidn program_studi konsentrasi' })
+        .populate({ 
+          path: 'pokja_id', 
+          select: 'nama_pokja mitra_id dpl_id mentor_id ketua_id anggota mentor_nama mentor_jabatan tanggal_mulai tanggal_selesai detail_tempat nomor_surat_pengantar updatedAt createdAt', 
+          populate: [
+            { path: 'mitra_id' },
+            { path: 'dpl_id', select: 'nama_lengkap nim_nidn nidn nomor_hp' },
+            { path: 'mentor_id', select: 'nama_lengkap nim_nidn nomor_hp jabatan instansi' }
+          ] 
+        });
       
       if (!laporan) {
         return NextResponse.json({ error: "Laporan not found" }, { status: 404 });
       }
 
-      // Populate DPL and Ketua from Pokja if needed by print template
+      // Populate DPL, Mentor, and Ketua from Pokja if needed by print template
       await Pokja.populate(laporan.pokja_id, [
-        { path: 'dpl_id', select: 'nama_lengkap nim_nidn' },
-        { path: 'ketua_id', select: 'nama_lengkap nim_nidn program_studi' },
-        { path: 'anggota.user_id', select: 'nama_lengkap nim_nidn program_studi' }
+        { path: 'dpl_id', select: 'nama_lengkap nim_nidn nidn nomor_hp' },
+        { path: 'mentor_id', select: 'nama_lengkap nim_nidn nomor_hp jabatan instansi' },
+        { path: 'ketua_id', select: 'nama_lengkap nim_nidn program_studi konsentrasi' },
+        { path: 'anggota.user_id', select: 'nama_lengkap nim_nidn program_studi konsentrasi' }
       ]);
 
       const processed = await processLaporanUrls(laporan);
@@ -98,7 +108,13 @@ export async function GET(request) {
         }
       }
 
-      return NextResponse.json({ laporan: processed, pengajuan: laporan.pokja_id, logbooks, monev: monevList });
+      const Proker = (await import('@/models/Proker')).default;
+      let prokerList = [];
+      if (laporan.pokja_id) {
+        prokerList = await Proker.find({ pokja_id: laporan.pokja_id._id || laporan.pokja_id }).sort({ tanggal_mulai: 1 }).lean();
+      }
+
+      return NextResponse.json({ laporan: processed, pengajuan: laporan.pokja_id, logbooks, monev: monevList, prokers: prokerList });
     }
 
     // Jika dipanggil oleh DPL
@@ -140,9 +156,10 @@ export async function GET(request) {
       // 1. Ambil pokja tempat mahasiswa tergabung sebagai 'pengajuan'
       const pokja = await Pokja.findOne({ $or: [{ 'anggota.user_id': mhsId }, { ketua_id: mhsId }] })
         .populate('mitra_id')
-        .populate({ path: 'anggota.user_id', select: 'nama_lengkap nim_nidn program_studi' })
-        .populate({ path: 'dpl_id', select: 'nama_lengkap nim_nidn' })
-        .populate({ path: 'ketua_id', select: 'nama_lengkap nim_nidn program_studi' });
+        .populate({ path: 'anggota.user_id', select: 'nama_lengkap nim_nidn program_studi konsentrasi' })
+        .populate({ path: 'dpl_id', select: 'nama_lengkap nim_nidn nidn nomor_hp' })
+        .populate({ path: 'mentor_id', select: 'nama_lengkap nim_nidn nomor_hp jabatan instansi' })
+        .populate({ path: 'ketua_id', select: 'nama_lengkap nim_nidn program_studi konsentrasi' });
 
       if (!pokja) {
         return NextResponse.json({ error: "Mahasiswa belum tergabung dalam Pokja / Pengajuan tidak ditemukan" }, { status: 404 });
@@ -179,12 +196,16 @@ export async function GET(request) {
       const rawLogbooks = await Logbook.find({ mahasiswa_id: mhsId, status_validasi: 'selesai' }).populate('proker_id').sort({ tanggal: 1 });
       const logbooks = await processLogbookArray(rawLogbooks);
 
+      // 6. Ambil status penilaian untuk validasi Sertifikat
+      const penilaian = await Penilaian.findOne({ pokja_id: pokja._id, mahasiswa_id: mhsId }).select('dpl_sudah_menilai status_kelulusan');
+
       return NextResponse.json({
         laporan: processed_individu, // Keep backward compatibility
         laporan_individu: processed_individu,
         laporan_kelompok: processed_kelompok,
         pengajuan,
-        logbooks
+        logbooks,
+        penilaian
       });
     }
 

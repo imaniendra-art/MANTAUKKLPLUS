@@ -24,16 +24,22 @@ export default function CetakPengesahan() {
       fetch(`/api/laporan-akhir?id=${id}`)
         .then(res => res.json())
         .then(d => {
-          if (d.laporan && d.pengajuan) {
-            setData(d);
+          if (d.pengajuan) {
+            setData({
+              pengajuan: d.pengajuan,
+              laporan: d.laporan || d.laporan_kelompok || d.laporan_individu || {}
+            });
           }
         });
     } else if (mhsId) {
       fetch(`/api/laporan-akhir?mhsId=${mhsId}`)
         .then(res => res.json())
         .then(d => {
-          if (d.laporan && d.pengajuan) {
-            setData(d);
+          if (d.pengajuan) {
+            setData({
+              pengajuan: d.pengajuan,
+              laporan: d.laporan || d.laporan_kelompok || d.laporan_individu || {}
+            });
           }
         });
     }
@@ -48,10 +54,14 @@ export default function CetakPengesahan() {
   
   const tipe = laporan?.tipe_laporan === 'pokja' ? 'KKL KELOMPOK (POKJA)' : 'KKL INDIVIDU';
   
-  // Format Tanggal
+  // Format Tanggal (Opsi 3: Standar 2 Bulan)
   const formatter = new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-  const tglMulai = formatter.format(new Date(pengajuan.tanggal_mulai));
-  const tglSelesai = formatter.format(new Date(pengajuan.tanggal_selesai));
+  const dStart = pengajuan.tanggal_mulai ? new Date(pengajuan.tanggal_mulai) : new Date();
+  const dEnd = new Date(dStart);
+  dEnd.setMonth(dEnd.getMonth() + 2);
+
+  const tglMulai = formatter.format(dStart);
+  const tglSelesai = formatter.format(dEnd);
   const tglSekarang = formatter.format(new Date());
 
   return (
@@ -114,13 +124,13 @@ export default function CetakPengesahan() {
               <p>Menyetujui,</p>
               <p className="mb-24">Dosen Pembimbing Lapangan</p>
               <p className="font-bold underline">{dpl?.nama_lengkap || '..................................................'}</p>
-              <p>NIDN. {dpl?.nim_nidn || '...................'}</p>
+              <p>NIDN. {dpl?.nidn || (dpl?.nim_nidn && /^\d+$/.test(dpl.nim_nidn) ? dpl.nim_nidn : '') || '...................'}</p>
             </div>
             <div className="w-1/2 flex flex-col items-center">
               <p>Makassar, {tglSekarang}</p>
               <p className="mb-24">Mentor Perusahaan</p>
-              <p className="font-bold underline">{pengajuan.mentor_nama || '..................................................'}</p>
-              <p>Mentor / {pengajuan.mentor_jabatan || 'Instruktur'}</p>
+              <p className="font-bold underline">{pengajuan.mentor_id?.nama_lengkap || pengajuan.mentor_nama || '..................................................'}</p>
+              <p>{pengajuan.mitra_id?.nama_instansi || mitra || pengajuan.mentor_id?.instansi || 'Instansi / Mitra'}</p>
             </div>
           </div>
           

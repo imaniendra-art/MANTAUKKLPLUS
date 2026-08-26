@@ -6,8 +6,25 @@ import { useSession } from "@/components/AuthProvider";
 export default function CetakTranskrip() {
   const { data: session } = useSession();
   const [data, setData] = useState(null);
+  const [settings, setSettings] = useState({
+    kaprodi_nama: "Dr Anwar, S.Ag.,M.Ag",
+    kaprodi_nip: "198001012005011001"
+  });
 
   useEffect(() => {
+    // Fetch System Settings
+    fetch('/api/admin/settings')
+      .then(res => res.json())
+      .then(d => {
+        if (d && !d.error) {
+          setSettings(prev => ({
+            ...prev,
+            ...d
+          }));
+        }
+      })
+      .catch(err => console.error("Error fetching settings:", err));
+
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
     const mhsId = params.get('mhsId') || session?.user?.id;
@@ -145,8 +162,10 @@ export default function CetakTranskrip() {
         <div className="w-full flex justify-end">
           <div className="text-center w-64 text-sm">
             <p className="mb-16">Makassar, {new Date(pengajuan.tanggal_selesai).toLocaleDateString('id-ID')}</p>
-            <div className="border-b border-black w-full mb-2"></div>
-            <p className="font-bold uppercase">Ketua Program Studi</p>
+            <div className="border-b border-black w-full mb-1"></div>
+            <p className="font-bold uppercase">{settings.kaprodi_nama || 'Ketua Program Studi'}</p>
+            {settings.kaprodi_nip && <p className="text-xs">NIP/NIDN. {settings.kaprodi_nip}</p>}
+            <p className="text-xs text-slate-600 uppercase mt-0.5">Ketua Program Studi</p>
           </div>
         </div>
 

@@ -16,16 +16,22 @@ export default function CetakPenerimaan() {
       fetch(`/api/laporan-akhir?id=${id}`)
         .then(res => res.json())
         .then(d => {
-          if (d.laporan && d.pengajuan) {
-            setData(d);
+          if (d.pengajuan) {
+            setData({
+              pengajuan: d.pengajuan,
+              laporan: d.laporan || d.laporan_kelompok || d.laporan_individu || {}
+            });
           }
         });
     } else if (mhsId) {
       fetch(`/api/laporan-akhir?mhsId=${mhsId}`)
         .then(res => res.json())
         .then(d => {
-          if (d.laporan && d.pengajuan) {
-            setData(d);
+          if (d.pengajuan) {
+            setData({
+              pengajuan: d.pengajuan,
+              laporan: d.laporan || d.laporan_kelompok || d.laporan_individu || {}
+            });
           }
         });
     }
@@ -48,13 +54,11 @@ export default function CetakPenerimaan() {
       </div>
 
       <div className="max-w-[21cm] mx-auto bg-white shadow-2xl print:shadow-none print:max-w-none">
-        <div className="p-[3cm] min-h-[29.7cm] print:p-[2.5cm]">
+        <div className="px-[3cm] pb-[3cm] pt-[1.5cm] min-h-[29.7cm] print:px-[2.5cm] print:pb-[2.5cm] print:pt-[1cm]">
           
           {/* KOP SURAT PERUSAHAAN (KOSONGAN/GENERIC) */}
-          <div className="border-b-4 border-black pb-4 mb-8 text-center">
-            <h1 className="text-2xl font-black uppercase tracking-wider">{mitra}</h1>
-            <p className="text-sm mt-1">{alamatMitra}</p>
-            <p className="text-sm">Telepon: ........................ | Email: ........................</p>
+          <div className="border-b-4 border-black pb-4 mb-8 text-center min-h-24 flex items-center justify-center">
+            <h1 className="text-3xl font-black uppercase tracking-wider text-slate-300">KOP INSTANSI</h1>
           </div>
 
           <div className="flex justify-between mb-8">
@@ -117,7 +121,7 @@ export default function CetakPenerimaan() {
             </table>
 
             <p>
-              Kegiatan KKL Plus akan dilaksanakan mulai tanggal <strong>{pengajuan.tanggal_mulai ? new Date(pengajuan.tanggal_mulai).toLocaleDateString('id-ID') : '.....'}</strong> sampai dengan <strong>{pengajuan.tanggal_selesai ? new Date(pengajuan.tanggal_selesai).toLocaleDateString('id-ID') : '.....'}</strong>. Selama pelaksanaannya, mahasiswa tersebut akan ditempatkan di bagian/divisi .................................................... dan dibimbing oleh mentor perusahaan.
+              Kegiatan KKL Plus akan dilaksanakan mulai tanggal <strong>..........................</strong> sampai dengan <strong>..........................</strong>. Selama pelaksanaannya, kami berharap mahasiswa tersebut dapat memberikan kontribusi nyata yang bermanfaat dan berdampak positif bagi instansi kami.
             </p>
             <p>
               Demikian surat balasan penerimaan KKL Plus ini kami sampaikan agar dapat dipergunakan sebagaimana mestinya. Atas kerja sama yang baik kami ucapkan terima kasih.
@@ -126,8 +130,7 @@ export default function CetakPenerimaan() {
 
           <div className="flex justify-end mt-16 text-center">
             <div className="w-1/2">
-              <p>Hormat Kami,</p>
-              <p className="mb-24 mt-2">(Stempel & Tanda Tangan)</p>
+              <p className="mb-24">Hormat Kami,</p>
               <p className="font-bold underline">(..................................................)</p>
               <p>Pimpinan / HRD</p>
             </div>

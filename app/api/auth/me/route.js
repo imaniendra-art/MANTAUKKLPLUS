@@ -27,9 +27,11 @@ export async function GET() {
       nim_nidn: existingUser.nim_nidn,
       nidn: existingUser.nidn,
       role: existingUser.role,
+      tipe_admin: existingUser.tipe_admin,
       isFirstLogin: existingUser.isFirstLogin,
       konsentrasi: existingUser.konsentrasi,
       program_studi: existingUser.program_studi,
+      nomor_hp: existingUser.nomor_hp || "",
     };
 
     return NextResponse.json({ authenticated: true, user: userData });

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import DashboardLayout, { MENU_CONFIG } from "@/components/DashboardLayout";
 import { useSession } from "@/components/AuthProvider";
 import { useRouter } from "next/navigation";
-import { Users, Building, Plus, CheckCircle, Clock, Edit, MapPin, User, Handshake, CheckCircle2 } from "lucide-react";
+import { Users, Building, Plus, CheckCircle, Clock, Edit, MapPin, User, Handshake, CheckCircle2, ClipboardList } from "lucide-react";
 import { Suspense } from "react";
 
 function MahasiswaDashboardContent() {
@@ -28,14 +28,16 @@ function MahasiswaDashboardContent() {
   });
   
   const fetchProker = async (pokjaId) => {
+    if (!pokjaId) return;
     try {
       const res = await fetch(`/api/proker?pokjaId=${pokjaId}`);
       if (res.ok) {
         const data = await res.json();
-        setProkerList(data);
+        setProkerList(Array.isArray(data) ? data : []);
       }
     } catch (e) {
       console.error(e);
+      setProkerList([]);
     }
   };
 
@@ -59,6 +61,12 @@ function MahasiswaDashboardContent() {
   useEffect(() => {
     fetchPokja();
   }, [session]);
+
+  useEffect(() => {
+    if (pokja?._id) {
+      fetchProker(pokja._id);
+    }
+  }, [pokja?._id]);
 
   const handleCreatePokja = async (e) => {
     e.preventDefault();
@@ -342,33 +350,40 @@ function MahasiswaDashboardContent() {
                   </div>
                   
                   {isKetua && !pokja.mitra_id.is_lengkap ? (
-                    <div className="mt-auto p-4 bg-teal-50 border border-teal-100 rounded-xl flex flex-col gap-3">
-                      <div>
-                        <h5 className="font-bold text-teal-900 text-sm">Lengkapi Profil Mitra</h5>
-                        <p className="text-xs text-teal-700 mt-1">Anda wajib melengkapi detail lokasi instansi untuk memulai KKL Plus.</p>
+                    ['disetujui_admin', 'berjalan', 'selesai'].includes(pokja.status_pokja) ? (
+                      <div className="mt-auto p-4 bg-teal-50 border border-teal-100 rounded-xl flex flex-col gap-3">
+                        <div>
+                          <h5 className="font-bold text-teal-900 text-sm">Lengkapi Profil Mitra</h5>
+                          <p className="text-xs text-teal-700 mt-1">Anda wajib melengkapi detail lokasi instansi untuk memulai KKL Plus.</p>
+                        </div>
+                        <button 
+                          onClick={() => {
+                            setMitraProfileForm({
+                              alamat_lengkap: pokja.mitra_id.alamat_lengkap || "",
+                              desa_kelurahan: pokja.mitra_id.desa_kelurahan || "",
+                              kecamatan: pokja.mitra_id.kecamatan || "",
+                              kabupaten_kota: pokja.mitra_id.kabupaten_kota || "",
+                              titik_koordinat: pokja.mitra_id.titik_koordinat || "",
+                              link_maps: pokja.mitra_id.link_maps || "",
+                              nama_pimpinan: pokja.mitra_id.nama_pimpinan || "",
+                              kontak_mitra: pokja.mitra_id.kontak_mitra || "",
+                              status_kerjasama: pokja.mitra_id.status_kerjasama || "Belum Ada",
+                              kuota_maksimal: pokja.mitra_id.kuota_maksimal || 5,
+                              fasilitas_khusus: pokja.mitra_id.fasilitas_khusus || ""
+                            });
+                            setShowMitraProfileModal(true);
+                          }} 
+                          className="w-full px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-lg text-sm shadow-sm transition-colors text-center"
+                        >
+                          Lengkapi Sekarang
+                        </button>
                       </div>
-                      <button 
-                        onClick={() => {
-                          setMitraProfileForm({
-                            alamat_lengkap: pokja.mitra_id.alamat_lengkap || "",
-                            desa_kelurahan: pokja.mitra_id.desa_kelurahan || "",
-                            kecamatan: pokja.mitra_id.kecamatan || "",
-                            kabupaten_kota: pokja.mitra_id.kabupaten_kota || "",
-                            titik_koordinat: pokja.mitra_id.titik_koordinat || "",
-                            link_maps: pokja.mitra_id.link_maps || "",
-                            nama_pimpinan: pokja.mitra_id.nama_pimpinan || "",
-                            kontak_mitra: pokja.mitra_id.kontak_mitra || "",
-                            status_kerjasama: pokja.mitra_id.status_kerjasama || "Belum Ada",
-                            kuota_maksimal: pokja.mitra_id.kuota_maksimal || 5,
-                            fasilitas_khusus: pokja.mitra_id.fasilitas_khusus || ""
-                          });
-                          setShowMitraProfileModal(true);
-                        }} 
-                        className="w-full px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-lg text-sm shadow-sm transition-colors text-center"
-                      >
-                        Lengkapi Sekarang
-                      </button>
-                    </div>
+                    ) : (
+                      <div className="mt-auto p-4 bg-amber-50 border border-amber-200 rounded-xl flex flex-col gap-2">
+                        <h5 className="font-bold text-amber-700 text-sm">Menunggu Persetujuan Admin</h5>
+                        <p className="text-xs text-amber-600">Anda dapat melengkapi profil lokasi instansi KKL Plus ini setelah pengajuan disetujui oleh Admin.</p>
+                      </div>
+                    )
                   ) : (
                     <div className="mt-2 text-sm text-slate-600 dark:text-slate-400 flex flex-col h-full">
                       <div className="space-y-3 mb-4">
@@ -429,13 +444,26 @@ function MahasiswaDashboardContent() {
             <div className="space-y-4">
               <div className="flex justify-between items-center">
                 <h3 className="font-bold text-slate-700 dark:text-slate-300">Program Kerja</h3>
+                {prokerList.length > 0 && prokerList.every(p => p.status === 'disetujui_dpl' || p.status === 'selesai') && (
+                  <span className="text-[10px] font-bold text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 px-2 py-0.5 rounded-md border border-teal-200 dark:border-teal-800/50">
+                    ✓ Disetujui DPL
+                  </span>
+                )}
               </div>
               
               {['berjalan', 'selesai'].includes(pokja.status_pokja) ? (
                 <div className="flex flex-col gap-4">
-                  <button onClick={() => router.push('/mahasiswa/proker')} className="w-full py-3 bg-amber-500 text-white font-bold rounded-xl shadow-sm shadow-amber-200 text-center flex items-center justify-center gap-2 transition-transform hover:scale-[1.02]">
-                    <Plus className="w-4 h-4" /> Rancang Proker
-                  </button>
+                  {/* Hanya Ketua yang melihat tombol Rancang Proker jika belum semua disetujui DPL */}
+                  {((pokja.ketua_id?._id && String(pokja.ketua_id._id) === String(session?.user?.id)) || (typeof pokja.ketua_id === 'string' && pokja.ketua_id === session?.user?.id)) && 
+                   !(prokerList.length > 0 && prokerList.every(p => p.status === 'disetujui_dpl' || p.status === 'selesai')) ? (
+                    <button onClick={() => router.push('/mahasiswa/proker')} className="w-full py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl shadow-sm shadow-amber-200 text-center flex items-center justify-center gap-2 transition-all hover:scale-[1.01]">
+                      <Plus className="w-4 h-4" /> Rancang Proker
+                    </button>
+                  ) : (
+                    <button onClick={() => router.push('/mahasiswa/proker')} className="w-full py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl shadow-sm text-center flex items-center justify-center gap-2 transition-all hover:scale-[1.01]">
+                      <ClipboardList className="w-4 h-4" /> Lihat Program Kerja
+                    </button>
+                  )}
                   
                   {/* Proker List */}
                   <div className="space-y-3 mt-1">

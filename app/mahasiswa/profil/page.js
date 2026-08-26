@@ -103,15 +103,20 @@ export default async function ProfilMahasiswa() {
             </div>
 
             <div className="sm:col-span-3">
-              <label htmlFor="konsentrasi" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-                Konsentrasi
-              </label>
+              <div className="flex justify-between items-center">
+                <label htmlFor="konsentrasi" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                  Konsentrasi
+                </label>
+                <a href="/profil" className="text-xs text-teal-600 hover:underline font-bold">
+                  Ubah Konsentrasi ⚙️
+                </a>
+              </div>
               <div className="mt-2">
                 <input
                   type="text"
                   name="konsentrasi"
                   id="konsentrasi"
-                  value={user.konsentrasi || '-'}
+                  value={user.konsentrasi || 'Belum memilih konsentrasi'}
                   disabled
                   readOnly
                   className="block w-full rounded-xl border-0 py-3 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6 bg-slate-100 dark:bg-slate-900/50 dark:text-slate-300 dark:ring-slate-700 cursor-not-allowed opacity-80"

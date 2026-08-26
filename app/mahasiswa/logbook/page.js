@@ -49,30 +49,57 @@ export default function LogbookPage() {
     setLoading(true);
     try {
       const resP = await fetch(`/api/pokja?mhsId=${session.user.id}`);
-      const dataP = await resP.json();
+      let dataP = null;
+      if (resP.ok) {
+        const textP = await resP.text();
+        dataP = textP ? JSON.parse(textP) : null;
+      }
       setPokja(dataP);
 
-      if (dataP && !dataP.error) {
+      if (dataP && dataP._id && !dataP.error) {
         // Fetch Proker untuk Dropdown
-        const resProker = await fetch(`/api/proker?pokjaId=${dataP._id}`);
-        setProkers(await resProker.json());
+        try {
+          const resProker = await fetch(`/api/proker?pokjaId=${dataP._id}`);
+          if (resProker.ok) {
+            const textProker = await resProker.text();
+            const dataProker = textProker ? JSON.parse(textProker) : [];
+            setProkers(Array.isArray(dataProker) ? dataProker : []);
+          } else {
+            setProkers([]);
+          }
+        } catch (errProker) {
+          console.error("Gagal memuat data proker:", errProker);
+          setProkers([]);
+        }
 
         // Fetch Logbooks with Pagination
-        const resL = await fetch(`/api/logbook?mhsId=${session.user.id}&tipe=${activeTab}&page=${page}&limit=${limit}`);
-        const dataL = await resL.json();
-        
-        if (dataL.data && dataL.pagination) {
-          setLogbooks(dataL.data);
-          setTotalItems(dataL.pagination.total);
-          setTotalPages(dataL.pagination.totalPages);
-        } else {
-          setLogbooks(Array.isArray(dataL) ? dataL : []);
-          setTotalItems(Array.isArray(dataL) ? dataL.length : 0);
-          setTotalPages(1);
+        try {
+          const resL = await fetch(`/api/logbook?mhsId=${session.user.id}&tipe=${activeTab}&page=${page}&limit=${limit}`);
+          if (resL.ok) {
+            const textL = await resL.text();
+            const dataL = textL ? JSON.parse(textL) : null;
+            
+            if (dataL && dataL.data && dataL.pagination) {
+              setLogbooks(dataL.data);
+              setTotalItems(dataL.pagination.total);
+              setTotalPages(dataL.pagination.totalPages);
+            } else {
+              setLogbooks(Array.isArray(dataL) ? dataL : []);
+              setTotalItems(Array.isArray(dataL) ? dataL.length : 0);
+              setTotalPages(1);
+            }
+          } else {
+            setLogbooks([]);
+            setTotalItems(0);
+            setTotalPages(1);
+          }
+        } catch (errLog) {
+          console.error("Gagal memuat logbook:", errLog);
+          setLogbooks([]);
         }
       }
     } catch (error) {
-      console.error(error);
+      console.error("Gagal memuat data:", error);
     } finally {
       setLoading(false);
     }
@@ -219,21 +246,23 @@ export default function LogbookPage() {
 
   // Logic untuk proker dropdown
   const filteredProkers = useMemo(() => {
-    if (!pokja || !session?.user?.id) return [];
+    if (!pokja || !Array.isArray(prokers) || prokers.length === 0) return [];
     
-    // The schema specifies ketua_id as a reference. Let's compare id.
-    const isKetua = pokja.ketua_id?._id === session.user.id || pokja.ketua_id === session.user.id;
+    const userId = String(session?.user?.id || session?.user?._id || '');
     
-    return prokers.filter(p => {
-      const isPIC = Array.isArray(p.pic_id) 
-        ? p.pic_id.some(pic => String(pic._id || pic) === String(session.user.id))
-        : String(p.pic_id?._id || p.pic_id) === String(session.user.id);
-        
-      if (p.jenis_proker === 'Utama') {
-        return isKetua;
-      } else {
-        return isPIC;
-      }
+    // Urutkan agar proker yang mana user adalah PIC atau Proker Utama muncul di urutan atas
+    return [...prokers].sort((a, b) => {
+      const aIsPIC = Array.isArray(a.pic_id)
+        ? a.pic_id.some(pic => String(pic?._id || pic?.id || pic) === userId)
+        : String(a.pic_id?._id || a.pic_id?.id || a.pic_id) === userId;
+      const bIsPIC = Array.isArray(b.pic_id)
+        ? b.pic_id.some(pic => String(pic?._id || pic?.id || pic) === userId)
+        : String(b.pic_id?._id || b.pic_id?.id || b.pic_id) === userId;
+      if (aIsPIC && !bIsPIC) return -1;
+      if (!aIsPIC && bIsPIC) return 1;
+      if (a.jenis_proker === 'Utama' && b.jenis_proker !== 'Utama') return -1;
+      if (a.jenis_proker !== 'Utama' && b.jenis_proker === 'Utama') return 1;
+      return 0;
     });
   }, [prokers, pokja, session]);
 
@@ -294,9 +323,9 @@ export default function LogbookPage() {
               
               {activeTab === 'pokja' && filteredProkers.length === 0 ? (
                 <div className="p-10 text-center">
-                  <div className="text-4xl mb-4">🚫</div>
-                  <p className="font-bold text-slate-700 dark:text-slate-300 mb-1">Akses Dibatasi</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Anda bukan Ketua (Proker Utama) maupun PIC (Proker Pendukung) yang berhak mengisi form Proker.</p>
+                  <div className="text-4xl mb-4">📂</div>
+                  <p className="font-bold text-slate-700 dark:text-slate-300 mb-1">Belum Ada Program Kerja</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Ketua Pokja belum merancang Program Kerja untuk kelompok Anda.</p>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="p-6 space-y-5">
@@ -310,11 +339,18 @@ export default function LogbookPage() {
                       <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Pilih Program Kerja <span className="text-red-500">*</span></label>
                       <select required value={prokerId} onChange={(e) => setProkerId(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/20 dark:bg-slate-900/20">
                         <option value="">-- Pilih Proker --</option>
-                        {filteredProkers.map(p => (
-                          <option key={p._id} value={p._id}>
-                            {p.judul_proker} {p.jenis_proker === 'Utama' ? '— (🌟 Utama)' : '— (Pendukung)'}
-                          </option>
-                        ))}
+                        {filteredProkers.map(p => {
+                          const userId = String(session?.user?.id || session?.user?._id || '');
+                          const isPIC = Array.isArray(p.pic_id)
+                            ? p.pic_id.some(pic => String(pic?._id || pic?.id || pic) === userId)
+                            : String(p.pic_id?._id || p.pic_id?.id || p.pic_id) === userId;
+
+                          return (
+                            <option key={p._id} value={p._id}>
+                              {p.judul_proker} {p.jenis_proker === 'Utama' ? '— (🌟 Utama)' : isPIC ? '— (Pendukung • PIC Anda)' : '— (Pendukung)'}
+                            </option>
+                          );
+                        })}
                       </select>
                     </div>
                   ) : (

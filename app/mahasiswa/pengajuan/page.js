@@ -76,8 +76,12 @@ export default function BursaMitra() {
     }
   };
 
-  const handleSelectMitra = async (mitraId) => {
+  const handleSelectMitra = async (mitraId, namaMitra) => {
     if (!pokja || !pokja._id) return;
+    
+    const isConfirmed = window.confirm(`Apakah Anda yakin ingin memilih ${namaMitra ? `"${namaMitra}"` : "lokasi ini"} sebagai tempat KKL Plus?\n\nSetelah diajukan, Anda harus menunggu validasi dari Admin dan tidak dapat mengubah pilihan secara mandiri.`);
+    if (!isConfirmed) return;
+
     setSubmitting(true);
     try {
       const res = await fetch('/api/pokja', {
@@ -352,7 +356,7 @@ export default function BursaMitra() {
               ) : (
                 <button 
                   disabled={submitting}
-                  onClick={() => handleSelectMitra(mitra._id)}
+                  onClick={() => handleSelectMitra(mitra._id, mitra.nama_instansi)}
                   className="w-full py-3 bg-teal-600 text-white font-bold rounded-xl shadow-sm hover:bg-teal-700 transition-colors disabled:opacity-50 mt-4"
                 >
                   {submitting ? 'Memproses...' : 'Pilih Lokasi & Ajukan ke Admin'}

@@ -12,6 +12,8 @@ export default function DplPenilaianPage() {
   const [prokers, setProkers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [allReportsApproved, setAllReportsApproved] = useState(true);
+  const [laporanSummary, setLaporanSummary] = useState(null);
 
   // Group Details (per-proker)
   const [detailKelompokDPL, setDetailKelompokDPL] = useState({});
@@ -21,6 +23,8 @@ export default function DplPenilaianPage() {
       const res = await fetch(`/api/penilaian?pokjaId=${params.pokjaId}`);
       const data = await res.json();
       if (data.success) {
+        setAllReportsApproved(data.allReportsApproved ?? true);
+        setLaporanSummary(data.laporanSummary || null);
         setPenilaians(data.penilaians.map(p => ({
           ...p,
           detail_dpl_individu: p.detail_dpl_individu || { laporan: 0, logbook: 0, etika: 0 }
@@ -171,6 +175,31 @@ export default function DplPenilaianPage() {
           </button>
         </div>
       </div>
+
+      {!allReportsApproved && (
+        <div className="bg-amber-50 border border-amber-300 rounded-2xl p-6 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="w-6 h-6 text-amber-600 shrink-0 mt-0.5" />
+            <div>
+              <h3 className="font-bold text-amber-900 text-base">Penilaian Mahasiswa Belum Dapat Disimpan</h3>
+              <p className="text-sm text-amber-800 mt-1">
+                Laporan Akhir untuk kelompok ini belum sepenuhnya disetujui DPL.
+                {laporanSummary && (
+                  <span className="block mt-1 font-semibold text-xs text-amber-900">
+                    Status: Laporan Kelompok ({laporanSummary.isLaporanKelompokApproved ? '✅ Disetujui' : '⏳ Belum Disetujui'}) • Laporan Individu ({laporanSummary.approvedIndividuCount}/{laporanSummary.totalMembers} Disetujui)
+                  </span>
+                )}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => router.push('/dpl/validasi-laporan')}
+            className="px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm rounded-xl transition-all shadow-sm shrink-0"
+          >
+            Ke Menu Validasi Laporan →
+          </button>
+        </div>
+      )}
 
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-6">
         <div className="p-6 border-b border-slate-200">
@@ -362,14 +391,21 @@ export default function DplPenilaianPage() {
             </tbody>
           </table>
         </div>
-        <div className="p-6 bg-slate-50 border-t border-slate-200 flex justify-end">
+        <div className="p-6 bg-slate-50 border-t border-slate-200 flex justify-between items-center flex-wrap gap-4">
+          <div>
+            {!allReportsApproved && (
+              <p className="text-xs text-amber-700 font-bold">
+                ⚠️ Anda harus menyetujui seluruh laporan kelompok dan laporan individu terlebih dahulu sebelum dapat menyimpan penilaian.
+              </p>
+            )}
+          </div>
           <button 
             onClick={handleSubmit}
-            disabled={saving}
-            className="flex items-center gap-2 bg-fuchsia-600 hover:bg-fuchsia-700 text-white px-6 py-2.5 rounded-lg font-bold transition-all disabled:opacity-50"
+            disabled={saving || !allReportsApproved}
+            className="flex items-center gap-2 bg-fuchsia-600 hover:bg-fuchsia-700 text-white px-6 py-2.5 rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
           >
             <Save className="w-4 h-4" />
-            {saving ? 'Menyimpan...' : 'Simpan Penilaian DPL'}
+            {saving ? 'Menyimpan...' : !allReportsApproved ? 'Penilaian Terkunci (Laporan Belum Disetujui)' : 'Simpan Penilaian DPL'}
           </button>
         </div>
       </div>

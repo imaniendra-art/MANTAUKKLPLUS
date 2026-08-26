@@ -4,6 +4,7 @@ import Penilaian from '@/models/Penilaian';
 import Pokja from '@/models/Pokja';
 import User from '@/models/User';
 import Proker from '@/models/Proker';
+import LaporanAkhir from '@/models/LaporanAkhir';
 
 // Helper for letter grading
 function calculateLetterGrade(score) {
@@ -64,8 +65,20 @@ export async function GET(req) {
     // Ambil daftar Proker dari kelompok ini
     const prokers = await Proker.find({ pokja_id: pokjaId }).lean();
 
-    // PERBAIKAN 2 & 3: Filter Ghost Student dan Tambah nilai_final_tersedia
+    // Cek status persetujuan Laporan Akhir (Kelompok & Seluruh Individu)
+    const laporans = await LaporanAkhir.find({ pokja_id: pokjaId }).lean();
+    const lapKelompok = laporans.find(l => l.tipe_laporan === 'pokja');
+    const isLaporanKelompokApproved = lapKelompok?.status === 'disetujui';
     const stringActiveIds = mahasiswaIds.map(id => id.toString());
+    const approvedIndividuCount = laporans.filter(l => 
+      l.tipe_laporan === 'individu' && 
+      l.status === 'disetujui' &&
+      stringActiveIds.includes(l.mahasiswa_id?.toString())
+    ).length;
+    const isIndividuComplete = stringActiveIds.length > 0 && approvedIndividuCount >= stringActiveIds.length;
+    const allReportsApproved = isLaporanKelompokApproved && isIndividuComplete;
+
+    // Filter Ghost Student dan Tambah nilai_final_tersedia
     const filteredPenilaians = penilaians
       .filter(p => p.mahasiswa_id && stringActiveIds.includes(p.mahasiswa_id._id.toString()))
       .map(p => {
@@ -74,7 +87,18 @@ export async function GET(req) {
         return pObj;
       });
 
-    return NextResponse.json({ success: true, penilaians: filteredPenilaians, prokers });
+    return NextResponse.json({ 
+      success: true, 
+      penilaians: filteredPenilaians, 
+      prokers, 
+      allReportsApproved,
+      laporanSummary: {
+        isLaporanKelompokApproved,
+        approvedIndividuCount,
+        totalMembers: stringActiveIds.length,
+        isIndividuComplete
+      }
+    });
 
   } catch (error) {
     console.error(error);
@@ -97,6 +121,17 @@ export async function PATCH(req) {
       const ni = Number(data.nilai_individu) || 0;
       if (nk < 0 || nk > 100 || ni < 0 || ni > 100) {
         return NextResponse.json({ error: "Nilai harus berada pada rentang 0 sampai 100." }, { status: 400 });
+      }
+    }
+
+    if (role === 'dpl' && updates.length > 0) {
+      const sampleP = await Penilaian.findById(updates[0]._id);
+      if (sampleP?.pokja_id) {
+        const laporans = await LaporanAkhir.find({ pokja_id: sampleP.pokja_id }).lean();
+        const lapKelompok = laporans.find(l => l.tipe_laporan === 'pokja');
+        if (!lapKelompok || lapKelompok.status !== 'disetujui') {
+          return NextResponse.json({ error: "Laporan Kelompok belum disetujui DPL. Selesaikan validasi laporan terlebih dahulu." }, { status: 400 });
+        }
       }
     }
 

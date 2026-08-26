@@ -9,5 +9,9 @@ const MagicLinkSchema = new mongoose.Schema({
   expiresAt: { type: Date, required: true }
 }, { timestamps: true });
 
+// TTL index untuk auto-cleanup magic link yang sudah kedaluwarsa
+MagicLinkSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+MagicLinkSchema.index({ token: 1, status: 1 });
+
 delete mongoose.models.MagicLink;
 export default mongoose.models.MagicLink || mongoose.model('MagicLink', MagicLinkSchema);

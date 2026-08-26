@@ -3,21 +3,24 @@
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import DashboardLayout from "@/components/DashboardLayout";
-import { Check, Edit2, Trash2, FileText, CheckCircle, XCircle } from "lucide-react";
+import { 
+  Check, Edit2, Trash2, FileText, CheckCircle, XCircle, 
+  Users, User, Building2, Search, Eye, AlertCircle, Phone, 
+  Mail, GraduationCap, X, UserCheck, Clock, ShieldCheck,
+  ChevronRight, Calendar, Info
+} from "lucide-react";
 
 export default function MasterData() {
   const [mounted, setMounted] = useState(false);
   // Data State
   const [mitras, setMitras] = useState([]);
   const [mentors, setMentors] = useState([]);
+  const [pokjas, setPokjas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("mitra");
 
-  
   // Modals State
   const [showMitraModal, setShowMitraModal] = useState(false);
-  // AI Preview Modal State
-  // Toast State
   const [toastMessage, setToastMessage] = useState("");
 
   // Form State
@@ -32,22 +35,38 @@ export default function MasterData() {
     id: null, nama_posisi: "", konsentrasi: "SDM", kuota: 1, 
     deskripsi_pekerjaan: "", kriteria_kandidat: "", sistem_kerja: "WFO" 
   });
+  
   // Pagination State for Mitra
   const [currentPageMitra, setCurrentPageMitra] = useState(1);
   const itemsPerPage = 8;
 
+  // Pokja States & Filters
+  const [searchPokja, setSearchPokja] = useState("");
+  const [statusFilterPokja, setStatusFilterPokja] = useState("all");
+  const [currentPagePokja, setCurrentPagePokja] = useState(1);
+  const pokjasPerPage = 8;
+  const [selectedPokjaDetail, setSelectedPokjaDetail] = useState(null);
+  const [showPokjaDetailModal, setShowPokjaDetailModal] = useState(false);
+  const [showEditPokjaModal, setShowEditPokjaModal] = useState(false);
+  const [editPokjaForm, setEditPokjaForm] = useState({ id: "", nama_pokja: "" });
+
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [mitraRes, mentorRes] = await Promise.all([
+      const [mitraRes, mentorRes, pokjaRes] = await Promise.all([
         fetch('/api/mitra'),
-        fetch('/api/admin/pengguna?role=mentor')
+        fetch('/api/admin/pengguna?role=mentor'),
+        fetch('/api/pokja?admin=true&status=all')
       ]);
-      const mitraData = await mitraRes.json();
-      const mentorData = await mentorRes.json();
+      const [mitraData, mentorData, pokjaData] = await Promise.all([
+        mitraRes.json(),
+        mentorRes.json(),
+        pokjaRes.json()
+      ]);
       
       if (Array.isArray(mitraData)) setMitras(mitraData);
       if (Array.isArray(mentorData)) setMentors(mentorData);
+      if (Array.isArray(pokjaData)) setPokjas(pokjaData);
     } catch (error) {
       console.error("Gagal mengambil data", error);
     } finally {
@@ -107,10 +126,51 @@ export default function MasterData() {
     }
   };
 
+  // Pokja Handlers
+  const handleEditPokjaSubmit = async (e) => {
+    e.preventDefault();
+    if (!editPokjaForm.nama_pokja.trim()) return;
+    try {
+      const res = await fetch('/api/pokja', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: editPokjaForm.id,
+          action: 'rename',
+          nama_pokja: editPokjaForm.nama_pokja
+        })
+      });
+      if (res.ok) {
+        setShowEditPokjaModal(false);
+        setEditPokjaForm({ id: "", nama_pokja: "" });
+        showToast("Nama POKJA berhasil diperbarui!");
+        fetchData();
+      } else {
+        const data = await res.json();
+        showToast(data.error || "Gagal mengubah nama Pokja");
+      }
+    } catch (error) {
+      console.error(error);
+      showToast("Terjadi kesalahan sistem");
+    }
+  };
 
-  ;
-
-  ;
+  const handleDeletePokja = async (id, nama) => {
+    if (!window.confirm(`Apakah Anda yakin ingin menghapus "${nama || 'POKJA'}"? Semua data anggota, proker, dan logbook terkait kelompok ini akan ikut dibersihkan.`)) return;
+    try {
+      const res = await fetch(`/api/pokja?id=${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        showToast("POKJA berhasil dihapus!");
+        fetchData();
+      } else {
+        const data = await res.json();
+        showToast(data.error || "Gagal menghapus POKJA");
+      }
+    } catch (error) {
+      console.error(error);
+      showToast("Terjadi kesalahan sistem");
+    }
+  };
 
   useEffect(() => {
     const load = async () => {
@@ -213,55 +273,42 @@ export default function MasterData() {
     } catch (error) { console.error(error); }
   };
 
-  ;
+  // Filter and Pagination for Pokja
+  const filteredPokjas = pokjas.filter(p => {
+    const query = searchPokja.toLowerCase().trim();
+    const namaMatch = p.nama_pokja?.toLowerCase().includes(query);
+    const ketuaNamaMatch = p.ketua_id?.nama_lengkap?.toLowerCase().includes(query);
+    const ketuaNimMatch = p.ketua_id?.nim_nidn?.toLowerCase().includes(query);
+    const mitraMatch = p.mitra_id?.nama_instansi?.toLowerCase().includes(query);
+    const matchesSearch = !query || namaMatch || ketuaNamaMatch || ketuaNimMatch || mitraMatch;
 
-  ;
+    if (!matchesSearch) return false;
 
-  // Dynamic form handlers for CPMK & Indikator
-  ;
+    if (statusFilterPokja === "all") return true;
+    if (statusFilterPokja === "belum_lengkap") {
+      const activeMembers = p.anggota?.filter(a => a.status_undangan === 'bergabung') || [];
+      return activeMembers.length < 2;
+    }
+    return p.status_pokja === statusFilterPokja;
+  });
 
-  ;
+  const indexOfLastPokja = currentPagePokja * pokjasPerPage;
+  const indexOfFirstPokja = indexOfLastPokja - pokjasPerPage;
+  const currentPokjas = filteredPokjas.slice(indexOfFirstPokja, indexOfLastPokja);
+  const totalPagesPokja = Math.ceil(filteredPokjas.length / pokjasPerPage) || 1;
 
-  ;
-
-  ;
-
-  ;
-
-  ;
-
-  ;
-
-  ;
-
-  ;
-
-  ;
-
-  ;
-
-  // Ekstrak semua matkul untuk ditampilkan di UI
-  
-  ;
-
-  ;
-
-  ;
-
-  ;
-
-  // Pagination Calculations
+  // Pagination Calculations for Mitra
   const indexOfLastMitra = currentPageMitra * itemsPerPage;
   const indexOfFirstMitra = indexOfLastMitra - itemsPerPage;
   const currentMitras = mitras.slice(indexOfFirstMitra, indexOfLastMitra);
-  const totalPagesMitra = Math.ceil(mitras.length / itemsPerPage);
+  const totalPagesMitra = Math.ceil(mitras.length / itemsPerPage) || 1;
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   return (
-    <DashboardLayout title="Master Data Mitra">
+    <DashboardLayout title="Manajemen Master Data">
       
       {/* Toast Notification (Portaled) */}
       {mounted && toastMessage && createPortal(
@@ -275,18 +322,50 @@ export default function MasterData() {
         <div className="text-center py-20 text-slate-500 dark:text-slate-400 font-bold animate-pulse">Memuat data dari database...</div>
       ) : (
         <>
-          <div className="flex space-x-1 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl shadow-sm p-1.5 rounded-xl w-max mb-6 border border-white/60 dark:border-slate-700">
-            <button onClick={() => setActiveTab("mitra")} className={`px-6 py-2.5 text-sm font-bold rounded-lg transition-all ${activeTab === "mitra" ? "bg-teal-600 text-amber-300 shadow-sm" : "text-slate-500 hover:text-teal-600 dark:text-slate-400 dark:hover:text-teal-400"}`}>Daftar Instansi</button>
-            <button onClick={() => setActiveTab("mentor")} className={`px-6 py-2.5 text-sm font-bold rounded-lg transition-all ${activeTab === "mentor" ? "bg-teal-600 text-amber-300 shadow-sm" : "text-slate-500 hover:text-teal-600 dark:text-slate-400 dark:hover:text-teal-400"}`}>Data Mentor</button>
+          {/* Top Navigation Tabs */}
+          <div className="flex flex-wrap gap-2 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl shadow-sm p-1.5 rounded-xl w-max mb-6 border border-white/60 dark:border-slate-700">
+            <button 
+              onClick={() => setActiveTab("mitra")} 
+              className={`px-5 py-2.5 text-sm font-bold rounded-lg transition-all flex items-center gap-2 ${activeTab === "mitra" ? "bg-teal-600 text-white shadow-sm" : "text-slate-500 hover:text-teal-600 dark:text-slate-400 dark:hover:text-teal-400"}`}
+            >
+              <Building2 className="w-4 h-4" />
+              <span>Daftar Instansi</span>
+              <span className={`px-2 py-0.5 text-xs rounded-full font-bold ${activeTab === "mitra" ? "bg-teal-700/60 text-white" : "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"}`}>
+                {mitras.length}
+              </span>
+            </button>
+
+            <button 
+              onClick={() => setActiveTab("pokja")} 
+              className={`px-5 py-2.5 text-sm font-bold rounded-lg transition-all flex items-center gap-2 ${activeTab === "pokja" ? "bg-teal-600 text-white shadow-sm" : "text-slate-500 hover:text-teal-600 dark:text-slate-400 dark:hover:text-teal-400"}`}
+            >
+              <Users className="w-4 h-4" />
+              <span>Daftar Pokja</span>
+              <span className={`px-2 py-0.5 text-xs rounded-full font-bold ${activeTab === "pokja" ? "bg-teal-700/60 text-white" : "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"}`}>
+                {pokjas.length}
+              </span>
+            </button>
+
+            <button 
+              onClick={() => setActiveTab("mentor")} 
+              className={`px-5 py-2.5 text-sm font-bold rounded-lg transition-all flex items-center gap-2 ${activeTab === "mentor" ? "bg-teal-600 text-white shadow-sm" : "text-slate-500 hover:text-teal-600 dark:text-slate-400 dark:hover:text-teal-400"}`}
+            >
+              <UserCheck className="w-4 h-4" />
+              <span>Data Mentor</span>
+              <span className={`px-2 py-0.5 text-xs rounded-full font-bold ${activeTab === "mentor" ? "bg-teal-700/60 text-white" : "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"}`}>
+                {mentors.length}
+              </span>
+            </button>
           </div>
 
           <div className="space-y-6">
+          {/* TAB 1: MITRA / INSTANSI */}
           {activeTab === "mitra" && (
             <>
-              <div className="flex justify-between items-center bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-6 rounded-2xl border border-white/60 dark:border-slate-700 shadow-sm">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-6 rounded-2xl border border-white/60 dark:border-slate-700 shadow-sm">
                 <div>
                   <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">Daftar Instansi / Mitra KKL Plus</h2>
-                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Kelola perusahaan tempat mahasiswa melakukan kegiatan KKL Plus.</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Kelola perusahaan dan instansi tempat mahasiswa melakukan kegiatan KKL Plus.</p>
                 </div>
                 <button 
                   onClick={() => {
@@ -299,7 +378,7 @@ export default function MasterData() {
                 </button>
               </div>
 
-              <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-2xl border border-white/60 dark:border-slate-700 shadow-sm overflow-hidden">
+              <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-2xl border border-white/60 dark:border-slate-700 shadow-sm overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="bg-slate-50 dark:bg-slate-800/80 border-b border-white/60 dark:border-slate-700 text-slate-500 dark:text-slate-400 text-sm font-bold">
@@ -314,14 +393,14 @@ export default function MasterData() {
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
                     {currentMitras.length === 0 ? (
-                      <tr><td colSpan="5" className="py-8 text-center text-slate-500 dark:text-slate-400">Belum ada data mitra.</td></tr>
+                      <tr><td colSpan="7" className="py-8 text-center text-slate-500 dark:text-slate-400">Belum ada data mitra.</td></tr>
                     ) : (
                       currentMitras.map((mitra, index) => (
                         <tr key={mitra._id} className="hover:bg-slate-50 dark:bg-slate-800/80 transition-colors">
                           <td className="py-4 px-6 text-center text-slate-500 dark:text-slate-400 font-medium">{indexOfFirstMitra + index + 1}</td>
                           <td className="py-4 px-6">
                             <div className="font-semibold text-slate-800 dark:text-slate-100">{mitra.nama_instansi}</div>
-                            <span className={`inline-block mt-1 px-2.5 py-0.5 rounded-md text-[10px] font-bold ${mitra.kategori?.includes('Sektor Publik') ? 'bg-teal-50 text-teal-600' : mitra.kategori?.includes('Ekonomi Kerakyatan') ? 'bg-amber-50 text-amber-600' : mitra.kategori?.includes('Privat') ? 'bg-teal-50 text-teal-600' : 'bg-slate-100 text-slate-600'}`}>
+                            <span className={`inline-block mt-1 px-2.5 py-0.5 rounded-md text-[10px] font-bold ${mitra.kategori?.includes('Sektor Publik') ? 'bg-teal-50 text-teal-600 dark:bg-teal-950/40 dark:text-teal-400' : mitra.kategori?.includes('Ekonomi Kerakyatan') ? 'bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400' : 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300'}`}>
                               {mitra.kategori}
                             </span>
                           </td>
@@ -332,8 +411,8 @@ export default function MasterData() {
                           </td>
                           <td className="py-4 px-6 max-w-[200px] truncate">
                             {mitra.alamat_lengkap ? (
-                              <div className="text-sm text-slate-600 dark:text-slate-300" title={`${mitra.alamat_lengkap}, ${mitra.kecamatan}, ${mitra.kabupaten_kota}`}>
-                                {mitra.alamat_lengkap}, {mitra.kecamatan}, {mitra.kabupaten_kota}
+                              <div className="text-sm text-slate-600 dark:text-slate-300" title={`${mitra.alamat_lengkap}, ${mitra.kecamatan || ''}, ${mitra.kabupaten_kota || ''}`}>
+                                {mitra.alamat_lengkap}{mitra.kecamatan ? `, ${mitra.kecamatan}` : ''}{mitra.kabupaten_kota ? `, ${mitra.kabupaten_kota}` : ''}
                               </div>
                             ) : (
                               <span className="text-xs text-slate-400 italic">Belum diisi</span>
@@ -354,7 +433,7 @@ export default function MasterData() {
                               {mitra.status_kerjasama && mitra.status_kerjasama !== 'Belum Ada' && mitra.status_kerjasama !== 'Proses Penjajakan (Siap MoU)' ? (
                                 <FileText className="w-5 h-5 text-teal-500" />
                               ) : (
-                                <XCircle className="w-5 h-5 text-slate-300" />
+                                <XCircle className="w-5 h-5 text-slate-300 dark:text-slate-600" />
                               )}
                             </div>
                           </td>
@@ -411,9 +490,316 @@ export default function MasterData() {
             </>
           )}
 
+          {/* TAB 2: DAFTAR POKJA (NEW) */}
+          {activeTab === "pokja" && (
+            <>
+              {/* Header & Quick Stats */}
+              <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-6 rounded-2xl border border-white/60 dark:border-slate-700 shadow-sm space-y-5">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                      <Users className="w-5 h-5 text-teal-600 dark:text-teal-400" />
+                      Daftar Kelompok Kerja (POKJA) Mahasiswa
+                    </h2>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                      Data seluruh POKJA yang dibuat mahasiswa, termasuk kelompok baru (hanya ketua) hingga yang sudah berjalan.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Stat Counters */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+                  <div className="p-4 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-white/60 dark:border-slate-700">
+                    <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Total POKJA</div>
+                    <div className="text-2xl font-black text-slate-800 dark:text-slate-100 mt-1">{pokjas.length}</div>
+                    <div className="text-[11px] text-slate-400 mt-0.5">Semua kelompok terdaftar</div>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/50 dark:border-amber-900/30">
+                    <div className="text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider">Belum Lengkap</div>
+                    <div className="text-2xl font-black text-amber-600 dark:text-amber-400 mt-1">
+                      {pokjas.filter(p => (p.anggota?.filter(a => a.status_undangan === 'bergabung').length || 0) < 2).length}
+                    </div>
+                    <div className="text-[11px] text-amber-600/80 dark:text-amber-400/80 mt-0.5">Hanya ketua / &lt; 2 anggota</div>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-blue-50/60 dark:bg-blue-950/20 border border-blue-200/50 dark:border-blue-900/30">
+                    <div className="text-xs font-bold text-blue-700 dark:text-blue-400 uppercase tracking-wider">Menunggu Validasi</div>
+                    <div className="text-2xl font-black text-blue-600 dark:text-blue-400 mt-1">
+                      {pokjas.filter(p => p.status_pokja === 'menunggu_persetujuan_admin').length}
+                    </div>
+                    <div className="text-[11px] text-blue-600/80 dark:text-blue-400/80 mt-0.5">Perlu konfirmasi admin</div>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-teal-50/60 dark:bg-teal-950/20 border border-teal-200/50 dark:border-teal-900/30">
+                    <div className="text-xs font-bold text-teal-700 dark:text-teal-400 uppercase tracking-wider">Aktif / Berjalan</div>
+                    <div className="text-2xl font-black text-teal-600 dark:text-teal-400 mt-1">
+                      {pokjas.filter(p => ['disetujui_admin', 'berjalan', 'selesai'].includes(p.status_pokja)).length}
+                    </div>
+                    <div className="text-[11px] text-teal-600/80 dark:text-teal-400/80 mt-0.5">Disetujui &amp; beroperasi</div>
+                  </div>
+                </div>
+
+                {/* Search & Filter bar */}
+                <div className="flex flex-col md:flex-row gap-3 pt-2">
+                  <div className="relative flex-1">
+                    <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input 
+                      type="text" 
+                      value={searchPokja} 
+                      onChange={(e) => { setSearchPokja(e.target.value); setCurrentPagePokja(1); }}
+                      placeholder="Cari nama pokja, nama ketua, NIM, atau instansi..." 
+                      className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-white/60 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 text-slate-800 dark:text-slate-100 placeholder-slate-400"
+                    />
+                  </div>
+
+                  <div className="w-full md:w-64">
+                    <select 
+                      value={statusFilterPokja} 
+                      onChange={(e) => { setStatusFilterPokja(e.target.value); setCurrentPagePokja(1); }}
+                      className="w-full px-4 py-2.5 rounded-xl border border-white/60 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 text-slate-800 dark:text-slate-100 font-medium"
+                    >
+                      <option value="all">Semua Status POKJA</option>
+                      <option value="belum_lengkap">⚠️ Belum Lengkap (Hanya Ketua / &lt;2 Anggota)</option>
+                      <option value="draft">Draf (Belum Diajukan)</option>
+                      <option value="menunggu_persetujuan_admin">Menunggu Validasi Admin</option>
+                      <option value="disetujui_admin">Disetujui Admin</option>
+                      <option value="berjalan">Sedang Berjalan</option>
+                      <option value="selesai">Selesai</option>
+                      <option value="ditolak">Ditolak</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Pokja Table */}
+              <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-2xl border border-white/60 dark:border-slate-700 shadow-sm overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-slate-50 dark:bg-slate-800/80 border-b border-white/60 dark:border-slate-700 text-slate-500 dark:text-slate-400 text-sm font-bold">
+                      <th className="py-4 px-6 w-14 text-center">No</th>
+                      <th className="py-4 px-6">Nama Pokja &amp; Periode</th>
+                      <th className="py-4 px-6">Ketua Kelompok</th>
+                      <th className="py-4 px-6">Komposisi Tim</th>
+                      <th className="py-4 px-6">Instansi Mitra</th>
+                      <th className="py-4 px-6">Pembimbing (DPL)</th>
+                      <th className="py-4 px-6 text-center">Status</th>
+                      <th className="py-4 px-6 text-center w-28">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                    {currentPokjas.length === 0 ? (
+                      <tr>
+                        <td colSpan="8" className="py-12 text-center text-slate-500 dark:text-slate-400">
+                          <Users className="w-8 h-8 mx-auto text-slate-300 dark:text-slate-600 mb-2" />
+                          Tidak ada data POKJA yang sesuai filter pencarian.
+                        </td>
+                      </tr>
+                    ) : (
+                      currentPokjas.map((pokja, index) => {
+                        const activeMembers = pokja.anggota?.filter(a => a.status_undangan === 'bergabung') || [];
+                        const pendingMembers = pokja.anggota?.filter(a => a.status_undangan === 'menunggu') || [];
+                        const totalActive = 1 + activeMembers.length;
+
+                        return (
+                          <tr key={pokja._id} className="hover:bg-slate-50 dark:bg-slate-800/80 transition-colors">
+                            <td className="py-4 px-6 text-center text-slate-500 dark:text-slate-400 font-medium">
+                              {indexOfFirstPokja + index + 1}
+                            </td>
+
+                            {/* Nama Pokja & Periode */}
+                            <td className="py-4 px-6">
+                              <div className="font-bold text-slate-800 dark:text-slate-100 flex items-center gap-1.5">
+                                <span>{pokja.nama_pokja || "POKJA Mahasiswa"}</span>
+                              </div>
+                              <div className="mt-1 flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+                                <Calendar className="w-3 h-3 text-slate-400" />
+                                <span>{pokja.periode || "Periode Aktif"}</span>
+                              </div>
+                            </td>
+
+                            {/* Ketua Kelompok */}
+                            <td className="py-4 px-6">
+                              {pokja.ketua_id ? (
+                                <div>
+                                  <div className="font-bold text-slate-800 dark:text-slate-100 flex items-center gap-1.5">
+                                    <User className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400 shrink-0" />
+                                    <span>{pokja.ketua_id.nama_lengkap}</span>
+                                  </div>
+                                  <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                                    NIM: <span className="font-semibold text-slate-700 dark:text-slate-300">{pokja.ketua_id.nim_nidn}</span>
+                                    {pokja.ketua_id.konsentrasi && ` • ${pokja.ketua_id.konsentrasi}`}
+                                  </div>
+                                  {pokja.ketua_id.nomor_hp && (
+                                    <div className="text-[11px] text-slate-400 mt-0.5 flex items-center gap-1">
+                                      <Phone className="w-3 h-3 text-slate-400" /> {pokja.ketua_id.nomor_hp}
+                                    </div>
+                                  )}
+                                </div>
+                              ) : (
+                                <span className="text-xs text-slate-400 italic">Ketua tidak terdata</span>
+                              )}
+                            </td>
+
+                            {/* Status Tim & Anggota */}
+                            <td className="py-4 px-6">
+                              {activeMembers.length === 0 ? (
+                                <div>
+                                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-200/50 dark:border-amber-900/40">
+                                    <AlertCircle className="w-3.5 h-3.5 shrink-0" /> 1 Orang (Hanya Ketua)
+                                  </span>
+                                  {pendingMembers.length > 0 ? (
+                                    <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                                      {pendingMembers.length} undangan menunggu
+                                    </div>
+                                  ) : (
+                                    <div className="text-[11px] text-slate-400 italic mt-1">
+                                      Belum ada anggota diundang
+                                    </div>
+                                  )}
+                                </div>
+                              ) : (
+                                <div>
+                                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 border border-teal-200/50 dark:border-teal-900/40">
+                                    <Users className="w-3.5 h-3.5 shrink-0" /> {totalActive} Mahasiswa
+                                  </span>
+                                  <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                                    {activeMembers.length} Bergabung {pendingMembers.length > 0 && `• ${pendingMembers.length} Menunggu`}
+                                  </div>
+                                </div>
+                              )}
+                            </td>
+
+                            {/* Instansi Mitra */}
+                            <td className="py-4 px-6">
+                              {pokja.mitra_id ? (
+                                <div>
+                                  <div className="font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-1.5">
+                                    <Building2 className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400 shrink-0" />
+                                    <span>{pokja.mitra_id.nama_instansi}</span>
+                                  </div>
+                                  {pokja.mitra_id.kategori && (
+                                    <span className="inline-block mt-0.5 text-[10px] text-slate-500 dark:text-slate-400 truncate max-w-[180px]">
+                                      {pokja.mitra_id.kategori}
+                                    </span>
+                                  )}
+                                </div>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400">
+                                  Belum Memilih Lokasi
+                                </span>
+                              )}
+                            </td>
+
+                            {/* DPL & Mentor */}
+                            <td className="py-4 px-6 text-xs text-slate-600 dark:text-slate-300">
+                              <div>
+                                <span className="text-slate-400">DPL:</span>{" "}
+                                <strong className="text-slate-700 dark:text-slate-200">{pokja.dpl_id?.nama_lengkap || "Belum diplot"}</strong>
+                              </div>
+                              {pokja.mentor_id && (
+                                <div className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">
+                                  <span className="text-slate-400">Mentor:</span> {pokja.mentor_id.nama_lengkap}
+                                </div>
+                              )}
+                            </td>
+
+                            {/* Status Pokja */}
+                            <td className="py-4 px-6 text-center">
+                              {(() => {
+                                switch (pokja.status_pokja) {
+                                  case 'draft':
+                                    return <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">Draf</span>;
+                                  case 'menunggu_persetujuan_admin':
+                                    return <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-amber-50 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300">Menunggu Validasi</span>;
+                                  case 'disetujui_admin':
+                                    return <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300">Disetujui</span>;
+                                  case 'berjalan':
+                                    return <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-teal-50 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300">Sedang Berjalan</span>;
+                                  case 'selesai':
+                                    return <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-emerald-50 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300">Selesai</span>;
+                                  case 'ditolak':
+                                    return <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-red-50 dark:bg-red-900/40 text-red-700 dark:text-red-300">Ditolak</span>;
+                                  default:
+                                    return <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-slate-100 text-slate-600">{pokja.status_pokja || '-'}</span>;
+                                }
+                              })()}
+                            </td>
+
+                            {/* Aksi */}
+                            <td className="py-4 px-6">
+                              <div className="flex justify-center gap-1.5">
+                                <button 
+                                  onClick={() => { setSelectedPokjaDetail(pokja); setShowPokjaDetailModal(true); }}
+                                  className="p-1.5 text-slate-400 hover:text-teal-600 hover:bg-teal-50 dark:hover:bg-teal-950/40 rounded-lg transition-colors"
+                                  title="Lihat Detail & Anggota"
+                                >
+                                  <Eye className="w-4 h-4" />
+                                </button>
+                                <button 
+                                  onClick={() => { setEditPokjaForm({ id: pokja._id, nama_pokja: pokja.nama_pokja || '' }); setShowEditPokjaModal(true); }}
+                                  className="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/40 rounded-lg transition-colors"
+                                  title="Ganti Nama Pokja"
+                                >
+                                  <Edit2 className="w-4 h-4" />
+                                </button>
+                                <button 
+                                  onClick={() => handleDeletePokja(pokja._id, pokja.nama_pokja)}
+                                  className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg transition-colors"
+                                  title="Hapus Pokja"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Pagination Pokja */}
+              {totalPagesPokja > 1 && (
+                <div className="flex justify-between items-center pt-2">
+                  <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">
+                    Menampilkan {indexOfFirstPokja + 1} - {Math.min(indexOfLastPokja, filteredPokjas.length)} dari total {filteredPokjas.length} POKJA
+                  </span>
+                  <div className="flex gap-2">
+                    <button 
+                      disabled={currentPagePokja === 1}
+                      onClick={() => setCurrentPagePokja(prev => prev - 1)}
+                      className="w-9 h-9 flex items-center justify-center bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl border border-white/60 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold rounded-lg disabled:opacity-50 transition-colors shadow-sm"
+                    >
+                      &lt;
+                    </button>
+                    {Array.from({ length: totalPagesPokja }).map((_, i) => (
+                      <button 
+                        key={i}
+                        onClick={() => setCurrentPagePokja(i + 1)}
+                        className={`w-9 h-9 flex items-center justify-center font-bold rounded-lg shadow-sm transition-colors border ${currentPagePokja === i + 1 ? 'bg-teal-600 text-white border-teal-600' : 'bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl border-white/60 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300'}`}
+                      >
+                        {i + 1}
+                      </button>
+                    ))}
+                    <button 
+                      disabled={currentPagePokja === totalPagesPokja}
+                      onClick={() => setCurrentPagePokja(prev => prev + 1)}
+                      className="w-9 h-9 flex items-center justify-center bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl border border-white/60 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold rounded-lg disabled:opacity-50 transition-colors shadow-sm"
+                    >
+                      &gt;
+                    </button>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+
+          {/* TAB 3: DATA MENTOR */}
           {activeTab === "mentor" && (
             <>
-              <div className="flex justify-between items-center bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-6 rounded-2xl border border-white/60 dark:border-slate-700 shadow-sm">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-6 rounded-2xl border border-white/60 dark:border-slate-700 shadow-sm">
                 <div>
                   <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">Data Mentor (Mitra Pendamping)</h2>
                   <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Kelola kontak mentor atau pendamping dari instansi KKL Plus.</p>
@@ -423,12 +809,12 @@ export default function MasterData() {
                 </button>
               </div>
 
-              <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-2xl border border-white/60 dark:border-slate-700 shadow-sm overflow-hidden">
+              <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-2xl border border-white/60 dark:border-slate-700 shadow-sm overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="bg-slate-50 dark:bg-slate-800/80 border-b border-white/60 dark:border-slate-700 text-slate-500 dark:text-slate-400 text-sm font-bold">
                       <th className="py-4 px-6 w-16 text-center">No</th>
-                      <th className="py-4 px-6">Nama & Kontak</th>
+                      <th className="py-4 px-6">Nama &amp; Kontak</th>
                       <th className="py-4 px-6">Instansi / Lokasi</th>
                       <th className="py-4 px-6">Posisi / Devisi</th>
                       <th className="py-4 px-6 text-right">Aksi</th>
@@ -439,7 +825,7 @@ export default function MasterData() {
                       <tr><td colSpan="5" className="py-8 text-center text-slate-500 dark:text-slate-400">Belum ada data mentor.</td></tr>
                     ) : (
                       currentMentors.map((m, index) => (
-                        <tr key={m._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors">
+                        <tr key={m._id} className="hover:bg-slate-50 dark:bg-slate-800/80 transition-colors">
                           <td className="py-4 px-6 text-center text-slate-500 font-medium">{indexOfFirstMentor + index + 1}</td>
                           <td className="py-4 px-6">
                             <div className="font-bold text-slate-800 dark:text-slate-100">{m.nama_lengkap}</div>
@@ -495,36 +881,213 @@ export default function MasterData() {
             </>
           )}
 
-            </div>
+          </div>
         </>
       )}
 
       {/* MODALS */}
 
-      {mounted && showSaranModal && createPortal(
-        <div  className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-slate-800 backdrop-blur-xl rounded-3xl shadow-sm w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200 border border-white/60 dark:border-slate-700 max-h-[95vh] overflow-y-auto">
-            <div className="px-6 py-5 border-b border-white/50 dark:border-slate-600 flex justify-between items-center bg-gradient-to-r from-amber-50 to-amber-50 dark:from-amber-900/20 dark:to-amber-900/20">
-              <h3 className="text-lg font-black text-amber-800 dark:text-amber-500 flex items-center gap-2">
-                <span>✨</span> Preview Saran Kegiatan (AI)
-              </h3>
-              <button onClick={() => setShowSaranModal(false)} className="text-slate-500 dark:text-slate-400 hover:text-red-500 font-bold text-xl">&times;</button>
+      {/* Modal Detail Pokja (NEW) */}
+      {mounted && showPokjaDetailModal && selectedPokjaDetail && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-slate-800 backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-3xl overflow-hidden animate-in zoom-in-95 duration-200 border border-white/60 dark:border-slate-700 max-h-[92vh] flex flex-col">
+            
+            {/* Header */}
+            <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50">
+              <div>
+                <div className="flex items-center gap-2.5">
+                  <h3 className="text-xl font-black text-slate-800 dark:text-slate-100">
+                    {selectedPokjaDetail.nama_pokja || "POKJA Mahasiswa"}
+                  </h3>
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-teal-100 text-teal-800 dark:bg-teal-900/50 dark:text-teal-300">
+                    {selectedPokjaDetail.periode || "Periode Aktif"}
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  Detail susunan tim kelompok, ketua, anggota, instansi, dan status verifikasi.
+                </p>
+              </div>
+              <button 
+                onClick={() => setShowPokjaDetailModal(false)} 
+                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
             </div>
-            <div className="p-6">
-              <p className="text-sm font-medium text-slate-600 dark:text-slate-300 mb-4">
-                Berikut adalah saran kegiatan yang dihasilkan oleh AI. Anda dapat membacanya, merevisinya jika kurang pas, lalu menyimpannya.
-              </p>
-              <textarea 
-                value={saranPreview} 
-                onChange={(e) => setSaranPreview(e.target.value)} 
-                rows="6" 
-                className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 bg-amber-50/30 dark:bg-slate-900/50 text-sm font-medium text-slate-800 dark:text-slate-200 leading-relaxed"
-              ></textarea>
+
+            {/* Modal Body */}
+            <div className="p-6 space-y-6 overflow-y-auto flex-1">
+              
+              {/* Card Ketua */}
+              <div className="p-5 rounded-2xl bg-teal-50/50 dark:bg-teal-950/20 border border-teal-200/60 dark:border-teal-900/40">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs font-bold text-teal-700 dark:text-teal-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <User className="w-4 h-4" /> Ketua Kelompok (Inisiator)
+                  </span>
+                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-600 text-white">
+                    Ketua Pokja
+                  </span>
+                </div>
+                {selectedPokjaDetail.ketua_id ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                    <div>
+                      <div className="font-black text-slate-800 dark:text-slate-100 text-base">
+                        {selectedPokjaDetail.ketua_id.nama_lengkap}
+                      </div>
+                      <div className="text-slate-600 dark:text-slate-400 text-xs mt-0.5">
+                        NIM: <span className="font-semibold">{selectedPokjaDetail.ketua_id.nim_nidn}</span>
+                      </div>
+                      <div className="text-slate-600 dark:text-slate-400 text-xs mt-0.5">
+                        Prodi / Konsentrasi: <span className="font-semibold">{selectedPokjaDetail.ketua_id.konsentrasi || selectedPokjaDetail.ketua_id.program_studi || "-"}</span>
+                      </div>
+                    </div>
+                    <div className="space-y-1 text-xs text-slate-600 dark:text-slate-400 sm:border-l sm:border-teal-200/50 sm:dark:border-teal-900/30 sm:pl-4">
+                      {selectedPokjaDetail.ketua_id.nomor_hp && (
+                        <div className="flex items-center gap-2">
+                          <Phone className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
+                          <span>{selectedPokjaDetail.ketua_id.nomor_hp}</span>
+                        </div>
+                      )}
+                      {selectedPokjaDetail.ketua_id.email && (
+                        <div className="flex items-center gap-2">
+                          <Mail className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
+                          <span className="truncate">{selectedPokjaDetail.ketua_id.email}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-xs text-slate-400 italic">Data ketua tidak ditemukan</div>
+                )}
+              </div>
+
+              {/* Grid Info Mitra & Pembimbing */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Mitra */}
+                <div className="p-4 rounded-2xl bg-slate-50/80 dark:bg-slate-900/40 border border-slate-200/60 dark:border-slate-700/60">
+                  <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5 mb-2">
+                    <Building2 className="w-4 h-4 text-teal-600 dark:text-teal-400" /> Instansi Mitra
+                  </div>
+                  {selectedPokjaDetail.mitra_id ? (
+                    <div>
+                      <div className="font-bold text-slate-800 dark:text-slate-100">
+                        {selectedPokjaDetail.mitra_id.nama_instansi}
+                      </div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                        {selectedPokjaDetail.mitra_id.alamat_lengkap || selectedPokjaDetail.mitra_id.kategori || "-"}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-xs text-slate-400 italic">Belum memilih instansi mitra</div>
+                  )}
+                </div>
+
+                {/* Pembimbing */}
+                <div className="p-4 rounded-2xl bg-slate-50/80 dark:bg-slate-900/40 border border-slate-200/60 dark:border-slate-700/60">
+                  <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5 mb-2">
+                    <GraduationCap className="w-4 h-4 text-teal-600 dark:text-teal-400" /> Pembimbing (DPL &amp; Mentor)
+                  </div>
+                  <div className="text-xs space-y-1.5 text-slate-600 dark:text-slate-300">
+                    <div>
+                      <span className="text-slate-400">DPL:</span>{" "}
+                      <strong className="text-slate-800 dark:text-slate-200">
+                        {selectedPokjaDetail.dpl_id?.nama_lengkap || "Belum diplot oleh admin"}
+                      </strong>
+                    </div>
+                    <div>
+                      <span className="text-slate-400">Mentor:</span>{" "}
+                      <strong className="text-slate-800 dark:text-slate-200">
+                        {selectedPokjaDetail.mentor_id?.nama_lengkap || "-"}
+                      </strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Daftar Anggota */}
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="font-bold text-slate-800 dark:text-slate-100 text-sm flex items-center gap-2">
+                    <Users className="w-4 h-4 text-teal-600 dark:text-teal-400" />
+                    Daftar Anggota Kelompok ({selectedPokjaDetail.anggota?.length || 0})
+                  </h4>
+                  <span className="text-xs text-slate-500 dark:text-slate-400">
+                    Maksimal 5 Mahasiswa per kelompok
+                  </span>
+                </div>
+
+                {(!selectedPokjaDetail.anggota || selectedPokjaDetail.anggota.length === 0) ? (
+                  <div className="p-6 rounded-2xl bg-amber-50/60 dark:bg-amber-950/20 border border-dashed border-amber-300 dark:border-amber-800/40 text-center">
+                    <AlertCircle className="w-8 h-8 mx-auto text-amber-500 mb-2" />
+                    <div className="font-bold text-amber-800 dark:text-amber-300 text-sm">
+                      Kelompok ini belum memiliki anggota lain (Hanya Ketua)
+                    </div>
+                    <p className="text-xs text-amber-700/80 dark:text-amber-400/80 mt-1 max-w-md mx-auto">
+                      Ketua kelompok belum mengundang anggota mahasiswa lain atau belum ada anggota yang bergabung.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+                    <table className="w-full text-left text-xs border-collapse">
+                      <thead>
+                        <tr className="bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 text-slate-500 font-bold">
+                          <th className="py-3 px-4 w-10 text-center">No</th>
+                          <th className="py-3 px-4">Nama &amp; NIM</th>
+                          <th className="py-3 px-4">Prodi / Konsentrasi</th>
+                          <th className="py-3 px-4">Kontak</th>
+                          <th className="py-3 px-4 text-center">Status Undangan</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                        {selectedPokjaDetail.anggota.map((ang, idx) => (
+                          <tr key={ang._id || idx} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40">
+                            <td className="py-3 px-4 text-center text-slate-400 font-medium">{idx + 1}</td>
+                            <td className="py-3 px-4">
+                              <div className="font-bold text-slate-800 dark:text-slate-200">
+                                {ang.user_id?.nama_lengkap || "Mahasiswa"}
+                              </div>
+                              <div className="text-[11px] text-slate-500 dark:text-slate-400">
+                                NIM: {ang.user_id?.nim_nidn || "-"}
+                              </div>
+                            </td>
+                            <td className="py-3 px-4 text-slate-600 dark:text-slate-300">
+                              {ang.user_id?.konsentrasi || ang.user_id?.program_studi || "-"}
+                            </td>
+                            <td className="py-3 px-4 text-slate-600 dark:text-slate-400 text-[11px]">
+                              {ang.user_id?.nomor_hp || ang.user_id?.email || "-"}
+                            </td>
+                            <td className="py-3 px-4 text-center">
+                              {ang.status_undangan === 'bergabung' ? (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-bold text-[10px] bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/40">
+                                  <Check className="w-3 h-3" /> Bergabung
+                                </span>
+                              ) : ang.status_undangan === 'ditolak' ? (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-bold text-[10px] bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-400 border border-red-200/60 dark:border-red-800/40">
+                                  <X className="w-3 h-3" /> Ditolak
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-bold text-[10px] bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 border border-amber-200/60 dark:border-amber-800/40">
+                                  <Clock className="w-3 h-3" /> Menunggu
+                                </span>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
             </div>
-            <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/80 border-t border-white/50 dark:border-slate-600 flex justify-end gap-3">
-              <button type="button" onClick={() => setShowSaranModal(false)} className="px-5 py-2.5 text-sm font-bold text-slate-500 dark:text-slate-400 hover:bg-slate-200 rounded-xl transition-colors">Batal</button>
-              <button onClick={handleSaveSaran} className="px-5 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-amber-500 to-amber-500 hover:from-amber-600 hover:to-amber-600 rounded-xl shadow-md transition-colors flex items-center gap-2">
-                Simpan Saran
+
+            {/* Footer */}
+            <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/80 border-t border-slate-100 dark:border-slate-700 flex justify-end">
+              <button 
+                type="button" 
+                onClick={() => setShowPokjaDetailModal(false)} 
+                className="px-5 py-2 text-sm font-bold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 rounded-xl border border-slate-200 dark:border-slate-600 transition-colors shadow-sm"
+              >
+                Tutup
               </button>
             </div>
           </div>
@@ -532,42 +1095,79 @@ export default function MasterData() {
         document.body
       )}
 
-      {/* Modal Tambah Mitra */}
+      {/* Modal Edit Nama Pokja */}
+      {mounted && showEditPokjaModal && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-slate-800 backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 border border-white/60 dark:border-slate-700">
+            <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                <Edit2 className="w-4 h-4 text-teal-600" />
+                Ubah Nama POKJA
+              </h3>
+              <button onClick={() => setShowEditPokjaModal(false)} className="text-slate-400 hover:text-red-500 font-bold text-xl">&times;</button>
+            </div>
+            <form onSubmit={handleEditPokjaSubmit}>
+              <div className="p-6 space-y-4">
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                    Nama Kelompok / POKJA
+                  </label>
+                  <input 
+                    required 
+                    value={editPokjaForm.nama_pokja} 
+                    onChange={(e) => setEditPokjaForm({ ...editPokjaForm, nama_pokja: e.target.value })} 
+                    type="text" 
+                    placeholder="Contoh: POKJA 01 - Tim Alpha" 
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 bg-slate-50 dark:bg-slate-900/50 text-slate-800 dark:text-slate-100" 
+                  />
+                </div>
+              </div>
+              <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/80 border-t border-slate-100 dark:border-slate-700 flex justify-end gap-3">
+                <button type="button" onClick={() => setShowEditPokjaModal(false)} className="px-4 py-2.5 text-sm font-bold text-slate-500 dark:text-slate-400 hover:bg-slate-200 rounded-xl transition-colors">Batal</button>
+                <button type="submit" className="px-5 py-2.5 text-sm font-bold text-white bg-teal-600 hover:bg-teal-700 rounded-xl shadow-md transition-colors">Simpan Perubahan</button>
+              </div>
+            </form>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* Modal Tambah / Edit Mitra */}
       {showMitraModal && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white dark:bg-slate-800 backdrop-blur-xl rounded-3xl shadow-sm w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 max-h-[95vh] overflow-y-auto">
             <div className="px-6 py-5 border-b border-white/50 dark:border-slate-600 flex justify-between items-center">
-              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Tambah Mitra KKL Plus Baru</h3>
+              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">{mitraForm.id ? "Edit Data Mitra" : "Tambah Mitra KKL Plus Baru"}</h3>
               <button onClick={() => setShowMitraModal(false)} className="text-slate-500 dark:text-slate-400 hover:text-red-500 font-bold text-xl">&times;</button>
             </div>
             <form onSubmit={handleMitraSubmit}>
               <div className="p-6 space-y-4">
                 <div>
                   <label className="block text-sm font-bold text-slate-800 dark:text-slate-100 mb-2">Nama Instansi / Mitra</label>
-                  <input required value={mitraForm.nama_instansi} onChange={(e) => setMitraForm({...mitraForm, nama_instansi: e.target.value})} type="text" placeholder="Contoh: PT Sukses Mandiri / Desa Maju" className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-slate-50 dark:bg-slate-800/80" />
+                  <input required value={mitraForm.nama_instansi} onChange={(e) => setMitraForm({...mitraForm, nama_instansi: e.target.value})} type="text" placeholder="Contoh: PT Sukses Mandiri / Desa Maju" className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-slate-50 dark:bg-slate-800/80 text-slate-800 dark:text-slate-100" />
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-slate-800 dark:text-slate-100 mb-2">Kategori Sektor</label>
-                  <select value={mitraForm.kategori} onChange={(e) => setMitraForm({...mitraForm, kategori: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-slate-50 dark:bg-slate-800/80 appearance-none">
-                    <option value="Pemerintahan & Desa (Sektor Publik)">Pemerintahan & Desa (Sektor Publik)</option>
-                    <option value="Bisnis & Ekonomi Kerakyatan">Bisnis & Ekonomi Kerakyatan</option>
-                    <option value="Industri & Korporasi (Sektor Privat)">Industri & Korporasi (Sektor Privat)</option>
-                    <option value="Pendidikan, Sosial & Kesehatan">Pendidikan, Sosial & Kesehatan</option>
+                  <select value={mitraForm.kategori} onChange={(e) => setMitraForm({...mitraForm, kategori: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-slate-50 dark:bg-slate-800/80 text-slate-800 dark:text-slate-100">
+                    <option value="Pemerintahan & Desa (Sektor Publik)">Pemerintahan &amp; Desa (Sektor Publik)</option>
+                    <option value="Bisnis & Ekonomi Kerakyatan">Bisnis &amp; Ekonomi Kerakyatan</option>
+                    <option value="Industri & Korporasi (Sektor Privat)">Industri &amp; Korporasi (Sektor Privat)</option>
+                    <option value="Pendidikan, Sosial & Kesehatan">Pendidikan, Sosial &amp; Kesehatan</option>
                     <option value="Organisasi Kemasyarakatan">Organisasi Kemasyarakatan</option>
                   </select>
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-slate-800 dark:text-slate-100 mb-2">Deskripsi Singkat (Opsional)</label>
-                  <textarea value={mitraForm.deskripsi_singkat} onChange={(e) => setMitraForm({...mitraForm, deskripsi_singkat: e.target.value})} rows="3" placeholder="Tentang instansi/perusahaan ini secara singkat..." className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-slate-50 dark:bg-slate-800/80"></textarea>
+                  <textarea value={mitraForm.deskripsi_singkat} onChange={(e) => setMitraForm({...mitraForm, deskripsi_singkat: e.target.value})} rows="3" placeholder="Tentang instansi/perusahaan ini secara singkat..." className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-slate-50 dark:bg-slate-800/80 text-slate-800 dark:text-slate-100"></textarea>
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-slate-800 dark:text-slate-100 mb-2">Kuota Penerimaan Mahasiswa</label>
-                  <input required value={mitraForm.kuota_maksimal} onChange={(e) => setMitraForm({...mitraForm, kuota_maksimal: parseInt(e.target.value) || 0})} type="number" min="0" placeholder="0" className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-slate-50 dark:bg-slate-800/80" />
+                  <input required value={mitraForm.kuota_maksimal} onChange={(e) => setMitraForm({...mitraForm, kuota_maksimal: parseInt(e.target.value) || 0})} type="number" min="0" placeholder="0" className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-slate-50 dark:bg-slate-800/80 text-slate-800 dark:text-slate-100" />
                 </div>
               </div>
               <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/80 border-t border-white/50 dark:border-slate-600 flex justify-end gap-3">
                 <button type="button" onClick={() => setShowMitraModal(false)} className="px-5 py-2.5 text-sm font-bold text-slate-500 dark:text-slate-400 hover:bg-slate-200 rounded-xl transition-colors">Batal</button>
-                <button type="submit" className="px-5 py-2.5 text-sm font-bold text-slate-800 dark:text-slate-100 bg-teal-600 hover:bg-teal-700 rounded-xl shadow-md transition-colors">Simpan Data</button>
+                <button type="submit" className="px-5 py-2.5 text-sm font-bold text-white bg-teal-600 hover:bg-teal-700 rounded-xl shadow-md transition-colors">Simpan Data</button>
               </div>
             </form>
           </div>
@@ -604,8 +1204,8 @@ export default function MasterData() {
                   posisiList.map(pos => (
                     <div key={pos._id} className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl border border-white/60 dark:border-slate-700 p-5 rounded-2xl shadow-sm relative group hover:shadow-md transition-all">
                       <div className="absolute top-4 right-4 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => { setPosisiForm({ id: pos._id, nama_posisi: pos.nama_posisi, konsentrasi: pos.konsentrasi, kuota: pos.kuota, deskripsi_pekerjaan: pos.deskripsi_pekerjaan || "", kriteria_kandidat: pos.kriteria_kandidat || "", sistem_kerja: pos.sistem_kerja || "WFO" }); setShowPosisiFormModal(true); }} className="p-1.5 bg-slate-100 hover:bg-teal-100 text-teal-600 rounded-md"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
-                        <button onClick={() => handleDeletePosisi(pos._id)} className="p-1.5 bg-slate-100 hover:bg-red-100 text-red-600 rounded-md"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+                        <button onClick={() => { setPosisiForm({ id: pos._id, nama_posisi: pos.nama_posisi, konsentrasi: pos.konsentrasi, kuota: pos.kuota, deskripsi_pekerjaan: pos.deskripsi_pekerjaan || "", kriteria_kandidat: pos.kriteria_kandidat || "", sistem_kerja: pos.sistem_kerja || "WFO" }); setShowPosisiFormModal(true); }} className="p-1.5 bg-slate-100 hover:bg-teal-100 text-teal-600 rounded-md"><Edit2 className="w-4 h-4" /></button>
+                        <button onClick={() => handleDeletePosisi(pos._id)} className="p-1.5 bg-slate-100 hover:bg-red-100 text-red-600 rounded-md"><Trash2 className="w-4 h-4" /></button>
                       </div>
                       <h5 className="font-bold text-slate-800 dark:text-slate-100 pr-12">{pos.nama_posisi}</h5>
                       <span className={`inline-block mt-2 px-2.5 py-1 text-xs font-bold rounded-md ${pos.sistem_kerja === 'WFH' ? 'bg-teal-50 text-teal-600' : pos.sistem_kerja === 'Hybrid' ? 'bg-teal-50 text-teal-600' : 'bg-teal-50 text-teal-600'}`}>{pos.sistem_kerja || 'WFO'}</span>
@@ -684,7 +1284,7 @@ export default function MasterData() {
         </div>
       )}
 
-
+      {/* Modal Add/Edit Mentor */}
       {(showAddMentorModal || showEditMentorModal) && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white dark:bg-slate-800 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/60 dark:border-slate-700 w-full max-w-lg overflow-hidden relative scale-in-95 duration-200 max-h-[95vh] overflow-y-auto">

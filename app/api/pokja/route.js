@@ -90,13 +90,27 @@ export async function GET(req) {
     const dplId = searchParams.get('dplId');
     
     if (pokjaId) {
-      const pokja = await Pokja.findById(pokjaId)
-        .populate({ path: 'ketua_id', select: 'nama_lengkap nim_nidn' })
-        .populate({ path: 'anggota.user_id', select: 'nama_lengkap nim_nidn program_studi' })
-        .populate({ path: 'dpl_id', select: 'nama_lengkap nomor_hp' })
-        .populate({ path: 'mentor_id', select: 'nama_lengkap nomor_hp' })
+      let pokja = await Pokja.findById(pokjaId)
+        .populate({ path: 'ketua_id', select: 'nama_lengkap nim_nidn program_studi konsentrasi' })
+        .populate({ path: 'anggota.user_id', select: 'nama_lengkap nim_nidn program_studi konsentrasi' })
+        .populate({ path: 'dpl_id', select: 'nama_lengkap nomor_hp nim_nidn nidn' })
+        .populate({ path: 'mentor_id', select: 'nama_lengkap nomor_hp jabatan instansi' })
         .populate('mitra_id');
         
+      if (!pokja) {
+        pokja = await Pokja.findOne({
+          $or: [
+            { ketua_id: pokjaId },
+            { 'anggota.user_id': pokjaId }
+          ]
+        })
+        .populate({ path: 'ketua_id', select: 'nama_lengkap nim_nidn program_studi konsentrasi' })
+        .populate({ path: 'anggota.user_id', select: 'nama_lengkap nim_nidn program_studi konsentrasi' })
+        .populate({ path: 'dpl_id', select: 'nama_lengkap nomor_hp nim_nidn nidn' })
+        .populate({ path: 'mentor_id', select: 'nama_lengkap nomor_hp jabatan instansi' })
+        .populate('mitra_id');
+      }
+
       if (pokja) {
         const processed = await processPokjaUrls(pokja);
         return NextResponse.json(processed);
@@ -105,21 +119,24 @@ export async function GET(req) {
     }
     
     if (isAdmin === 'true') {
-      const status = searchParams.get('status') || 'menunggu_persetujuan_admin';
-      const statusArray = status.includes(',') ? status.split(',') : [status];
+      const status = searchParams.get('status');
       
       const SystemSettings = (await import('@/models/SystemSettings')).default;
       const settings = await SystemSettings.findOne({});
       const activePeriode = settings?.periode_aktif || "Ganjil 2026/2027";
 
-      const pokjas = await Pokja.find({ 
-        status_pokja: { $in: statusArray },
-        periode: activePeriode
-      })
-        .populate({ path: 'ketua_id', select: 'nama_lengkap nim_nidn program_studi konsentrasi' })
-        .populate({ path: 'anggota.user_id', select: 'nama_lengkap nim_nidn program_studi konsentrasi' })
-        .populate({ path: 'dpl_id', select: 'nama_lengkap' })
-        .populate({ path: 'mitra_id', select: 'nama_instansi' })
+      const query = { periode: activePeriode };
+      if (status && status !== 'all') {
+        const statusArray = status.includes(',') ? status.split(',') : [status];
+        query.status_pokja = { $in: statusArray };
+      }
+
+      const pokjas = await Pokja.find(query)
+        .populate({ path: 'ketua_id', select: 'nama_lengkap nim_nidn program_studi konsentrasi nomor_hp email' })
+        .populate({ path: 'anggota.user_id', select: 'nama_lengkap nim_nidn program_studi konsentrasi nomor_hp email' })
+        .populate({ path: 'dpl_id', select: 'nama_lengkap nomor_hp email nidn' })
+        .populate({ path: 'mentor_id', select: 'nama_lengkap nomor_hp email nidn lokasi devisi' })
+        .populate({ path: 'mitra_id', select: 'nama_instansi alamat_lengkap kecamatan kabupaten_kota kategori kuota_maksimal' })
         .sort({ createdAt: -1 });
         
       const processed = await Promise.all(pokjas.map(p => processPokjaUrls(p)));
@@ -134,12 +151,12 @@ export async function GET(req) {
           { 'anggota.user_id': mhsId }
         ]
       })
-      .populate({ path: 'ketua_id', select: 'nama_lengkap nim_nidn' })
-      .populate({ path: 'anggota.user_id', select: 'nama_lengkap nim_nidn' })
-      .populate({ path: 'dpl_id', select: 'nama_lengkap nomor_hp' })
-      .populate({ path: 'mentor_id', select: 'nama_lengkap nomor_hp' })
+      .populate({ path: 'ketua_id', select: 'nama_lengkap nim_nidn program_studi konsentrasi' })
+      .populate({ path: 'anggota.user_id', select: 'nama_lengkap nim_nidn program_studi konsentrasi' })
+      .populate({ path: 'dpl_id', select: 'nama_lengkap nomor_hp nim_nidn nidn' })
+      .populate({ path: 'mentor_id', select: 'nama_lengkap nomor_hp jabatan instansi' })
       .populate('mitra_id')
-      .sort({ createdAt: -1 });
+      .sort({ updatedAt: -1, createdAt: -1 });
       
       if (pokja) {
         const processed = await processPokjaUrls(pokja);

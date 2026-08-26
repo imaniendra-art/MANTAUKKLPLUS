@@ -35,6 +35,11 @@ const LaporanAkhirSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
+// Indeks untuk query laporan akhir kelompok & individu
+LaporanAkhirSchema.index({ pokja_id: 1, tipe_laporan: 1 });
+LaporanAkhirSchema.index({ mahasiswa_id: 1 });
+LaporanAkhirSchema.index({ status: 1 });
+
 // Hapus model lama dari cache agar enum baru terbaca di Next.js dev server
 if (mongoose.models.LaporanAkhir) {
   delete mongoose.models.LaporanAkhir;

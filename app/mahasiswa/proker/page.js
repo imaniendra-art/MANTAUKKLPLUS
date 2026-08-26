@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { useSession } from "@/components/AuthProvider";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Lock, Info, CheckCircle2 } from "lucide-react";
 
 export default function DaftarProker() {
   const { data: session } = useSession();
@@ -95,6 +95,13 @@ export default function DaftarProker() {
 
   if (loading) return <DashboardLayout title="Daftar Proker"><div className="p-10 text-center animate-pulse">Memuat...</div></DashboardLayout>;
 
+  const isKetua = pokja && (
+    (pokja.ketua_id?._id && String(pokja.ketua_id._id) === String(session?.user?.id)) ||
+    (typeof pokja.ketua_id === 'string' && pokja.ketua_id === session?.user?.id)
+  );
+
+  const isAllProkerApproved = prokers.length > 0 && prokers.every(p => p.status === 'disetujui_dpl' || p.status === 'selesai');
+
   return (
     <DashboardLayout title="Daftar Program Kerja POKJA">
       
@@ -113,31 +120,63 @@ export default function DaftarProker() {
         </div>
       ) : (
       <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-3xl p-6 md:p-8 shadow-sm border border-white/60 dark:border-slate-700 w-full">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <div>
             <h2 className="text-2xl font-bold text-slate-800 dark:text-white">Daftar Proker</h2>
             <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Pantau seluruh kegiatan program kerja POKJA Anda di sini.</p>
           </div>
-          <button 
-            onClick={() => {
-              setEditingId(null);
-              setFormData({ 
-                judul_proker: "", deskripsi: "", target_dampak: "", 
-                jenis_proker: "Utama", pic_id: [], tanggal_mulai: "", tanggal_selesai: "" 
-              });
-              setIsModalOpen(true);
-            }}
-            className="px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl shadow-md transition-all flex items-center gap-2"
-          >
-            <Plus className="w-5 h-5" /> Tambah Proker Baru
-          </button>
+          
+          {isKetua && !isAllProkerApproved ? (
+            <button 
+              onClick={() => {
+                setEditingId(null);
+                setFormData({ 
+                  judul_proker: "", deskripsi: "", target_dampak: "", 
+                  jenis_proker: "Utama", pic_id: [], tanggal_mulai: "", tanggal_selesai: "" 
+                });
+                setIsModalOpen(true);
+              }}
+              className="px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl shadow-md transition-all flex items-center gap-2"
+            >
+              <Plus className="w-5 h-5" /> Tambah Proker Baru
+            </button>
+          ) : isAllProkerApproved ? (
+            <span className="px-4 py-2 bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 font-bold text-xs rounded-xl border border-teal-200 dark:border-teal-800/50 flex items-center gap-2">
+              <Lock className="w-4 h-4" /> Proker Terkunci (Disetujui DPL)
+            </span>
+          ) : (
+            <span className="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold text-xs rounded-xl border border-slate-200 dark:border-slate-700 flex items-center gap-2">
+              <Info className="w-4 h-4" /> Mode Anggota (Lihat Saja)
+            </span>
+          )}
         </div>
+
+        {/* Status / Notice Banners */}
+        {isAllProkerApproved && (
+          <div className="mb-6 p-4 bg-teal-50/80 dark:bg-teal-950/30 border border-teal-200 dark:border-teal-800/50 rounded-2xl flex items-center gap-3 text-teal-800 dark:text-teal-300 text-xs sm:text-sm">
+            <CheckCircle2 className="w-5 h-5 text-teal-600 shrink-0" />
+            <span>
+              <strong>Program Kerja telah disetujui DPL dan terkunci.</strong> Seluruh anggota kelompok dipersilakan fokus pada pelaksanaan kegiatan dan pengisian logbook harian.
+            </span>
+          </div>
+        )}
+
+        {!isKetua && !isAllProkerApproved && (
+          <div className="mb-6 p-4 bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50 rounded-2xl flex items-center gap-3 text-amber-800 dark:text-amber-300 text-xs sm:text-sm">
+            <Info className="w-5 h-5 text-amber-600 shrink-0" />
+            <span>
+              Anda mengakses halaman ini sebagai <strong>Anggota Pokja</strong>. Perancangan dan penambahan Program Kerja dikelola langsung oleh <strong>Ketua Pokja</strong>.
+            </span>
+          </div>
+        )}
 
         {prokers.length === 0 ? (
           <div className="text-center p-12 text-slate-500 bg-white/20 dark:bg-slate-900/20 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700">
             <div className="text-4xl mb-4">📂</div>
             <p className="font-bold text-lg">Belum ada program kerja</p>
-            <p className="text-sm">Klik tombol &quot;Tambah Proker Baru&quot; untuk mulai merancang kegiatan.</p>
+            <p className="text-sm">
+              {isKetua ? 'Klik tombol "Tambah Proker Baru" untuk mulai merancang kegiatan.' : 'Ketua Pokja belum merancang Program Kerja.'}
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
@@ -215,7 +254,7 @@ export default function DaftarProker() {
                       </select>
                     </div>
 
-                    {p.status !== 'disetujui_dpl' && (p.status_pelaksanaan === 'Belum Dimulai' || !p.status_pelaksanaan) && (
+                    {isKetua && p.status !== 'disetujui_dpl' && (p.status_pelaksanaan === 'Belum Dimulai' || !p.status_pelaksanaan) && (
                       <div className="flex gap-2">
                         <button 
                           onClick={() => {
