@@ -219,8 +219,12 @@ export async function PATCH(req) {
     
     // Handle link join
     if (action === 'join_by_link' && mhs_id) {
-      const targetPokja = await Pokja.findById(id);
+      const targetPokja = await Pokja.findById(id).populate('mitra_id');
       if (!targetPokja) return NextResponse.json({ error: "Kelompok tidak ditemukan" }, { status: 404 });
+
+      if (!targetPokja.mitra_id) {
+        return NextResponse.json({ error: "Ketua Pokja belum memilih instansi/mitra. Pendaftaran anggota belum bisa dilakukan." }, { status: 400 });
+      }
       
       if (targetPokja.ketua_id.toString() === mhs_id.toString()) {
         return NextResponse.json({ error: "Ketua tidak dapat menjadi anggota di Pokjanya sendiri" }, { status: 400 });
@@ -238,8 +242,9 @@ export async function PATCH(req) {
         return NextResponse.json({ error: "Anda sudah memiliki Pokja atau tergabung dalam Pokja lain" }, { status: 400 });
       }
 
-      if (targetPokja.anggota.length >= 4) {
-        return NextResponse.json({ error: "Kelompok sudah penuh (maksimal 5 orang termasuk ketua)" }, { status: 400 });
+      const kuotaMaksimal = targetPokja.mitra_id.kuota_maksimal || 5;
+      if (targetPokja.anggota.length + 1 >= kuotaMaksimal) {
+        return NextResponse.json({ error: `Kelompok sudah penuh (maksimal ${kuotaMaksimal} orang termasuk ketua untuk instansi ini)` }, { status: 400 });
       }
       
       const isAlreadyMember = targetPokja.anggota.find(a => a.user_id.toString() === mhs_id.toString());
@@ -256,13 +261,7 @@ export async function PATCH(req) {
 
     // Handle Admin actions / Location Application
     if (mitra_id && status_pokja === 'menunggu_persetujuan_admin') {
-      const targetPokja = await Pokja.findById(id);
-      if (targetPokja) {
-        const activeMembers = targetPokja.anggota.filter(a => a.status_undangan === 'bergabung').length;
-        if (activeMembers < 2) {
-          return NextResponse.json({ error: "Minimal 2 anggota (selain ketua) harus bergabung sebelum mengajukan lokasi." }, { status: 400 });
-        }
-      }
+      // Validasi minimal anggota dihapus untuk mendukung alur pilih instansi dulu
     }
 
     const updatePayload = {};

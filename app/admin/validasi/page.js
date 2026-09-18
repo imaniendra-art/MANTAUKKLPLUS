@@ -717,14 +717,27 @@ export default function ValidasiPokja() {
                   <label className="block text-sm font-bold text-slate-700 dark:text-slate-300">
                     Anggota Kelompok <span className="ml-1 text-teal-600 dark:text-teal-400">({plotForm.anggota_ids.length} dipilih)</span>
                   </label>
-                  <span className={`text-xs font-bold px-2 py-1 rounded-md ${plotForm.anggota_ids.length > 4 ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600'}`}>Total Tim: {totalMembers} Orang</span>
+                  {(() => {
+                    const selectedMitra = mitraList.find(m => m._id === plotForm.mitra_id);
+                    const kuota = selectedMitra?.kuota_maksimal || 5;
+                    return (
+                      <span className={`text-xs font-bold px-2 py-1 rounded-md ${totalMembers > kuota ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600'}`}>Total Tim: {totalMembers} Orang</span>
+                    );
+                  })()}
                 </div>
                 
-                {plotForm.anggota_ids.length > 4 && (
-                  <div className="mb-3 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-amber-700 dark:text-amber-400 text-xs font-medium">
-                    ⚠️ <strong>Peringatan:</strong> Jumlah anggota melebihi 4 orang (Total 1 tim melebihi 5 orang). Anda tetap dapat melanjutkannya jika memang ini adalah kebijakan khusus.
-                  </div>
-                )}
+                {(() => {
+                  const selectedMitra = mitraList.find(m => m._id === plotForm.mitra_id);
+                  const kuota = selectedMitra?.kuota_maksimal || 5;
+                  if (totalMembers > kuota) {
+                    return (
+                      <div className="mb-3 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-amber-700 dark:text-amber-400 text-xs font-medium">
+                        ⚠️ <strong>Peringatan:</strong> Jumlah anggota ({totalMembers} orang) melebihi kuota maksimal lokasi instansi yang dipilih ({kuota} orang). Anda tetap dapat melanjutkannya jika memang ini adalah kebijakan khusus (force override).
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
 
                 <input 
                   type="text" 

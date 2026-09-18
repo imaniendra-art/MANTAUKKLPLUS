@@ -61,13 +61,18 @@ export async function POST(req) {
         }
       } else if (peran === 'anggota') {
         const Pokja = (await import('@/models/Pokja')).default;
-        const pokjaTarget = await Pokja.findById(pokjaId);
+        const pokjaTarget = await Pokja.findById(pokjaId).populate('mitra_id');
         if (!pokjaTarget) {
           return NextResponse.json({ message: 'Kelompok tidak ditemukan' }, { status: 404 });
         }
         
-        if (pokjaTarget.anggota.length >= 4) {
-          return NextResponse.json({ message: 'Kelompok sudah penuh (maksimal 5 orang termasuk ketua)' }, { status: 400 });
+        if (!pokjaTarget.mitra_id) {
+          return NextResponse.json({ message: 'Ketua Pokja belum memilih lokasi instansi. Pendaftaran anggota belum bisa dilakukan.' }, { status: 400 });
+        }
+
+        const kuotaMaksimal = pokjaTarget.mitra_id.kuota_maksimal || 5;
+        if (pokjaTarget.anggota.length + 1 >= kuotaMaksimal) {
+          return NextResponse.json({ message: `Kelompok sudah penuh (maksimal ${kuotaMaksimal} orang termasuk ketua untuk instansi ini)` }, { status: 400 });
         }
         
         // Check if already joined

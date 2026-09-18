@@ -565,7 +565,7 @@ function MahasiswaDashboardContent() {
               })}
             </div>
 
-            {isKetua && pokja.status_pokja === 'draft' && (
+            {isKetua && pokja.mitra_id && !['selesai'].includes(pokja.status_pokja) && (
               <button 
                 onClick={() => {
                   const link = `${window.location.origin}/mahasiswa/join?invite=${pokja._id}`;
@@ -576,6 +576,14 @@ function MahasiswaDashboardContent() {
               >
                 🔗 Salin Link Undangan
               </button>
+            )}
+
+            {isKetua && !pokja.mitra_id && (
+              <div className="mt-4 p-3 bg-amber-50 rounded-xl border border-amber-100">
+                <p className="text-xs text-amber-700 text-center font-bold">
+                  ⚠️ Pilih lokasi Instansi/Mitra terlebih dahulu di menu Pengajuan agar bisa membagikan link pendaftaran anggota (Kuota bergantung pada lokasi).
+                </p>
+              </div>
             )}
           </div>
         </div>
