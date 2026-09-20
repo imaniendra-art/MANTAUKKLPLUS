@@ -4,6 +4,7 @@ import Pokja from '@/models/Pokja';
 import User from '@/models/User';
 import MitraKKL from '@/models/MitraKKL';
 import { generatePresignedUrl } from '@/lib/minio';
+import { getServerSession } from '@/lib/auth';
 
 async function processPokjaUrls(pokjaDoc) {
   if (!pokjaDoc) return pokjaDoc;
@@ -286,15 +287,39 @@ export async function PATCH(req) {
 export async function DELETE(req) {
   await dbConnect();
   try {
+    const session = await getServerSession();
+    if (!session?.user) {
+      return NextResponse.json({ error: "Sesi tidak valid atau telah berakhir" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
 
     if (!id) return NextResponse.json({ error: "ID wajib diisi" }, { status: 400 });
 
-    const deleted = await Pokja.findByIdAndDelete(id);
-    if (!deleted) {
+    const targetPokja = await Pokja.findById(id);
+    if (!targetPokja) {
       return NextResponse.json({ error: "POKJA tidak ditemukan" }, { status: 404 });
     }
+
+    const isAdmin = session.user.role === 'admin';
+    const isKetua = targetPokja.ketua_id?.toString() === session.user.id?.toString();
+
+    if (!isAdmin && !isKetua) {
+      return NextResponse.json({ error: "Hanya Ketua Pokja atau Admin yang dapat membatalkan/menghapus kelompok ini" }, { status: 403 });
+    }
+
+    // Jika yang menghapus adalah Ketua Mahasiswa (bukan Admin), batasi hanya pada status awal
+    if (isKetua && !isAdmin) {
+      const allowedStatuses = ['draft', 'menunggu_persetujuan_admin'];
+      if (!allowedStatuses.includes(targetPokja.status_pokja)) {
+        return NextResponse.json({ 
+          error: "Kelompok yang telah disetujui atau sedang berjalan tidak dapat dibubarkan secara mandiri. Silakan hubungi Admin." 
+        }, { status: 400 });
+      }
+    }
+
+    const deleted = await Pokja.findByIdAndDelete(id);
 
     // Hapus data terkait agar tidak menjadi sampah (orphaned data)
     try {
@@ -319,3 +344,4 @@ export async function DELETE(req) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+
