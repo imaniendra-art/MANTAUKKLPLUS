@@ -145,11 +145,11 @@ export async function GET(req) {
     }
     
     if (mhsId) {
-      // Cari pokja dimana mahasiswa ini menjadi ketua atau anggota
+      // Cari pokja dimana mahasiswa ini menjadi ketua atau anggota aktif/menunggu
       const pokja = await Pokja.findOne({
         $or: [
           { ketua_id: mhsId },
-          { 'anggota.user_id': mhsId }
+          { anggota: { $elemMatch: { user_id: mhsId, status_undangan: { $in: ['menunggu', 'bergabung'] } } } }
         ]
       })
       .populate({ path: 'ketua_id', select: 'nama_lengkap nim_nidn program_studi konsentrasi' })
@@ -193,10 +193,109 @@ export async function GET(req) {
 export async function PATCH(req) {
   await dbConnect();
   try {
+    const session = await getServerSession();
     const data = await req.json();
     const { id, dpl_id, mentor_id, status_pokja, catatan_admin, action, mhs_id, mitra_id } = data;
     
     if (!id) return NextResponse.json({ error: "ID wajib diisi" }, { status: 400 });
+
+    // Handle remove member (Keluar mandiri / Kick oleh Ketua / Hapus oleh Admin)
+    if (action === 'remove_member' && data.member_id) {
+      const targetPokja = await Pokja.findById(id);
+      if (!targetPokja) return NextResponse.json({ error: "Kelompok tidak ditemukan" }, { status: 404 });
+
+      const isAdmin = session?.user?.role === 'admin';
+      const isKetua = targetPokja.ketua_id?.toString() === session?.user?.id?.toString();
+      const isSelf = data.member_id.toString() === session?.user?.id?.toString();
+
+      if (!isAdmin && !isKetua && !isSelf) {
+        return NextResponse.json({ error: "Anda tidak memiliki wewenang untuk aksi ini" }, { status: 403 });
+      }
+
+      if (targetPokja.ketua_id?.toString() === data.member_id.toString()) {
+        return NextResponse.json({ 
+          error: "Ketua kelompok tidak dapat dikeluarkan melalui aksi ini. Silakan alihkan jabatan ketua terlebih dahulu atau batalkan kelompok." 
+        }, { status: 400 });
+      }
+
+      if (!isAdmin) {
+        const allowedStatuses = ['draft', 'menunggu_persetujuan_admin'];
+        if (!allowedStatuses.includes(targetPokja.status_pokja)) {
+          return NextResponse.json({ 
+            error: "Anggota hanya dapat dikeluarkan saat kelompok berstatus Draft atau Menunggu Persetujuan. Silakan hubungi Admin." 
+          }, { status: 400 });
+        }
+      }
+
+      const updated = await Pokja.findByIdAndUpdate(
+        id,
+        { $pull: { anggota: { user_id: data.member_id } } },
+        { new: true }
+      )
+        .populate({ path: 'ketua_id', select: 'nama_lengkap nim_nidn program_studi konsentrasi' })
+        .populate({ path: 'anggota.user_id', select: 'nama_lengkap nim_nidn program_studi konsentrasi' });
+
+      return NextResponse.json({ success: true, message: "Anggota berhasil dikeluarkan", pokja: updated });
+    }
+
+    // Handle transfer ketua (Ganti Ketua Pokja)
+    if (action === 'transfer_ketua' && data.new_ketua_id) {
+      const targetPokja = await Pokja.findById(id);
+      if (!targetPokja) return NextResponse.json({ error: "Kelompok tidak ditemukan" }, { status: 404 });
+
+      const isAdmin = session?.user?.role === 'admin';
+      const isKetua = targetPokja.ketua_id?.toString() === session?.user?.id?.toString();
+
+      if (!isAdmin && !isKetua) {
+        return NextResponse.json({ error: "Hanya Ketua saat ini atau Admin yang berhak mengalihkan jabatan ketua" }, { status: 403 });
+      }
+
+      if (!isAdmin) {
+        const allowedStatuses = ['draft', 'menunggu_persetujuan_admin'];
+        if (!allowedStatuses.includes(targetPokja.status_pokja)) {
+          return NextResponse.json({ 
+            error: "Alih jabatan ketua oleh mahasiswa hanya dapat dilakukan saat kelompok berstatus Draft atau Menunggu Persetujuan. Silakan hubungi Admin." 
+          }, { status: 400 });
+        }
+      }
+
+      const newKetuaIdStr = data.new_ketua_id.toString();
+      const oldKetuaId = targetPokja.ketua_id;
+
+      if (newKetuaIdStr === oldKetuaId?.toString()) {
+        return NextResponse.json({ error: "Mahasiswa tersebut sudah menjadi ketua kelompok" }, { status: 400 });
+      }
+
+      const memberIndex = targetPokja.anggota.findIndex(a => a.user_id?.toString() === newKetuaIdStr);
+      if (memberIndex === -1) {
+        return NextResponse.json({ error: "Calon ketua baru harus merupakan anggota kelompok ini" }, { status: 400 });
+      }
+
+      // Ambil objek anggota ketua baru sebelum dihapus dari array
+      const existingMemberData = targetPokja.anggota[memberIndex];
+      targetPokja.anggota.splice(memberIndex, 1);
+
+      // Tambahkan ketua lama ke dalam array anggota jika belum ada
+      const isOldKetuaInAnggota = targetPokja.anggota.some(a => a.user_id?.toString() === oldKetuaId?.toString());
+      if (!isOldKetuaInAnggota && oldKetuaId) {
+        targetPokja.anggota.unshift({
+          user_id: oldKetuaId,
+          status_undangan: 'bergabung',
+          nilai_rekomendasi_sistem: 0,
+          nilai_akhir_mutlak: 0,
+          catatan_evaluasi: ''
+        });
+      }
+
+      targetPokja.ketua_id = data.new_ketua_id;
+      await targetPokja.save();
+
+      const updated = await Pokja.findById(id)
+        .populate({ path: 'ketua_id', select: 'nama_lengkap nim_nidn program_studi konsentrasi' })
+        .populate({ path: 'anggota.user_id', select: 'nama_lengkap nim_nidn program_studi konsentrasi' });
+
+      return NextResponse.json({ success: true, message: "Jabatan ketua berhasil dialihkan", pokja: updated });
+    }
 
     // Handle rename
     if (action === 'rename' && data.nama_pokja) {

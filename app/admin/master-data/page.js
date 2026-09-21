@@ -7,7 +7,7 @@ import {
   Check, Edit2, Trash2, FileText, CheckCircle, XCircle, 
   Users, User, Building2, Search, Eye, AlertCircle, Phone, 
   Mail, GraduationCap, X, UserCheck, Clock, ShieldCheck,
-  ChevronRight, Calendar, Info
+  ChevronRight, Calendar, Info, UserMinus, Crown, ArrowRightLeft
 } from "lucide-react";
 
 export default function MasterData() {
@@ -49,6 +49,9 @@ export default function MasterData() {
   const [showPokjaDetailModal, setShowPokjaDetailModal] = useState(false);
   const [showEditPokjaModal, setShowEditPokjaModal] = useState(false);
   const [editPokjaForm, setEditPokjaForm] = useState({ id: "", nama_pokja: "" });
+  const [showAdminTransferModal, setShowAdminTransferModal] = useState(false);
+  const [adminSelectedNewKetua, setAdminSelectedNewKetua] = useState("");
+  const [isAdminTransferring, setIsAdminTransferring] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
@@ -169,6 +172,70 @@ export default function MasterData() {
     } catch (error) {
       console.error(error);
       showToast("Terjadi kesalahan sistem");
+    }
+  };
+
+  const handleAdminRemoveMember = async (memberId, memberName) => {
+    if (!selectedPokjaDetail?._id || !memberId) return;
+    if (!window.confirm(`Apakah Anda yakin ingin mengeluarkan mahasiswa "${memberName || 'ini'}" dari POKJA "${selectedPokjaDetail.nama_pokja}"?`)) return;
+    try {
+      const res = await fetch('/api/pokja', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: selectedPokjaDetail._id,
+          action: 'remove_member',
+          member_id: memberId
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showToast("Mahasiswa berhasil dikeluarkan dari POKJA!");
+        setSelectedPokjaDetail(prev => ({
+          ...prev,
+          anggota: prev.anggota.filter(a => (a.user_id?._id || a.user_id) !== memberId)
+        }));
+        fetchData();
+      } else {
+        showToast(data.error || "Gagal mengeluarkan anggota");
+      }
+    } catch (error) {
+      console.error(error);
+      showToast("Terjadi kesalahan sistem");
+    }
+  };
+
+  const handleAdminTransferKetuaSubmit = async (e) => {
+    e.preventDefault();
+    if (!selectedPokjaDetail?._id || !adminSelectedNewKetua) return;
+    setIsAdminTransferring(true);
+    try {
+      const res = await fetch('/api/pokja', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: selectedPokjaDetail._id,
+          action: 'transfer_ketua',
+          new_ketua_id: adminSelectedNewKetua
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showToast("Ketua POKJA berhasil dialihkan!");
+        setShowAdminTransferModal(false);
+        setAdminSelectedNewKetua("");
+        if (data.pokja) {
+          setSelectedPokjaDetail(data.pokja);
+        }
+        fetchData();
+      } else {
+        showToast(data.error || "Gagal mengalihkan ketua");
+      }
+    } catch (error) {
+      console.error(error);
+      showToast("Terjadi kesalahan sistem");
+    } finally {
+      setIsAdminTransferring(false);
     }
   };
 
@@ -924,9 +991,25 @@ export default function MasterData() {
                   <span className="text-xs font-bold text-teal-700 dark:text-teal-400 uppercase tracking-wider flex items-center gap-1.5">
                     <User className="w-4 h-4" /> Ketua Kelompok (Inisiator)
                   </span>
-                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-600 text-white">
-                    Ketua Pokja
-                  </span>
+                  <div className="flex items-center gap-2">
+                    {selectedPokjaDetail.anggota?.filter(a => a.status_undangan === 'bergabung' && (a.user_id?._id || a.user_id) !== (selectedPokjaDetail.ketua_id?._id || selectedPokjaDetail.ketua_id)).length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAdminSelectedNewKetua("");
+                          setShowAdminTransferModal(true);
+                        }}
+                        className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-amber-100 hover:bg-amber-200 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 transition-colors border border-amber-300 dark:border-amber-800 shadow-sm"
+                        title="Ganti Ketua POKJA ke Anggota Lain"
+                      >
+                        <Crown className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                        Ganti Ketua
+                      </button>
+                    )}
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-600 text-white">
+                      Ketua Pokja
+                    </span>
+                  </div>
                 </div>
                 {selectedPokjaDetail.ketua_id ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
@@ -1036,6 +1119,7 @@ export default function MasterData() {
                           <th className="py-3 px-4">Prodi / Konsentrasi</th>
                           <th className="py-3 px-4">Kontak</th>
                           <th className="py-3 px-4 text-center">Status Undangan</th>
+                          <th className="py-3 px-4 text-center w-16">Aksi</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
@@ -1071,6 +1155,16 @@ export default function MasterData() {
                                 </span>
                               )}
                             </td>
+                            <td className="py-3 px-4 text-center">
+                              <button
+                                type="button"
+                                onClick={() => handleAdminRemoveMember(ang.user_id?._id || ang.user_id, ang.user_id?.nama_lengkap)}
+                                className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-colors"
+                                title={`Keluarkan ${ang.user_id?.nama_lengkap || 'mahasiswa'} dari POKJA`}
+                              >
+                                <UserMinus className="w-3.5 h-3.5" />
+                              </button>
+                            </td>
                           </tr>
                         ))}
                       </tbody>
@@ -1090,6 +1184,69 @@ export default function MasterData() {
                 Tutup
               </button>
             </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* Modal Admin Ganti Ketua Pokja */}
+      {mounted && showAdminTransferModal && selectedPokjaDetail && createPortal(
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-slate-800 backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 border border-white/60 dark:border-slate-700">
+            <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                <Crown className="w-4 h-4 text-amber-500" />
+                Ganti Ketua POKJA
+              </h3>
+              <button onClick={() => setShowAdminTransferModal(false)} className="text-slate-400 hover:text-red-500 font-bold text-xl">&times;</button>
+            </div>
+            <form onSubmit={handleAdminTransferKetuaSubmit}>
+              <div className="p-6 space-y-4">
+                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                  Pilih mahasiswa anggota aktif yang akan diangkat menggantikan <strong className="text-slate-800 dark:text-slate-200">{selectedPokjaDetail.ketua_id?.nama_lengkap}</strong> sebagai Ketua baru.
+                </p>
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase mb-2">
+                    Calon Ketua Baru
+                  </label>
+                  <select
+                    value={adminSelectedNewKetua}
+                    onChange={(e) => setAdminSelectedNewKetua(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-amber-500 outline-none"
+                    required
+                  >
+                    <option value="">-- Pilih Anggota Menjadi Ketua --</option>
+                    {selectedPokjaDetail.anggota
+                      ?.filter(a => a.status_undangan === 'bergabung' && (a.user_id?._id || a.user_id) !== (selectedPokjaDetail.ketua_id?._id || selectedPokjaDetail.ketua_id))
+                      .map((a) => (
+                        <option key={a.user_id?._id || a.user_id} value={a.user_id?._id || a.user_id}>
+                          {a.user_id?.nama_lengkap} ({a.user_id?.nim_nidn || 'NIM -'})
+                        </option>
+                      ))}
+                  </select>
+                </div>
+                <div className="p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/40 rounded-xl text-xs text-amber-800 dark:text-amber-300">
+                  ℹ️ Ketua lama akan otomatis dipindahkan menjadi anggota biasa dengan status bergabung.
+                </div>
+              </div>
+              <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/80 border-t border-slate-100 dark:border-slate-700 flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowAdminTransferModal(false)}
+                  className="px-4 py-2 text-xs font-bold text-slate-500 hover:bg-slate-100 rounded-xl"
+                  disabled={isAdminTransferring}
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  disabled={isAdminTransferring || !adminSelectedNewKetua}
+                  className="px-5 py-2 text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 rounded-xl shadow transition-all disabled:opacity-50 flex items-center gap-1.5"
+                >
+                  {isAdminTransferring ? "Menyimpan..." : "Simpan Perubahan"}
+                </button>
+              </div>
+            </form>
           </div>
         </div>,
         document.body

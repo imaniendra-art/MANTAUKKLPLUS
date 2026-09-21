@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import DashboardLayout, { MENU_CONFIG } from "@/components/DashboardLayout";
 import { useSession } from "@/components/AuthProvider";
 import { useRouter } from "next/navigation";
-import { Users, Building, Plus, CheckCircle, Clock, Edit, MapPin, User, Handshake, CheckCircle2, ClipboardList, Trash2, AlertTriangle } from "lucide-react";
+import { Users, Building, Plus, CheckCircle, Clock, Edit, MapPin, User, Handshake, CheckCircle2, ClipboardList, Trash2, AlertTriangle, LogOut, UserMinus, Crown, ArrowRightLeft } from "lucide-react";
 import { Suspense } from "react";
 
 function MahasiswaDashboardContent() {
@@ -24,6 +24,16 @@ function MahasiswaDashboardContent() {
   const [editNamaPokja, setEditNamaPokja] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // States for Leave, Kick, & Transfer Ketua
+  const [showLeaveModal, setShowLeaveModal] = useState(false);
+  const [isLeaving, setIsLeaving] = useState(false);
+  const [kickTarget, setKickTarget] = useState(null);
+  const [isKicking, setIsKicking] = useState(false);
+  const [showTransferModal, setShowTransferModal] = useState(false);
+  const [selectedNewKetua, setSelectedNewKetua] = useState("");
+  const [isTransferring, setIsTransferring] = useState(false);
+
   const [mitraProfileForm, setMitraProfileForm] = useState({
     alamat_lengkap: "", desa_kelurahan: "", kecamatan: "", kabupaten_kota: "", titik_koordinat: "", link_maps: "",
     nama_pimpinan: "", kontak_mitra: "", status_kerjasama: "Belum Ada", kuota_maksimal: 5, fasilitas_khusus: ""
@@ -136,6 +146,96 @@ function MahasiswaDashboardContent() {
       alert("Terjadi kesalahan sistem saat membubarkan kelompok.");
     } finally {
       setIsDeleting(false);
+    }
+  };
+
+  const handleLeavePokja = async () => {
+    if (!pokja?._id) return;
+    setIsLeaving(true);
+    try {
+      const res = await fetch('/api/pokja', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: pokja._id,
+          action: 'remove_member',
+          member_id: session.user.id
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setShowLeaveModal(false);
+        setPokja(null);
+        setProkerList([]);
+        alert("Anda telah berhasil keluar dari kelompok.");
+        fetchPokja();
+      } else {
+        alert(data.error || "Gagal keluar dari kelompok");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Terjadi kesalahan sistem saat keluar dari kelompok.");
+    } finally {
+      setIsLeaving(false);
+    }
+  };
+
+  const handleKickMember = async () => {
+    if (!pokja?._id || !kickTarget) return;
+    setIsKicking(true);
+    try {
+      const res = await fetch('/api/pokja', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: pokja._id,
+          action: 'remove_member',
+          member_id: kickTarget.user_id
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setKickTarget(null);
+        alert(`Mahasiswa ${kickTarget.nama || ''} berhasil dikeluarkan dari kelompok.`);
+        fetchPokja();
+      } else {
+        alert(data.error || "Gagal mengeluarkan anggota");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Terjadi kesalahan sistem saat mengeluarkan anggota.");
+    } finally {
+      setIsKicking(false);
+    }
+  };
+
+  const handleTransferKetua = async () => {
+    if (!pokja?._id || !selectedNewKetua) return;
+    setIsTransferring(true);
+    try {
+      const res = await fetch('/api/pokja', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: pokja._id,
+          action: 'transfer_ketua',
+          new_ketua_id: selectedNewKetua
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setShowTransferModal(false);
+        setSelectedNewKetua('');
+        alert("Jabatan Ketua berhasil dialihkan!");
+        fetchPokja();
+      } else {
+        alert(data.error || "Gagal mengalihkan jabatan ketua");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Terjadi kesalahan sistem saat mengalihkan jabatan ketua.");
+    } finally {
+      setIsTransferring(false);
     }
   };
 
@@ -313,16 +413,41 @@ function MahasiswaDashboardContent() {
                 </div>
               </div>
 
-              {isKetua && ['draft', 'menunggu_persetujuan_admin'].includes(pokja.status_pokja) && (
-                <button 
-                  onClick={() => setShowDeleteModal(true)}
-                  className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:text-rose-300 dark:hover:bg-rose-900/60 rounded-xl transition-all border border-rose-200 dark:border-rose-800 shadow-sm shrink-0"
-                  title="Batalkan / Bubarkan Kelompok"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                  <span>Bubarkan Kelompok</span>
-                </button>
-              )}
+              <div className="flex flex-wrap items-center gap-2 shrink-0">
+                {isKetua && ['draft', 'menunggu_persetujuan_admin'].includes(pokja.status_pokja) && (
+                  <>
+                    {pokja.anggota?.filter(a => a.status_undangan === 'bergabung' && a.user_id?._id !== pokja.ketua_id?._id).length > 0 && (
+                      <button 
+                        onClick={() => setShowTransferModal(true)}
+                        className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-amber-700 hover:text-amber-800 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/40 dark:text-amber-300 dark:hover:bg-amber-900/60 rounded-xl transition-all border border-amber-200 dark:border-amber-800 shadow-sm"
+                        title="Alihkan Jabatan Ketua ke Anggota Lain"
+                      >
+                        <Crown className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                        <span>Alihkan Ketua</span>
+                      </button>
+                    )}
+                    <button 
+                      onClick={() => setShowDeleteModal(true)}
+                      className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:text-rose-300 dark:hover:bg-rose-900/60 rounded-xl transition-all border border-rose-200 dark:border-rose-800 shadow-sm"
+                      title="Batalkan / Bubarkan Kelompok"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Bubarkan Kelompok</span>
+                    </button>
+                  </>
+                )}
+
+                {!isKetua && ['draft', 'menunggu_persetujuan_admin'].includes(pokja.status_pokja) && (
+                  <button 
+                    onClick={() => setShowLeaveModal(true)}
+                    className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:text-rose-300 dark:hover:bg-rose-900/60 rounded-xl transition-all border border-rose-200 dark:border-rose-800 shadow-sm"
+                    title="Keluar dari Kelompok Ini"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    <span>Keluar dari Kelompok</span>
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 
@@ -583,21 +708,35 @@ function MahasiswaDashboardContent() {
                       ? 'bg-teal-50 dark:bg-teal-900/20 text-teal-900 dark:text-teal-100'
                       : 'bg-white/20 dark:bg-slate-900/20 text-slate-700 dark:text-slate-300'
                   }`}>
-                    <div className="flex items-center gap-3">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${
                         isCurrentUser
                           ? 'bg-teal-200 text-teal-700'
                           : 'bg-slate-200 text-slate-600'
                       }`}>
                         {member.user_id?.nama_lengkap?.charAt(0) || 'A'}
                       </div>
-                      <div>
-                        <p className="text-sm font-bold">{member.user_id?.nama_lengkap}</p>
+                      <div className="min-w-0">
+                        <p className="text-sm font-bold truncate">{member.user_id?.nama_lengkap}</p>
                         <p className={`text-[10px] capitalize font-bold ${
                           isCurrentUser ? 'text-teal-500' : 'text-slate-400'
                         }`}>Status: {member.status_undangan}</p>
                       </div>
                     </div>
+
+                    {/* Tombol Keluarkan Anggota oleh Ketua */}
+                    {isKetua && ['draft', 'menunggu_persetujuan_admin'].includes(pokja.status_pokja) && (
+                      <button
+                        onClick={() => setKickTarget({
+                          user_id: member.user_id?._id,
+                          nama: member.user_id?.nama_lengkap || 'Anggota'
+                        })}
+                        className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-100/50 dark:hover:bg-rose-900/40 rounded-lg transition-colors shrink-0 ml-2"
+                        title={`Keluarkan ${member.user_id?.nama_lengkap || 'mahasiswa'} dari kelompok`}
+                      >
+                        <UserMinus className="w-4 h-4" />
+                      </button>
+                    )}
                   </div>
                 );
               })}
@@ -858,6 +997,190 @@ function MahasiswaDashboardContent() {
                   <>
                     <Trash2 className="w-4 h-4" />
                     <span>Ya, Bubarkan Kelompok</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Konfirmasi Keluar dari Kelompok (Anggota Mandiri) */}
+      {showLeaveModal && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl border border-slate-100 dark:border-slate-700">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-12 h-12 rounded-2xl bg-rose-100 dark:bg-rose-950/50 flex items-center justify-center shrink-0">
+                <LogOut className="w-6 h-6 text-rose-600 dark:text-rose-400" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white">Keluar dari Kelompok?</h3>
+                <p className="text-xs text-rose-600 dark:text-rose-400 font-semibold">Konfirmasi pembatalan keanggotaan</p>
+              </div>
+            </div>
+
+            <div className="space-y-3 text-sm text-slate-600 dark:text-slate-300 mb-6">
+              <p>
+                Apakah Anda yakin ingin keluar dari kelompok <strong className="text-slate-900 dark:text-white">&ldquo;{pokja?.nama_pokja}&rdquo;</strong>?
+              </p>
+              <div className="p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 rounded-xl text-xs text-amber-800 dark:text-amber-300 leading-relaxed">
+                ℹ️ Setelah keluar, Anda akan dapat bergabung ke kelompok lain menggunakan tautan undangan baru atau membuat kelompok sendiri.
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3">
+              <button 
+                type="button" 
+                disabled={isLeaving}
+                onClick={() => setShowLeaveModal(false)} 
+                className="px-5 py-2.5 font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors disabled:opacity-50"
+              >
+                Batal
+              </button>
+              <button 
+                type="button" 
+                disabled={isLeaving}
+                onClick={handleLeavePokja}
+                className="flex items-center gap-2 px-6 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl shadow-lg shadow-rose-600/30 transition-all disabled:opacity-50"
+              >
+                {isLeaving ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span>Memproses...</span>
+                  </>
+                ) : (
+                  <>
+                    <LogOut className="w-4 h-4" />
+                    <span>Ya, Keluar Kelompok</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Konfirmasi Keluarkan Anggota (Ketua) */}
+      {kickTarget && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl border border-slate-100 dark:border-slate-700">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-12 h-12 rounded-2xl bg-rose-100 dark:bg-rose-950/50 flex items-center justify-center shrink-0">
+                <UserMinus className="w-6 h-6 text-rose-600 dark:text-rose-400" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white">Keluarkan Anggota?</h3>
+                <p className="text-xs text-rose-600 dark:text-rose-400 font-semibold">Tindakan oleh Ketua Kelompok</p>
+              </div>
+            </div>
+
+            <div className="space-y-3 text-sm text-slate-600 dark:text-slate-300 mb-6">
+              <p>
+                Apakah Anda yakin ingin mengeluarkan mahasiswa <strong className="text-slate-900 dark:text-white">&ldquo;{kickTarget.nama}&rdquo;</strong> dari kelompok ini?
+              </p>
+              <div className="p-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                Mahasiswa yang dikeluarkan akan dibebaskan kembali dan dapat bergabung ke kelompok lain.
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3">
+              <button 
+                type="button" 
+                disabled={isKicking}
+                onClick={() => setKickTarget(null)} 
+                className="px-5 py-2.5 font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors disabled:opacity-50"
+              >
+                Batal
+              </button>
+              <button 
+                type="button" 
+                disabled={isKicking}
+                onClick={handleKickMember}
+                className="flex items-center gap-2 px-6 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl shadow-lg shadow-rose-600/30 transition-all disabled:opacity-50"
+              >
+                {isKicking ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span>Mengeluarkan...</span>
+                  </>
+                ) : (
+                  <>
+                    <UserMinus className="w-4 h-4" />
+                    <span>Ya, Keluarkan</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Alihkan Jabatan Ketua */}
+      {showTransferModal && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl border border-slate-100 dark:border-slate-700">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-12 h-12 rounded-2xl bg-amber-100 dark:bg-amber-950/50 flex items-center justify-center shrink-0">
+                <Crown className="w-6 h-6 text-amber-600 dark:text-amber-400" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white">Alihkan Jabatan Ketua</h3>
+                <p className="text-xs text-amber-600 dark:text-amber-400 font-semibold">Pindahkan kendali kelompok</p>
+              </div>
+            </div>
+
+            <div className="space-y-4 text-sm text-slate-600 dark:text-slate-300 mb-6">
+              <p>
+                Pilih salah satu anggota kelompok yang telah bergabung untuk dijadikan Ketua Kelompok baru:
+              </p>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-2">Pilih Anggota</label>
+                <select 
+                  value={selectedNewKetua} 
+                  onChange={(e) => setSelectedNewKetua(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-medium focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                >
+                  <option value="">-- Pilih Mahasiswa Calon Ketua --</option>
+                  {pokja.anggota
+                    .filter(a => a.status_undangan === 'bergabung' && a.user_id?._id !== pokja.ketua_id?._id)
+                    .map((a) => (
+                      <option key={a.user_id?._id} value={a.user_id?._id}>
+                        {a.user_id?.nama_lengkap} ({a.user_id?.nim_nidn || 'NIM -'})
+                      </option>
+                    ))}
+                </select>
+              </div>
+
+              <div className="p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 rounded-xl text-xs text-amber-800 dark:text-amber-300 leading-relaxed">
+                ⚠️ Setelah dialihkan, Anda akan menjadi <strong>anggota biasa</strong>, dan seluruh hak kendali/tanggung jawab kelompok akan berpindah ke ketua baru.
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3">
+              <button 
+                type="button" 
+                disabled={isTransferring}
+                onClick={() => { setShowTransferModal(false); setSelectedNewKetua(''); }} 
+                className="px-5 py-2.5 font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors disabled:opacity-50"
+              >
+                Batal
+              </button>
+              <button 
+                type="button" 
+                disabled={isTransferring || !selectedNewKetua}
+                onClick={handleTransferKetua}
+                className="flex items-center gap-2 px-6 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl shadow-lg shadow-amber-600/30 transition-all disabled:opacity-50"
+              >
+                {isTransferring ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span>Mengalihkan...</span>
+                  </>
+                ) : (
+                  <>
+                    <ArrowRightLeft className="w-4 h-4" />
+                    <span>Alihkan Sekarang</span>
                   </>
                 )}
               </button>
