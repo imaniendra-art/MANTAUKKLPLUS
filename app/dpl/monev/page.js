@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
-import { Camera, MapPin, CheckCircle2, UploadCloud, Loader2, X, PlusCircle } from "lucide-react";
+import { Camera, MapPin, CheckCircle2, UploadCloud, Loader2, X, PlusCircle, Sparkles } from "lucide-react";
+import { compressImage, formatBytes } from "@/lib/imageCompressor";
 
 export default function MonevDPLPage() {
   const [pokjas, setPokjas] = useState([]);
@@ -23,6 +24,8 @@ export default function MonevDPLPage() {
   const [catatan, setCatatan] = useState("");
   const [fotoBase64, setFotoBase64] = useState("");
   const [submitLoading, setSubmitLoading] = useState(false);
+  const [compressingImage, setCompressingImage] = useState(false);
+  const [compressionInfo, setCompressionInfo] = useState(null);
 
   const fileInputRef = useRef(null);
 
@@ -62,18 +65,49 @@ export default function MonevDPLPage() {
     setTanggal("");
     setCatatan("");
     setFotoBase64("");
+    setCompressingImage(false);
+    setCompressionInfo(null);
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (file.size > 2 * 1024 * 1024) {
-        showToast("Ukuran file terlalu besar (Maks 2MB).");
-        return;
-      }
+  const handleFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      setFotoBase64("");
+      setCompressionInfo(null);
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      showToast("Mohon pilih file gambar (JPG, PNG, atau WEBP)");
+      return;
+    }
+
+    // Izinkan gambar resolusi tinggi hingga 20MB sebelum dikompres
+    if (file.size > 20 * 1024 * 1024) {
+      showToast("Ukuran file terlalu besar (Maksimal 20MB sebelum kompresi).");
+      return;
+    }
+
+    setCompressingImage(true);
+    setCompressionInfo(null);
+
+    try {
+      const result = await compressImage(file, { maxWidth: 1280, maxHeight: 1280, quality: 0.75 });
+      setFotoBase64(result.dataUrl);
+      setCompressionInfo({
+        originalSize: result.originalSize,
+        compressedSize: result.compressedSize,
+        ratio: result.compressionRatio,
+        width: result.width,
+        height: result.height
+      });
+    } catch (err) {
+      console.error("Gagal kompresi foto:", err);
       const reader = new FileReader();
       reader.onloadend = () => setFotoBase64(reader.result);
       reader.readAsDataURL(file);
+    } finally {
+      setCompressingImage(false);
     }
   };
 
@@ -288,20 +322,56 @@ export default function MonevDPLPage() {
               </div>
               
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Foto Dokumentasi</label>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-sm font-semibold text-slate-700">Foto Dokumentasi</label>
+                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                    <Sparkles className="w-3 h-3 text-emerald-500" /> Auto-Compress Aktif
+                  </span>
+                </div>
+
                 <div 
-                  onClick={() => fileInputRef.current?.click()}
-                  className="w-full border-2 border-dashed border-slate-300 rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 transition"
+                  onClick={() => !compressingImage && fileInputRef.current?.click()}
+                  className={`w-full border-2 border-dashed rounded-xl p-5 flex flex-col items-center justify-center transition cursor-pointer ${
+                    compressingImage 
+                      ? 'border-amber-300 bg-amber-50/50' 
+                      : 'border-slate-300 hover:bg-slate-50'
+                  }`}
                 >
-                  {fotoBase64 ? (
-                    <img src={fotoBase64} alt="Preview" className="h-40 object-contain rounded-lg" />
+                  {compressingImage ? (
+                    <div className="flex flex-col items-center py-4 text-amber-700">
+                      <Loader2 className="w-8 h-8 animate-spin mb-2 text-amber-600" />
+                      <p className="text-xs font-bold">Mengompresi resolusi foto...</p>
+                      <p className="text-[11px] text-amber-600">Menyesuaikan ke resolusi HD ringan</p>
+                    </div>
+                  ) : fotoBase64 ? (
+                    <div className="flex flex-col items-center gap-2">
+                      <img src={fotoBase64} alt="Preview" className="h-40 object-contain rounded-lg shadow-xs" />
+                      <p className="text-xs text-slate-500 font-medium">Klik untuk mengganti foto</p>
+                    </div>
                   ) : (
                     <>
                       <UploadCloud className="w-10 h-10 text-slate-400 mb-2" />
-                      <p className="text-sm text-slate-500 font-medium">Klik untuk memilih foto (Maks 2MB)</p>
+                      <p className="text-sm text-slate-600 font-medium">Klik untuk memilih foto kunjungan</p>
+                      <p className="text-xs text-slate-400 mt-0.5">Kamera HP resolusi tinggi otomatis dioptimalkan</p>
                     </>
                   )}
                 </div>
+
+                {/* Info Hasil Kompresi */}
+                {compressionInfo && !compressingImage && (
+                  <div className="mt-2.5 p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 flex items-center justify-between shadow-xs">
+                    <div className="flex items-center gap-1.5 font-medium">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <span>
+                        <span className="line-through text-slate-400">{formatBytes(compressionInfo.originalSize)}</span> ➔ <strong className="font-bold text-emerald-700">{formatBytes(compressionInfo.compressedSize)}</strong> ({compressionInfo.width}×{compressionInfo.height}px)
+                      </span>
+                    </div>
+                    <span className="px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-800 font-bold text-[10px]">
+                      Hemat {compressionInfo.ratio}%
+                    </span>
+                  </div>
+                )}
+
                 <input
                   type="file"
                   accept="image/jpeg, image/png, image/webp"
@@ -326,18 +396,20 @@ export default function MonevDPLPage() {
                 <button
                   type="button"
                   onClick={handleCloseModal}
-                  disabled={submitLoading}
+                  disabled={submitLoading || compressingImage}
                   className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-slate-800"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
-                  disabled={submitLoading || !fotoBase64 || !tanggal}
+                  disabled={submitLoading || compressingImage || !fotoBase64 || !tanggal}
                   className="px-5 py-2 bg-teal-600 text-white rounded-lg text-sm font-semibold hover:bg-teal-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
                   {submitLoading ? (
                     <><Loader2 className="w-4 h-4 animate-spin" /> Menyimpan...</>
+                  ) : compressingImage ? (
+                    <><Loader2 className="w-4 h-4 animate-spin" /> Mengompres...</>
                   ) : "Simpan Dokumentasi"}
                 </button>
               </div>

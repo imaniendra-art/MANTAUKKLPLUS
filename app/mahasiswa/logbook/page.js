@@ -3,8 +3,8 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import DashboardLayout from "@/components/DashboardLayout";
-import { useSession } from "@/components/AuthProvider";
-import { FileSignature, User, Briefcase } from "lucide-react";
+import { FileSignature, User, Briefcase, Loader2, CheckCircle2, Sparkles } from "lucide-react";
+import { compressImage, formatBytes } from "@/lib/imageCompressor";
 
 export default function LogbookPage() {
   const { data: session } = useSession();
@@ -40,6 +40,8 @@ export default function LogbookPage() {
   const [prokerId, setProkerId] = useState(""); 
   
   const [submitting, setSubmitting] = useState(false);
+  const [compressingImage, setCompressingImage] = useState(false);
+  const [compressionInfo, setCompressionInfo] = useState(null);
 
   // Set default date on mount
   useEffect(() => {
@@ -118,21 +120,50 @@ export default function LogbookPage() {
     setPage(1); // reset pagination
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (file.size > 2 * 1024 * 1024) {
-        alert("Ukuran file maksimal 2MB");
-        e.target.value = null;
-        return;
-      }
+  const handleFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      setBuktiFoto("");
+      setCompressionInfo(null);
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      alert("Mohon pilih file gambar (JPG, PNG, atau WEBP)");
+      e.target.value = null;
+      return;
+    }
+
+    // Izinkan file resolusi tinggi hingga 20MB, karena akan dikompresi otomatis
+    if (file.size > 20 * 1024 * 1024) {
+      alert("Ukuran file foto terlalu besar (Maksimal 20MB sebelum kompresi).");
+      e.target.value = null;
+      return;
+    }
+
+    setCompressingImage(true);
+    setCompressionInfo(null);
+
+    try {
+      // Kompres otomatis ke HD 1280px, quality 0.75 JPEG
+      const result = await compressImage(file, { maxWidth: 1280, maxHeight: 1280, quality: 0.75 });
+      setBuktiFoto(result.dataUrl);
+      setCompressionInfo({
+        originalSize: result.originalSize,
+        compressedSize: result.compressedSize,
+        ratio: result.compressionRatio,
+        width: result.width,
+        height: result.height
+      });
+    } catch (err) {
+      console.error("Kompresi gambar gagal, fallback ke pembaca biasa:", err);
       const reader = new FileReader();
       reader.onloadend = () => {
         setBuktiFoto(reader.result);
       };
       reader.readAsDataURL(file);
-    } else {
-      setBuktiFoto("");
+    } finally {
+      setCompressingImage(false);
     }
   };
 
@@ -210,6 +241,7 @@ export default function LogbookPage() {
         setHasilOutput("");
         setKendalaSolusi("");
         setBuktiFoto("");
+        setCompressionInfo(null);
         setKeteranganBukti("");
         setProkerId("");
         
@@ -427,8 +459,62 @@ export default function LogbookPage() {
                     <textarea value={kendalaSolusi} onChange={(e) => setKendalaSolusi(e.target.value)} rows="2" placeholder="Jika ada kendala, bagaimana mengatasinya?" className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/20 dark:bg-slate-900/20 text-sm"></textarea>
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Upload Bukti Foto <span className="text-red-500">*</span></label>
-                    <input required id="file-upload" type="file" accept="image/*" onChange={handleFileChange} className="w-full px-4 py-2.5 rounded-xl border border-white/60 dark:border-slate-700 bg-white/20 dark:bg-slate-900/20 text-sm" />
+                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center justify-between">
+                      <span>Upload Bukti Foto <span className="text-red-500">*</span></span>
+                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
+                        <Sparkles className="w-3 h-3 text-emerald-500" /> Auto-Compress Aktif
+                      </span>
+                    </label>
+                    <input 
+                      required 
+                      id="file-upload" 
+                      type="file" 
+                      accept="image/*" 
+                      onChange={handleFileChange} 
+                      className="w-full px-4 py-2.5 rounded-xl border border-white/60 dark:border-slate-700 bg-white/20 dark:bg-slate-900/20 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500" 
+                    />
+
+                    {/* Status Loading Kompresi */}
+                    {compressingImage && (
+                      <div className="flex items-center gap-2 mt-2 p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-xs font-semibold text-amber-700 dark:text-amber-300 animate-pulse">
+                        <Loader2 className="w-4 h-4 animate-spin text-amber-600 shrink-0" />
+                        <span>Mengompresi foto otomatis agar ringan diupload...</span>
+                      </div>
+                    )}
+
+                    {/* Feedback Hasil Kompresi */}
+                    {compressionInfo && !compressingImage && (
+                      <div className="mt-2.5 p-3 rounded-xl bg-emerald-50/90 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 text-xs text-emerald-900 dark:text-emerald-200 space-y-1.5 shadow-xs">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1.5 font-bold text-emerald-700 dark:text-emerald-300">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                            <span>Foto Berhasil Dioptimalkan</span>
+                          </div>
+                          <span className="px-2 py-0.5 rounded-full bg-emerald-200 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-100 font-bold text-[10px]">
+                            Hemat {compressionInfo.ratio}%
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between text-[11px] text-slate-600 dark:text-slate-300">
+                          <span>Ukuran: <span className="line-through text-slate-400">{formatBytes(compressionInfo.originalSize)}</span> ➔ <strong className="font-bold text-emerald-600 dark:text-emerald-400">{formatBytes(compressionInfo.compressedSize)}</strong></span>
+                          <span>Resolusi: {compressionInfo.width}×{compressionInfo.height}px</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Preview Gambar */}
+                    {buktiFoto && !compressingImage && (
+                      <div className="mt-2.5 flex items-center gap-3 p-2 bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl">
+                        <img 
+                          src={buktiFoto} 
+                          alt="Preview Bukti" 
+                          className="w-14 h-14 rounded-lg object-cover border border-slate-200 dark:border-slate-700 shadow-xs shrink-0" 
+                        />
+                        <div className="text-xs truncate">
+                          <p className="font-bold text-slate-700 dark:text-slate-200">Pratinjau Bukti Foto</p>
+                          <p className="text-slate-500 text-[11px]">Foto siap diunggah bersama catatan logbook</p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Keterangan Gambar / Foto <span className="text-red-500">*</span></label>
@@ -436,10 +522,22 @@ export default function LogbookPage() {
                   </div>
                   <button 
                     type="submit" 
-                    disabled={submitting}
-                    className="w-full bg-teal-600 hover:bg-teal-700 py-3.5 text-sm font-bold text-white rounded-xl shadow-md transition-all disabled:opacity-50"
+                    disabled={submitting || compressingImage}
+                    className="w-full bg-teal-600 hover:bg-teal-700 py-3.5 text-sm font-bold text-white rounded-xl shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
-                    {submitting ? 'Menyimpan...' : 'Simpan Logbook'}
+                    {submitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>Menyimpan Logbook...</span>
+                      </>
+                    ) : compressingImage ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>Mengompresi Foto...</span>
+                      </>
+                    ) : (
+                      'Simpan Logbook'
+                    )}
                   </button>
                 </form>
               )}

@@ -5,6 +5,7 @@ import { useSession } from "@/components/AuthProvider";
 import DashboardLayout from '@/components/DashboardLayout';
 import Link from 'next/link';
 import { Check, X, FileSignature, Building, User, Users, BookOpen, Paperclip, Printer, PenTool, Mail, FileCheck, FileBadge, FileText, Award, Download, Clock, AlertTriangle, CheckCircle, Lock } from "lucide-react";
+import { compressImage } from "@/lib/imageCompressor";
 
 const DEFAULT_SECTIONS_INDIVIDU = {
   bab1: [
@@ -294,36 +295,49 @@ export default function LaporanAkhirPage() {
   const handleFileChange = async (e, field) => {
     const file = e.target.files[0];
     if (file) {
-      if (file.size > 2 * 1024 * 1024) {
-        alert("Ukuran file maksimal 2MB");
+      const isImg = file.type && file.type.startsWith('image/');
+      const maxSize = isImg ? 20 * 1024 * 1024 : 5 * 1024 * 1024;
+      
+      if (file.size > maxSize) {
+        alert(`Ukuran file maksimal ${isImg ? '20MB' : '5MB'}`);
         e.target.value = null;
         return;
       }
       
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        try {
-          setIsSaving(true);
-          const res = await fetch('/api/upload', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ imageBase64: reader.result })
+      try {
+        setIsSaving(true);
+        let base64ToSend = '';
+
+        if (isImg) {
+          const comp = await compressImage(file, { maxWidth: 1280, maxHeight: 1280, quality: 0.75 });
+          base64ToSend = comp.dataUrl;
+        } else {
+          base64ToSend = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
           });
-          const data = await res.json();
-          if (res.ok && data.url) {
-            setCurrentForm(prev => ({ ...prev, [field]: data.url }));
-            setIsDirty(true);
-          } else {
-            alert(`Gagal mengunggah file: ${data.error || 'Unknown error'}`);
-          }
-        } catch (error) {
-          console.error("Upload error:", error);
-          alert("Terjadi kesalahan saat mengunggah file.");
-        } finally {
-          setIsSaving(false);
         }
-      };
-      reader.readAsDataURL(file);
+
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ imageBase64: base64ToSend, prefix: 'laporan' })
+        });
+        const data = await res.json();
+        if (res.ok && data.url) {
+          setCurrentForm(prev => ({ ...prev, [field]: data.url }));
+          setIsDirty(true);
+        } else {
+          alert(`Gagal mengunggah file: ${data.error || 'Unknown error'}`);
+        }
+      } catch (error) {
+        console.error("Upload error:", error);
+        alert("Terjadi kesalahan saat mengunggah file: " + error.message);
+      } finally {
+        setIsSaving(false);
+      }
     }
   };
 
