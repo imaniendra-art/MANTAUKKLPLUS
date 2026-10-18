@@ -17,6 +17,48 @@ export default function ArsipDokumen() {
   const [activeTab, setActiveTab] = useState("surat"); // surat, laporan, sertifikat, galeri
   const [searchTerm, setSearchTerm] = useState("");
 
+  // Modal SK states
+  const [showSkModal, setShowSkModal] = useState(false);
+  const [isCollectiveSk, setIsCollectiveSk] = useState(false);
+  const [selectedPokjaForSk, setSelectedPokjaForSk] = useState(null);
+  const [skForm, setSkForm] = useState({
+    nomor_sk: "000.4/496/STIMI-YAPMI/MKS/IX/2026",
+    tanggal_sk: "14 September 2026",
+    tanggal_rapat: "28 Mei 2026",
+    semester: "Ganjil",
+    tahun_akademik: "2026/2027",
+  });
+
+  const openSkModalForPokja = (pokja) => {
+    setSelectedPokjaForSk(pokja);
+    setIsCollectiveSk(false);
+    setShowSkModal(true);
+  };
+
+  const openSkModalCollective = () => {
+    setSelectedPokjaForSk(null);
+    setIsCollectiveSk(true);
+    setShowSkModal(true);
+  };
+
+  const handleGenerateSk = (e) => {
+    e.preventDefault();
+    const query = new URLSearchParams({
+      nomorSk: skForm.nomor_sk,
+      tglSk: skForm.tanggal_sk,
+      tglRapat: skForm.tanggal_rapat,
+      semester: skForm.semester,
+      tahun: skForm.tahun_akademik,
+    });
+    if (isCollectiveSk) {
+      query.set("collective", "true");
+    } else if (selectedPokjaForSk) {
+      query.set("pokjaId", selectedPokjaForSk._id);
+    }
+    window.open(`/admin/arsip/sk?${query.toString()}`, "_blank");
+    setShowSkModal(false);
+  };
+
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -57,9 +99,21 @@ export default function ArsipDokumen() {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
-            <h4 className="font-bold text-amber-800">Cetak Surat Keputusan (SK) KKL Plus</h4>
-            <p className="text-sm text-amber-700 mt-1">Surat Keputusan (SK) untuk Peserta (Mahasiswa) dan DPL diterbitkan per Kelompok.</p>
+            <h4 className="font-bold text-amber-800 flex items-center gap-2">
+              <FileSignature className="w-5 h-5 text-amber-600" />
+              Cetak Surat Keputusan (SK) KKL Plus
+            </h4>
+            <p className="text-sm text-amber-700 mt-1">
+              Surat Keputusan (SK) Penetapan Dosen Pembimbing & Peserta KKLP dapat dicetak per Kelompok maupun Kolektif (seluruh kelompok).
+            </p>
           </div>
+          <button
+            onClick={openSkModalCollective}
+            className="px-4 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-2 whitespace-nowrap cursor-pointer shrink-0"
+          >
+            <Printer className="w-4 h-4" />
+            Cetak SK Kolektif (Semua Kelompok)
+          </button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -95,9 +149,13 @@ export default function ArsipDokumen() {
                 <div className="flex items-center justify-between p-3 bg-amber-50 rounded-lg border border-amber-100">
                   <div>
                     <p className="text-sm font-semibold text-amber-800">SK Mahasiswa & DPL</p>
-                    <p className="text-xs text-amber-600">Surat Keputusan KKL Plus</p>
+                    <p className="text-xs text-amber-600">Surat Keputusan Penetapan</p>
                   </div>
-                  <button className="px-3 py-1.5 text-amber-700 bg-amber-100 hover:bg-amber-200 rounded-lg text-xs font-bold transition-colors shadow-sm" onClick={() => alert('Fitur Cetak SK sedang dalam pengembangan format.')}>
+                  <button 
+                    className="px-3.5 py-1.5 text-amber-800 bg-amber-200 hover:bg-amber-300 rounded-lg text-xs font-bold transition-colors shadow-sm cursor-pointer flex items-center gap-1.5"
+                    onClick={() => openSkModalForPokja(pokja)}
+                  >
+                    <Printer className="w-3.5 h-3.5" />
                     Cetak SK
                   </button>
                 </div>
@@ -455,6 +513,130 @@ export default function ArsipDokumen() {
           </>
         )}
       </div>
+
+      {/* Modal Pengaturan Cetak SK */}
+      {showSkModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-lg w-full p-6 border border-slate-200 dark:border-slate-700 animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-700 mb-5">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 bg-amber-100 text-amber-700 rounded-xl">
+                  <FileSignature className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900 dark:text-white text-base">
+                    {isCollectiveSk ? "Cetak SK Kolektif (Semua Kelompok)" : `Cetak SK - ${selectedPokjaForSk?.nama_pokja || "Kelompok"}`}
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    {isCollectiveSk 
+                      ? "Membuat Surat Keputusan induk untuk seluruh kelompok peserta & DPL" 
+                      : `Lokasi: ${selectedPokjaForSk?.mitra_id?.desa_kelurahan ? `Kel. ${selectedPokjaForSk.mitra_id.desa_kelurahan}` : (selectedPokjaForSk?.mitra_id?.nama_instansi || '-')}`}
+                  </p>
+                </div>
+              </div>
+              <button 
+                type="button"
+                onClick={() => setShowSkModal(false)}
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-lg cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleGenerateSk} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  Nomor Surat Keputusan (SK)
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={skForm.nomor_sk}
+                  onChange={(e) => setSkForm({ ...skForm, nomor_sk: e.target.value })}
+                  className="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-600 focus:border-amber-500 focus:ring focus:ring-amber-200 text-sm bg-white dark:bg-slate-700 font-mono"
+                  placeholder="000.4/496/STIMI-YAPMI/MKS/IX/2026"
+                />
+                <p className="text-[11px] text-slate-400 mt-0.5">Format baku: 000.4/[NoUrut]/STIMI-YAPMI/MKS/[RomawiBulan]/[Tahun]</p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Tanggal Penetapan SK
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={skForm.tanggal_sk}
+                    onChange={(e) => setSkForm({ ...skForm, tanggal_sk: e.target.value })}
+                    className="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-600 focus:border-amber-500 focus:ring focus:ring-amber-200 text-sm bg-white dark:bg-slate-700"
+                    placeholder="14 September 2026"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Tanggal Rapat Pimpinan
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={skForm.tanggal_rapat}
+                    onChange={(e) => setSkForm({ ...skForm, tanggal_rapat: e.target.value })}
+                    className="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-600 focus:border-amber-500 focus:ring focus:ring-amber-200 text-sm bg-white dark:bg-slate-700"
+                    placeholder="28 Mei 2026"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Semester
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={skForm.semester}
+                    onChange={(e) => setSkForm({ ...skForm, semester: e.target.value })}
+                    className="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-600 focus:border-amber-500 focus:ring focus:ring-amber-200 text-sm bg-white dark:bg-slate-700"
+                    placeholder="Ganjil"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Tahun Akademik
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={skForm.tahun_akademik}
+                    onChange={(e) => setSkForm({ ...skForm, tahun_akademik: e.target.value })}
+                    className="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-600 focus:border-amber-500 focus:ring focus:ring-amber-200 text-sm bg-white dark:bg-slate-700"
+                    placeholder="2026/2027"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-100 dark:border-slate-700">
+                <button
+                  type="button"
+                  onClick={() => setShowSkModal(false)}
+                  className="px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors cursor-pointer"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 text-sm font-bold bg-amber-600 hover:bg-amber-700 text-white rounded-xl shadow-md transition-colors flex items-center gap-2 cursor-pointer"
+                >
+                  <Printer className="w-4 h-4" />
+                  Buka & Cetak SK
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
     </DashboardLayout>
   );

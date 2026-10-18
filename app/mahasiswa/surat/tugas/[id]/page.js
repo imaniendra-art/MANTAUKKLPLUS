@@ -182,7 +182,7 @@ export default function SuratTugasPage({ params }) {
               <div className="h-20"></div>
             )}
             <p className="font-bold underline">{settings?.ketua_lppm_nama || 'Andi Arwinda Wildam, S.E.,M.M'}</p>
-            <p>NIDN. {settings?.ketua_lppm_nidn || '0912345678'}</p>
+            <p>NUPTK. {settings?.ketua_lppm_nidn || '0153770671230313'}</p>
           </div>
         </div>
 

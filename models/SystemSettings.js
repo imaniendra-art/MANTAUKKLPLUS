@@ -35,7 +35,7 @@ const SystemSettingsSchema = new mongoose.Schema({
   },
   ketua_lppm_nidn: {
     type: String,
-    default: "0912345678",
+    default: "0153770671230313",
   },
   ketua_lppm_ttd: {
     type: String,

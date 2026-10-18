@@ -22,7 +22,7 @@ export default function AdminSettingsPage() {
     kaprodi_nip: '198001012005011001',
     kaprodi_ttd: '',
     ketua_lppm_nama: 'Andi Arwinda Wildam, S.E.,M.M',
-    ketua_lppm_nidn: '0912345678',
+    ketua_lppm_nidn: '0153770671230313',
     ketua_lppm_ttd: '/ttd-lppm.png',
   });
 
@@ -51,7 +51,7 @@ export default function AdminSettingsPage() {
           kaprodi_nip: data.kaprodi_nip || '198001012005011001',
           kaprodi_ttd: data.kaprodi_ttd || '',
           ketua_lppm_nama: data.ketua_lppm_nama || 'Andi Arwinda Wildam, S.E.,M.M',
-          ketua_lppm_nidn: data.ketua_lppm_nidn || '0912345678',
+          ketua_lppm_nidn: data.ketua_lppm_nidn || '0153770671230313',
           ketua_lppm_ttd: data.ketua_lppm_ttd || '/ttd-lppm.png',
         });
       }
@@ -440,7 +440,7 @@ export default function AdminSettingsPage() {
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">NIDN / NUPTK</label>
+                        <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">NUPTK / NIDN Ketua LPPM</label>
                         <input 
                           type="text" 
                           value={systemSettings.ketua_lppm_nidn || ''}
@@ -452,7 +452,7 @@ export default function AdminSettingsPage() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Scan Tanda Tangan Ketua LPPM</label>
+                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Scan Tanda Tangan & Cap Ketua LPPM</label>
                       {systemSettings.ketua_lppm_ttd ? (
                         <div className="flex items-center gap-4 p-3 bg-white dark:bg-slate-800 border border-teal-200 dark:border-teal-800 rounded-xl">
                           <div className="h-16 w-36 bg-slate-100 dark:bg-slate-900 rounded-lg border border-dashed border-teal-300 dark:border-teal-700 p-1 flex items-center justify-center">
@@ -460,9 +460,9 @@ export default function AdminSettingsPage() {
                           </div>
                           <div className="flex-1 text-xs">
                             <p className="font-semibold text-teal-700 dark:text-teal-300 flex items-center gap-1">
-                              <CheckCircle className="w-3.5 h-3.5" /> Tanda tangan aktif
+                              <CheckCircle className="w-3.5 h-3.5" /> Tanda tangan & cap aktif
                             </p>
-                            <p className="text-slate-400 text-[11px] mt-0.5">Tersimpan dan otomatis diterapkan pada Surat Tugas & Pengantar.</p>
+                            <p className="text-slate-400 text-[11px] mt-0.5">Tersimpan dan otomatis diterapkan pada Surat Keputusan (SK), Surat Tugas, & Pengantar.</p>
                           </div>
                           <div className="flex items-center gap-2">
                             <label className="cursor-pointer px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 text-xs font-semibold rounded-lg transition-colors">
