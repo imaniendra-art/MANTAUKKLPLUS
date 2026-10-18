@@ -14,6 +14,11 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "MANTAU KKLPlus | STIMI YAPMI",
   description: "Manajemen Aktivitas, Penilaian, & Tata Administrasi Umum KKLPlus STIMI YAPMI",
+  icons: {
+    icon: "/favicon.png",
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
+  },
 };
 
 import { Providers } from "@/components/Providers";
