@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { useSession } from "@/components/AuthProvider";
-import { Search, FolderOpen, FileText, Award, Book, FileSignature, Download, Printer } from "lucide-react";
+import { Search, FolderOpen, FileText, Award, Book, FileSignature, Download, Printer, Image as ImageIcon, ChevronLeft, ChevronRight, X, ExternalLink, Users, Calendar, MapPin, Eye, Building2, UserCheck, Camera, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 export default function ArsipDokumen() {
@@ -28,6 +28,14 @@ export default function ArsipDokumen() {
     semester: "Ganjil",
     tahun_akademik: "2026/2027",
   });
+
+  // Galeri Album states
+  const [selectedAlbumPokjaId, setSelectedAlbumPokjaId] = useState(null);
+  const [galeriKategori, setGaleriKategori] = useState("semua"); // 'semua', 'mitra', 'monev', 'logbook'
+  const [filterMhsId, setFilterMhsId] = useState("semua");
+  const [galeriSearch, setGaleriSearch] = useState("");
+  const [galeriPage, setGaleriPage] = useState(1);
+  const [lightboxItem, setLightboxItem] = useState(null);
 
   const openSkModalForPokja = (pokja) => {
     setSelectedPokjaForSk(pokja);
@@ -354,99 +362,455 @@ export default function ArsipDokumen() {
     );
   };
 
-  // ================= TAB 4: GALERI FOTO =================
+  // ================= TAB 4: GALERI FOTO (ALBUM PER KELOMPOK) =================
   const renderTabGaleri = () => {
-    // Kumpulkan foto Mitra
-    const fotoMitra = [];
-    dataPokja.forEach(pokja => {
-      const mitra = pokja.mitra_id;
-      if (mitra) {
-        if (mitra.foto_kantor_desa && mitra.foto_kantor_desa.trim() !== '') {
-          fotoMitra.push({ url: mitra.foto_kantor_desa, label: 'Foto Gedung', pokja });
-        }
-        if (mitra.foto_kantor_bumdes && mitra.foto_kantor_bumdes.trim() !== '') {
-          fotoMitra.push({ url: mitra.foto_kantor_bumdes, label: 'Foto Dalam Gedung', pokja });
-        }
+    // 1. Compile Albums data for each Pokja
+    const albums = dataPokja.map((pokja, idx) => {
+      // Mitra photos
+      const mitraPhotos = [];
+      const mInstansi = pokja.mitra_id?.nama_instansi || "Mitra";
+      if (pokja.mitra_id?.foto_kantor_desa && pokja.mitra_id.foto_kantor_desa.trim() !== '') {
+        mitraPhotos.push({
+          id: `mitra-desa-${pokja._id}`,
+          type: 'mitra',
+          url: pokja.mitra_id.foto_kantor_desa,
+          title: 'Foto Gedung Kantor Mitra',
+          subtitle: mInstansi,
+          tag: 'Gedung Mitra',
+          date: null,
+          uploader: 'Instansi Mitra',
+          pokja
+        });
       }
+      if (pokja.mitra_id?.foto_kantor_bumdes && pokja.mitra_id.foto_kantor_bumdes.trim() !== '') {
+        mitraPhotos.push({
+          id: `mitra-bumdes-${pokja._id}`,
+          type: 'mitra',
+          url: pokja.mitra_id.foto_kantor_bumdes,
+          title: 'Foto Fasilitas / Dalam Gedung',
+          subtitle: mInstansi,
+          tag: 'Fasilitas Mitra',
+          date: null,
+          uploader: 'Instansi Mitra',
+          pokja
+        });
+      }
+
+      // Monev photos
+      const monevPhotos = dataMonev.filter(m => 
+        (m.pokja_id?._id && String(m.pokja_id._id) === String(pokja._id)) ||
+        (m.pokja_id?.nama_pokja && m.pokja_id.nama_pokja === pokja.nama_pokja)
+      ).map(m => ({
+        id: `monev-${m._id}`,
+        type: 'monev',
+        url: m.foto_url,
+        title: m.jenis_kunjungan || 'Monitoring & Evaluasi DPL',
+        subtitle: `DPL: ${m.dpl_id?.nama_lengkap || pokja.dpl_id?.nama_lengkap || '-'}`,
+        description: m.catatan || '',
+        tag: 'Monev DPL',
+        date: m.tanggal_kunjungan || m.createdAt,
+        uploader: m.dpl_id?.nama_lengkap || 'DPL',
+        pokja
+      }));
+
+      // Logbook photos
+      const logbookPhotos = dataLogbook.filter(l => 
+        (l.pokja_id?._id && String(l.pokja_id._id) === String(pokja._id)) ||
+        (l.pokja_id?.nama_pokja && l.pokja_id.nama_pokja === pokja.nama_pokja)
+      ).map(l => ({
+        id: `logbook-${l._id}`,
+        type: 'logbook',
+        url: l.bukti_kegiatan,
+        title: l.mahasiswa_id?.nama_lengkap || 'Mahasiswa',
+        nim: l.mahasiswa_id?.nim_nidn || '',
+        mhsId: l.mahasiswa_id?._id ? String(l.mahasiswa_id._id) : '',
+        subtitle: l.kegiatan_utama || 'Aktivitas Harian KKL Plus',
+        description: l.uraian_kegiatan || '',
+        tag: 'Logbook Mahasiswa',
+        date: l.tanggal_kegiatan || l.createdAt,
+        uploader: l.mahasiswa_id?.nama_lengkap || 'Mahasiswa',
+        pokja
+      }));
+
+      const allPhotos = [...mitraPhotos, ...monevPhotos, ...logbookPhotos];
+      const coverUrl = monevPhotos[0]?.url || mitraPhotos[0]?.url || logbookPhotos[0]?.url || null;
+
+      // Mahasiswa members list for filtering
+      const membersList = [];
+      if (pokja.ketua_id) {
+        membersList.push({ id: String(pokja.ketua_id._id || pokja.ketua_id), nama: pokja.ketua_id.nama_lengkap || 'Ketua' });
+      }
+      if (Array.isArray(pokja.anggota)) {
+        pokja.anggota.forEach(a => {
+          if (a.user_id && String(a.user_id._id || a.user_id) !== String(pokja.ketua_id?._id || pokja.ketua_id)) {
+            membersList.push({ id: String(a.user_id._id || a.user_id), nama: a.user_id.nama_lengkap || 'Anggota' });
+          }
+        });
+      }
+
+      return {
+        pokja,
+        mitraPhotos,
+        monevPhotos,
+        logbookPhotos,
+        allPhotos,
+        coverUrl,
+        membersList,
+        totalCount: allPhotos.length,
+      };
     });
 
+    const activeAlbum = albums.find(a => String(a.pokja._id) === String(selectedAlbumPokjaId));
+
+    // ================= VIEW LEVEL 2: DI DALAM ALBUM KELOMPOK =================
+    if (activeAlbum) {
+      // Filter photos by category and student
+      let currentPhotos = activeAlbum.allPhotos;
+      if (galeriKategori === 'mitra') currentPhotos = activeAlbum.mitraPhotos;
+      else if (galeriKategori === 'monev') currentPhotos = activeAlbum.monevPhotos;
+      else if (galeriKategori === 'logbook') currentPhotos = activeAlbum.logbookPhotos;
+
+      if (filterMhsId !== 'semua') {
+        currentPhotos = currentPhotos.filter(p => p.type !== 'logbook' || p.mhsId === filterMhsId);
+      }
+
+      // Pagination calculation
+      const itemsPerPage = 12;
+      const totalPages = Math.ceil(currentPhotos.length / itemsPerPage) || 1;
+      const currentPage = Math.min(galeriPage, totalPages);
+      const paginatedPhotos = currentPhotos.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+      return (
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+          
+          {/* Header Navigasi Album */}
+          <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex items-start md:items-center gap-3">
+              <button
+                onClick={() => {
+                  setSelectedAlbumPokjaId(null);
+                  setGaleriKategori('semua');
+                  setFilterMhsId('semua');
+                  setGaleriPage(1);
+                }}
+                className="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 text-xs font-bold shrink-0"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Daftar Album
+              </button>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-xl font-bold text-slate-800">
+                    Album {activeAlbum.pokja.nama_pokja}
+                  </h3>
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-teal-100 text-teal-800">
+                    {activeAlbum.totalCount} Foto
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 mt-1 flex items-center gap-2 flex-wrap">
+                  <span className="flex items-center gap-1">
+                    <MapPin className="w-3.5 h-3.5 text-rose-500" />
+                    {activeAlbum.pokja.mitra_id?.desa_kelurahan ? `Kel. ${activeAlbum.pokja.mitra_id.desa_kelurahan}` : (activeAlbum.pokja.mitra_id?.nama_instansi || 'Mitra')}
+                  </span>
+                  <span>•</span>
+                  <span className="flex items-center gap-1">
+                    <UserCheck className="w-3.5 h-3.5 text-teal-600" />
+                    DPL: {activeAlbum.pokja.dpl_id?.nama_lengkap || '-'}
+                  </span>
+                  <span>•</span>
+                  <span className="flex items-center gap-1">
+                    <Users className="w-3.5 h-3.5 text-indigo-500" />
+                    {activeAlbum.membersList.length} Mahasiswa
+                  </span>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Sub-Filter Toolbar: Kategori & Filter Mahasiswa */}
+          <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 flex flex-col md:flex-row items-center justify-between gap-3">
+            {/* Filter Kategori Segmented */}
+            <div className="flex flex-wrap gap-1.5 w-full md:w-auto">
+              {[
+                { id: 'semua', label: 'Semua', count: activeAlbum.totalCount },
+                { id: 'mitra', label: '🏢 Mitra', count: activeAlbum.mitraPhotos.length },
+                { id: 'monev', label: '👨‍🏫 Monev DPL', count: activeAlbum.monevPhotos.length },
+                { id: 'logbook', label: '📸 Logbook', count: activeAlbum.logbookPhotos.length },
+              ].map(cat => (
+                <button
+                  key={cat.id}
+                  onClick={() => { setGaleriKategori(cat.id); setGaleriPage(1); }}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                    galeriKategori === cat.id
+                      ? 'bg-teal-600 text-white shadow-sm'
+                      : 'bg-white text-slate-600 hover:bg-slate-200/70 border border-slate-200'
+                  }`}
+                >
+                  <span>{cat.label}</span>
+                  <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${galeriKategori === cat.id ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'}`}>
+                    {cat.count}
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            {/* Filter Mahasiswa (hanya jika ada foto logbook dan kategori mencakup logbook) */}
+            {(galeriKategori === 'semua' || galeriKategori === 'logbook') && activeAlbum.membersList.length > 0 && (
+              <div className="flex items-center gap-2 w-full md:w-auto">
+                <span className="text-xs text-slate-500 whitespace-nowrap font-medium">Mahasiswa:</span>
+                <select
+                  value={filterMhsId}
+                  onChange={(e) => { setFilterMhsId(e.target.value); setGaleriPage(1); }}
+                  className="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-medium bg-white text-slate-700 outline-none focus:border-teal-500 w-full md:w-56"
+                >
+                  <option value="semua">Semua Mahasiswa ({activeAlbum.membersList.length})</option>
+                  {activeAlbum.membersList.map(m => (
+                    <option key={m.id} value={m.id}>{m.nama}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </div>
+
+          {/* Grid Foto Paginated */}
+          {paginatedPhotos.length === 0 ? (
+            <div className="bg-white p-12 rounded-2xl border border-slate-200 text-center text-slate-500">
+              <Camera className="w-12 h-12 text-slate-300 mx-auto mb-2" />
+              <p className="font-semibold text-slate-700">Tidak ada foto dokumentasi pada filter ini.</p>
+              <p className="text-xs text-slate-400 mt-1">Coba ganti kategori atau pilih mahasiswa lain.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              {paginatedPhotos.map(foto => (
+                <div
+                  key={foto.id}
+                  onClick={() => setLightboxItem(foto)}
+                  className="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-teal-300 transition-all cursor-pointer overflow-hidden group flex flex-col"
+                >
+                  <div className="h-44 bg-slate-100 relative overflow-hidden flex items-center justify-center">
+                    <img
+                      src={foto.url}
+                      alt={foto.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.parentElement.innerHTML = `
+                          <div class="flex flex-col items-center justify-center text-slate-400 p-4 text-center">
+                            <svg class="w-8 h-8 mb-1 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            <span class="text-[10px] font-bold text-slate-500">Foto di Server</span>
+                            <span class="text-[9px] text-slate-400">Klik untuk detail</span>
+                          </div>
+                        `;
+                      }}
+                    />
+                    <div className="absolute top-2 left-2 bg-slate-900/70 text-white text-[10px] px-2 py-0.5 rounded backdrop-blur-sm font-semibold">
+                      {foto.tag}
+                    </div>
+                    <div className="absolute inset-0 bg-teal-900/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <span className="p-2 bg-white/90 text-teal-700 rounded-full shadow-lg">
+                        <Eye className="w-4 h-4" />
+                      </span>
+                    </div>
+                  </div>
+                  <div className="p-3 flex-1 flex flex-col justify-between">
+                    <div>
+                      <p className="font-bold text-xs text-slate-800 line-clamp-1 group-hover:text-teal-600 transition-colors">
+                        {foto.title}
+                      </p>
+                      <p className="text-[11px] text-slate-500 line-clamp-1 mt-0.5">
+                        {foto.subtitle}
+                      </p>
+                    </div>
+                    {foto.date && (
+                      <p className="text-[10px] text-slate-400 mt-2 flex items-center gap-1 border-t border-slate-100 pt-1.5">
+                        <Calendar className="w-3 h-3 text-slate-400" />
+                        {new Date(foto.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="bg-white p-3 rounded-xl border border-slate-200 flex items-center justify-between">
+              <button
+                disabled={currentPage === 1}
+                onClick={() => setGaleriPage(p => Math.max(1, p - 1))}
+                className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 cursor-pointer"
+              >
+                <ChevronLeft className="w-4 h-4" /> Sebelumnya
+              </button>
+              <span className="text-xs text-slate-600 font-medium">
+                Halaman <strong className="text-slate-800">{currentPage}</strong> dari <strong>{totalPages}</strong> ({currentPhotos.length} Foto)
+              </span>
+              <button
+                disabled={currentPage === totalPages}
+                onClick={() => setGaleriPage(p => Math.min(totalPages, p + 1))}
+                className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 cursor-pointer"
+              >
+                Berikutnya <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+
+        </div>
+      );
+    }
+
+    // ================= VIEW LEVEL 1: DAFTAR SEMUA ALBUM (FOLDER POKJA) =================
+    const filteredAlbums = albums.filter(a => 
+      a.pokja.nama_pokja?.toLowerCase().includes(galeriSearch.toLowerCase()) ||
+      a.pokja.mitra_id?.nama_instansi?.toLowerCase().includes(galeriSearch.toLowerCase()) ||
+      a.pokja.dpl_id?.nama_lengkap?.toLowerCase().includes(galeriSearch.toLowerCase())
+    );
+
+    const totalDokumentasi = albums.reduce((acc, curr) => acc + curr.totalCount, 0);
+
     return (
-      <div className="space-y-10 animate-in fade-in slide-in-from-bottom-2 duration-500">
+      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
         
-        {/* FOTO MITRA */}
-        <section>
-          <h3 className="font-bold text-slate-800 text-lg border-b pb-2 mb-4">Foto Instansi / Mitra</h3>
-          {fotoMitra.length === 0 ? (
-            <div className="bg-slate-50 p-6 rounded-xl border border-slate-200 text-center text-slate-500 text-sm">Belum ada foto instansi mitra.</div>
-          ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
-              {fotoMitra.map((foto, idx) => (
-                <div key={`mitra-${idx}`} className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden group">
-                  <div className="h-40 bg-slate-100 relative overflow-hidden">
-                    <img src={foto.url} alt={foto.label} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                    <div className="absolute top-2 right-2 bg-black/60 text-white text-[10px] px-2 py-1 rounded backdrop-blur-sm">
-                      {foto.label}
-                    </div>
-                  </div>
-                  <div className="p-3">
-                    <p className="font-bold text-sm text-slate-800 line-clamp-1">{foto.pokja?.nama_pokja}</p>
-                    <p className="text-xs text-slate-500 mt-1 line-clamp-1">{foto.pokja?.mitra_id?.nama_instansi}</p>
-                  </div>
-                </div>
-              ))}
+        {/* Banner Ringkasan & Search Album */}
+        <div className="bg-gradient-to-r from-teal-50 to-indigo-50 border border-teal-200/70 rounded-2xl p-5 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div>
+            <h3 className="font-bold text-slate-800 text-lg flex items-center gap-2">
+              <FolderOpen className="w-5 h-5 text-teal-600" />
+              Galeri Dokumentasi Berbasis Album Kelompok
+            </h3>
+            <p className="text-xs text-slate-600 mt-1">
+              Foto kegiatan diarsipkan rapi per Pokja untuk menghemat kuota dan mempermudah pemantauan dokumentasi lapangan.
+            </p>
+            <div className="flex items-center gap-3 mt-3">
+              <span className="px-3 py-1 bg-white rounded-lg border border-teal-200 text-xs font-bold text-teal-800 shadow-2xs">
+                📁 {albums.length} Album Kelompok
+              </span>
+              <span className="px-3 py-1 bg-white rounded-lg border border-indigo-200 text-xs font-bold text-indigo-800 shadow-2xs">
+                📸 {totalDokumentasi} Total Foto Dokumentasi
+              </span>
             </div>
-          )}
-        </section>
+          </div>
 
-        {/* FOTO MONEV */}
-        <section>
-          <h3 className="font-bold text-slate-800 text-lg border-b pb-2 mb-4">Foto Monitoring DPL (Monev)</h3>
-          {dataMonev.length === 0 ? (
-            <div className="bg-slate-50 p-6 rounded-xl border border-slate-200 text-center text-slate-500 text-sm">Belum ada foto dokumentasi dari DPL.</div>
-          ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
-              {dataMonev.map(monev => (
-                <div key={monev._id} className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden group">
-                  <div className="h-40 bg-slate-100 relative overflow-hidden">
-                    <img src={monev.foto_url} alt="Monev" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                    <div className="absolute top-2 right-2 bg-black/60 text-white text-[10px] px-2 py-1 rounded backdrop-blur-sm">
-                      {monev.jenis_kunjungan}
-                    </div>
-                  </div>
-                  <div className="p-3">
-                    <p className="font-bold text-sm text-slate-800 line-clamp-1">{monev.pokja_id?.nama_pokja}</p>
-                    <p className="text-xs text-slate-500 mt-1 line-clamp-1">DPL: {monev.dpl_id?.nama_lengkap}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
+          <div className="relative w-full md:w-72 shrink-0">
+            <Search className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Cari Kelompok / Mitra / DPL..."
+              value={galeriSearch}
+              onChange={(e) => setGaleriSearch(e.target.value)}
+              className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-xl text-xs bg-white focus:ring-2 focus:ring-teal-500 outline-none shadow-2xs"
+            />
+          </div>
+        </div>
 
-        {/* FOTO LOGBOOK */}
-        <section>
-          <h3 className="font-bold text-slate-800 text-lg border-b pb-2 mb-4">Foto Kegiatan Mahasiswa (Logbook)</h3>
-          {dataLogbook.length === 0 ? (
-            <div className="bg-slate-50 p-6 rounded-xl border border-slate-200 text-center text-slate-500 text-sm">Belum ada foto kegiatan dari mahasiswa.</div>
-          ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
-              {dataLogbook.map(logbook => (
-                <div key={logbook._id} className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden group">
-                  <div className="h-40 bg-slate-100 relative overflow-hidden">
-                    <img src={logbook.bukti_kegiatan} alt="Kegiatan" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                    <div className="absolute top-2 left-2 bg-teal-600/90 text-white text-[10px] px-2 py-1 rounded backdrop-blur-sm shadow-sm">
-                      Logbook
-                    </div>
+        {/* Grid Album Pokja Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredAlbums.map((album) => (
+            <div
+              key={album.pokja._id}
+              onClick={() => {
+                setSelectedAlbumPokjaId(album.pokja._id);
+                setGaleriKategori('semua');
+                setFilterMhsId('semua');
+                setGaleriPage(1);
+              }}
+              className="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl hover:border-teal-400 transition-all duration-300 overflow-hidden cursor-pointer group flex flex-col"
+            >
+              {/* Cover Album */}
+              <div className="h-48 bg-slate-100 relative overflow-hidden flex items-center justify-center">
+                {album.coverUrl ? (
+                  <img
+                    src={album.coverUrl}
+                    alt={album.pokja.nama_pokja}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.parentElement.innerHTML = `
+                        <div class="flex flex-col items-center justify-center text-slate-400 p-4 text-center">
+                          <svg class="w-10 h-10 mb-1 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+                          <span class="text-xs font-bold text-slate-600">Dokumentasi Tersimpan</span>
+                          <span class="text-[10px] text-slate-400">Di Server Produksi</span>
+                        </div>
+                      `;
+                    }}
+                  />
+                ) : (
+                  <div className="flex flex-col items-center justify-center text-slate-400">
+                    <FolderOpen className="w-12 h-12 text-slate-300 mb-1" />
+                    <span className="text-xs font-semibold text-slate-400">Belum Ada Foto</span>
                   </div>
-                  <div className="p-3">
-                    <p className="font-bold text-sm text-slate-800 line-clamp-1">{logbook.mahasiswa_id?.nama_lengkap}</p>
-                    <p className="text-xs text-slate-500 mt-1 line-clamp-1">{logbook.pokja_id?.nama_pokja}</p>
-                  </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                
+                {/* Badges on cover */}
+                <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-md text-white text-[10px] font-bold px-2.5 py-1 rounded-lg">
+                  {album.pokja.periode || 'KKL Plus'}
                 </div>
-              ))}
+                <div className="absolute top-3 right-3 bg-teal-600/90 text-white text-[11px] font-bold px-3 py-1 rounded-lg shadow-md backdrop-blur-sm flex items-center gap-1">
+                  <Camera className="w-3.5 h-3.5" />
+                  {album.totalCount} Foto
+                </div>
+
+                {/* Pokja Name on bottom of cover */}
+                <div className="absolute bottom-3 left-4 right-4 text-white">
+                  <h4 className="font-black text-lg drop-shadow-md leading-tight group-hover:text-teal-200 transition-colors">
+                    {album.pokja.nama_pokja}
+                  </h4>
+                  <p className="text-xs text-white/90 drop-shadow flex items-center gap-1 mt-0.5">
+                    <MapPin className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                    <span className="truncate">{album.pokja.mitra_id?.desa_kelurahan ? `Kel. ${album.pokja.mitra_id.desa_kelurahan}` : (album.pokja.mitra_id?.nama_instansi || 'Lokasi Mitra')}</span>
+                  </p>
+                </div>
+              </div>
+
+              {/* Card Body & Counters */}
+              <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
+                <div className="space-y-1.5 text-xs text-slate-600">
+                  <p className="flex items-center gap-1.5">
+                    <Building2 className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                    <span className="font-semibold text-slate-700 truncate">{album.pokja.mitra_id?.nama_instansi || 'Belum Ada Mitra'}</span>
+                  </p>
+                  <p className="flex items-center gap-1.5">
+                    <UserCheck className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                    <span className="truncate">DPL: {album.pokja.dpl_id?.nama_lengkap || '-'}</span>
+                  </p>
+                  <p className="flex items-center gap-1.5">
+                    <Users className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                    <span>{album.membersList.length} Mahasiswa Aktif</span>
+                  </p>
+                </div>
+
+                {/* Breakdown tags */}
+                <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+                  <span className="px-2 py-0.5 rounded bg-slate-100 font-medium">
+                    🏢 {album.mitraPhotos.length} Mitra
+                  </span>
+                  <span className="px-2 py-0.5 rounded bg-slate-100 font-medium">
+                    👨‍🏫 {album.monevPhotos.length} Monev
+                  </span>
+                  <span className="px-2 py-0.5 rounded bg-slate-100 font-medium">
+                    📸 {album.logbookPhotos.length} Logbook
+                  </span>
+                </div>
+
+                <div className="pt-1">
+                  <span className="w-full py-2 bg-teal-50 group-hover:bg-teal-600 text-teal-700 group-hover:text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-2xs">
+                    Buka Album Dokumentasi →
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {filteredAlbums.length === 0 && (
+            <div className="col-span-full py-16 bg-white rounded-2xl border border-slate-200 text-center text-slate-500">
+              <FolderOpen className="w-12 h-12 text-slate-300 mx-auto mb-2" />
+              <p className="font-bold text-slate-700">Tidak ada album yang sesuai dengan pencarian.</p>
+              <p className="text-xs text-slate-400 mt-1">Coba ketikkan kata kunci nama kelompok atau mitra lain.</p>
             </div>
           )}
-        </section>
+        </div>
 
       </div>
     );
@@ -634,6 +998,80 @@ export default function ArsipDokumen() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Lightbox Preview Modal */}
+      {lightboxItem && (
+        <div 
+          onClick={() => setLightboxItem(null)}
+          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex flex-col items-center justify-center p-4 animate-in fade-in duration-200"
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()} 
+            className="relative max-w-4xl w-full max-h-[92vh] flex flex-col items-center"
+          >
+            {/* Tombol Tutup */}
+            <button
+              onClick={() => setLightboxItem(null)}
+              className="absolute -top-10 right-0 text-white/80 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors cursor-pointer"
+            >
+              <X className="w-6 h-6" />
+            </button>
+
+            {/* Gambar Besar */}
+            <div className="bg-black/40 rounded-2xl overflow-hidden flex items-center justify-center max-h-[68vh] w-full">
+              <img
+                src={lightboxItem.url}
+                alt={lightboxItem.title}
+                className="max-h-[68vh] max-w-full object-contain rounded-xl shadow-2xl"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.parentElement.innerHTML = `
+                    <div class="py-20 text-center text-slate-300">
+                      <p class="text-4xl mb-2">📸</p>
+                      <p class="font-bold">File Gambar Tersimpan di Server</p>
+                      <p class="text-xs text-slate-400 mt-1">File tidak ditemukan di lokal dev.</p>
+                    </div>
+                  `;
+                }}
+              />
+            </div>
+
+            {/* Info Bar Bawah */}
+            <div className="w-full bg-slate-900/95 border border-slate-700/80 rounded-2xl p-4 mt-3 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xl">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-500/30 text-teal-300 border border-teal-400/30">
+                    {lightboxItem.tag}
+                  </span>
+                  <h4 className="font-bold text-sm text-white">{lightboxItem.title}</h4>
+                </div>
+                <p className="text-xs text-slate-300 mt-1">
+                  {lightboxItem.subtitle}
+                  {lightboxItem.nim ? ` (NIM: ${lightboxItem.nim})` : ''}
+                  {lightboxItem.date ? ` • ${new Date(lightboxItem.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}` : ''}
+                </p>
+                {lightboxItem.description && (
+                  <p className="text-xs text-slate-400 mt-1.5 italic line-clamp-2">
+                    "{lightboxItem.description}"
+                  </p>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                <a
+                  href={lightboxItem.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  Buka Ukuran Asli
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       )}

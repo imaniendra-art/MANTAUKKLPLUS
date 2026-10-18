@@ -51,10 +51,10 @@ export const GET = withAdminAuth(async (req) => {
 
   // 4. Fetch Logbook Photos
   const logbooks = await Logbook.find({ bukti_kegiatan: { $exists: true, $ne: '' } })
-    .populate('mahasiswa_id', 'nama_lengkap')
+    .populate('mahasiswa_id', 'nama_lengkap nim_nidn')
     .populate('pokja_id', 'nama_pokja')
     .sort({ tanggal_kegiatan: -1 })
-    .limit(100)
+    .limit(500)
     .lean();
 
   // 5. Fetch Laporan DPL
