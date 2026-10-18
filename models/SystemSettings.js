@@ -23,7 +23,7 @@ const SystemSettingsSchema = new mongoose.Schema({
   },
   kaprodi_nama: {
     type: String,
-    default: "Dr. Jhon Doe, SE., M.Si",
+    default: "Dr Anwar, S.Ag.,M.Ag",
   },
   kaprodi_nip: {
     type: String,
@@ -31,7 +31,7 @@ const SystemSettingsSchema = new mongoose.Schema({
   },
   ketua_lppm_nama: {
     type: String,
-    default: "Dr. Jane Doe, M.Pd",
+    default: "Andi Arwinda Wildam, S.E.,M.M",
   },
   ketua_lppm_nidn: {
     type: String,

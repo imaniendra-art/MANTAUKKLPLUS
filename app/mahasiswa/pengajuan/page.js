@@ -191,7 +191,7 @@ export default function BursaMitra() {
                   </div>
                   <div>
                     <h4 className="font-bold text-sm text-slate-800 dark:text-white">MOU (Memorandum of Understanding)</h4>
-                    <p className="text-xs text-slate-500 mt-1">Kerjasama tingkat universitas</p>
+                    <p className="text-xs text-slate-500 mt-1">Kerjasama tingkat perguruan tinggi</p>
                   </div>
                 </div>
                 <div className="mt-auto self-end">

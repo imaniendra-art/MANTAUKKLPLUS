@@ -118,7 +118,7 @@ export default function SuratPengantarPage({ params }) {
             Dengan hormat,
           </p>
           <p>
-            Dalam rangka pelaksanaan kegiatan Kuliah Kerja Lapangan (KKL) Plus bagi mahasiswa Universitas Contoh Indonesia sebagai bentuk pengabdian kepada masyarakat dan implementasi Tri Dharma Perguruan Tinggi, kami memohon bantuan Bapak/Ibu untuk dapat menerima mahasiswa kami melakukan kegiatan <strong>observasi dan penjajakan lokasi</strong> di instansi yang Bapak/Ibu pimpin.
+            Dalam rangka pelaksanaan kegiatan Kuliah Kerja Lapangan (KKL) Plus bagi mahasiswa Sekolah Tinggi Ilmu Manajemen Indonesia YAPMI Makassar sebagai bentuk pengabdian kepada masyarakat dan implementasi Tri Dharma Perguruan Tinggi, kami memohon bantuan Bapak/Ibu untuk dapat menerima mahasiswa kami melakukan kegiatan <strong>observasi dan penjajakan lokasi</strong> di instansi yang Bapak/Ibu pimpin.
           </p>
           <p>
             Kegiatan observasi ini bertujuan untuk mencari data awal, mendiskusikan potensi program kerja (proker), serta mengurus kelengkapan administrasi penerimaan (Surat Balasan / <i>Letter of Acceptance</i>) sebelum kegiatan KKL Plus resmi dimulai.
@@ -167,7 +167,7 @@ export default function SuratPengantarPage({ params }) {
         <div className="mt-16 flex justify-end">
           <div className="w-64 text-center">
             <p className="mb-20">Ketua LPPM,</p>
-            <p className="font-bold underline">{settings?.ketua_lppm_nama || 'Dr. Jane Doe, M.Pd'}</p>
+            <p className="font-bold underline">{settings?.ketua_lppm_nama || 'Andi Arwinda Wildam, S.E.,M.M'}</p>
             <p>NIDN. {settings?.ketua_lppm_nidn || '0912345678'}</p>
           </div>
         </div>

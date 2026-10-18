@@ -138,7 +138,7 @@ export default function ArsipDokumen() {
                 <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100">
                   <div>
                     <p className="text-sm font-semibold text-slate-700">Memorandum of Understanding (MoU)</p>
-                    <p className="text-xs text-slate-500">Kesepakatan Tingkat Universitas</p>
+                    <p className="text-xs text-slate-500">Kesepakatan Tingkat Perguruan Tinggi</p>
                   </div>
                   {mitra.file_mou ? (
                     <a href={mitra.file_mou} target="_blank" rel="noreferrer" className="px-3 py-1.5 text-teal-700 bg-teal-100 hover:bg-teal-200 rounded-lg text-xs font-bold transition-colors">

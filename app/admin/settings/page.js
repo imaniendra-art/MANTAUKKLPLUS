@@ -40,9 +40,9 @@ export default function AdminSettingsPage() {
           pendaftaran_buka: data.pendaftaran_buka ?? true,
           pengisian_logbook_buka: data.pengisian_logbook_buka ?? true,
           pengumpulan_laporan_buka: data.pengumpulan_laporan_buka ?? true,
-          kaprodi_nama: data.kaprodi_nama || 'Dr. Jhon Doe, SE., M.Si',
+          kaprodi_nama: data.kaprodi_nama || 'Dr Anwar, S.Ag.,M.Ag',
           kaprodi_nip: data.kaprodi_nip || '198001012005011001',
-          ketua_lppm_nama: data.ketua_lppm_nama || 'Dr. Jane Doe, M.Pd',
+          ketua_lppm_nama: data.ketua_lppm_nama || 'Andi Arwinda Wildam, S.E.,M.M',
           ketua_lppm_nidn: data.ketua_lppm_nidn || '0912345678',
         });
       }

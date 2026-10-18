@@ -552,7 +552,7 @@ export default function ManajemenPenggunaPage() {
                 <div className="text-2xl font-black text-teal-600 dark:text-teal-400 mt-1">
                   {users.filter(u => u.tipe_admin === 'lppm').length}
                 </div>
-                <div className="text-[11px] text-teal-600/80 dark:text-teal-400/80 mt-0.5">Pengelola Universitas</div>
+                <div className="text-[11px] text-teal-600/80 dark:text-teal-400/80 mt-0.5">Pengelola Kampus (STIMI YAPMI)</div>
               </div>
 
               <div className="p-4 rounded-2xl bg-amber-50/50 dark:bg-amber-950/20 backdrop-blur-xl border border-amber-200/50 dark:border-amber-900/30 shadow-sm">
@@ -1191,7 +1191,7 @@ export default function ManajemenPenggunaPage() {
                     className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none"
                   >
                     <option value="prodi">Program Studi (Prodi)</option>
-                    <option value="lppm">LPPM / Panitia Universitas</option>
+                    <option value="lppm">LPPM / Panitia KKL Plus</option>
                     <option value="fakultas">Fakultas</option>
                     {session?.user?.tipe_admin === 'superadmin' && (
                       <option value="superadmin">Super Admin</option>
@@ -1342,7 +1342,7 @@ export default function ManajemenPenggunaPage() {
                     className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     <option value="prodi">Program Studi (Prodi)</option>
-                    <option value="lppm">LPPM / Panitia Universitas</option>
+                    <option value="lppm">LPPM / Panitia KKL Plus</option>
                     <option value="fakultas">Fakultas</option>
                     {(session?.user?.tipe_admin === 'superadmin' || editForm.tipe_admin === 'superadmin') && (
                       <option value="superadmin">Super Admin</option>

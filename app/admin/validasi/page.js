@@ -576,7 +576,7 @@ export default function ValidasiPokja() {
                       <p className="font-bold mb-1">Panduan Status Kerja Sama Mitra:</p>
                       <ul className="list-disc pl-4 space-y-1 text-xs">
                         <li><strong>Belum Ada / Penjajakan:</strong> Peluang DPL & Admin untuk membuka kerja sama baru selama masa KKL Plus.</li>
-                        <li><strong>MOU (Memorandum of Understanding):</strong> Payung kerja sama umum (tingkat Universitas). Harus ditindaklanjuti dengan MOA/IA.</li>
+                        <li><strong>MOU (Memorandum of Understanding):</strong> Payung kerja sama umum (tingkat Perguruan Tinggi). Harus ditindaklanjuti dengan MOA/IA.</li>
                         <li><strong>MOA (Memorandum of Agreement):</strong> Kesepakatan spesifik (tingkat Fakultas). Membutuhkan IA sebagai bukti pelaksanaan riil.</li>
                         <li><strong>IA (Implementation Arrangement):</strong> Bukti implementasi nyata bahwa mahasiswa KKL telah beraktivitas. Sangat penting untuk <strong>IKU & Akreditasi!</strong></li>
                       </ul>

@@ -10,21 +10,27 @@ export default function SuratTugasPage({ params }) {
   const { id } = unwrappedParams;
   const router = useRouter();
   const [pokja, setPokja] = useState(null);
+  const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchPokja = async () => {
+    const fetchData = async () => {
       try {
-        const res = await fetch(`/api/pokja?pokjaId=${id}`);
-        const data = await res.json();
-        setPokja(data);
+        const [resPokja, resSettings] = await Promise.all([
+          fetch(`/api/pokja?pokjaId=${id}`),
+          fetch(`/api/admin/settings`)
+        ]);
+        const dataPokja = await resPokja.json();
+        const dataSettings = resSettings.ok ? await resSettings.json() : {};
+        setPokja(dataPokja);
+        setSettings(dataSettings);
       } catch (err) {
         console.error(err);
       } finally {
         setLoading(false);
       }
     };
-    fetchPokja();
+    fetchData();
   }, [id]);
 
   if (loading) {
@@ -55,6 +61,12 @@ export default function SuratTugasPage({ params }) {
     day: 'numeric', month: 'long', year: 'numeric'
   });
 
+  const romanMonths = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
+  const currentMonthRoman = romanMonths[new Date().getMonth()];
+  const currentYear = new Date().getFullYear();
+  const noUrutStr = id ? String(parseInt(id.slice(-4), 16) % 1000).padStart(3, '0') : "001";
+  const nomorSurat = `${noUrutStr}/ST-KKLPlus/LPPM/${currentMonthRoman}/${currentYear}`;
+
   return (
     <div className="bg-slate-200 min-h-screen py-8 print:py-0 print:bg-white flex justify-center">
       
@@ -84,13 +96,13 @@ export default function SuratTugasPage({ params }) {
         {/* JUDUL SURAT */}
         <div className="text-center mb-8">
           <h1 className="font-bold text-[14pt] underline">SURAT TUGAS PELAKSANAAN KKL PLUS</h1>
-          <p>Nomor: ..... /UN.../Admin/KKL-TUGAS/{new Date().getFullYear()}</p>
+          <p>Nomor: {nomorSurat}</p>
         </div>
 
         {/* ISI SURAT */}
         <div className="space-y-4 text-justify">
           <p>
-            Ketua Lembaga Penelitian dan Pengabdian kepada Masyarakat (Admin) Universitas Contoh Indonesia, dengan ini memberikan tugas kepada:
+            Ketua Lembaga Penelitian dan Pengabdian kepada Masyarakat (LPPM) Sekolah Tinggi Ilmu Manajemen Indonesia YAPMI Makassar, dengan ini memberikan tugas kepada:
           </p>
 
           <table className="w-full mt-4 border-collapse border border-black text-[11pt]">
@@ -145,7 +157,7 @@ export default function SuratTugasPage({ params }) {
           </table>
 
           <p className="mt-4">
-            Surat tugas ini berlaku selama mahasiswa melaksanakan kegiatan di lokasi mitra yang bersangkutan. Mahasiswa diwajibkan untuk menjaga nama baik almamater, mematuhi peraturan yang berlaku di instansi mitra, serta melaporkan hasil kegiatannya kepada Admin.
+            Surat tugas ini berlaku selama mahasiswa melaksanakan kegiatan di lokasi mitra yang bersangkutan. Mahasiswa diwajibkan untuk menjaga nama baik almamater, mematuhi peraturan yang berlaku di instansi mitra, serta melaporkan hasil kegiatannya kepada LPPM.
           </p>
           <p>
             Demikian surat tugas ini dibuat agar dapat dilaksanakan dengan penuh tanggung jawab.
@@ -155,10 +167,11 @@ export default function SuratTugasPage({ params }) {
         {/* TTD */}
         <div className="mt-16 flex justify-end">
           <div className="w-64 text-center">
-            <p className="mb-1">Dikeluarkan di: Kota Akademik</p>
-            <p className="mb-20">Pada Tanggal: {currentDate}</p>
-            <p className="font-bold underline">Prof. Dr. Akademisi Hebat, M.Si.</p>
-            <p>NIP. 19800101 200501 1 001</p>
+            <p className="mb-1">Dikeluarkan di: Makassar</p>
+            <p className="mb-2">Pada Tanggal: {currentDate}</p>
+            <p className="mb-20">Ketua LPPM,</p>
+            <p className="font-bold underline">{settings?.ketua_lppm_nama || 'Andi Arwinda Wildam, S.E.,M.M'}</p>
+            <p>NIDN. {settings?.ketua_lppm_nidn || '0912345678'}</p>
           </div>
         </div>
 
