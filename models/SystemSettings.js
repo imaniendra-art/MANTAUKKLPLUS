@@ -36,6 +36,14 @@ const SystemSettingsSchema = new mongoose.Schema({
   ketua_lppm_nidn: {
     type: String,
     default: "0912345678",
+  },
+  ketua_lppm_ttd: {
+    type: String,
+    default: "/ttd-lppm.png",
+  },
+  kaprodi_ttd: {
+    type: String,
+    default: "",
   }
 }, { timestamps: true });
 

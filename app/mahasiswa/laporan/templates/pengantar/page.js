@@ -282,10 +282,21 @@ export default function CetakPengantar() {
           </div>
 
           <div className="flex justify-end mt-4 text-center">
-            <div className="w-1/2">
-              <p className="mb-20">Ketua Program Studi Manajemen,</p>
-              <p className="font-bold underline">{settings.kaprodi_nama}</p>
-              <p>NIDN. {settings.kaprodi_nip}</p>
+            <div className="w-1/2 flex flex-col items-center">
+              <p className="mb-1">Ketua Program Studi Manajemen,</p>
+              {settings?.kaprodi_ttd ? (
+                <div className="h-20 flex items-center justify-center my-1">
+                  <img
+                    src={settings.kaprodi_ttd}
+                    alt="TTD Kaprodi"
+                    className="h-20 w-auto object-contain mix-blend-multiply"
+                  />
+                </div>
+              ) : (
+                <div className="h-20"></div>
+              )}
+              <p className="font-bold underline">{settings?.kaprodi_nama || 'Dr Anwar, S.Ag.,M.Ag'}</p>
+              <p>NIDN. {settings?.kaprodi_nip || '198001012005011001'}</p>
             </div>
           </div>
 

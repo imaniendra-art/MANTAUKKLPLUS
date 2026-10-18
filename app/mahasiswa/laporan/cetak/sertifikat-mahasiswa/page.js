@@ -394,17 +394,20 @@ export default function CetakSertifikatMahasiswa() {
             <div className="flex flex-col justify-between items-center w-60 min-h-[3.2cm]">
               <p className="text-xs text-slate-600">Ketua Program Studi</p>
               
-              {/* Barcode sebagai TTD Elektronik */}
               <div className="flex-1 flex items-center justify-center my-1">
-                {pengajuan._id && (
+                {settings?.kaprodi_ttd ? (
+                  <img src={settings.kaprodi_ttd} alt="TTD Kaprodi" className="h-[1.8cm] w-auto object-contain mix-blend-multiply" />
+                ) : pengajuan._id ? (
                   <img src={qrCodeUrl} alt="TTD QR" className="h-[1.8cm] w-[1.8cm] opacity-80 mix-blend-multiply" />
+                ) : (
+                  <div className="h-[1.8cm]"></div>
                 )}
               </div>
 
               <div className="w-full text-center">
                 <div className="border-b border-slate-800 w-full mb-0.5"></div>
-                <p className="font-bold text-slate-900 text-xs leading-tight">{settings.kaprodi_nama || 'Ketua Program Studi'}</p>
-                {settings.kaprodi_nip && (
+                <p className="font-bold text-slate-900 text-xs leading-tight">{settings?.kaprodi_nama || 'Dr Anwar, S.Ag.,M.Ag'}</p>
+                {settings?.kaprodi_nip && (
                   <p className="text-[10px] text-slate-600 leading-tight mt-0.5">NIP/NIDN. {settings.kaprodi_nip}</p>
                 )}
               </div>

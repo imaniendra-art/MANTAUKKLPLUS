@@ -160,12 +160,23 @@ export default function CetakTranskrip() {
 
         {/* TANDA TANGAN */}
         <div className="w-full flex justify-end">
-          <div className="text-center w-64 text-sm">
-            <p className="mb-16">Makassar, {new Date(pengajuan.tanggal_selesai).toLocaleDateString('id-ID')}</p>
+          <div className="text-center w-64 text-sm flex flex-col items-center">
+            <p className="mb-1">Makassar, {pengajuan.tanggal_selesai ? new Date(pengajuan.tanggal_selesai).toLocaleDateString('id-ID') : new Date().toLocaleDateString('id-ID')}</p>
+            <p className="text-xs text-slate-600 uppercase mb-1">Ketua Program Studi</p>
+            {settings?.kaprodi_ttd ? (
+              <div className="h-20 flex items-center justify-center my-1">
+                <img 
+                  src={settings.kaprodi_ttd} 
+                  alt="TTD Kaprodi" 
+                  className="h-20 w-auto object-contain mix-blend-multiply" 
+                />
+              </div>
+            ) : (
+              <div className="h-20"></div>
+            )}
             <div className="border-b border-black w-full mb-1"></div>
-            <p className="font-bold uppercase">{settings.kaprodi_nama || 'Ketua Program Studi'}</p>
-            {settings.kaprodi_nip && <p className="text-xs">NIP/NIDN. {settings.kaprodi_nip}</p>}
-            <p className="text-xs text-slate-600 uppercase mt-0.5">Ketua Program Studi</p>
+            <p className="font-bold uppercase">{settings?.kaprodi_nama || 'Dr Anwar, S.Ag.,M.Ag'}</p>
+            {settings?.kaprodi_nip && <p className="text-xs">NIP/NIDN. {settings.kaprodi_nip}</p>}
           </div>
         </div>
 

@@ -75,6 +75,12 @@ export async function PUT(req) {
       if (data.ketua_lppm_nidn !== undefined) {
         settings.ketua_lppm_nidn = data.ketua_lppm_nidn;
       }
+      if (data.ketua_lppm_ttd !== undefined) {
+        settings.ketua_lppm_ttd = data.ketua_lppm_ttd;
+      }
+      if (data.kaprodi_ttd !== undefined) {
+        settings.kaprodi_ttd = data.kaprodi_ttd;
+      }
       await settings.save();
     }
 

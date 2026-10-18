@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from "@/components/AuthProvider";
 import DashboardLayout from '@/components/DashboardLayout';
-import { Settings as SettingsIcon, User, Save, CheckCircle, AlertTriangle, FileSignature } from 'lucide-react';
+import { Settings as SettingsIcon, User, Save, CheckCircle, AlertTriangle, FileSignature, Upload, Trash2, Image as ImageIcon, Loader2 } from 'lucide-react';
 
 export default function AdminSettingsPage() {
   const { data: session, update } = useSession();
@@ -18,9 +18,16 @@ export default function AdminSettingsPage() {
     pendaftaran_buka: true,
     pengisian_logbook_buka: true,
     pengumpulan_laporan_buka: true,
+    kaprodi_nama: 'Dr Anwar, S.Ag.,M.Ag',
+    kaprodi_nip: '198001012005011001',
+    kaprodi_ttd: '',
+    ketua_lppm_nama: 'Andi Arwinda Wildam, S.E.,M.M',
+    ketua_lppm_nidn: '0912345678',
+    ketua_lppm_ttd: '/ttd-lppm.png',
   });
 
   const [newPeriode, setNewPeriode] = useState('');
+  const [uploadingTtd, setUploadingTtd] = useState({ lppm: false, kaprodi: false });
 
   const [profileData, setProfileData] = useState({
     nama_lengkap: '',
@@ -42,14 +49,46 @@ export default function AdminSettingsPage() {
           pengumpulan_laporan_buka: data.pengumpulan_laporan_buka ?? true,
           kaprodi_nama: data.kaprodi_nama || 'Dr Anwar, S.Ag.,M.Ag',
           kaprodi_nip: data.kaprodi_nip || '198001012005011001',
+          kaprodi_ttd: data.kaprodi_ttd || '',
           ketua_lppm_nama: data.ketua_lppm_nama || 'Andi Arwinda Wildam, S.E.,M.M',
           ketua_lppm_nidn: data.ketua_lppm_nidn || '0912345678',
+          ketua_lppm_ttd: data.ketua_lppm_ttd || '/ttd-lppm.png',
         });
       }
     } catch (error) {
       console.error('Failed to fetch settings:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleUploadTtd = async (file, type) => {
+    if (!file) return;
+    setUploadingTtd(prev => ({ ...prev, [type]: true }));
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('prefix', `ttd_${type}`);
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (res.ok && data.url) {
+        setSystemSettings(prev => ({
+          ...prev,
+          [`${type === 'lppm' ? 'ketua_lppm' : 'kaprodi'}_ttd`]: data.url,
+        }));
+      } else {
+        alert(data.error || 'Gagal mengunggah file tanda tangan');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Terjadi kesalahan saat mengunggah tanda tangan');
+    } finally {
+      setUploadingTtd(prev => ({ ...prev, [type]: false }));
     }
   };
 
@@ -290,49 +329,183 @@ export default function AdminSettingsPage() {
                 <h3 className="text-xl font-black text-slate-800 mb-2">Penandatangan Dokumen</h3>
                 <p className="text-slate-500 text-sm mb-6">Nama dan identitas pejabat yang berwenang menandatangani dokumen-dokumen resmi KKL Plus.</p>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl">
-                  <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">Nama Ketua Program Studi</label>
-                    <input 
-                      type="text" 
-                      value={systemSettings.kaprodi_nama}
-                      onChange={(e) => setSystemSettings({...systemSettings, kaprodi_nama: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring focus:ring-teal-200 focus:ring-opacity-50 transition-all bg-slate-50"
-                      required
-                    />
+                <div className="space-y-6 max-w-4xl">
+                  {/* Card Ketua Program Studi */}
+                  <div className="p-6 bg-slate-50/70 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-4">
+                    <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+                      <div>
+                        <h4 className="font-bold text-slate-800 dark:text-white">1. Ketua Program Studi (Kaprodi)</h4>
+                        <p className="text-xs text-slate-500">Penandatangan surat permohonan pengantar, transkrip, dan lembar pengesahan prodi.</p>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Nama Lengkap & Gelar</label>
+                        <input 
+                          type="text" 
+                          value={systemSettings.kaprodi_nama}
+                          onChange={(e) => setSystemSettings({...systemSettings, kaprodi_nama: e.target.value})}
+                          className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-teal-500 focus:ring focus:ring-teal-200 text-sm bg-white dark:bg-slate-800"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">NIP / NIDN</label>
+                        <input 
+                          type="text" 
+                          value={systemSettings.kaprodi_nip}
+                          onChange={(e) => setSystemSettings({...systemSettings, kaprodi_nip: e.target.value})}
+                          className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-teal-500 focus:ring focus:ring-teal-200 text-sm bg-white dark:bg-slate-800"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Scan Tanda Tangan Kaprodi</label>
+                      {systemSettings.kaprodi_ttd ? (
+                        <div className="flex items-center gap-4 p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl">
+                          <div className="h-16 w-36 bg-slate-100 dark:bg-slate-900 rounded-lg border border-dashed border-slate-300 dark:border-slate-700 p-1 flex items-center justify-center">
+                            <img src={systemSettings.kaprodi_ttd} alt="TTD Kaprodi" className="max-h-full max-w-full object-contain mix-blend-multiply dark:invert" />
+                          </div>
+                          <div className="flex-1 text-xs">
+                            <p className="font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                              <CheckCircle className="w-3.5 h-3.5" /> Tanda tangan aktif
+                            </p>
+                            <p className="text-slate-400 text-[11px] mt-0.5">Tersimpan dan siap disisipkan pada dokumen resmi.</p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <label className="cursor-pointer px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 text-xs font-semibold rounded-lg transition-colors">
+                              Ganti
+                              <input 
+                                type="file" 
+                                accept="image/png,image/jpeg,image/webp" 
+                                className="hidden" 
+                                onChange={(e) => e.target.files?.[0] && handleUploadTtd(e.target.files[0], 'kaprodi')} 
+                                disabled={uploadingTtd.kaprodi}
+                              />
+                            </label>
+                            <button
+                              type="button"
+                              onClick={() => setSystemSettings(prev => ({ ...prev, kaprodi_ttd: '' }))}
+                              className="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 dark:bg-rose-950/40 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" /> Hapus
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <label className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-teal-500 rounded-xl cursor-pointer bg-white dark:bg-slate-800 hover:bg-teal-50/20 transition-all">
+                          {uploadingTtd.kaprodi ? (
+                            <div className="flex items-center gap-2 text-xs font-semibold text-teal-600 py-2">
+                              <Loader2 className="w-4 h-4 animate-spin" /> Mengunggah tanda tangan...
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-3 text-xs text-slate-500 py-1">
+                              <Upload className="w-4 h-4 text-teal-500" />
+                              <span>Klik untuk unggah scan TTD Kaprodi (PNG transparan / JPG bersih)</span>
+                            </div>
+                          )}
+                          <input 
+                            type="file" 
+                            accept="image/png,image/jpeg,image/webp" 
+                            className="hidden" 
+                            onChange={(e) => e.target.files?.[0] && handleUploadTtd(e.target.files[0], 'kaprodi')} 
+                            disabled={uploadingTtd.kaprodi}
+                          />
+                        </label>
+                      )}
+                    </div>
                   </div>
-                  <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">NIP / NIDN Kaprodi</label>
-                    <input 
-                      type="text" 
-                      value={systemSettings.kaprodi_nip}
-                      onChange={(e) => setSystemSettings({...systemSettings, kaprodi_nip: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring focus:ring-teal-200 focus:ring-opacity-50 transition-all bg-slate-50"
-                      required
-                    />
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mt-6">
-                  <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">Nama Ketua LPPM</label>
-                    <input 
-                      type="text" 
-                      value={systemSettings.ketua_lppm_nama || ''}
-                      onChange={(e) => setSystemSettings({...systemSettings, ketua_lppm_nama: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring focus:ring-teal-200 focus:ring-opacity-50 transition-all bg-slate-50"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">NIDN / NUPTK Ketua LPPM</label>
-                    <input 
-                      type="text" 
-                      value={systemSettings.ketua_lppm_nidn || ''}
-                      onChange={(e) => setSystemSettings({...systemSettings, ketua_lppm_nidn: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring focus:ring-teal-200 focus:ring-opacity-50 transition-all bg-slate-50"
-                      required
-                    />
+
+                  {/* Card Ketua LPPM */}
+                  <div className="p-6 bg-teal-50/40 dark:bg-teal-950/20 border border-teal-200/60 dark:border-teal-900/40 rounded-2xl space-y-4">
+                    <div className="flex items-center justify-between border-b border-teal-200/50 dark:border-teal-900/40 pb-3">
+                      <div>
+                        <h4 className="font-bold text-teal-900 dark:text-teal-200">2. Ketua LPPM STIMI YAPMI</h4>
+                        <p className="text-xs text-slate-500">Penandatangan Surat Tugas KKL Plus, Surat Pengantar Observasi, dan Pengesahan LPPM.</p>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Nama Lengkap & Gelar</label>
+                        <input 
+                          type="text" 
+                          value={systemSettings.ketua_lppm_nama || ''}
+                          onChange={(e) => setSystemSettings({...systemSettings, ketua_lppm_nama: e.target.value})}
+                          className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-teal-500 focus:ring focus:ring-teal-200 text-sm bg-white dark:bg-slate-800"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">NIDN / NUPTK</label>
+                        <input 
+                          type="text" 
+                          value={systemSettings.ketua_lppm_nidn || ''}
+                          onChange={(e) => setSystemSettings({...systemSettings, ketua_lppm_nidn: e.target.value})}
+                          className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-teal-500 focus:ring focus:ring-teal-200 text-sm bg-white dark:bg-slate-800"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Scan Tanda Tangan Ketua LPPM</label>
+                      {systemSettings.ketua_lppm_ttd ? (
+                        <div className="flex items-center gap-4 p-3 bg-white dark:bg-slate-800 border border-teal-200 dark:border-teal-800 rounded-xl">
+                          <div className="h-16 w-36 bg-slate-100 dark:bg-slate-900 rounded-lg border border-dashed border-teal-300 dark:border-teal-700 p-1 flex items-center justify-center">
+                            <img src={systemSettings.ketua_lppm_ttd} alt="TTD Ketua LPPM" className="max-h-full max-w-full object-contain mix-blend-multiply dark:invert" />
+                          </div>
+                          <div className="flex-1 text-xs">
+                            <p className="font-semibold text-teal-700 dark:text-teal-300 flex items-center gap-1">
+                              <CheckCircle className="w-3.5 h-3.5" /> Tanda tangan aktif
+                            </p>
+                            <p className="text-slate-400 text-[11px] mt-0.5">Tersimpan dan otomatis diterapkan pada Surat Tugas & Pengantar.</p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <label className="cursor-pointer px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 text-xs font-semibold rounded-lg transition-colors">
+                              Ganti
+                              <input 
+                                type="file" 
+                                accept="image/png,image/jpeg,image/webp" 
+                                className="hidden" 
+                                onChange={(e) => e.target.files?.[0] && handleUploadTtd(e.target.files[0], 'lppm')} 
+                                disabled={uploadingTtd.lppm}
+                              />
+                            </label>
+                            <button
+                              type="button"
+                              onClick={() => setSystemSettings(prev => ({ ...prev, ketua_lppm_ttd: '' }))}
+                              className="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 dark:bg-rose-950/40 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" /> Hapus
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <label className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-teal-300 dark:border-teal-700 hover:border-teal-500 rounded-xl cursor-pointer bg-white dark:bg-slate-800 hover:bg-teal-50/30 transition-all">
+                          {uploadingTtd.lppm ? (
+                            <div className="flex items-center gap-2 text-xs font-semibold text-teal-600 py-2">
+                              <Loader2 className="w-4 h-4 animate-spin" /> Mengunggah tanda tangan...
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-3 text-xs text-slate-500 py-1">
+                              <Upload className="w-4 h-4 text-teal-500" />
+                              <span>Klik untuk unggah scan TTD Ketua LPPM (PNG transparan / JPG bersih)</span>
+                            </div>
+                          )}
+                          <input 
+                            type="file" 
+                            accept="image/png,image/jpeg,image/webp" 
+                            className="hidden" 
+                            onChange={(e) => e.target.files?.[0] && handleUploadTtd(e.target.files[0], 'lppm')} 
+                            disabled={uploadingTtd.lppm}
+                          />
+                        </label>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>

@@ -134,11 +134,22 @@ export default function CetakPengesahan() {
             </div>
           </div>
           
-          <div className="mt-20 flex flex-col items-center text-center">
+          <div className="mt-12 flex flex-col items-center text-center">
             <p>Mengetahui,</p>
-            <p className="mb-24">Ketua Program Studi Manajemen</p>
-            <p className="font-bold underline">{settings.kaprodi_nama}</p>
-            <p>NIP/NIDN. {settings.kaprodi_nip}</p>
+            <p className="mb-1">Ketua Program Studi Manajemen</p>
+            {settings?.kaprodi_ttd ? (
+              <div className="h-20 flex items-center justify-center my-1">
+                <img
+                  src={settings.kaprodi_ttd}
+                  alt="TTD Kaprodi"
+                  className="h-20 w-auto object-contain mix-blend-multiply"
+                />
+              </div>
+            ) : (
+              <div className="h-20"></div>
+            )}
+            <p className="font-bold underline">{settings?.kaprodi_nama || 'Dr Anwar, S.Ag.,M.Ag'}</p>
+            <p>NIP/NIDN. {settings?.kaprodi_nip || '198001012005011001'}</p>
           </div>
 
         </div>

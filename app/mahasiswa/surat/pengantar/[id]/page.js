@@ -164,9 +164,20 @@ export default function SuratPengantarPage({ params }) {
         </div>
 
         {/* TTD */}
-        <div className="mt-16 flex justify-end">
-          <div className="w-64 text-center">
-            <p className="mb-20">Ketua LPPM,</p>
+        <div className="mt-12 flex justify-end">
+          <div className="w-64 text-center flex flex-col items-center">
+            <p className="mb-1">Ketua LPPM,</p>
+            {settings?.ketua_lppm_ttd ? (
+              <div className="h-20 flex items-center justify-center my-1">
+                <img 
+                  src={settings.ketua_lppm_ttd} 
+                  alt="TTD Ketua LPPM" 
+                  className="h-20 w-auto object-contain mix-blend-multiply" 
+                />
+              </div>
+            ) : (
+              <div className="h-20"></div>
+            )}
             <p className="font-bold underline">{settings?.ketua_lppm_nama || 'Andi Arwinda Wildam, S.E.,M.M'}</p>
             <p>NIDN. {settings?.ketua_lppm_nidn || '0912345678'}</p>
           </div>

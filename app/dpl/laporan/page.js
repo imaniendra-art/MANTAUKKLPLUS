@@ -845,12 +845,18 @@ export default function LaporanDplPage() {
                       <div className="flex flex-col justify-between items-center w-60 min-h-[3.2cm]">
                         <p className="text-xs text-slate-600">Ketua LPPM</p>
                         <div className="flex-1 flex items-center justify-center my-1">
-                          {qrCodeUrl && <img src={qrCodeUrl} alt="TTD QR" className="h-[1.8cm] w-[1.8cm] opacity-80 mix-blend-multiply" />}
+                          {settings?.ketua_lppm_ttd ? (
+                            <img src={settings.ketua_lppm_ttd} alt="TTD Ketua LPPM" className="h-[1.8cm] w-auto object-contain mix-blend-multiply" />
+                          ) : qrCodeUrl ? (
+                            <img src={qrCodeUrl} alt="TTD QR" className="h-[1.8cm] w-[1.8cm] opacity-80 mix-blend-multiply" />
+                          ) : (
+                            <div className="h-[1.8cm]"></div>
+                          )}
                         </div>
                         <div className="w-full text-center">
                           <div className="border-b border-slate-800 w-full mb-0.5"></div>
-                          <p className="font-bold text-slate-900 text-xs leading-tight">{settings.ketua_lppm_nama || 'Andi Arwinda Wildam, S.E.,M.M'}</p>
-                          {settings.ketua_lppm_nidn && (
+                          <p className="font-bold text-slate-900 text-xs leading-tight">{settings?.ketua_lppm_nama || 'Andi Arwinda Wildam, S.E.,M.M'}</p>
+                          {settings?.ketua_lppm_nidn && (
                             <p className="text-[10px] text-slate-600 leading-tight mt-0.5">NIDN. {settings.ketua_lppm_nidn}</p>
                           )}
                         </div>
@@ -859,12 +865,18 @@ export default function LaporanDplPage() {
                       <div className="flex flex-col justify-between items-center w-60 min-h-[3.2cm]">
                         <p className="text-xs text-slate-600">Ketua Program Studi</p>
                         <div className="flex-1 flex items-center justify-center my-1">
-                          {qrCodeUrl && <img src={qrCodeUrl} alt="TTD QR" className="h-[1.8cm] w-[1.8cm] opacity-80 mix-blend-multiply" />}
+                          {settings?.kaprodi_ttd ? (
+                            <img src={settings.kaprodi_ttd} alt="TTD Kaprodi" className="h-[1.8cm] w-auto object-contain mix-blend-multiply" />
+                          ) : qrCodeUrl ? (
+                            <img src={qrCodeUrl} alt="TTD QR" className="h-[1.8cm] w-[1.8cm] opacity-80 mix-blend-multiply" />
+                          ) : (
+                            <div className="h-[1.8cm]"></div>
+                          )}
                         </div>
                         <div className="w-full text-center">
                           <div className="border-b border-slate-800 w-full mb-0.5"></div>
-                          <p className="font-bold text-slate-900 text-xs leading-tight">{settings.kaprodi_nama || 'Ketua Program Studi'}</p>
-                          {settings.kaprodi_nip && (
+                          <p className="font-bold text-slate-900 text-xs leading-tight">{settings?.kaprodi_nama || 'Dr Anwar, S.Ag.,M.Ag'}</p>
+                          {settings?.kaprodi_nip && (
                             <p className="text-[10px] text-slate-600 leading-tight mt-0.5">NIP/NIDN. {settings.kaprodi_nip}</p>
                           )}
                         </div>
