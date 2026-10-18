@@ -95,7 +95,7 @@ export default function CetakLaporan() {
 
   const isDisetujui = laporan.status === 'disetujui';
   // Use absolute URL dynamically based on current window location
-  const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://mantaukklplus.vercel.app';
+  const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://kklplus.stimiapps.my.id';
   const verifyUrl = `${baseUrl}/verify/${laporan._id}`;
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(verifyUrl)}`;
 

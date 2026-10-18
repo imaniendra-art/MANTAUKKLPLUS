@@ -166,7 +166,7 @@ export default function LaporanDplPage() {
   );
 
   const isReadonly = laporan?.status === 'submitted' || laporan?.status === 'disetujui';
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://kklplus.stimiapps.my.id';
   const qrCodeUrl = laporan?.qr_code_validasi ? `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(`${baseUrl}/verify/${laporan.qr_code_validasi}`)}` : '';
 
   return (

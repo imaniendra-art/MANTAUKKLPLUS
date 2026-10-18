@@ -54,7 +54,10 @@ export default function DplPenilaianPage() {
   }, [params.pokjaId]);
 
   const copyMentorLink = () => {
-    const link = `${window.location.origin}/penilaian-mentor/${params.pokjaId}`;
+    const baseUrl = (typeof window !== 'undefined' && window.location.origin.includes('stimiapps.my.id'))
+      ? window.location.origin
+      : 'https://kklplus.stimiapps.my.id';
+    const link = `${baseUrl}/penilaian-mentor/${params.pokjaId}`;
     navigator.clipboard.writeText(link);
     alert('Link form penilaian Mentor berhasil disalin! Silakan kirimkan link tersebut ke Mentor via WhatsApp.');
   };

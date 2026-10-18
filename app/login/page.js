@@ -138,7 +138,7 @@ export default function Login() {
               <div className="flex justify-between items-center mb-2">
                 <label className="block text-sm font-bold text-slate-700" htmlFor="password">Password</label>
                 <a 
-                  href="https://wa.me/6285256096248?text=Halo%20Admin%20MANTAU%20KKL%20PLUS%2C%20saya%20mengalami%20kendala%20lupa%20password%20akun%20saya.%20Mohon%20bantuannya%20untuk%20verifikasi%20dan%20reset%20password%20akun%20saya.%20Terima%20kasih." 
+                  href={`https://wa.me/6285256096248?text=${encodeURIComponent("Halo Admin MANTAU KKL PLUS (https://kklplus.stimiapps.my.id), saya mengalami kendala lupa password akun saya. Mohon bantuannya untuk verifikasi dan reset password akun saya. Terima kasih.")}`}
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="text-xs font-bold text-teal-600 hover:text-[#0f7a85] transition-colors"

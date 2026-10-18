@@ -651,10 +651,13 @@ export default function DplValidasiLaporan() {
                                 <p className="text-sm text-slate-700">{pokja.mentor_id.nama_lengkap || '-'}</p>
                                 <button
                                   onClick={() => {
-                                    const url = `${window.location.origin}/penilaian-mentor/${pokja._id}`;
+                                    const baseUrl = (typeof window !== 'undefined' && window.location.origin.includes('stimiapps.my.id'))
+                                      ? window.location.origin
+                                      : 'https://kklplus.stimiapps.my.id';
+                                    const url = `${baseUrl}/penilaian-mentor/${pokja._id}`;
                                     let phone = pokja.mentor_id.nomor_hp.replace(/[^0-9]/g, '');
                                     if (phone.startsWith('0')) phone = '62' + phone.substring(1);
-                                    const msg = `Halo Bapak/Ibu ${pokja.mentor_id.nama_lengkap},\n\nBerikut adalah link untuk mengisi form penilaian KKL Plus mahasiswa kelompok *${pokja.nama_pokja}*:\n\n${url}\n\nTerima kasih.`;
+                                    const msg = `Assalamu'alaikum Wr. Wb. / Salam Sejahtera Bapak/Ibu ${pokja.mentor_id.nama_lengkap},\n\nBerikut adalah link form penilaian KKL Plus mahasiswa kelompok *${pokja.nama_pokja}* di portal resmi MANTAU KKL Plus:\n\n${url}\n\nMohon kesediaannya untuk memberikan penilaian. Terima kasih.`;
                                     window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
                                   }}
                                   className="text-[10px] bg-green-50 hover:bg-green-100 text-green-700 px-2 py-1 rounded transition-colors border border-green-200 flex items-center gap-1 shrink-0"

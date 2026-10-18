@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
-import { UserCircle, MapPin, Phone, Mail, CheckCircle2, UserPlus, Clock, Info, Eye, RefreshCcw, Upload, AlertCircle } from "lucide-react";
+import { UserCircle, MapPin, Phone, Mail, CheckCircle2, UserPlus, Clock, Info, Eye, RefreshCcw, Upload, AlertCircle, MessageSquare } from "lucide-react";
 
 export default function DaftarBimbinganPage() {
   const [bimbinganList, setBimbinganList] = useState([]);
@@ -402,8 +402,20 @@ export default function DaftarBimbinganPage() {
                             {mentor ? (
                               <div>
                                 <p className="font-bold text-slate-800 dark:text-slate-100">{mentor.nama_lengkap}</p>
-                                <div className="flex items-center gap-1.5 mt-1 text-[11px] text-slate-500">
-                                  <Phone className="w-3 h-3" /> {mentor.nomor_hp}
+                                <div className="flex items-center gap-2 mt-1">
+                                  <span className="flex items-center gap-1 text-[11px] text-slate-500">
+                                    <Phone className="w-3 h-3" /> {mentor.nomor_hp}
+                                  </span>
+                                  {mentor.nomor_hp && (
+                                    <a
+                                      href={`https://wa.me/${mentor.nomor_hp.replace(/^0/, '62').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Assalamu'alaikum Wr. Wb. / Salam Sejahtera Bapak/Ibu ${mentor.nama_lengkap}, saya DPL KKL Plus pendamping kelompok *${item.nama_pokja}* di portal https://kklplus.stimiapps.my.id.`)}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="inline-flex items-center gap-1 text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold hover:underline"
+                                    >
+                                      <MessageSquare className="w-3 h-3" /> Chat WA
+                                    </a>
+                                  )}
                                 </div>
                               </div>
                             ) : (
@@ -504,11 +516,25 @@ export default function DaftarBimbinganPage() {
                                 </h5>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                   {/* Ketua */}
-                                  <div className="p-3 bg-teal-50/50 dark:bg-teal-900/10 rounded-lg border border-teal-100 dark:border-teal-800/50">
-                                    <span className="text-[10px] uppercase font-bold text-teal-500 mb-1 block">Ketua POKJA</span>
-                                    <p className="font-bold text-slate-700 dark:text-slate-200 text-sm">{ketua?.nama_lengkap}</p>
-                                    <p className="text-xs text-slate-500 mt-0.5">{ketua?.nim_nidn}</p>
-                                    <p className="text-[11px] text-slate-400 mt-1">{ketua?.program_studi || "-"} • {ketua?.konsentrasi || "Belum ada konsentrasi"}</p>
+                                  <div className="p-3 bg-teal-50/50 dark:bg-teal-900/10 rounded-lg border border-teal-100 dark:border-teal-800/50 flex flex-col justify-between">
+                                    <div>
+                                      <span className="text-[10px] uppercase font-bold text-teal-500 mb-1 block">Ketua POKJA</span>
+                                      <p className="font-bold text-slate-700 dark:text-slate-200 text-sm">{ketua?.nama_lengkap}</p>
+                                      <p className="text-xs text-slate-500 mt-0.5">{ketua?.nim_nidn}</p>
+                                      <p className="text-[11px] text-slate-400 mt-1">{ketua?.program_studi || "-"} • {ketua?.konsentrasi || "Belum ada konsentrasi"}</p>
+                                    </div>
+                                    {ketua?.nomor_hp && (
+                                      <div className="mt-3 pt-2 border-t border-teal-200/50 dark:border-teal-800/50">
+                                        <a
+                                          href={`https://wa.me/${ketua.nomor_hp.replace(/^0/, '62').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Halo ${ketua.nama_lengkap || 'Ketua Pokja'}, saya DPL Anda terkait bimbingan kelompok KKL Plus *${item.nama_pokja}* di portal https://kklplus.stimiapps.my.id.`)}`}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="inline-flex items-center gap-1.5 text-xs font-semibold text-teal-700 dark:text-teal-400 hover:underline"
+                                        >
+                                          <MessageSquare className="w-3.5 h-3.5" /> Chat WA Ketua POKJA
+                                        </a>
+                                      </div>
+                                    )}
                                   </div>
                                   
                                   {/* Anggota */}
@@ -516,11 +542,25 @@ export default function DaftarBimbinganPage() {
                                     if (ang.status_undangan !== 'bergabung') return null;
                                     const u = ang.user_id;
                                     return (
-                                      <div key={idx} className="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-lg border border-slate-100 dark:border-slate-800">
-                                        <span className="text-[10px] uppercase font-bold text-slate-400 mb-1 block">Anggota</span>
-                                        <p className="font-bold text-slate-700 dark:text-slate-200 text-sm">{u?.nama_lengkap}</p>
-                                        <p className="text-xs text-slate-500 mt-0.5">{u?.nim_nidn}</p>
-                                        <p className="text-[11px] text-slate-400 mt-1">{u?.program_studi || "-"} • {u?.konsentrasi || "Belum ada konsentrasi"}</p>
+                                      <div key={idx} className="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-lg border border-slate-100 dark:border-slate-800 flex flex-col justify-between">
+                                        <div>
+                                          <span className="text-[10px] uppercase font-bold text-slate-400 mb-1 block">Anggota</span>
+                                          <p className="font-bold text-slate-700 dark:text-slate-200 text-sm">{u?.nama_lengkap}</p>
+                                          <p className="text-xs text-slate-500 mt-0.5">{u?.nim_nidn}</p>
+                                          <p className="text-[11px] text-slate-400 mt-1">{u?.program_studi || "-"} • {u?.konsentrasi || "Belum ada konsentrasi"}</p>
+                                        </div>
+                                        {u?.nomor_hp && (
+                                          <div className="mt-3 pt-2 border-t border-slate-200 dark:border-slate-800">
+                                            <a
+                                              href={`https://wa.me/${u.nomor_hp.replace(/^0/, '62').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Halo ${u.nama_lengkap}, saya DPL Anda terkait kelompok KKL Plus *${item.nama_pokja}* di portal https://kklplus.stimiapps.my.id.`)}`}
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                              className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:underline"
+                                            >
+                                              <MessageSquare className="w-3.5 h-3.5" /> Chat WA
+                                            </a>
+                                          </div>
+                                        )}
                                       </div>
                                     );
                                   })}

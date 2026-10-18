@@ -186,7 +186,7 @@ export default function MonitoringPokjaPage() {
     const text = encodeURIComponent(
       `Assalamu'alaikum Wr. Wb. Bapak/Ibu ${dplName || 'DPL KKL Plus'},\n\n` +
       `Pemberitahuan dari LPPM STIMI YAPMIM terkait pendampingan kelompok *${pokjaName || 'KKL Plus'}*.\n` +
-      `Mohon kesediaannya login ke portal https://kklp.stimiyapmim.ac.id untuk meninjau penyerahan kelompok dan memasukkan data Mentor Instansi agar logbook kegiatan mahasiswa dapat berjalan lancar.\n\n` +
+      `Mohon kesediaannya login ke portal https://kklplus.stimiapps.my.id untuk meninjau penyerahan kelompok dan memasukkan data Mentor Instansi agar logbook kegiatan mahasiswa dapat berjalan lancar.\n\n` +
       `Terima kasih.`
     );
     return `https://wa.me/${clean}?text=${text}`;
@@ -437,12 +437,12 @@ export default function MonitoringPokjaPage() {
                                       {p.ketua_id?.nomor_hp && (
                                         <div>
                                           <a 
-                                            href={`https://wa.me/${p.ketua_id.nomor_hp.replace(/^0/, '62').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Halo ${p.ketua_id.nama_lengkap || 'Ketua Pokja'}, kelompok KKL Plus Anda (${p.nama_pokja}) sudah aktif/berjalan. Mohon segera merancang dan mengajukan Program Kerja ke DPL melalui sistem MANTAU KKL Plus.`)}`}
+                                            href={`https://wa.me/${p.ketua_id.nomor_hp.replace(/^0/, '62').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Halo ${p.ketua_id.nama_lengkap || 'Ketua Pokja'}, kelompok KKL Plus Anda (${p.nama_pokja}) saat ini sudah aktif/berjalan. Mohon segera merancang dan mengajukan Program Kerja ke DPL melalui portal resmi MANTAU KKL Plus:\nhttps://kklplus.stimiapps.my.id\n\nTerima kasih.`)}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="inline-flex items-center gap-1 text-[11px] text-teal-600 dark:text-teal-400 hover:underline font-semibold"
                                           >
-                                            <MessageSquare className="w-3 h-3" /> Nudge Ketua
+                                            <MessageSquare className="w-3 h-3" /> Chat WA Ketua POKJA
                                           </a>
                                         </div>
                                       )}
@@ -455,12 +455,12 @@ export default function MonitoringPokjaPage() {
                                       {p.dpl_id?.nomor_hp && (
                                         <div>
                                           <a 
-                                            href={`https://wa.me/${p.dpl_id.nomor_hp.replace(/^0/, '62').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Yth. Bapak/Ibu ${p.dpl_id.nama_lengkap}, kelompok ${p.nama_pokja} telah mengajukan usulan Program Kerja. Mohon kiranya dapat direview dan disetujui di MANTAU KKL Plus.`)}`}
+                                            href={`https://wa.me/${p.dpl_id.nomor_hp.replace(/^0/, '62').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Yth. Bapak/Ibu ${p.dpl_id.nama_lengkap}, kelompok bimbingan Anda (${p.nama_pokja}) telah mengajukan usulan Program Kerja. Mohon kesediaannya untuk meninjau dan memberikan persetujuan melalui portal MANTAU KKL Plus:\nhttps://kklplus.stimiapps.my.id\n\nTerima kasih.`)}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="inline-flex items-center gap-1 text-[11px] text-teal-600 dark:text-teal-400 hover:underline font-semibold"
                                           >
-                                            <MessageSquare className="w-3 h-3" /> Nudge DPL
+                                            <MessageSquare className="w-3 h-3" /> Chat WA DPL
                                           </a>
                                         </div>
                                       )}

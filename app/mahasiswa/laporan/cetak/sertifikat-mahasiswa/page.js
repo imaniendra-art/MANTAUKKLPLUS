@@ -84,7 +84,7 @@ export default function CetakSertifikatMahasiswa() {
   const lokasiMitra = pengajuan.mitra_id?.kabupaten_kota ? ` - ${pengajuan.mitra_id.kabupaten_kota}` : '';
 
   // URL validasi untuk QR Code
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://kklplus.stimiapps.my.id';
   const verifyUrl = `${baseUrl}/verify/${laporan._id}`;
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(verifyUrl)}`;
 
