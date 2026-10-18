@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import Pokja from '@/models/Pokja';
-import { uploadToMinio } from '@/lib/minio';
+import fs from 'fs';
+import path from 'path';
 
 export async function POST(req) {
   try {
@@ -15,9 +16,23 @@ export async function POST(req) {
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
-    const fileName = `${pokjaId}_${documentType}_${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
 
-    const fileUrl = await uploadToMinio(buffer, fileName, file.type);
+    // Tentukan direktori penyimpanan lokal (mitra untuk foto/logo profil, surat untuk dokumen PDF resmi)
+    const isMitraMedia = ['foto_kantor_desa', 'foto_kantor_bumdes', 'logo_mitra'].includes(documentType);
+    const subfolder = isMitraMedia ? 'mitra' : 'surat';
+
+    const uploadDir = path.join(process.cwd(), 'public', 'uploads', subfolder);
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
+    const cleanFileName = file.name.replace(/[^a-zA-Z0-9.]/g, '_');
+    const fileName = `${pokjaId}_${documentType}_${Date.now()}_${cleanFileName}`;
+    const filePath = path.join(uploadDir, fileName);
+
+    await fs.promises.writeFile(filePath, buffer);
+
+    const fileUrl = `/uploads/${subfolder}/${fileName}`;
 
     await dbConnect();
 
@@ -27,8 +42,8 @@ export async function POST(req) {
     if (['mou', 'moa', 'ia', 'foto_kantor_desa', 'foto_kantor_bumdes', 'logo_mitra'].includes(documentType)) {
       const pokja = await Pokja.findById(pokjaId);
       if (pokja && pokja.mitra_id) {
-        import('@/models/MitraKKL');
         const MitraKKL = (await import('@/models/MitraKKL')).default;
+        const mitraId = pokja.mitra_id._id || pokja.mitra_id;
         
         const mitraUpdate = {};
         if (documentType === 'mou') {
@@ -47,7 +62,7 @@ export async function POST(req) {
         if (documentType === 'foto_kantor_bumdes') mitraUpdate.foto_kantor_bumdes = fileUrl;
         if (documentType === 'logo_mitra') mitraUpdate.logo_mitra = fileUrl;
         
-        updatedData = await MitraKKL.findByIdAndUpdate(pokja.mitra_id, { $set: mitraUpdate }, { new: true });
+        updatedData = await MitraKKL.findByIdAndUpdate(mitraId, { $set: mitraUpdate }, { new: true });
       }
     } else {
       if (documentType === 'loa') {
@@ -65,7 +80,7 @@ export async function POST(req) {
       );
     }
 
-    return NextResponse.json({ success: true, fileUrl, data: updatedData });
+    return NextResponse.json({ success: true, fileUrl, url: fileUrl, data: updatedData });
 
   } catch (error) {
     console.error("Upload error:", error);

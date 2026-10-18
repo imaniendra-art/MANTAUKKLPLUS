@@ -16,6 +16,8 @@ services:
       # atau Docker akan otomatis membaca file .env.local jika dikonfigurasi.
     env_file:
       - .env.local
+    volumes:
+      - uploads_data:/app/public/uploads
     depends_on:
       - redis
     networks:
@@ -34,6 +36,7 @@ services:
 
 volumes:
   redis_data:
+  uploads_data:
 
 networks:
   mantau_network:
