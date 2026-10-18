@@ -135,8 +135,8 @@ export async function GET(req) {
       const pokjas = await Pokja.find(query)
         .populate({ path: 'ketua_id', select: 'nama_lengkap nim_nidn program_studi konsentrasi nomor_hp email' })
         .populate({ path: 'anggota.user_id', select: 'nama_lengkap nim_nidn program_studi konsentrasi nomor_hp email' })
-        .populate({ path: 'dpl_id', select: 'nama_lengkap nomor_hp email nidn' })
-        .populate({ path: 'mentor_id', select: 'nama_lengkap nomor_hp email nidn lokasi devisi' })
+        .populate({ path: 'dpl_id', select: 'nama_lengkap nomor_hp email nidn nim_nidn isFirstLogin last_login' })
+        .populate({ path: 'mentor_id', select: 'nama_lengkap nomor_hp email nidn lokasi devisi isFirstLogin last_login' })
         .populate({ path: 'mitra_id', select: 'nama_instansi alamat_lengkap kecamatan kabupaten_kota kategori kuota_maksimal' })
         .sort({ createdAt: -1 });
         
@@ -365,7 +365,19 @@ export async function PATCH(req) {
     }
 
     const updatePayload = {};
-    if (status_pokja) updatePayload.status_pokja = status_pokja;
+    if (status_pokja) {
+      updatePayload.status_pokja = status_pokja;
+      if (status_pokja === 'berjalan') {
+        const existing = await Pokja.findById(id);
+        if (existing && !existing.tanggal_mulai) {
+          const tMulai = new Date();
+          const tSelesai = new Date();
+          tSelesai.setMonth(tSelesai.getMonth() + 4);
+          updatePayload.tanggal_mulai = tMulai;
+          updatePayload.tanggal_selesai = tSelesai;
+        }
+      }
+    }
     if (dpl_id) updatePayload.dpl_id = dpl_id;
     if (catatan_admin) updatePayload.catatan_admin = catatan_admin;
     if (mitra_id) updatePayload.mitra_id = mitra_id;

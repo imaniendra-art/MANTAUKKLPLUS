@@ -8,7 +8,7 @@ services:
     container_name: mantau_web
     restart: unless-stopped
     ports:
-      - "3020:3020"
+      - "3021:3021"
     environment:
       - NODE_ENV=production
       - REDIS_URL=redis://redis:6379

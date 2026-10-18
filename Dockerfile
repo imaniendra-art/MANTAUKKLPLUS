@@ -34,8 +34,8 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 
-EXPOSE 3020
-ENV PORT 3020
+EXPOSE 3021
+ENV PORT 3021
 ENV HOSTNAME "0.0.0.0"
 
 # Start the application using package.json script

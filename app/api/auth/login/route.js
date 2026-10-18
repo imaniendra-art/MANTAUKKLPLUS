@@ -35,6 +35,15 @@ export async function POST(req) {
       return NextResponse.json({ error: "Password salah" }, { status: 401 });
     }
 
+    // Rekam waktu login dan update isFirstLogin
+    const updateData = { last_login: new Date() };
+    if (user.role === 'dpl' || user.role === 'mentor' || user.role === 'admin') {
+      updateData.isFirstLogin = false;
+    }
+    await User.findByIdAndUpdate(user._id, { $set: updateData });
+
+    const isFirstLoginUpdated = (user.role === 'dpl' || user.role === 'mentor' || user.role === 'admin') ? false : user.isFirstLogin;
+
     const payload = {
       id: user._id.toString(),
       email: user.email,
@@ -43,7 +52,7 @@ export async function POST(req) {
       nidn: user.nidn,
       role: user.role,
       tipe_admin: user.tipe_admin || (user.role === 'admin' ? 'lppm' : undefined),
-      isFirstLogin: user.isFirstLogin,
+      isFirstLogin: isFirstLoginUpdated,
       konsentrasi: user.konsentrasi || "Manajemen SDM (Default)",
       program_studi: user.program_studi || "Manajemen (S1)",
       nomor_hp: user.nomor_hp || "",

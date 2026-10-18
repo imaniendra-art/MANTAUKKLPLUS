@@ -136,7 +136,7 @@ export default function LogbookPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!pokja || pokja.status_pokja !== 'berjalan') return;
+    if (!pokja || !['disetujui_admin', 'berjalan', 'selesai'].includes(pokja.status_pokja)) return;
     
     if (rencanaTarget.trim().length < 5 || uraianKegiatan.trim().length < 10 || hasilOutput.trim().length < 5) {
       alert("Mohon isi Rencana, Uraian, dan Hasil dengan detail yang cukup.");
@@ -273,13 +273,13 @@ export default function LogbookPage() {
       
       {loading ? (
         <div className="text-center py-20 text-slate-500 font-bold animate-pulse">Memuat data logbook...</div>
-      ) : !pokja || pokja.status_pokja !== 'berjalan' ? (
+      ) : !pokja || !['disetujui_admin', 'berjalan', 'selesai'].includes(pokja.status_pokja) ? (
         <div className="max-w-2xl mx-auto mt-10">
           <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-10 rounded-3xl border border-white/60 dark:border-slate-700 shadow-sm text-center">
             <div className="w-20 h-20 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">🔒</div>
             <h2 className="text-2xl font-black mb-2 text-slate-800 dark:text-white">Akses Terkunci</h2>
             <p className="text-slate-600 dark:text-slate-400">
-              Logbook Harian terbuka **setelah** POKJA Anda disetujui oleh Admin dan statusnya berjalan.
+              Logbook Harian terbuka **setelah** POKJA Anda disetujui oleh Admin.
             </p>
           </div>
         </div>
@@ -292,7 +292,7 @@ export default function LogbookPage() {
             <div className="flex bg-slate-100 dark:bg-slate-900 rounded-xl p-1 border border-slate-200 dark:border-slate-700/50 w-full">
               <button
                 className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-2 ${
-                  activeTab === 'individu' ? 'bg-white dark:bg-slate-700 text-teal-600 dark:text-teal-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                activeTab === 'individu' ? 'bg-white dark:bg-slate-700 text-teal-600 dark:text-teal-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
                 }`}
                 onClick={() => handleTabChange('individu')}
               >
@@ -300,7 +300,7 @@ export default function LogbookPage() {
               </button>
               <button
                 className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-2 ${
-                  activeTab === 'pokja' ? 'bg-white dark:bg-slate-700 text-teal-600 dark:text-teal-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                activeTab === 'pokja' ? 'bg-white dark:bg-slate-700 text-teal-600 dark:text-teal-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
                 }`}
                 onClick={() => handleTabChange('pokja')}
               >
@@ -316,16 +316,35 @@ export default function LogbookPage() {
                 </h3>
                 <p className="text-xs text-slate-500 font-medium mt-1">
                   {activeTab === 'individu' 
-                    ? `Ceritakan aktivitas dan kehadiran Anda secara personal di ${pokja.mitra_id?.nama_instansi}.` 
+                    ? `Ceritakan aktivitas dan kehadiran Anda secara personal di ${pokja.mitra_id?.nama_instansi || 'lokasi KKL'}.` 
                     : `Laporkan progress dan capaian kumulatif Proker yang menjadi tanggung jawab Anda.`}
                 </p>
               </div>
+
+              {/* Tips Petunjuk Hari Awal KKL */}
+              {activeTab === 'individu' && (
+                <div className="mx-6 mt-4 p-3.5 bg-teal-500/10 dark:bg-teal-500/15 border border-teal-500/30 rounded-2xl flex items-start gap-3">
+                  <span className="text-base">💡</span>
+                  <p className="text-xs text-teal-800 dark:text-teal-300 leading-relaxed font-medium">
+                    <strong>Kegiatan Awal KKL:</strong> Jika Program Kerja (Proker) masih dirumuskan atau belum disetujui DPL, Anda tetap dapat mencatat kegiatan harian (seperti rapat koordinasi, observasi instansi/desa, rembuk proker) di tab ini dengan memilih opsi <em>&quot;Tidak Terkait Proker Khusus&quot;</em>.
+                  </p>
+                </div>
+              )}
               
               {activeTab === 'pokja' && filteredProkers.length === 0 ? (
-                <div className="p-10 text-center">
-                  <div className="text-4xl mb-4">📂</div>
-                  <p className="font-bold text-slate-700 dark:text-slate-300 mb-1">Belum Ada Program Kerja</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Ketua Pokja belum merancang Program Kerja untuk kelompok Anda.</p>
+                <div className="p-8 text-center space-y-3">
+                  <div className="text-4xl">📂</div>
+                  <p className="font-bold text-slate-700 dark:text-slate-300">Belum Ada Program Kerja Disetujui</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto leading-relaxed">
+                    Proker kelompok belum disusun atau masih menunggu persetujuan DPL. Untuk hari-hari awal, silakan gunakan tab <strong>Logbook Personal</strong>.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => handleTabChange('individu')}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-xl transition-all shadow-sm"
+                  >
+                    Beralih ke Logbook Personal →
+                  </button>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="p-6 space-y-5">

@@ -54,6 +54,10 @@ const UserSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  last_login: {
+    type: Date,
+    required: false,
+  },
 }, { timestamps: true });
 
 // Indeks untuk pencarian role pengguna & tipe admin
