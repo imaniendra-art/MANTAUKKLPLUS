@@ -81,6 +81,40 @@ export async function POST(req) {
   }
 }
 
+async function attachProkerStats(pokjas) {
+  if (!pokjas || pokjas.length === 0) return [];
+  try {
+    const Proker = (await import('@/models/Proker')).default;
+    const pokjaIds = pokjas.map(p => p._id);
+    const prokerStats = await Proker.aggregate([
+      { $match: { pokja_id: { $in: pokjaIds } } },
+      { 
+        $group: { 
+          _id: "$pokja_id", 
+          total: { $sum: 1 },
+          usulan: { $sum: { $cond: [{ $eq: ["$status", "usulan"] }, 1, 0] } },
+          revisi: { $sum: { $cond: [{ $eq: ["$status", "revisi"] }, 1, 0] } },
+          disetujui: { $sum: { $cond: [{ $in: ["$status", ["disetujui_dpl", "selesai"]] }, 1, 0] } },
+        } 
+      }
+    ]);
+    const statsMap = new Map();
+    prokerStats.forEach(s => statsMap.set(s._id.toString(), s));
+    
+    return pokjas.map(p => {
+      const plain = p.toObject ? p.toObject() : { ...p };
+      const st = statsMap.get(plain._id.toString()) || { total: 0, usulan: 0, revisi: 0, disetujui: 0 };
+      return {
+        ...plain,
+        proker_stats: st
+      };
+    });
+  } catch (err) {
+    console.error("Gagal agregasi proker_stats:", err);
+    return pokjas;
+  }
+}
+
 export async function GET(req) {
   await dbConnect();
   try {
@@ -114,7 +148,8 @@ export async function GET(req) {
 
       if (pokja) {
         const processed = await processPokjaUrls(pokja);
-        return NextResponse.json(processed);
+        const [withStats] = await attachProkerStats([processed]);
+        return NextResponse.json(withStats);
       }
       return NextResponse.json(null);
     }
@@ -141,7 +176,8 @@ export async function GET(req) {
         .sort({ createdAt: -1 });
         
       const processed = await Promise.all(pokjas.map(p => processPokjaUrls(p)));
-      return NextResponse.json(processed);
+      const withStats = await attachProkerStats(processed);
+      return NextResponse.json(withStats);
     }
     
     if (mhsId) {
@@ -161,7 +197,8 @@ export async function GET(req) {
       
       if (pokja) {
         const processed = await processPokjaUrls(pokja);
-        return NextResponse.json(processed);
+        const [withStats] = await attachProkerStats([processed]);
+        return NextResponse.json(withStats);
       }
       return NextResponse.json(null);
     }
@@ -181,7 +218,8 @@ export async function GET(req) {
         .sort({ createdAt: -1 });
         
       const processed = await Promise.all(pokjas.map(p => processPokjaUrls(p)));
-      return NextResponse.json(processed);
+      const withStats = await attachProkerStats(processed);
+      return NextResponse.json(withStats);
     }
     
     return NextResponse.json({ error: "Missing parameters" }, { status: 400 });

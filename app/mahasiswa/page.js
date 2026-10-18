@@ -464,6 +464,96 @@ function MahasiswaDashboardContent() {
             </div>
           )}
 
+          {/* Proker Status Alert Banner */}
+          {['disetujui_admin', 'berjalan'].includes(pokja.status_pokja) && (
+            <>
+              {/* 1. Belum Ada Proker Sama Sekali */}
+              {prokerList.length === 0 && (
+                <div className="p-5 bg-amber-50/90 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-3xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm animate-in fade-in duration-300">
+                  <div className="flex items-start gap-3.5">
+                    <div className="w-10 h-10 rounded-2xl bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-400 flex items-center justify-center shrink-0 shadow-inner">
+                      <AlertTriangle className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-amber-900 dark:text-amber-200 text-sm sm:text-base flex items-center gap-2">
+                        Perhatian: Program Kerja Belum Dirancang!
+                        <span className="text-[10px] uppercase font-black px-2 py-0.5 rounded-full bg-amber-200/80 dark:bg-amber-900 text-amber-800 dark:text-amber-300">
+                          Penting
+                        </span>
+                      </h4>
+                      <p className="text-xs sm:text-sm text-amber-800/90 dark:text-amber-300/90 mt-1 leading-relaxed">
+                        {isKetua 
+                          ? "Status Pokja Anda sudah aktif/berjalan. Sebagai Ketua, Anda wajib segera merancang Program Kerja (minimal 1 Proker Utama dan Proker Pendukung) agar dapat direview dan disetujui DPL."
+                          : "Status Pokja sudah aktif/berjalan, namun Ketua Pokja belum merancang Program Kerja. Koordinasikan segera bersama Ketua agar Proker dapat diajukan ke DPL."}
+                      </p>
+                    </div>
+                  </div>
+                  {isKetua && (
+                    <button 
+                      onClick={() => router.push('/mahasiswa/proker')}
+                      className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-2xl shadow-sm text-xs flex items-center gap-2 shrink-0 transition-all hover:scale-[1.02] whitespace-nowrap w-full sm:w-auto justify-center"
+                    >
+                      <Plus className="w-4 h-4" /> Rancang Proker Sekarang
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {/* 2. Ada Proker Revisi dari DPL */}
+              {prokerList.length > 0 && prokerList.some(p => p.status === 'revisi') && (
+                <div className="p-5 bg-rose-50/90 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-3xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm animate-in fade-in duration-300">
+                  <div className="flex items-start gap-3.5">
+                    <div className="w-10 h-10 rounded-2xl bg-rose-100 dark:bg-rose-900/60 text-rose-700 dark:text-rose-400 flex items-center justify-center shrink-0 shadow-inner">
+                      <AlertTriangle className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-rose-900 dark:text-rose-200 text-sm sm:text-base">
+                        Catatan Revisi Program Kerja dari DPL
+                      </h4>
+                      <p className="text-xs sm:text-sm text-rose-800/90 dark:text-rose-300/90 mt-1 leading-relaxed">
+                        Dosen Pembimbing Lapangan memberikan catatan revisi pada usulan Proker Anda. Silakan tinjau dan perbaiki di menu Program Kerja.
+                      </p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => router.push('/mahasiswa/proker')}
+                    className="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-2xl shadow-sm text-xs flex items-center gap-2 shrink-0 transition-all hover:scale-[1.02] whitespace-nowrap w-full sm:w-auto justify-center"
+                  >
+                    Periksa Revisi Proker
+                  </button>
+                </div>
+              )}
+
+              {/* 3. Proker Diajukan, Menunggu Approval DPL */}
+              {prokerList.length > 0 && !prokerList.some(p => p.status === 'revisi') && prokerList.some(p => p.status === 'usulan') && (
+                <div className="p-5 bg-blue-50/90 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 rounded-3xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm animate-in fade-in duration-300">
+                  <div className="flex items-start gap-3.5">
+                    <div className="w-10 h-10 rounded-2xl bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-400 flex items-center justify-center shrink-0 shadow-inner">
+                      <Clock className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-blue-900 dark:text-blue-200 text-sm sm:text-base flex items-center gap-2">
+                        Program Kerja Sedang Direview DPL
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-200/80 dark:bg-blue-900 text-blue-800 dark:text-blue-300">
+                          {prokerList.filter(p => p.status === 'usulan').length} Usulan
+                        </span>
+                      </h4>
+                      <p className="text-xs sm:text-sm text-blue-800/90 dark:text-blue-300/90 mt-1 leading-relaxed">
+                        Usulan Program Kerja kelompok sedang menunggu evaluasi dan persetujuan dari DPL ({pokja.dpl_id?.nama_lengkap || 'Dosen Pembimbing'}). Selama menunggu, Anda tetap dapat mencatat kegiatan koordinasi awal di menu Logbook Personal.
+                      </p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => router.push('/mahasiswa/proker')}
+                    className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl shadow-sm text-xs flex items-center gap-2 shrink-0 transition-all hover:scale-[1.02] whitespace-nowrap w-full sm:w-auto justify-center"
+                  >
+                    Lihat Usulan Proker
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+
           {/* 2-Column Split for Biodata & Proker */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             

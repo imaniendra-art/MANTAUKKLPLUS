@@ -201,10 +201,12 @@ export default function MonitoringPokjaPage() {
     return false;
   };
 
-  // Perhitungan Ringkasan Masalah DPL
+  // Perhitungan Ringkasan Masalah DPL & Proker
   const dplBelumLoginCount = pokjas.filter(p => p.dpl_id && !isDplActive(p.dpl_id, p)).length;
   const pokjaBelumMentorCount = pokjas.filter(p => !p.mentor_id).length;
   const pokjaPendingPenyerahanCount = pokjas.filter(p => p.status_pokja === 'disetujui_admin').length;
+  const pokjaBelumAdaProkerCount = pokjas.filter(p => ['berjalan', 'disetujui_admin'].includes(p.status_pokja) && (p.proker_stats?.total || 0) === 0).length;
+  const prokerMenungguApprovalCount = pokjas.filter(p => (p.proker_stats?.usulan || 0) > 0).length;
 
   return (
     <DashboardLayout title="Monitoring KKL Plus">
@@ -272,35 +274,55 @@ export default function MonitoringPokjaPage() {
         {activeTab === 'dpl' && (
           <div className="space-y-6">
             
-            {/* Quick KPI Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-5 rounded-2xl border border-white/60 dark:border-slate-700 shadow-sm flex items-center gap-4">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-black text-xl shrink-0 ${dplBelumLoginCount > 0 ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-teal-50 text-teal-600'}`}>
+            {/* Quick KPI Cards (5 Cards) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
+              <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-4 rounded-2xl border border-white/60 dark:border-slate-700 shadow-sm flex items-center gap-3">
+                <div className={`w-11 h-11 rounded-xl flex items-center justify-center font-black text-lg shrink-0 ${dplBelumLoginCount > 0 ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-teal-50 text-teal-600'}`}>
                   {dplBelumLoginCount > 0 ? '⚠️' : '✅'}
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">DPL Belum Pernah Login</p>
-                  <p className="text-2xl font-black text-slate-800 dark:text-white mt-0.5">{dplBelumLoginCount} Dosen</p>
+                  <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">DPL Belum Login</p>
+                  <p className="text-xl font-black text-slate-800 dark:text-white mt-0.5">{dplBelumLoginCount} Dosen</p>
                 </div>
               </div>
 
-              <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-5 rounded-2xl border border-white/60 dark:border-slate-700 shadow-sm flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 border border-amber-200 flex items-center justify-center font-black text-xl shrink-0">
+              <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-4 rounded-2xl border border-white/60 dark:border-slate-700 shadow-sm flex items-center gap-3">
+                <div className="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 border border-amber-200 flex items-center justify-center font-black text-lg shrink-0">
                   ⏳
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Menunggu Penyerahan DPL</p>
-                  <p className="text-2xl font-black text-slate-800 dark:text-white mt-0.5">{pokjaPendingPenyerahanCount} Kelompok</p>
+                  <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Pending Penyerahan</p>
+                  <p className="text-xl font-black text-slate-800 dark:text-white mt-0.5">{pokjaPendingPenyerahanCount} Kelompok</p>
                 </div>
               </div>
 
-              <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-5 rounded-2xl border border-white/60 dark:border-slate-700 shadow-sm flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 border border-blue-200 flex items-center justify-center font-black text-xl shrink-0">
+              <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-4 rounded-2xl border border-white/60 dark:border-slate-700 shadow-sm flex items-center gap-3">
+                <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 border border-blue-200 flex items-center justify-center font-black text-lg shrink-0">
                   🏢
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Belum Ada Mentor Instansi</p>
-                  <p className="text-2xl font-black text-slate-800 dark:text-white mt-0.5">{pokjaBelumMentorCount} Lokasi</p>
+                  <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Belum Ada Mentor</p>
+                  <p className="text-xl font-black text-slate-800 dark:text-white mt-0.5">{pokjaBelumMentorCount} Lokasi</p>
+                </div>
+              </div>
+
+              <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-4 rounded-2xl border border-white/60 dark:border-slate-700 shadow-sm flex items-center gap-3">
+                <div className={`w-11 h-11 rounded-xl flex items-center justify-center font-black text-lg shrink-0 ${pokjaBelumAdaProkerCount > 0 ? 'bg-rose-50 text-rose-600 border border-rose-200' : 'bg-teal-50 text-teal-600'}`}>
+                  📂
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Belum Buat Proker</p>
+                  <p className="text-xl font-black text-slate-800 dark:text-white mt-0.5">{pokjaBelumAdaProkerCount} Kelompok</p>
+                </div>
+              </div>
+
+              <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-4 rounded-2xl border border-white/60 dark:border-slate-700 shadow-sm flex items-center gap-3">
+                <div className={`w-11 h-11 rounded-xl flex items-center justify-center font-black text-lg shrink-0 ${prokerMenungguApprovalCount > 0 ? 'bg-amber-50 text-amber-600 border border-amber-200 animate-pulse' : 'bg-teal-50 text-teal-600'}`}>
+                  📝
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Proker Menunggu DPL</p>
+                  <p className="text-xl font-black text-slate-800 dark:text-white mt-0.5">{prokerMenungguApprovalCount} Kelompok</p>
                 </div>
               </div>
             </div>
@@ -317,6 +339,7 @@ export default function MonitoringPokjaPage() {
                         <th className="py-4 px-6 whitespace-nowrap">POKJA & Mitra</th>
                         <th className="py-4 px-6">Dosen Pembimbing (DPL)</th>
                         <th className="py-4 px-6">Mentor Instansi</th>
+                        <th className="py-4 px-6">Status Program Kerja</th>
                         <th className="py-4 px-6 text-center">Status Kelompok</th>
                         <th className="py-4 px-6 text-center">Aksi Admin</th>
                       </tr>
@@ -324,7 +347,7 @@ export default function MonitoringPokjaPage() {
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-700/50">
                       {filteredPokjas.length === 0 ? (
                         <tr>
-                          <td colSpan="5" className="py-12 text-center text-slate-500 font-medium">
+                          <td colSpan="6" className="py-12 text-center text-slate-500 font-medium">
                             <div className="text-4xl mb-3">📭</div>
                             Tidak ada kelompok KKL Plus yang cocok dengan pencarian.
                           </td>
@@ -400,6 +423,61 @@ export default function MonitoringPokjaPage() {
                                     <span className="text-xs text-slate-400 italic">Belum Ada Mentor</span>
                                     <p className="text-[10px] text-slate-400">Didaftarkan saat DPL serah terima</p>
                                   </div>
+                                )}
+                              </td>
+
+                              {/* Status Program Kerja */}
+                              <td className="py-4 px-6 align-top">
+                                {['berjalan', 'disetujui_admin'].includes(p.status_pokja) ? (
+                                  (p.proker_stats?.total === 0 || !p.proker_stats) ? (
+                                    <div className="space-y-1">
+                                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400 text-xs font-bold rounded-lg border border-rose-200 dark:border-rose-800">
+                                        <AlertTriangle className="w-3.5 h-3.5" /> Belum Ada Proker
+                                      </span>
+                                      {p.ketua_id?.nomor_hp && (
+                                        <div>
+                                          <a 
+                                            href={`https://wa.me/${p.ketua_id.nomor_hp.replace(/^0/, '62').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Halo ${p.ketua_id.nama_lengkap || 'Ketua Pokja'}, kelompok KKL Plus Anda (${p.nama_pokja}) sudah aktif/berjalan. Mohon segera merancang dan mengajukan Program Kerja ke DPL melalui sistem MANTAU KKL Plus.`)}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-1 text-[11px] text-teal-600 dark:text-teal-400 hover:underline font-semibold"
+                                          >
+                                            <MessageSquare className="w-3 h-3" /> Nudge Ketua
+                                          </a>
+                                        </div>
+                                      )}
+                                    </div>
+                                  ) : (p.proker_stats?.usulan > 0) ? (
+                                    <div className="space-y-1">
+                                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 text-xs font-bold rounded-lg border border-amber-200 dark:border-amber-800 animate-pulse">
+                                        <Clock className="w-3.5 h-3.5" /> {p.proker_stats.usulan} Menunggu DPL
+                                      </span>
+                                      {p.dpl_id?.nomor_hp && (
+                                        <div>
+                                          <a 
+                                            href={`https://wa.me/${p.dpl_id.nomor_hp.replace(/^0/, '62').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Yth. Bapak/Ibu ${p.dpl_id.nama_lengkap}, kelompok ${p.nama_pokja} telah mengajukan usulan Program Kerja. Mohon kiranya dapat direview dan disetujui di MANTAU KKL Plus.`)}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-1 text-[11px] text-teal-600 dark:text-teal-400 hover:underline font-semibold"
+                                          >
+                                            <MessageSquare className="w-3 h-3" /> Nudge DPL
+                                          </a>
+                                        </div>
+                                      )}
+                                    </div>
+                                  ) : (p.proker_stats?.revisi > 0) ? (
+                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-orange-50 text-orange-700 dark:bg-orange-950/40 dark:text-orange-400 text-xs font-bold rounded-lg border border-orange-200 dark:border-orange-800">
+                                      <AlertTriangle className="w-3.5 h-3.5" /> {p.proker_stats.revisi} Perlu Revisi
+                                    </span>
+                                  ) : (p.proker_stats?.disetujui > 0) ? (
+                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-teal-50 text-teal-700 dark:bg-teal-950/40 dark:text-teal-400 text-xs font-bold rounded-lg border border-teal-200 dark:border-teal-800">
+                                      <CheckCircle2 className="w-3.5 h-3.5" /> {p.proker_stats.disetujui} Disetujui
+                                    </span>
+                                  ) : (
+                                    <span className="text-xs text-slate-400">-</span>
+                                  )
+                                ) : (
+                                  <span className="text-xs text-slate-400">-</span>
                                 )}
                               </td>
 

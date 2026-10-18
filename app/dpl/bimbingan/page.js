@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
-import { UserCircle, MapPin, Phone, Mail, CheckCircle2, UserPlus, Clock, Info, Eye, RefreshCcw, Upload } from "lucide-react";
+import { UserCircle, MapPin, Phone, Mail, CheckCircle2, UserPlus, Clock, Info, Eye, RefreshCcw, Upload, AlertCircle } from "lucide-react";
 
 export default function DaftarBimbinganPage() {
   const [bimbinganList, setBimbinganList] = useState([]);
@@ -417,11 +417,21 @@ export default function DaftarBimbinganPage() {
                           </td>
                           <td className="px-6 py-4 align-middle">
                             <div className="flex flex-col gap-2">
-                              {item.all_proker_approved && (
+                              {/* Status Proker Indicator */}
+                              {(item.proker_stats?.total === 0 || (!item.all_proker_approved && item.proker_stats?.total === 0)) ? (
+                                <span className="inline-flex items-center justify-center gap-1.5 px-3 py-1 bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400 text-[11px] font-bold rounded-full border border-rose-200 dark:border-rose-800 w-full">
+                                  <AlertCircle className="w-3.5 h-3.5" /> Belum Ada Proker
+                                </span>
+                              ) : (item.proker_stats?.usulan > 0) ? (
+                                <span className="inline-flex items-center justify-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 text-[11px] font-bold rounded-full border border-amber-200 dark:border-amber-800 w-full animate-pulse">
+                                  <Clock className="w-3.5 h-3.5" /> {item.proker_stats.usulan} Perlu Disetujui
+                                </span>
+                              ) : (item.all_proker_approved || (item.proker_stats?.total > 0 && item.proker_stats?.disetujui === item.proker_stats?.total)) ? (
                                 <span className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-teal-100 text-teal-700 dark:bg-teal-500/20 dark:text-teal-400 text-xs font-bold rounded-full border border-teal-200 dark:border-teal-500/30 w-full">
                                   <CheckCircle2 className="w-3.5 h-3.5" /> Disetujui Semua
                                 </span>
-                              )}
+                              ) : null}
+
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();

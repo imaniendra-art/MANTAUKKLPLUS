@@ -7,7 +7,7 @@ import { Check, FileSignature, GraduationCap, Briefcase, Bell, AlertTriangle, Cl
 
 export default function DPLDashboard() {
   const { data: session } = useSession();
-  const [stats, setStats] = useState({ prokerMenungguValidasi: 0, logbookMenungguValidasi: 0, pokjaBelumIA: 0, laporanMenungguValidasi: 0 });
+  const [stats, setStats] = useState({ prokerMenungguValidasi: 0, pokjaBelumAdaProker: 0, logbookMenungguValidasi: 0, pokjaBelumIA: 0, laporanMenungguValidasi: 0 });
   const [pendingPokjas, setPendingPokjas] = useState([]);
   const [activePokjas, setActivePokjas] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,6 +21,7 @@ export default function DPLDashboard() {
         fetch(`/api/proker?dplId=${session.user.id}`).then(r => r.json())
       ]).then(([pokjasList, logs, laporans, prokers]) => {
         let pokjaBelumIA = 0;
+        let pokjaBelumAdaProker = 0;
         let prokerMenungguValidasi = 0;
         let logbookMenungguValidasi = 0;
         let laporanMenungguValidasi = 0;
@@ -30,6 +31,9 @@ export default function DPLDashboard() {
           pokjaBelumIA = activeList.filter(p => p.mitra_id?.status_kerjasama !== 'Implementation Arrangement (IA)').length;
           setPendingPokjas(pokjasList.filter(p => p.status_pokja === 'disetujui_admin'));
           setActivePokjas(activeList);
+          
+          // Hitung kelompok berjalan yang belum memiliki proker
+          pokjaBelumAdaProker = activeList.filter(p => (p.proker_stats?.total || 0) === 0).length;
         }
 
         if (Array.isArray(logs)) {
@@ -44,7 +48,7 @@ export default function DPLDashboard() {
           prokerMenungguValidasi = prokers.filter(p => p.status === 'usulan').length;
         }
 
-        setStats({ prokerMenungguValidasi, logbookMenungguValidasi, pokjaBelumIA, laporanMenungguValidasi });
+        setStats({ prokerMenungguValidasi, pokjaBelumAdaProker, logbookMenungguValidasi, pokjaBelumIA, laporanMenungguValidasi });
         setLoading(false);
       }).catch((err) => {
         console.error(err);
@@ -72,7 +76,7 @@ export default function DPLDashboard() {
     }
   };
 
-  const hasNotifications = session?.user?.isFirstLogin || pendingPokjas.length > 0 || stats.prokerMenungguValidasi > 0 || stats.pokjaBelumIA > 0 || stats.laporanMenungguValidasi > 0;
+  const hasNotifications = session?.user?.isFirstLogin || pendingPokjas.length > 0 || stats.prokerMenungguValidasi > 0 || stats.pokjaBelumAdaProker > 0 || stats.pokjaBelumIA > 0 || stats.laporanMenungguValidasi > 0;
 
   const dashboardContent = loading ? (
     <>
@@ -142,7 +146,35 @@ export default function DPLDashboard() {
               </div>
             ))}
 
-            {/* Notifikasi Proker */}
+            {/* Notifikasi Pokja Belum Buat Proker */}
+            {stats.pokjaBelumAdaProker > 0 && (
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 bg-white dark:bg-slate-800 border border-rose-200/60 dark:border-rose-900/40 rounded-2xl transition-all hover:shadow-md">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-rose-50 dark:bg-rose-900/40 flex items-center justify-center text-rose-600 dark:text-rose-400 shrink-0">
+                    <AlertTriangle className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <h4 className="font-bold text-slate-800 dark:text-white text-lg">Kelompok Belum Menyusun Proker</h4>
+                      <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-900/60 dark:text-rose-300">
+                        Perlu Perhatian
+                      </span>
+                    </div>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                      Terdapat <strong>{stats.pokjaBelumAdaProker}</strong> kelompok bimbingan yang telah diserahkan/berjalan namun belum menyusun Program Kerja.
+                    </p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => window.location.href = '/dpl/bimbingan'}
+                  className="w-full sm:w-auto px-6 py-2.5 bg-rose-500 hover:bg-rose-600 text-white font-bold rounded-xl shadow-sm transition-all shrink-0 whitespace-nowrap"
+                >
+                  Pantau Bimbingan
+                </button>
+              </div>
+            )}
+
+            {/* Notifikasi Proker Menunggu Validasi */}
             {stats.prokerMenungguValidasi > 0 && (
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl transition-all hover:shadow-md">
                 <div className="flex items-start gap-4">

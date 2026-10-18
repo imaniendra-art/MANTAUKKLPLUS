@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import DashboardLayout from "@/components/DashboardLayout";
 import { useSession } from "@/components/AuthProvider";
 import { FileSignature, User, Briefcase } from "lucide-react";
 
 export default function LogbookPage() {
   const { data: session } = useSession();
+  const router = useRouter();
   
   const [pokja, setPokja] = useState(null);
   const [prokers, setProkers] = useState([]);
@@ -244,14 +246,19 @@ export default function LogbookPage() {
     }
   };
 
-  // Logic untuk proker dropdown
-  const filteredProkers = useMemo(() => {
+  // Logic untuk proker dropdown: Hanya proker yang telah disetujui DPL
+  const approvedProkers = useMemo(() => {
     if (!pokja || !Array.isArray(prokers) || prokers.length === 0) return [];
+    return prokers.filter(p => p.status === 'disetujui_dpl' || p.status === 'selesai');
+  }, [prokers, pokja]);
+
+  const filteredProkers = useMemo(() => {
+    if (approvedProkers.length === 0) return [];
     
     const userId = String(session?.user?.id || session?.user?._id || '');
     
     // Urutkan agar proker yang mana user adalah PIC atau Proker Utama muncul di urutan atas
-    return [...prokers].sort((a, b) => {
+    return [...approvedProkers].sort((a, b) => {
       const aIsPIC = Array.isArray(a.pic_id)
         ? a.pic_id.some(pic => String(pic?._id || pic?.id || pic) === userId)
         : String(a.pic_id?._id || a.pic_id?.id || a.pic_id) === userId;
@@ -264,7 +271,7 @@ export default function LogbookPage() {
       if (a.jenis_proker !== 'Utama' && b.jenis_proker === 'Utama') return 1;
       return 0;
     });
-  }, [prokers, pokja, session]);
+  }, [approvedProkers, session]);
 
   const displayedLogbooks = logbooks; // Sudah di-filter dari API
 
@@ -333,18 +340,35 @@ export default function LogbookPage() {
               
               {activeTab === 'pokja' && filteredProkers.length === 0 ? (
                 <div className="p-8 text-center space-y-3">
-                  <div className="text-4xl">📂</div>
-                  <p className="font-bold text-slate-700 dark:text-slate-300">Belum Ada Program Kerja Disetujui</p>
+                  <div className="w-16 h-16 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center text-3xl mx-auto shadow-inner">
+                    {prokers.length === 0 ? '📂' : '⏳'}
+                  </div>
+                  <h4 className="font-bold text-slate-800 dark:text-white text-base">
+                    {prokers.length === 0 ? 'Belum Ada Program Kerja' : 'Program Kerja Menunggu Persetujuan DPL'}
+                  </h4>
                   <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto leading-relaxed">
-                    Proker kelompok belum disusun atau masih menunggu persetujuan DPL. Untuk hari-hari awal, silakan gunakan tab <strong>Logbook Personal</strong>.
+                    {prokers.length === 0
+                      ? 'Kelompok Anda belum memiliki rancangan Program Kerja. Untuk hari-hari awal, silakan gunakan tab Logbook Personal untuk mencatat kegiatan rapat dan observasi.'
+                      : `Terdapat ${prokers.length} usulan Program Kerja yang masih dalam proses evaluasi/persetujuan oleh DPL. Silakan gunakan tab Logbook Personal untuk aktivitas harian Anda.`}
                   </p>
-                  <button
-                    type="button"
-                    onClick={() => handleTabChange('individu')}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-xl transition-all shadow-sm"
-                  >
-                    Beralih ke Logbook Personal →
-                  </button>
+                  <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => handleTabChange('individu')}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-xl transition-all shadow-sm"
+                    >
+                      Beralih ke Logbook Personal →
+                    </button>
+                    {prokers.length === 0 && pokja && (String(pokja.ketua_id?._id || pokja.ketua_id) === String(session?.user?.id)) && (
+                      <button
+                        type="button"
+                        onClick={() => router.push('/mahasiswa/proker')}
+                        className="inline-flex items-center gap-1.5 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-xl transition-all shadow-sm"
+                      >
+                        Rancang Proker Sekarang
+                      </button>
+                    )}
+                  </div>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="p-6 space-y-5">
