@@ -957,7 +957,7 @@ function MahasiswaDashboardContent() {
                     <div className="text-center">
                       <p className="font-bold text-xs mb-2">Foto Luar Bangunan / Gedung</p>
                       {pokja?.mitra_id?.foto_kantor_desa ? (
-                        <img src={pokja.mitra_id.foto_kantor_desa} alt="Luar Bangunan" className="w-full h-24 object-cover rounded-xl shadow-sm border border-slate-200 mb-2" />
+                        <img src={pokja.mitra_id.foto_kantor_desa} alt="Luar Bangunan" onError={(e) => { e.currentTarget.style.display = 'none'; }} className="w-full h-24 object-cover rounded-xl shadow-sm border border-slate-200 mb-2" />
                       ) : (
                         <div className="w-full h-24 bg-slate-100 dark:bg-slate-800 rounded-xl border border-dashed border-slate-300 flex items-center justify-center mb-2">
                           <span className="text-[10px] text-slate-400">Belum ada foto</span>
@@ -973,7 +973,7 @@ function MahasiswaDashboardContent() {
                     <div className="text-center">
                       <p className="font-bold text-xs mb-2">Foto Dalam Kantor / Ruangan</p>
                       {pokja?.mitra_id?.foto_kantor_bumdes ? (
-                        <img src={pokja.mitra_id.foto_kantor_bumdes} alt="Dalam Ruangan" className="w-full h-24 object-cover rounded-xl shadow-sm border border-slate-200 mb-2" />
+                        <img src={pokja.mitra_id.foto_kantor_bumdes} alt="Dalam Ruangan" onError={(e) => { e.currentTarget.style.display = 'none'; }} className="w-full h-24 object-cover rounded-xl shadow-sm border border-slate-200 mb-2" />
                       ) : (
                         <div className="w-full h-24 bg-slate-100 dark:bg-slate-800 rounded-xl border border-dashed border-slate-300 flex items-center justify-center mb-2">
                           <span className="text-[10px] text-slate-400">Belum ada foto</span>
@@ -989,7 +989,7 @@ function MahasiswaDashboardContent() {
                     <div className="text-center">
                       <p className="font-bold text-xs mb-2">Logo Instansi</p>
                       {pokja?.mitra_id?.logo_mitra ? (
-                        <img src={pokja.mitra_id.logo_mitra} alt="Logo" className="w-full h-24 object-contain rounded-xl shadow-sm border border-slate-200 mb-2 bg-white p-2" />
+                        <img src={pokja.mitra_id.logo_mitra} alt="Logo" onError={(e) => { e.currentTarget.style.display = 'none'; }} className="w-full h-24 object-contain rounded-xl shadow-sm border border-slate-200 mb-2 bg-white p-2" />
                       ) : (
                         <div className="w-full h-24 bg-slate-100 dark:bg-slate-800 rounded-xl border border-dashed border-slate-300 flex items-center justify-center mb-2">
                           <span className="text-[10px] text-slate-400">Belum ada logo</span>
