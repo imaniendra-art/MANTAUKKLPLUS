@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import DashboardLayout from "@/components/DashboardLayout";
+import { useSession } from "@/components/AuthProvider";
 import { FileSignature, User, Briefcase, Loader2, CheckCircle2, Sparkles } from "lucide-react";
 import { compressImage, formatBytes } from "@/lib/imageCompressor";
 
