@@ -65,7 +65,7 @@ export default function SuratPengantarPage({ params }) {
         </button>
         <button 
           onClick={() => router.back()} 
-          className="px-6 py-3 bg-white text-slate-700 font-bold rounded-xl shadow border border-slate-200 text-center"
+          className="px-6 py-3 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold rounded-xl shadow border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-center"
         >
           Kembali
         </button>

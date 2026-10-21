@@ -596,7 +596,7 @@ export default function DaftarBimbinganPage() {
                                           </div>
                                           <div className="ml-11 space-y-3">
                                             <div className="flex flex-wrap items-center gap-2">
-                                              <span className={`text-[10px] px-2 py-0.5 rounded-md font-bold ${p.jenis_proker === 'Utama' ? 'bg-amber-100 text-amber-700' : 'bg-slate-200 text-slate-700'}`}>
+                                              <span className={`text-[10px] px-2 py-0.5 rounded-md font-bold ${p.jenis_proker === 'Utama' ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'}`}>
                                                 {p.jenis_proker}
                                               </span>
                                               <span className="text-[11px] text-slate-500 font-medium bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded-md">
@@ -640,7 +640,7 @@ export default function DaftarBimbinganPage() {
                                                   placeholder="Catatan revisi..."
                                                   value={revisiNotes[p._id] || ''}
                                                   onChange={(e) => setRevisiNotes({...revisiNotes, [p._id]: e.target.value})}
-                                                  className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-2 text-xs mb-2 resize-none h-16 focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                                                  className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 rounded-lg p-2 text-xs mb-2 resize-none h-16 focus:ring-2 focus:ring-amber-500 focus:outline-none"
                                                 ></textarea>
                                                 <button
                                                   onClick={() => handleReviewProker(p._id, 'revisi')}
@@ -819,7 +819,7 @@ export default function DaftarBimbinganPage() {
             <div className="mt-6 flex justify-end">
               <button 
                 onClick={() => setShowStatusInfo(false)} 
-                className="px-6 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors"
+                className="px-6 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold rounded-xl transition-colors"
               >
                 Tutup
               </button>

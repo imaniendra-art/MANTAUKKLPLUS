@@ -407,13 +407,13 @@ export default function LogbookPage() {
                 <form onSubmit={handleSubmit} className="p-6 space-y-5">
                   <div>
                     <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Tanggal Kegiatan</label>
-                    <input required value={tanggal} onChange={(e) => setTanggal(e.target.value)} type="date" className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/20 dark:bg-slate-900/20" />
+                    <input required value={tanggal} onChange={(e) => setTanggal(e.target.value)} type="date" className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/20 dark:bg-slate-900/60 text-slate-900 dark:text-white" />
                   </div>
                   
                   {activeTab === 'pokja' ? (
                     <div>
                       <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Pilih Program Kerja <span className="text-red-500">*</span></label>
-                      <select required value={prokerId} onChange={(e) => setProkerId(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/20 dark:bg-slate-900/20">
+                      <select required value={prokerId} onChange={(e) => setProkerId(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/20 dark:bg-slate-900/60 text-slate-900 dark:text-white">
                         <option value="">-- Pilih Proker --</option>
                         {filteredProkers.map(p => {
                           const userId = String(session?.user?.id || session?.user?._id || '');
@@ -432,7 +432,7 @@ export default function LogbookPage() {
                   ) : (
                     <div>
                       <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Program Kerja Terkait (Opsional)</label>
-                      <select value={prokerId} onChange={(e) => setProkerId(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/20 dark:bg-slate-900/20">
+                      <select value={prokerId} onChange={(e) => setProkerId(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/20 dark:bg-slate-900/60 text-slate-900 dark:text-white">
                         <option value="">-- Tidak Terkait Proker Khusus --</option>
                         {prokers.map(p => (
                           <option key={p._id} value={p._id}>
@@ -445,19 +445,19 @@ export default function LogbookPage() {
 
                   <div>
                     <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Rencana/Target Hari Ini <span className="text-red-500">*</span></label>
-                    <input required value={rencanaTarget} onChange={(e) => setRencanaTarget(e.target.value)} type="text" placeholder="Cth: Mengadakan observasi ke balai desa" className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/20 dark:bg-slate-900/20 text-sm" />
+                    <input required value={rencanaTarget} onChange={(e) => setRencanaTarget(e.target.value)} type="text" placeholder="Cth: Mengadakan observasi ke balai desa" className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/20 dark:bg-slate-900/60 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm" />
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Uraian Kegiatan <span className="text-red-500">*</span></label>
-                    <textarea required minLength="20" value={uraianKegiatan} onChange={(e) => setUraianKegiatan(e.target.value)} rows="3" placeholder="Ceritakan detail apa saja yang dilakukan..." className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/20 dark:bg-slate-900/20 text-sm"></textarea>
+                    <textarea required minLength="20" value={uraianKegiatan} onChange={(e) => setUraianKegiatan(e.target.value)} rows="3" placeholder="Ceritakan detail apa saja yang dilakukan..." className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/20 dark:bg-slate-900/60 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm"></textarea>
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Hasil/Output <span className="text-red-500">*</span></label>
-                    <input required value={hasilOutput} onChange={(e) => setHasilOutput(e.target.value)} type="text" placeholder="Cth: Mendapat data monografi desa" className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/20 dark:bg-slate-900/20 text-sm" />
+                    <input required value={hasilOutput} onChange={(e) => setHasilOutput(e.target.value)} type="text" placeholder="Cth: Mendapat data monografi desa" className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/20 dark:bg-slate-900/60 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm" />
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Kendala & Solusi (Opsional)</label>
-                    <textarea value={kendalaSolusi} onChange={(e) => setKendalaSolusi(e.target.value)} rows="2" placeholder="Jika ada kendala, bagaimana mengatasinya?" className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/20 dark:bg-slate-900/20 text-sm"></textarea>
+                    <textarea value={kendalaSolusi} onChange={(e) => setKendalaSolusi(e.target.value)} rows="2" placeholder="Jika ada kendala, bagaimana mengatasinya?" className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/20 dark:bg-slate-900/60 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm"></textarea>
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center justify-between">
@@ -472,7 +472,7 @@ export default function LogbookPage() {
                       type="file" 
                       accept="image/*" 
                       onChange={handleFileChange} 
-                      className="w-full px-4 py-2.5 rounded-xl border border-white/60 dark:border-slate-700 bg-white/20 dark:bg-slate-900/20 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500" 
+                      className="w-full px-4 py-2.5 rounded-xl border border-white/60 dark:border-slate-700 bg-white/20 dark:bg-slate-900/60 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-teal-500" 
                     />
 
                     {/* Status Loading Kompresi */}
@@ -519,7 +519,7 @@ export default function LogbookPage() {
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Keterangan Gambar / Foto <span className="text-red-500">*</span></label>
-                    <input required value={keteranganBukti} onChange={(e) => setKeteranganBukti(e.target.value)} type="text" placeholder="Cth: Foto bersama kepala desa di balai desa" className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/20 dark:bg-slate-900/20 text-sm" />
+                    <input required value={keteranganBukti} onChange={(e) => setKeteranganBukti(e.target.value)} type="text" placeholder="Cth: Foto bersama kepala desa di balai desa" className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/20 dark:bg-slate-900/60 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm" />
                   </div>
                   <button 
                     type="submit" 
@@ -609,7 +609,7 @@ export default function LogbookPage() {
                     <select 
                       value={limit} 
                       onChange={(e) => { setLimit(Number(e.target.value)); setPage(1); }}
-                      className="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm font-medium"
+                      className="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white text-sm font-medium"
                     >
                       <option value={10}>10</option>
                       <option value={20}>20</option>

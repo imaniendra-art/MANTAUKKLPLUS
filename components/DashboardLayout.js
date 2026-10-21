@@ -336,7 +336,7 @@ export default function DashboardLayout({ children, title = "Dashboard", notific
           <div className="absolute inset-0 bg-gradient-to-r from-teal-600/90 to-teal-600/20 dark:from-teal-900/90 dark:to-transparent"></div>
           
           <div className="relative p-8 lg:p-12">
-            <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white shadow-sm mb-6">
+            <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-white/10 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/20 text-white dark:text-white shadow-sm mb-6">
               <span className="text-xs font-bold uppercase tracking-widest">{config.greeting} Panel</span>
             </div>
             <h1 className="text-4xl lg:text-5xl font-black text-white mb-4 tracking-tight drop-shadow-lg">

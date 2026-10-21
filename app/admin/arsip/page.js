@@ -126,17 +126,17 @@ export default function ArsipDokumen() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {filtered.map(pokja => (
-            <div key={pokja._id} className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-shadow">
-              <h3 className="font-bold text-lg text-slate-800 mb-1">{pokja.nama_pokja}</h3>
+            <div key={pokja._id} className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm hover:shadow-md transition-shadow">
+              <h3 className="font-bold text-lg text-slate-800 dark:text-slate-100 mb-1">{pokja.nama_pokja}</h3>
               <p className="text-sm text-slate-600 mb-4 flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-teal-500"></span> 
                 {pokja.mitra_id?.nama_instansi || 'Belum ada mitra'}
               </p>
               
               <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100">
+                <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900/60 rounded-lg border border-slate-100 dark:border-slate-700">
                   <div>
-                    <p className="text-sm font-semibold text-slate-700">Surat Pengantar Instansi</p>
+                    <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">Surat Pengantar Instansi</p>
                     <p className="text-xs text-slate-500">Ke: {pokja.mitra_id?.nama_instansi}</p>
                   </div>
                   <Link href={`/mahasiswa/surat/pengantar/${pokja.ketua_id?._id}`} target="_blank" className="p-2 text-teal-600 hover:bg-teal-50 rounded-lg transition-colors">
@@ -144,9 +144,9 @@ export default function ArsipDokumen() {
                   </Link>
                 </div>
                 
-                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100">
+                <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900/60 rounded-lg border border-slate-100 dark:border-slate-700">
                   <div>
-                    <p className="text-sm font-semibold text-slate-700">Surat Tugas DPL</p>
+                    <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">Surat Tugas DPL</p>
                     <p className="text-xs text-slate-500">DPL: {pokja.dpl_id?.nama_lengkap || '-'}</p>
                   </div>
                   <Link href={`/mahasiswa/surat/tugas/${pokja.ketua_id?._id}`} target="_blank" className="p-2 text-teal-600 hover:bg-teal-50 rounded-lg transition-colors">
@@ -154,7 +154,7 @@ export default function ArsipDokumen() {
                   </Link>
                 </div>
                 
-                <div className="flex items-center justify-between p-3 bg-amber-50 rounded-lg border border-amber-100">
+                <div className="flex items-center justify-between p-3 bg-amber-50 dark:bg-amber-950/40 rounded-lg border border-amber-100 dark:border-amber-800/60">
                   <div>
                     <p className="text-sm font-semibold text-amber-800">SK Mahasiswa & DPL</p>
                     <p className="text-xs text-amber-600">Surat Keputusan Penetapan</p>
@@ -191,19 +191,19 @@ export default function ArsipDokumen() {
 
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
-        <h3 className="font-bold text-slate-800 text-lg border-b pb-2">Dokumen Kerjasama Mitra</h3>
+        <h3 className="font-bold text-slate-800 dark:text-slate-100 text-lg border-b border-slate-200 dark:border-slate-700 pb-2">Dokumen Kerjasama Mitra</h3>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {filteredMitras.map(mitra => (
-            <div key={mitra._id} className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-shadow">
-              <h3 className="font-bold text-lg text-slate-800 mb-1">{mitra.nama_instansi}</h3>
+            <div key={mitra._id} className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm hover:shadow-md transition-shadow">
+              <h3 className="font-bold text-lg text-slate-800 dark:text-slate-100 mb-1">{mitra.nama_instansi}</h3>
               <p className="text-sm text-slate-600 mb-4 flex items-center gap-1.5">
                 Status: <span className="font-bold text-teal-600">{mitra.status_kerjasama || 'Belum Ada'}</span>
               </p>
               
               <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100">
+                <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900/60 rounded-lg border border-slate-100 dark:border-slate-700">
                   <div>
-                    <p className="text-sm font-semibold text-slate-700">Memorandum of Understanding (MoU)</p>
+                    <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">Memorandum of Understanding (MoU)</p>
                     <p className="text-xs text-slate-500">Kesepakatan Tingkat Perguruan Tinggi</p>
                   </div>
                   {mitra.file_mou ? (
@@ -215,9 +215,9 @@ export default function ArsipDokumen() {
                   )}
                 </div>
                 
-                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100">
+                <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900/60 rounded-lg border border-slate-100 dark:border-slate-700">
                   <div>
-                    <p className="text-sm font-semibold text-slate-700">Memorandum of Agreement (MoA)</p>
+                    <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">Memorandum of Agreement (MoA)</p>
                     <p className="text-xs text-slate-500">Kesepakatan Tingkat Fakultas</p>
                   </div>
                   {mitra.file_moa ? (
@@ -229,9 +229,9 @@ export default function ArsipDokumen() {
                   )}
                 </div>
 
-                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100">
+                <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900/60 rounded-lg border border-slate-100 dark:border-slate-700">
                   <div>
-                    <p className="text-sm font-semibold text-slate-700">Implementation Arrangement (IA)</p>
+                    <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">Implementation Arrangement (IA)</p>
                     <p className="text-xs text-slate-500">Surat Keterangan Implementasi Program</p>
                   </div>
                   {mitra.file_ia ? (
@@ -264,12 +264,12 @@ export default function ArsipDokumen() {
 
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
-        <h3 className="font-bold text-slate-800 text-lg border-b pb-2">Laporan Kelompok</h3>
+        <h3 className="font-bold text-slate-800 dark:text-slate-100 text-lg border-b border-slate-200 dark:border-slate-700 pb-2">Laporan Kelompok</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {dataPokja.filter(p => p.nama_pokja?.toLowerCase().includes(searchTerm.toLowerCase())).map(pokja => (
-            <div key={pokja._id} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between gap-3">
+            <div key={pokja._id} className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-between gap-3">
               <div className="overflow-hidden">
-                <p className="font-bold text-sm text-slate-800 truncate">{pokja.nama_pokja}</p>
+                <p className="font-bold text-sm text-slate-800 dark:text-slate-100 truncate">{pokja.nama_pokja}</p>
                 <p className="text-xs text-slate-500 truncate">{pokja.mitra_id?.nama_instansi}</p>
               </div>
               <Link href={`/mahasiswa/laporan/cetak/laporan?tipe=pokja&pokjaId=${pokja._id}`} target="_blank" className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 text-teal-700 hover:bg-teal-100 font-semibold text-xs rounded-lg transition-colors">
@@ -279,13 +279,13 @@ export default function ArsipDokumen() {
           ))}
         </div>
 
-        <h3 className="font-bold text-slate-800 text-lg border-b pb-2 mt-8">Laporan Individu</h3>
+        <h3 className="font-bold text-slate-800 dark:text-slate-100 text-lg border-b border-slate-200 dark:border-slate-700 pb-2 mt-8">Laporan Individu</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {filteredIndividu.map(pengajuan => (
-            <div key={pengajuan._id} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-3 justify-between">
+            <div key={pengajuan._id} className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col gap-3 justify-between">
               <div>
-                <p className="font-bold text-sm text-slate-800 truncate">{pengajuan.mahasiswa_id?.nama_lengkap}</p>
-                <p className="text-xs font-mono text-slate-500">{pengajuan.mahasiswa_id?.nim_nidn}</p>
+                <p className="font-bold text-sm text-slate-800 dark:text-slate-100 truncate">{pengajuan.mahasiswa_id?.nama_lengkap}</p>
+                <p className="text-xs font-mono text-slate-500 dark:text-slate-400">{pengajuan.mahasiswa_id?.nim_nidn}</p>
                 <p className="text-xs text-teal-600 font-semibold mt-1 bg-teal-50 inline-block px-2 py-0.5 rounded">{pengajuan.pokja_id?.nama_pokja}</p>
               </div>
               <Link href={`/mahasiswa/laporan/cetak/laporan?tipe=individu&pokjaId=${pengajuan.pokja_id?._id}&mhsId=${pengajuan.mahasiswa_id?._id}`} target="_blank" className="flex items-center justify-center gap-1.5 px-3 py-2 bg-slate-800 text-white hover:bg-slate-700 font-semibold text-xs rounded-lg transition-colors w-full">
@@ -295,13 +295,13 @@ export default function ArsipDokumen() {
           ))}
         </div>
 
-        <h3 className="font-bold text-slate-800 text-lg border-b pb-2 mt-8">Laporan Dosen Pembimbing (DPL)</h3>
+        <h3 className="font-bold text-slate-800 dark:text-slate-100 text-lg border-b border-slate-200 dark:border-slate-700 pb-2 mt-8">Laporan Dosen Pembimbing (DPL)</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {dataLaporanDpl.filter(l => l.dpl_id?.nama_lengkap?.toLowerCase().includes(searchTerm.toLowerCase())).map(laporan => (
-            <div key={laporan._id} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-3 justify-between">
+            <div key={laporan._id} className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col gap-3 justify-between">
               <div>
-                <p className="font-bold text-sm text-slate-800 truncate">{laporan.dpl_id?.nama_lengkap}</p>
-                <p className="text-xs font-mono text-slate-500">{laporan.dpl_id?.nidn || laporan.dpl_id?.nim_nidn}</p>
+                <p className="font-bold text-sm text-slate-800 dark:text-slate-100 truncate">{laporan.dpl_id?.nama_lengkap}</p>
+                <p className="text-xs font-mono text-slate-500 dark:text-slate-400">{laporan.dpl_id?.nidn || laporan.dpl_id?.nim_nidn}</p>
                 <p className={`text-xs font-semibold mt-1 inline-block px-2 py-0.5 rounded uppercase ${laporan.status === 'disetujui' ? 'bg-teal-50 text-teal-600' : 'bg-blue-50 text-blue-600'}`}>{laporan.status}</p>
               </div>
               <Link href={`/dpl/laporan?id=${laporan._id}`} target="_blank" className="flex items-center justify-center gap-1.5 px-3 py-2 bg-blue-600 text-white hover:bg-blue-700 font-semibold text-xs rounded-lg transition-colors w-full">
@@ -321,34 +321,34 @@ export default function ArsipDokumen() {
   const renderTabSertifikat = () => {
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
-        <h3 className="font-bold text-slate-800 text-lg border-b pb-2">Sertifikat Mahasiswa</h3>
+        <h3 className="font-bold text-slate-800 dark:text-slate-100 text-lg border-b border-slate-200 dark:border-slate-700 pb-2">Sertifikat Mahasiswa</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
           {dataPengajuan.filter(p => p.mahasiswa_id?.nama_lengkap?.toLowerCase().includes(searchTerm.toLowerCase())).map(pengajuan => (
-            <div key={`cert-mhs-${pengajuan._id}`} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-3 text-center">
+            <div key={`cert-mhs-${pengajuan._id}`} className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col gap-3 text-center">
               <div className="w-12 h-12 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto shadow-inner">
                 <Award className="w-6 h-6" />
               </div>
               <div>
-                <p className="font-bold text-sm text-slate-800 line-clamp-1">{pengajuan.mahasiswa_id?.nama_lengkap}</p>
+                <p className="font-bold text-sm text-slate-800 dark:text-slate-100 line-clamp-1">{pengajuan.mahasiswa_id?.nama_lengkap}</p>
                 <p className="text-xs text-slate-500">{pengajuan.mahasiswa_id?.nim_nidn}</p>
               </div>
-              <Link href={`/mahasiswa/laporan/cetak/sertifikat-mahasiswa?mhsId=${pengajuan._id}`} target="_blank" className="mt-2 w-full flex items-center justify-center gap-2 px-3 py-2 bg-white border-2 border-amber-500 text-amber-700 hover:bg-amber-50 font-bold text-xs rounded-lg transition-colors">
+              <Link href={`/mahasiswa/laporan/cetak/sertifikat-mahasiswa?mhsId=${pengajuan._id}`} target="_blank" className="mt-2 w-full flex items-center justify-center gap-2 px-3 py-2 bg-white dark:bg-slate-800 border-2 border-amber-500 text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-slate-700 font-bold text-xs rounded-lg transition-colors">
                 <Printer className="w-4 h-4" /> Cetak
               </Link>
             </div>
           ))}
         </div>
 
-        <h3 className="font-bold text-slate-800 text-lg border-b pb-2 mt-8">Sertifikat Mitra Instansi</h3>
+        <h3 className="font-bold text-slate-800 dark:text-slate-100 text-lg border-b border-slate-200 dark:border-slate-700 pb-2 mt-8">Sertifikat Mitra Instansi</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
           {dataPokja.filter(p => p.mitra_id?.nama_instansi?.toLowerCase().includes(searchTerm.toLowerCase())).map(pokja => (
             <div key={`cert-mitra-${pokja._id}`} className="bg-gradient-to-br from-teal-50 to-emerald-50 p-5 rounded-xl border border-teal-100 shadow-sm flex flex-col justify-between gap-4">
               <div className="flex gap-3 items-start">
-                <div className="p-2 bg-white rounded-lg shadow-sm shrink-0">
+                <div className="p-2 bg-white dark:bg-slate-800 rounded-lg shadow-sm shrink-0">
                   <Award className="w-6 h-6 text-teal-600" />
                 </div>
                 <div>
-                  <p className="font-bold text-sm text-slate-800 line-clamp-2">{pokja.mitra_id?.nama_instansi || 'Belum Ada Mitra'}</p>
+                  <p className="font-bold text-sm text-slate-800 dark:text-slate-100 line-clamp-2">{pokja.mitra_id?.nama_instansi || 'Belum Ada Mitra'}</p>
                   <p className="text-xs text-slate-500 mt-1">Diberikan via Kelompok: {pokja.nama_pokja}</p>
                 </div>
               </div>
@@ -484,7 +484,7 @@ export default function ArsipDokumen() {
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
           
           {/* Header Navigasi Album */}
-          <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-start md:items-center gap-3">
               <button
                 onClick={() => {
@@ -493,14 +493,14 @@ export default function ArsipDokumen() {
                   setFilterMhsId('semua');
                   setGaleriPage(1);
                 }}
-                className="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 text-xs font-bold shrink-0"
+                className="p-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 text-xs font-bold shrink-0"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Daftar Album
               </button>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-xl font-bold text-slate-800">
+                  <h3 className="text-xl font-bold text-slate-800 dark:text-white">
                     Album {activeAlbum.pokja.nama_pokja}
                   </h3>
                   <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-teal-100 text-teal-800">
@@ -528,7 +528,7 @@ export default function ArsipDokumen() {
           </div>
 
           {/* Sub-Filter Toolbar: Kategori & Filter Mahasiswa */}
-          <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 flex flex-col md:flex-row items-center justify-between gap-3">
+          <div className="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col md:flex-row items-center justify-between gap-3">
             {/* Filter Kategori Segmented */}
             <div className="flex flex-wrap gap-1.5 w-full md:w-auto">
               {[
@@ -543,11 +543,11 @@ export default function ArsipDokumen() {
                   className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                     galeriKategori === cat.id
                       ? 'bg-teal-600 text-white shadow-sm'
-                      : 'bg-white text-slate-600 hover:bg-slate-200/70 border border-slate-200'
+                      : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200/70 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
                   }`}
                 >
                   <span>{cat.label}</span>
-                  <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${galeriKategori === cat.id ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'}`}>
+                  <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${galeriKategori === cat.id ? 'bg-white/20 dark:bg-white/20 text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300'}`}>
                     {cat.count}
                   </span>
                 </button>
@@ -561,7 +561,7 @@ export default function ArsipDokumen() {
                 <select
                   value={filterMhsId}
                   onChange={(e) => { setFilterMhsId(e.target.value); setGaleriPage(1); }}
-                  className="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-medium bg-white text-slate-700 outline-none focus:border-teal-500 w-full md:w-56"
+                  className="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-medium bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 outline-none focus:border-teal-500 w-full md:w-56"
                 >
                   <option value="semua">Semua Mahasiswa ({activeAlbum.membersList.length})</option>
                   {activeAlbum.membersList.map(m => (
@@ -574,9 +574,9 @@ export default function ArsipDokumen() {
 
           {/* Grid Foto Paginated */}
           {paginatedPhotos.length === 0 ? (
-            <div className="bg-white p-12 rounded-2xl border border-slate-200 text-center text-slate-500">
+            <div className="bg-white dark:bg-slate-800 p-12 rounded-2xl border border-slate-200 dark:border-slate-700 text-center text-slate-500 dark:text-slate-400">
               <Camera className="w-12 h-12 text-slate-300 mx-auto mb-2" />
-              <p className="font-semibold text-slate-700">Tidak ada foto dokumentasi pada filter ini.</p>
+              <p className="font-semibold text-slate-700 dark:text-slate-200">Tidak ada foto dokumentasi pada filter ini.</p>
               <p className="text-xs text-slate-400 mt-1">Coba ganti kategori atau pilih mahasiswa lain.</p>
             </div>
           ) : (
@@ -585,7 +585,7 @@ export default function ArsipDokumen() {
                 <div
                   key={foto.id}
                   onClick={() => setLightboxItem(foto)}
-                  className="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-teal-300 transition-all cursor-pointer overflow-hidden group flex flex-col"
+                  className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md hover:border-teal-300 dark:hover:border-teal-400 transition-all cursor-pointer overflow-hidden group flex flex-col"
                 >
                   <div className="h-44 bg-slate-100 relative overflow-hidden flex items-center justify-center">
                     <img
@@ -607,14 +607,14 @@ export default function ArsipDokumen() {
                       {foto.tag}
                     </div>
                     <div className="absolute inset-0 bg-teal-900/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <span className="p-2 bg-white/90 text-teal-700 rounded-full shadow-lg">
+                      <span className="p-2 bg-white/90 dark:bg-slate-800/90 text-teal-700 dark:text-teal-300 rounded-full shadow-lg">
                         <Eye className="w-4 h-4" />
                       </span>
                     </div>
                   </div>
                   <div className="p-3 flex-1 flex flex-col justify-between">
                     <div>
-                      <p className="font-bold text-xs text-slate-800 line-clamp-1 group-hover:text-teal-600 transition-colors">
+                      <p className="font-bold text-xs text-slate-800 dark:text-slate-100 line-clamp-1 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">
                         {foto.title}
                       </p>
                       <p className="text-[11px] text-slate-500 line-clamp-1 mt-0.5">
@@ -635,7 +635,7 @@ export default function ArsipDokumen() {
 
           {/* Pagination Controls */}
           {totalPages > 1 && (
-            <div className="bg-white p-3 rounded-xl border border-slate-200 flex items-center justify-between">
+            <div className="bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-between">
               <button
                 disabled={currentPage === 1}
                 onClick={() => setGaleriPage(p => Math.max(1, p - 1))}
@@ -644,7 +644,7 @@ export default function ArsipDokumen() {
                 <ChevronLeft className="w-4 h-4" /> Sebelumnya
               </button>
               <span className="text-xs text-slate-600 font-medium">
-                Halaman <strong className="text-slate-800">{currentPage}</strong> dari <strong>{totalPages}</strong> ({currentPhotos.length} Foto)
+                Halaman <strong className="text-slate-800 dark:text-white">{currentPage}</strong> dari <strong>{totalPages}</strong> ({currentPhotos.length} Foto)
               </span>
               <button
                 disabled={currentPage === totalPages}
@@ -673,20 +673,20 @@ export default function ArsipDokumen() {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
         
         {/* Banner Ringkasan & Search Album */}
-        <div className="bg-gradient-to-r from-teal-50 to-indigo-50 border border-teal-200/70 rounded-2xl p-5 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="bg-gradient-to-r from-teal-50 to-indigo-50 dark:from-slate-850 dark:to-slate-800 border border-teal-200/70 dark:border-slate-700 rounded-2xl p-5 flex flex-col md:flex-row items-center justify-between gap-4">
           <div>
-            <h3 className="font-bold text-slate-800 text-lg flex items-center gap-2">
+            <h3 className="font-bold text-slate-800 dark:text-slate-100 text-lg flex items-center gap-2">
               <FolderOpen className="w-5 h-5 text-teal-600" />
               Galeri Dokumentasi Berbasis Album Kelompok
             </h3>
-            <p className="text-xs text-slate-600 mt-1">
+            <p className="text-xs text-slate-600 dark:text-slate-300 mt-1">
               Foto kegiatan diarsipkan rapi per Pokja untuk menghemat kuota dan mempermudah pemantauan dokumentasi lapangan.
             </p>
             <div className="flex items-center gap-3 mt-3">
-              <span className="px-3 py-1 bg-white rounded-lg border border-teal-200 text-xs font-bold text-teal-800 shadow-2xs">
+              <span className="px-3 py-1 bg-white dark:bg-slate-900 rounded-lg border border-teal-200 dark:border-teal-800 text-xs font-bold text-teal-800 dark:text-teal-300 shadow-2xs">
                 📁 {albums.length} Album Kelompok
               </span>
-              <span className="px-3 py-1 bg-white rounded-lg border border-indigo-200 text-xs font-bold text-indigo-800 shadow-2xs">
+              <span className="px-3 py-1 bg-white dark:bg-slate-900 rounded-lg border border-indigo-200 dark:border-indigo-800 text-xs font-bold text-indigo-800 dark:text-indigo-300 shadow-2xs">
                 📸 {totalDokumentasi} Total Foto Dokumentasi
               </span>
             </div>
@@ -699,7 +699,7 @@ export default function ArsipDokumen() {
               placeholder="Cari Kelompok / Mitra / DPL..."
               value={galeriSearch}
               onChange={(e) => setGaleriSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-xl text-xs bg-white focus:ring-2 focus:ring-teal-500 outline-none shadow-2xs"
+              className="w-full pl-9 pr-4 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-500 outline-none shadow-2xs"
             />
           </div>
         </div>
@@ -715,7 +715,7 @@ export default function ArsipDokumen() {
                 setFilterMhsId('semua');
                 setGaleriPage(1);
               }}
-              className="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl hover:border-teal-400 transition-all duration-300 overflow-hidden cursor-pointer group flex flex-col"
+              className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-xl hover:border-teal-400 dark:hover:border-teal-400 transition-all duration-300 overflow-hidden cursor-pointer group flex flex-col"
             >
               {/* Cover Album */}
               <div className="h-48 bg-slate-100 relative overflow-hidden flex items-center justify-center">
@@ -769,7 +769,7 @@ export default function ArsipDokumen() {
                 <div className="space-y-1.5 text-xs text-slate-600">
                   <p className="flex items-center gap-1.5">
                     <Building2 className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                    <span className="font-semibold text-slate-700 truncate">{album.pokja.mitra_id?.nama_instansi || 'Belum Ada Mitra'}</span>
+                    <span className="font-semibold text-slate-700 dark:text-slate-300 truncate">{album.pokja.mitra_id?.nama_instansi || 'Belum Ada Mitra'}</span>
                   </p>
                   <p className="flex items-center gap-1.5">
                     <UserCheck className="w-3.5 h-3.5 text-slate-400 shrink-0" />
@@ -804,9 +804,9 @@ export default function ArsipDokumen() {
           ))}
 
           {filteredAlbums.length === 0 && (
-            <div className="col-span-full py-16 bg-white rounded-2xl border border-slate-200 text-center text-slate-500">
+            <div className="col-span-full py-16 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 text-center text-slate-500 dark:text-slate-400">
               <FolderOpen className="w-12 h-12 text-slate-300 mx-auto mb-2" />
-              <p className="font-bold text-slate-700">Tidak ada album yang sesuai dengan pencarian.</p>
+              <p className="font-bold text-slate-700 dark:text-slate-300">Tidak ada album yang sesuai dengan pencarian.</p>
               <p className="text-xs text-slate-400 mt-1">Coba ketikkan kata kunci nama kelompok atau mitra lain.</p>
             </div>
           )}
@@ -820,11 +820,11 @@ export default function ArsipDokumen() {
     <DashboardLayout title="Arsip & Dokumen">
       <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+          <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
             <FolderOpen className="w-7 h-7 text-teal-600" />
             Digital Library & Arsip KKL
           </h2>
-          <p className="text-slate-500 mt-1">Pusat penyimpanan seluruh dokumen, surat-menyurat, laporan, dan sertifikat.</p>
+          <p className="text-slate-500 dark:text-slate-400 mt-1">Pusat penyimpanan seluruh dokumen, surat-menyurat, laporan, dan sertifikat.</p>
         </div>
         
         {/* Search Bar - only show if not on galeri tab */}
@@ -836,14 +836,14 @@ export default function ArsipDokumen() {
               placeholder="Cari Nama, Kelompok, Mitra..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 outline-none shadow-sm"
+              className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 outline-none shadow-sm"
             />
           </div>
         )}
       </div>
 
       {/* Tabs Header */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-2 mb-6 flex flex-wrap gap-2">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-2 mb-6 flex flex-wrap gap-2">
         {TABS.map((tab) => (
           <button
             key={tab.id}
@@ -851,7 +851,7 @@ export default function ArsipDokumen() {
             className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 flex-1 md:flex-none justify-center ${
               activeTab === tab.id 
                 ? "bg-teal-600 text-white shadow-md" 
-                : "bg-transparent text-slate-500 hover:bg-slate-100 hover:text-slate-800"
+                : "bg-transparent text-slate-500 hover:bg-slate-100 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-100"
             }`}
           >
             {tab.icon}
@@ -917,7 +917,7 @@ export default function ArsipDokumen() {
                   required
                   value={skForm.nomor_sk}
                   onChange={(e) => setSkForm({ ...skForm, nomor_sk: e.target.value })}
-                  className="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-600 focus:border-amber-500 focus:ring focus:ring-amber-200 text-sm bg-white dark:bg-slate-700 font-mono"
+                  className="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-600 focus:border-amber-500 focus:ring focus:ring-amber-200 text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 font-mono"
                   placeholder="000.4/496/STIMI-YAPMI/MKS/IX/2026"
                 />
                 <p className="text-[11px] text-slate-400 mt-0.5">Format baku: 000.4/[NoUrut]/STIMI-YAPMI/MKS/[RomawiBulan]/[Tahun]</p>
@@ -933,7 +933,7 @@ export default function ArsipDokumen() {
                     required
                     value={skForm.tanggal_sk}
                     onChange={(e) => setSkForm({ ...skForm, tanggal_sk: e.target.value })}
-                    className="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-600 focus:border-amber-500 focus:ring focus:ring-amber-200 text-sm bg-white dark:bg-slate-700"
+                    className="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-600 focus:border-amber-500 focus:ring focus:ring-amber-200 text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                     placeholder="14 September 2026"
                   />
                 </div>
@@ -946,7 +946,7 @@ export default function ArsipDokumen() {
                     required
                     value={skForm.tanggal_rapat}
                     onChange={(e) => setSkForm({ ...skForm, tanggal_rapat: e.target.value })}
-                    className="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-600 focus:border-amber-500 focus:ring focus:ring-amber-200 text-sm bg-white dark:bg-slate-700"
+                    className="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-600 focus:border-amber-500 focus:ring focus:ring-amber-200 text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                     placeholder="28 Mei 2026"
                   />
                 </div>
@@ -962,7 +962,7 @@ export default function ArsipDokumen() {
                     required
                     value={skForm.semester}
                     onChange={(e) => setSkForm({ ...skForm, semester: e.target.value })}
-                    className="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-600 focus:border-amber-500 focus:ring focus:ring-amber-200 text-sm bg-white dark:bg-slate-700"
+                    className="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-600 focus:border-amber-500 focus:ring focus:ring-amber-200 text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                     placeholder="Ganjil"
                   />
                 </div>
@@ -975,7 +975,7 @@ export default function ArsipDokumen() {
                     required
                     value={skForm.tahun_akademik}
                     onChange={(e) => setSkForm({ ...skForm, tahun_akademik: e.target.value })}
-                    className="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-600 focus:border-amber-500 focus:ring focus:ring-amber-200 text-sm bg-white dark:bg-slate-700"
+                    className="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-600 focus:border-amber-500 focus:ring focus:ring-amber-200 text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                     placeholder="2026/2027"
                   />
                 </div>

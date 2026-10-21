@@ -1027,7 +1027,7 @@ export default function ManajemenPenggunaPage() {
                       </p>
                       <p className="font-normal mt-1">Berhasil memasukkan/memperbarui: <strong>{importResult.inserted}</strong> data.</p>
                       {importResult.errors?.length > 0 && (
-                        <div className="mt-2 text-red-600 font-normal max-h-28 overflow-y-auto bg-white p-2 rounded-lg">
+                        <div className="mt-2 text-red-600 dark:text-red-400 font-normal max-h-28 overflow-y-auto bg-white dark:bg-slate-900 border border-red-200 dark:border-red-900/50 p-2 rounded-lg">
                           <p className="font-bold mb-1">Gagal diproses:</p>
                           <ul className="list-disc pl-4 text-[11px] space-y-0.5">
                             {importResult.errors.map((err, i) => <li key={i}>{err}</li>)}

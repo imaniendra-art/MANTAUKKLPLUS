@@ -372,7 +372,7 @@ export default function LaporanAkhirPage() {
       <div className="space-y-6 pb-28 mt-6">
 
         {isKetua && (
-          <div className="mb-6 flex bg-white p-1 rounded-2xl shadow-sm border border-slate-200 w-fit">
+          <div className="mb-6 flex bg-white dark:bg-slate-800 p-1 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 w-fit">
             <button
               onClick={() => setActiveMode('individu')}
               className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${activeMode === 'individu' ? 'bg-teal-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50'}`}
@@ -389,8 +389,8 @@ export default function LaporanAkhirPage() {
         )}
 
         <div className="mb-4">
-          <h2 className="text-2xl font-black text-slate-800 capitalize">Mode: Laporan {activeMode}</h2>
-          <p className="text-slate-500 text-sm">
+          <h2 className="text-2xl font-black text-slate-800 dark:text-slate-100 capitalize">Mode: Laporan {activeMode}</h2>
+          <p className="text-slate-500 dark:text-slate-400 text-sm">
             {activeMode === 'individu' 
               ? 'Fokus pada proses belajar, pengembangan diri, dan observasi personal.' 
               : 'Fokus pada output proker kelompok dan analisis organisasional perusahaan mitra.'}
@@ -413,7 +413,7 @@ export default function LaporanAkhirPage() {
             <div>
               <div className="font-bold">Laporan Perlu Direvisi</div>
               <div className="text-sm mb-2">DPL Anda meminta Anda untuk melakukan revisi sebelum laporan {activeMode} dapat disetujui.</div>
-              <div className="bg-white p-3 rounded border border-amber-100 text-sm italic font-medium">
+              <div className="bg-white dark:bg-slate-800 p-3 rounded border border-amber-100 dark:border-amber-900 text-sm italic font-medium text-amber-900 dark:text-amber-200">
                 Catatan DPL: Silakan periksa detail pesan revisi yang tertera di kotak merah pada masing-masing kolom isian laporan Anda.
               </div>
             </div>
@@ -431,7 +431,7 @@ export default function LaporanAkhirPage() {
         )}
 
         {/* Tab Navigasi */}
-        <div className="flex bg-white rounded-t-2xl border-b border-slate-200 p-2 gap-2 shadow-sm flex-wrap">
+        <div className="flex bg-white dark:bg-slate-800 rounded-t-2xl border-b border-slate-200 dark:border-slate-700 p-2 gap-2 shadow-sm flex-wrap">
           <button onClick={() => setActiveTab('panduan')} className={`px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${activeTab === 'panduan' ? 'bg-amber-100 text-amber-800' : 'text-slate-500 hover:bg-slate-50'}`}>
             <BookOpen className="w-4 h-4" /> Panduan & Template
           </button>
@@ -447,31 +447,31 @@ export default function LaporanAkhirPage() {
         </div>
 
         {/* Konten Tab */}
-        <div className="bg-white p-8 rounded-b-2xl shadow-sm border border-t-0 border-slate-100 min-h-[500px]">
+        <div className="bg-white dark:bg-slate-800 p-8 rounded-b-2xl shadow-sm border border-t-0 border-slate-100 dark:border-slate-700 min-h-[500px]">
           
           {/* TAB 0: PANDUAN */}
           {activeTab === 'panduan' && (
             <div className="space-y-8">
               <div>
-                <h3 className="text-xl font-bold text-slate-800 border-b pb-2 mb-4">Sistematika Penulisan {activeMode === 'individu' ? 'Individu' : 'Kelompok'}</h3>
+                <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Sistematika Penulisan {activeMode === 'individu' ? 'Individu' : 'Kelompok'}</h3>
                 
                 {activeMode === 'individu' ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="border p-4 rounded-xl md:col-span-2">
-                      <h4 className="font-bold text-lg text-teal-700 border-b pb-2 mb-2">KATA PENGANTAR</h4>
+                    <div className="border border-slate-200 dark:border-slate-700 p-4 rounded-xl md:col-span-2 bg-slate-50/50 dark:bg-slate-900/40">
+                      <h4 className="font-bold text-lg text-teal-700 dark:text-teal-300 border-b border-slate-200 dark:border-slate-700 pb-2 mb-2">KATA PENGANTAR</h4>
                       <div className="space-y-3 mt-3">
                         <div>
-                          <span className="text-sm text-slate-600">Berisi ucapan syukur kepada Tuhan Yang Maha Esa dan penyampaian rasa terima kasih secara terperinci kepada pihak-pihak yang telah berkontribusi dan mendukung selama proses KKL Plus (misal: Pimpinan Kampus, Dosen Pembimbing Lapangan, Mentor/Pimpinan Instansi Mitra, Rekan Kelompok, dan Keluarga). Sampaikan juga tujuan singkat penulisan laporan serta permohonan maaf atas segala kekurangan yang mungkin ada di dalam penulisan.</span>
+                          <span className="text-sm text-slate-600 dark:text-slate-300">Berisi ucapan syukur kepada Tuhan Yang Maha Esa dan penyampaian rasa terima kasih secara terperinci kepada pihak-pihak yang telah berkontribusi dan mendukung selama proses KKL Plus (misal: Pimpinan Kampus, Dosen Pembimbing Lapangan, Mentor/Pimpinan Instansi Mitra, Rekan Kelompok, dan Keluarga). Sampaikan juga tujuan singkat penulisan laporan serta permohonan maaf atas segala kekurangan yang mungkin ada di dalam penulisan.</span>
                         </div>
                       </div>
                     </div>
                     
-                    <div className="border p-4 rounded-xl md:col-span-2">
-                      <h4 className="font-bold text-lg text-teal-700 border-b pb-2 mb-2">BAB I. PENDAHULUAN</h4>
+                    <div className="border border-slate-200 dark:border-slate-700 p-4 rounded-xl md:col-span-2 bg-slate-50/50 dark:bg-slate-900/40">
+                      <h4 className="font-bold text-lg text-teal-700 dark:text-teal-300 border-b border-slate-200 dark:border-slate-700 pb-2 mb-2">BAB I. PENDAHULUAN</h4>
                       <div className="space-y-3 mt-3">
                         <div>
-                          <span className="font-bold text-slate-800 text-sm block mb-1">1.1 Latar Belakang dan Rasionalisasi Pemilihan Mitra</span>
-                          <div className="text-sm text-slate-600 space-y-2">
+                          <span className="font-bold text-slate-800 dark:text-slate-200 text-sm block mb-1">1.1 Latar Belakang dan Rasionalisasi Pemilihan Mitra</span>
+                          <div className="text-sm text-slate-600 dark:text-slate-300 space-y-2">
                             <p>Bagian ini menguraikan argumentasi logis dan objektif mengenai alasan penentuan instansi atau perusahaan sebagai mitra KKL Plus. Mahasiswa diwajibkan untuk memaparkan korelasi antara profil institusi mitra dengan bidang keilmuan yang ditekuni, serta menyusun rasionalisasi pemilihan tersebut secara komprehensif dengan memuat komponen-komponen berikut:</p>
                             <ul className="list-disc pl-5 space-y-1">
                               <li><b>Landasan Pemilihan Mitra:</b> Uraikan argumentasi mengapa instansi/perusahaan tersebut dipilih dan bagaimana relevansinya dengan kompetensi serta konsentrasi program studi.</li>
@@ -481,8 +481,8 @@ export default function LaporanAkhirPage() {
                           </div>
                         </div>
                         <div>
-                          <span className="font-bold text-slate-800 text-sm block mb-1">1.2 Tujuan dan Manfaat Pelaksanaan KKL Plus</span>
-                          <div className="text-sm text-slate-600 space-y-2">
+                          <span className="font-bold text-slate-800 dark:text-slate-200 text-sm block mb-1">1.2 Tujuan dan Manfaat Pelaksanaan KKL Plus</span>
+                          <div className="text-sm text-slate-600 dark:text-slate-300 space-y-2">
                             <p>Bagian ini mendeskripsikan secara definitif target pencapaian esensial yang diharapkan oleh mahasiswa selama pelaksanaan KKL Plus. Uraian harus mencakup signifikansi program terhadap pengembangan kapasitas diri secara terstruktur, dengan memuat komponen berikut:</p>
                             <ul className="list-disc pl-5 space-y-1">
                               <li><b>Tujuan Akademis dan Praktis:</b> Formulasikan tujuan spesifik yang diorientasikan pada pemahaman komprehensif terhadap dinamika dunia kerja profesional, serta pengujian teori akademis dalam situasi empiris.</li>
@@ -494,12 +494,12 @@ export default function LaporanAkhirPage() {
                       </div>
                     </div>
 
-                    <div className="border p-4 rounded-xl md:col-span-2">
-                      <h4 className="font-bold text-lg text-teal-700 border-b pb-2 mb-2">BAB II. DESKRIPSI PERAN</h4>
+                    <div className="border border-slate-200 dark:border-slate-700 p-4 rounded-xl md:col-span-2 bg-slate-50/50 dark:bg-slate-900/40">
+                      <h4 className="font-bold text-lg text-teal-700 dark:text-teal-300 border-b border-slate-200 dark:border-slate-700 pb-2 mb-2">BAB II. DESKRIPSI PERAN</h4>
                       <div className="space-y-3 mt-3">
                         <div>
-                          <span className="font-bold text-slate-800 text-sm block mb-1">2.1 Deskripsi Posisi dan Uraian Tugas (Job Description)</span>
-                          <div className="text-sm text-slate-600 space-y-2">
+                          <span className="font-bold text-slate-800 dark:text-slate-200 text-sm block mb-1">2.1 Deskripsi Posisi dan Uraian Tugas (Job Description)</span>
+                          <div className="text-sm text-slate-600 dark:text-slate-300 space-y-2">
                             <p>Bagian ini menguraikan penempatan institusional mahasiswa selama KKL Plus beserta rincian beban kerja (workload) yang diamanatkan. Mahasiswa diharapkan mendeskripsikan secara komprehensif:</p>
                             <ul className="list-disc pl-5 space-y-1">
                               <li><b>Nomenklatur dan Posisi Penempatan:</b> Sebutkan unit kerja, departemen, atau divisi penempatan secara spesifik beserta struktur komandonya (atasan langsung).</li>
@@ -508,8 +508,8 @@ export default function LaporanAkhirPage() {
                           </div>
                         </div>
                         <div>
-                          <span className="font-bold text-slate-800 text-sm block mb-1">2.2 Observasi Budaya dan Lingkungan Kerja Mitra</span>
-                          <div className="text-sm text-slate-600 space-y-2">
+                          <span className="font-bold text-slate-800 dark:text-slate-200 text-sm block mb-1">2.2 Observasi Budaya dan Lingkungan Kerja Mitra</span>
+                          <div className="text-sm text-slate-600 dark:text-slate-300 space-y-2">
                             <p>Bagian ini menuntut mahasiswa untuk melakukan analisis observasional terhadap iklim organisasi dan kultur kerja di instansi mitra. Komponen analisis meliputi:</p>
                             <ul className="list-disc pl-5 space-y-1">
                               <li><b>Dinamika dan Iklim Organisasi:</b> Deskripsikan atmosfer kerja profesional, sistem komunikasi interpersonal, pola koordinasi antar-divisi, serta mekanisme penyelesaian konflik (problem-solving) yang berlaku.</li>
@@ -519,12 +519,12 @@ export default function LaporanAkhirPage() {
                         </div>
                       </div>
                     </div>
-                    <div className="border p-4 rounded-xl md:col-span-2">
-                      <h4 className="font-bold text-lg text-teal-700 border-b pb-2 mb-2">BAB III. REFLEKSI DAN PEMBAHASAN</h4>
+                    <div className="border border-slate-200 dark:border-slate-700 p-4 rounded-xl md:col-span-2 bg-slate-50/50 dark:bg-slate-900/40">
+                      <h4 className="font-bold text-lg text-teal-700 dark:text-teal-300 border-b border-slate-200 dark:border-slate-700 pb-2 mb-2">BAB III. REFLEKSI DAN PEMBAHASAN</h4>
                       <div className="space-y-3 mt-3">
                         <div>
-                          <span className="font-bold text-slate-800 text-sm block mb-1">3.1 Relevansi Praktik Kerja dengan Kerangka Teoretis</span>
-                          <div className="text-sm text-slate-600 space-y-2">
+                          <span className="font-bold text-slate-800 dark:text-slate-200 text-sm block mb-1">3.1 Relevansi Praktik Kerja dengan Kerangka Teoretis</span>
+                          <div className="text-sm text-slate-600 dark:text-slate-300 space-y-2">
                             <p>Bagian ini mengevaluasi korelasi dan integrasi antara landasan teori yang didapatkan pada kurikulum program studi dengan realitas empiris di lapangan kerja. Mahasiswa diharuskan untuk mensintesiskan:</p>
                             <ul className="list-disc pl-5 space-y-1">
                               <li><b>Keselarasan Teori dan Praktik:</b> Paparkan studi kasus spesifik di mana konsep atau model akademis berhasil diimplementasikan secara langsung untuk menyelesaikan tugas-tugas di lokasi KKL Plus.</li>
@@ -533,8 +533,8 @@ export default function LaporanAkhirPage() {
                           </div>
                         </div>
                         <div>
-                          <span className="font-bold text-slate-800 text-sm block mb-1">3.2 Identifikasi Kendala dan Strategi Pemecahan Masalah</span>
-                          <div className="text-sm text-slate-600 space-y-2">
+                          <span className="font-bold text-slate-800 dark:text-slate-200 text-sm block mb-1">3.2 Identifikasi Kendala dan Strategi Pemecahan Masalah</span>
+                          <div className="text-sm text-slate-600 dark:text-slate-300 space-y-2">
                             <p>Fokus pada identifikasi hambatan teknis maupun non-teknis yang mengintervensi efektivitas kinerja selama pelaksanaan KKL Plus, serta mekanisme adaptasinya:</p>
                             <ul className="list-disc pl-5 space-y-1">
                               <li><b>Analisis Kendala Operasional:</b> Deskripsikan kendala yang dialami, baik dari segi keterbatasan fasilitas, kapabilitas personal, maupun dinamika tim (team dynamics).</li>
@@ -543,8 +543,8 @@ export default function LaporanAkhirPage() {
                           </div>
                         </div>
                         <div>
-                          <span className="font-bold text-slate-800 text-sm block mb-1">3.3 Pengembangan Kompetensi Teknis dan Non-Teknis (Hard & Soft Skills)</span>
-                          <div className="text-sm text-slate-600 space-y-2">
+                          <span className="font-bold text-slate-800 dark:text-slate-200 text-sm block mb-1">3.3 Pengembangan Kompetensi Teknis dan Non-Teknis (Hard & Soft Skills)</span>
+                          <div className="text-sm text-slate-600 dark:text-slate-300 space-y-2">
                             <p>Mengevaluasi secara objektif ekskalasi dan akuisisi kompetensi pasca-kegiatan, yang diklasifikasikan ke dalam dua parameter utama:</p>
                             <ul className="list-disc pl-5 space-y-1">
                               <li><b>Kecakapan Teknis (Hard Skills):</b> Penguasaan instrumen kerja baru, metodologi praktis, perangkat lunak (software), atau prosedur teknis spesifik yang relevan dengan bidang keahlian.</li>
@@ -555,12 +555,12 @@ export default function LaporanAkhirPage() {
                       </div>
                     </div>
 
-                    <div className="border p-4 rounded-xl md:col-span-2">
-                      <h4 className="font-bold text-lg text-teal-700 border-b pb-2 mb-2">BAB IV. PENUTUP</h4>
+                    <div className="border border-slate-200 dark:border-slate-700 p-4 rounded-xl md:col-span-2 bg-slate-50/50 dark:bg-slate-900/40">
+                      <h4 className="font-bold text-lg text-teal-700 dark:text-teal-300 border-b border-slate-200 dark:border-slate-700 pb-2 mb-2">BAB IV. PENUTUP</h4>
                       <div className="space-y-3 mt-3">
                         <div>
-                          <span className="font-bold text-slate-800 text-sm block mb-1">4.1 Kesimpulan</span>
-                          <div className="text-sm text-slate-600 space-y-2">
+                          <span className="font-bold text-slate-800 dark:text-slate-200 text-sm block mb-1">4.1 Kesimpulan</span>
+                          <div className="text-sm text-slate-600 dark:text-slate-300 space-y-2">
                             <p>Merupakan sintesis komprehensif dari keseluruhan observasi dan implementasi kegiatan. Mahasiswa harus merumuskan:</p>
                             <ul className="list-disc pl-5 space-y-1">
                               <li><b>Ketercapaian Indikator Kinerja:</b> Penilaian konklusif mengenai tingkat keberhasilan pencapaian tujuan dan manfaat yang telah diproyeksikan pada Bab I.</li>
@@ -569,8 +569,8 @@ export default function LaporanAkhirPage() {
                           </div>
                         </div>
                         <div>
-                          <span className="font-bold text-slate-800 text-sm block mb-1">4.2 Evaluasi Diri dan Rekomendasi</span>
-                          <div className="text-sm text-slate-600 space-y-2">
+                          <span className="font-bold text-slate-800 dark:text-slate-200 text-sm block mb-1">4.2 Evaluasi Diri dan Rekomendasi</span>
+                          <div className="text-sm text-slate-600 dark:text-slate-300 space-y-2">
                             <p>Memberikan ulasan konstruktif sebagai landasan perbaikan berkelanjutan (continuous improvement), yang mencakup:</p>
                             <ul className="list-disc pl-5 space-y-1">
                               <li><b>Evaluasi Personal (Self-Assessment):</b> Identifikasi celah kompetensi (competency gap) yang masih perlu dioptimalkan untuk meminimalkan disparitas antara kualifikasi diri saat ini dengan tuntutan industri.</li>
@@ -583,21 +583,21 @@ export default function LaporanAkhirPage() {
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="border p-4 rounded-xl md:col-span-2">
-                      <h4 className="font-bold text-lg text-teal-700 border-b pb-2 mb-2">KATA PENGANTAR</h4>
+                    <div className="border border-slate-200 dark:border-slate-700 p-4 rounded-xl md:col-span-2 bg-slate-50/50 dark:bg-slate-900/40">
+                      <h4 className="font-bold text-lg text-teal-700 dark:text-teal-300 border-b border-slate-200 dark:border-slate-700 pb-2 mb-2">KATA PENGANTAR</h4>
                       <div className="space-y-3 mt-3">
                         <div>
-                          <span className="text-sm text-slate-600">Berisi ucapan syukur kepada Tuhan Yang Maha Esa dan penyampaian rasa terima kasih secara terperinci kepada pihak-pihak yang telah berkontribusi dan mendukung selama proses KKL Plus (misal: Pimpinan Kampus, Dosen Pembimbing Lapangan, Mentor/Pimpinan Instansi Mitra, dan pihak lain yang relevan). Sampaikan juga tujuan singkat penulisan laporan kelompok serta permohonan maaf atas segala kekurangan yang mungkin ada di dalam penulisan.</span>
+                          <span className="text-sm text-slate-600 dark:text-slate-300">Berisi ucapan syukur kepada Tuhan Yang Maha Esa dan penyampaian rasa terima kasih secara terperinci kepada pihak-pihak yang telah berkontribusi dan mendukung selama proses KKL Plus (misal: Pimpinan Kampus, Dosen Pembimbing Lapangan, Mentor/Pimpinan Instansi Mitra, dan pihak lain yang relevan). Sampaikan juga tujuan singkat penulisan laporan kelompok serta permohonan maaf atas segala kekurangan yang mungkin ada di dalam penulisan.</span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="border p-4 rounded-xl md:col-span-2">
-                      <h4 className="font-bold text-lg text-teal-700 border-b pb-2 mb-2">BAB I. PENDAHULUAN</h4>
+                    <div className="border border-slate-200 dark:border-slate-700 p-4 rounded-xl md:col-span-2 bg-slate-50/50 dark:bg-slate-900/40">
+                      <h4 className="font-bold text-lg text-teal-700 dark:text-teal-300 border-b border-slate-200 dark:border-slate-700 pb-2 mb-2">BAB I. PENDAHULUAN</h4>
                       <div className="space-y-3 mt-3">
                         <div>
-                          <span className="font-bold text-slate-800 text-sm block mb-1">1.1 Latar Belakang dan Rasionalisasi Program Kerja</span>
-                          <div className="text-sm text-slate-600 space-y-2">
+                          <span className="font-bold text-slate-800 dark:text-slate-200 text-sm block mb-1">1.1 Latar Belakang dan Rasionalisasi Program Kerja</span>
+                          <div className="text-sm text-slate-600 dark:text-slate-300 space-y-2">
                             <p>Bagian ini menguraikan argumentasi logis mengenai pemilihan program kerja yang diusung oleh kelompok. Uraian harus mencakup:</p>
                             <ul className="list-disc pl-5 space-y-1">
                               <li><b>Analisis Situasional:</b> Penjelasan mengenai kondisi awal di lokasi mitra yang mendasari perlunya program kerja tersebut.</li>
@@ -606,8 +606,8 @@ export default function LaporanAkhirPage() {
                           </div>
                         </div>
                         <div>
-                          <span className="font-bold text-slate-800 text-sm block mb-1">1.2 Tujuan dan Sasaran Strategis Program Kerja</span>
-                          <div className="text-sm text-slate-600 space-y-2">
+                          <span className="font-bold text-slate-800 dark:text-slate-200 text-sm block mb-1">1.2 Tujuan dan Sasaran Strategis Program Kerja</span>
+                          <div className="text-sm text-slate-600 dark:text-slate-300 space-y-2">
                             <ul className="list-disc pl-5 space-y-1">
                               <li><b>Tujuan Umum dan Khusus:</b> Formulasikan capaian akhir yang ingin diraih melalui eksekusi program kerja.</li>
                               <li><b>Sasaran Program (Target Audience):</b> Identifikasi pihak-pihak yang menjadi penerima manfaat langsung (beneficiaries) dari program kerja yang dijalankan.</li>
@@ -617,30 +617,30 @@ export default function LaporanAkhirPage() {
                       </div>
                     </div>
 
-                    <div className="border p-4 rounded-xl md:col-span-2">
-                      <h4 className="font-bold text-lg text-teal-700 border-b pb-2 mb-2">BAB II. PROFIL MITRA DAN ANALISIS</h4>
+                    <div className="border border-slate-200 dark:border-slate-700 p-4 rounded-xl md:col-span-2 bg-slate-50/50 dark:bg-slate-900/40">
+                      <h4 className="font-bold text-lg text-teal-700 dark:text-teal-300 border-b border-slate-200 dark:border-slate-700 pb-2 mb-2">BAB II. PROFIL MITRA DAN ANALISIS</h4>
                       <div className="space-y-3 mt-3">
                         <div>
-                          <span className="font-bold text-slate-800 text-sm block mb-1">2.1 Tinjauan Historis dan Profil Institusi Mitra</span>
-                          <span className="text-sm text-slate-600">Paparkan profil singkat, sejarah pendirian, visi-misi, serta sektor atau bidang garapan utama dari instansi mitra.</span>
+                          <span className="font-bold text-slate-800 dark:text-slate-200 text-sm block mb-1">2.1 Tinjauan Historis dan Profil Institusi Mitra</span>
+                          <span className="text-sm text-slate-600 dark:text-slate-300">Paparkan profil singkat, sejarah pendirian, visi-misi, serta sektor atau bidang garapan utama dari instansi mitra.</span>
                         </div>
                         <div>
-                          <span className="font-bold text-slate-800 text-sm block mb-1">2.2 Struktur Organisasi dan Tata Kelola (Manajemen) Mitra</span>
-                          <span className="text-sm text-slate-600">Gambarkan susunan organisasi, pembagian divisi, dan garis komando yang berlaku. Uraikan secara singkat bagaimana roda manajemen dan operasional mitra dijalankan sehari-hari.</span>
+                          <span className="font-bold text-slate-800 dark:text-slate-200 text-sm block mb-1">2.2 Struktur Organisasi dan Tata Kelola (Manajemen) Mitra</span>
+                          <span className="text-sm text-slate-600 dark:text-slate-300">Gambarkan susunan organisasi, pembagian divisi, dan garis komando yang berlaku. Uraikan secara singkat bagaimana roda manajemen dan operasional mitra dijalankan sehari-hari.</span>
                         </div>
                         <div>
-                          <span className="font-bold text-slate-800 text-sm block mb-1">2.3 Identifikasi Kesenjangan (Gap Analysis) dan Kebutuhan Mitra</span>
-                          <span className="text-sm text-slate-600"><b>Analisis Kebutuhan (Needs Assessment):</b> Formulasikan permasalahan konkret, kendala operasional, atau area pengembangan (area of improvement) yang ditemukan di instansi mitra, yang kemudian menjadi landasan rumusan program kerja kelompok.</span>
+                          <span className="font-bold text-slate-800 dark:text-slate-200 text-sm block mb-1">2.3 Identifikasi Kesenjangan (Gap Analysis) dan Kebutuhan Mitra</span>
+                          <span className="text-sm text-slate-600 dark:text-slate-300"><b>Analisis Kebutuhan (Needs Assessment):</b> Formulasikan permasalahan konkret, kendala operasional, atau area pengembangan (area of improvement) yang ditemukan di instansi mitra, yang kemudian menjadi landasan rumusan program kerja kelompok.</span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="border p-4 rounded-xl md:col-span-2">
-                      <h4 className="font-bold text-lg text-teal-700 border-b pb-2 mb-2">BAB III. PELAKSANAAN PROGRAM KERJA</h4>
+                    <div className="border border-slate-200 dark:border-slate-700 p-4 rounded-xl md:col-span-2 bg-slate-50/50 dark:bg-slate-900/40">
+                      <h4 className="font-bold text-lg text-teal-700 dark:text-teal-300 border-b border-slate-200 dark:border-slate-700 pb-2 mb-2">BAB III. PELAKSANAAN PROGRAM KERJA</h4>
                       <div className="space-y-3 mt-3">
                         <div>
-                          <span className="font-bold text-slate-800 text-sm block mb-1">3.1 Deskripsi Komprehensif Pelaksanaan Program Kerja</span>
-                          <div className="text-sm text-slate-600 space-y-2">
+                          <span className="font-bold text-slate-800 dark:text-slate-200 text-sm block mb-1">3.1 Deskripsi Komprehensif Pelaksanaan Program Kerja</span>
+                          <div className="text-sm text-slate-600 dark:text-slate-300 space-y-2">
                             <ul className="list-disc pl-5 space-y-1">
                               <li><b>Metode dan Tahapan Eksekusi:</b> Jabarkan secara kronologis dan sistematis langkah-langkah implementasi program kerja, mulai dari tahap perencanaan, persiapan, hingga eksekusi di lapangan.</li>
                               <li><b>Pembagian Peran (Role Assignment):</b> Uraikan pembagian tugas spesifik dan kontribusi masing-masing anggota kelompok dalam realisasi program.</li>
@@ -648,8 +648,8 @@ export default function LaporanAkhirPage() {
                           </div>
                         </div>
                         <div>
-                          <span className="font-bold text-slate-800 text-sm block mb-1">3.2 Evaluasi Capaian dan Indikator Keberhasilan Program (KPI)</span>
-                          <div className="text-sm text-slate-600 space-y-2">
+                          <span className="font-bold text-slate-800 dark:text-slate-200 text-sm block mb-1">3.2 Evaluasi Capaian dan Indikator Keberhasilan Program (KPI)</span>
+                          <div className="text-sm text-slate-600 dark:text-slate-300 space-y-2">
                             <ul className="list-disc pl-5 space-y-1">
                               <li><b>Pengukuran Kinerja:</b> Lakukan evaluasi objektif terhadap tingkat keberhasilan program kerja dengan membandingkan target awal (Bab I) dengan realisasi di lapangan.</li>
                               <li><b>Faktor Pendukung dan Penghambat:</b> Identifikasi variabel-variabel yang memfasilitasi kelancaran program maupun hambatan yang mengintervensi eksekusinya, beserta solusi yang telah diterapkan.</li>
@@ -659,16 +659,16 @@ export default function LaporanAkhirPage() {
                       </div>
                     </div>
 
-                    <div className="border p-4 rounded-xl md:col-span-2">
-                      <h4 className="font-bold text-lg text-teal-700 border-b pb-2 mb-2">BAB IV. PENUTUP</h4>
+                    <div className="border border-slate-200 dark:border-slate-700 p-4 rounded-xl md:col-span-2 bg-slate-50/50 dark:bg-slate-900/40">
+                      <h4 className="font-bold text-lg text-teal-700 dark:text-teal-300 border-b border-slate-200 dark:border-slate-700 pb-2 mb-2">BAB IV. PENUTUP</h4>
                       <div className="space-y-3 mt-3">
                         <div>
-                          <span className="font-bold text-slate-800 text-sm block mb-1">4.1 Kesimpulan dan Sintesis Kegiatan Kelompok</span>
-                          <span className="text-sm text-slate-600">Rangkumkan efektivitas keseluruhan program kerja yang telah dijalankan dan dampaknya secara kolektif terhadap institusi mitra.</span>
+                          <span className="font-bold text-slate-800 dark:text-slate-200 text-sm block mb-1">4.1 Kesimpulan dan Sintesis Kegiatan Kelompok</span>
+                          <span className="text-sm text-slate-600 dark:text-slate-300">Rangkumkan efektivitas keseluruhan program kerja yang telah dijalankan dan dampaknya secara kolektif terhadap institusi mitra.</span>
                         </div>
                         <div>
-                          <span className="font-bold text-slate-800 text-sm block mb-1">4.2 Rekomendasi Manajerial dan Strategis</span>
-                          <span className="text-sm text-slate-600">Berikan saran tindak lanjut yang aplikatif bagi instansi mitra untuk memelihara (sustainability) hasil program kerja, serta masukan evaluatif bagi pihak kampus dalam penyelenggaraan KKL Plus di masa mendatang.</span>
+                          <span className="font-bold text-slate-800 dark:text-slate-200 text-sm block mb-1">4.2 Rekomendasi Manajerial dan Strategis</span>
+                          <span className="text-sm text-slate-600 dark:text-slate-300">Berikan saran tindak lanjut yang aplikatif bagi instansi mitra untuk memelihara (sustainability) hasil program kerja, serta masukan evaluatif bagi pihak kampus dalam penyelenggaraan KKL Plus di masa mendatang.</span>
                         </div>
                       </div>
                     </div>
@@ -678,7 +678,7 @@ export default function LaporanAkhirPage() {
 
               {isKetua && (
                 <div>
-                  <h3 className="text-xl font-bold text-slate-800 border-b pb-2 mb-4">Template & Referensi Dokumen</h3>
+                  <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Template & Referensi Dokumen</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Link href={`/mahasiswa/laporan/templates/pengesahan?id=${currentForm.id || ''}&pokjaId=${pengajuan?._id || ''}`} target="_blank" className="flex items-center gap-3 p-4 border rounded-xl hover:bg-teal-50 transition-colors">
                       <div className="p-3 bg-teal-100 rounded-lg text-teal-600"><PenTool className="w-6 h-6" /></div>
@@ -728,14 +728,14 @@ export default function LaporanAkhirPage() {
               )}
               <div>
                 <div className="flex justify-between items-end mb-2">
-                  <h3 className="text-lg font-bold text-slate-800">KATA PENGANTAR ({activeMode === 'individu' ? 'Pribadi' : 'Kelompok'})</h3>
+                  <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">KATA PENGANTAR ({activeMode === 'individu' ? 'Pribadi' : 'Kelompok'})</h3>
                   {currentForm.status !== 'submitted' && (
-                    <button onClick={() => handleSave(false)} disabled={isSaving} className={`px-4 py-2 text-sm rounded-lg border font-bold shadow-sm disabled:opacity-50 transition-colors ${isDirty ? 'bg-amber-100 border-amber-300 text-amber-800' : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50'}`}>
+                    <button onClick={() => handleSave(false)} disabled={isSaving} className={`px-4 py-2 text-sm rounded-lg border font-bold shadow-sm disabled:opacity-50 transition-colors ${isDirty ? 'bg-amber-100 dark:bg-amber-950/40 border-amber-300 dark:border-amber-800 text-amber-800 dark:text-amber-200' : 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700'}`}>
                       {isSaving ? 'Menyimpan...' : (isDirty ? 'Perlu Disimpan (*)' : (lastSaved ? `Tersimpan ${lastSaved.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}` : 'Simpan Draf'))}
                     </button>
                   )}
                 </div>
-                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <div className="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
                   {currentForm.catatan_dpl?.kata_pengantar && (
                     <div className="mb-3 p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800 flex gap-2 items-start shadow-sm">
                       <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5 text-amber-600" />
@@ -753,7 +753,7 @@ export default function LaporanAkhirPage() {
                       setIsDirty(true);
                       setCurrentForm({...currentForm, kata_pengantar: e.target.value});
                     }}
-                    className="w-full h-48 border-slate-300 rounded-xl p-4 focus:ring-2 focus:ring-teal-500 text-sm"
+                    className="w-full h-48 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl p-4 focus:ring-2 focus:ring-teal-500 text-sm"
                     placeholder="Puji dan syukur ke hadirat Tuhan Yang Maha Esa... (Tuliskan ungkapan rasa syukur, tujuan penulisan laporan KKL Plus, serta ucapan terima kasih kepada pihak-pihak yang telah membantu kelancaran kegiatan)"
                   ></textarea>
                   <div className="flex justify-between items-center text-xs mt-2 px-1">
@@ -769,12 +769,12 @@ export default function LaporanAkhirPage() {
 
               <div>
                 <div className="flex justify-between items-end mb-2">
-                  <h3 className="text-lg font-bold text-slate-800">BAB I. Pendahuluan</h3>
+                  <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">BAB I. Pendahuluan</h3>
                 </div>
-                <div className="space-y-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <div className="space-y-4 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
                   {currentForm.bab1_sections.map((sec, idx) => (
                     <div key={sec.id}>
-                      <label className="block text-sm font-bold text-slate-700 mb-1">
+                      <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
                         {(activeMode === 'individu' ? DEFAULT_SECTIONS_INDIVIDU.bab1 : DEFAULT_SECTIONS_KELOMPOK.bab1).find(s => s.id === sec.id)?.title || sec.title}
                       </label>
                       {currentForm.catatan_dpl?.[sec.id] && (
@@ -796,7 +796,7 @@ export default function LaporanAkhirPage() {
                           newSecs[idx].content = e.target.value;
                           setCurrentForm({...currentForm, bab1_sections: newSecs});
                         }}
-                        className="w-full h-32 border-slate-300 rounded-xl p-4 focus:ring-2 focus:ring-teal-500 text-sm"
+                        className="w-full h-32 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl p-4 focus:ring-2 focus:ring-teal-500 text-sm"
                         placeholder={(activeMode === 'individu' ? DEFAULT_SECTIONS_INDIVIDU.bab1 : DEFAULT_SECTIONS_KELOMPOK.bab1).find(s => s.id === sec.id)?.placeholder || 'Ketik di sini...'}
                       ></textarea>
                       <div className="flex justify-between items-center text-xs mt-2 px-1">
@@ -814,12 +814,12 @@ export default function LaporanAkhirPage() {
               
               <div>
                 <div className="flex justify-between items-end mb-2">
-                  <h3 className="text-lg font-bold text-slate-800">BAB II. {activeMode === 'individu' ? 'Deskripsi Peran' : 'Profil Mitra & Analisis'}</h3>
+                  <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">BAB II. {activeMode === 'individu' ? 'Deskripsi Peran' : 'Profil Mitra & Analisis'}</h3>
                 </div>
-                <div className="space-y-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <div className="space-y-4 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
                   {currentForm.bab2_sections.map((sec, idx) => (
                     <div key={sec.id}>
-                      <label className="block text-sm font-bold text-slate-700 mb-1">
+                      <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
                         {(activeMode === 'individu' ? DEFAULT_SECTIONS_INDIVIDU.bab2 : DEFAULT_SECTIONS_KELOMPOK.bab2).find(s => s.id === sec.id)?.title || sec.title}
                       </label>
                       {currentForm.catatan_dpl?.[sec.id] && (
@@ -841,7 +841,7 @@ export default function LaporanAkhirPage() {
                           newSecs[idx].content = e.target.value;
                           setCurrentForm({...currentForm, bab2_sections: newSecs});
                         }}
-                        className="w-full h-32 border-slate-300 rounded-xl p-4 focus:ring-2 focus:ring-teal-500 text-sm"
+                        className="w-full h-32 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl p-4 focus:ring-2 focus:ring-teal-500 text-sm"
                         placeholder={(activeMode === 'individu' ? DEFAULT_SECTIONS_INDIVIDU.bab2 : DEFAULT_SECTIONS_KELOMPOK.bab2).find(s => s.id === sec.id)?.placeholder || 'Ketik di sini...'}
                       ></textarea>
                       <div className="flex justify-between items-center text-xs mt-2 px-1 mb-1">
@@ -878,12 +878,12 @@ export default function LaporanAkhirPage() {
 
               <div>
                 <div className="flex justify-between items-end mb-2">
-                  <h3 className="text-lg font-bold text-slate-800">BAB III. {activeMode === 'individu' ? 'Refleksi dan Pembahasan' : 'Pelaksanaan Program Kerja'}</h3>
+                  <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">BAB III. {activeMode === 'individu' ? 'Refleksi dan Pembahasan' : 'Pelaksanaan Program Kerja'}</h3>
                 </div>
-                <div className="space-y-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <div className="space-y-4 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
                   {currentForm.bab3_sections.map((sec, idx) => (
                     <div key={sec.id}>
-                      <label className="block text-sm font-bold text-slate-700 mb-1">
+                      <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
                         {(activeMode === 'individu' ? DEFAULT_SECTIONS_INDIVIDU.bab3 : DEFAULT_SECTIONS_KELOMPOK.bab3).find(s => s.id === sec.id)?.title || sec.title}
                       </label>
                       {currentForm.catatan_dpl?.[sec.id] && (
@@ -905,7 +905,7 @@ export default function LaporanAkhirPage() {
                           newSecs[idx].content = e.target.value;
                           setCurrentForm({...currentForm, bab3_sections: newSecs});
                         }}
-                        className="w-full h-32 border-slate-300 rounded-xl p-4 focus:ring-2 focus:ring-teal-500 text-sm"
+                        className="w-full h-32 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl p-4 focus:ring-2 focus:ring-teal-500 text-sm"
                         placeholder={(activeMode === 'individu' ? DEFAULT_SECTIONS_INDIVIDU.bab3 : DEFAULT_SECTIONS_KELOMPOK.bab3).find(s => s.id === sec.id)?.placeholder || 'Ketik di sini...'}
                       ></textarea>
                       <div className="flex justify-between items-center text-xs mt-2 px-1">
@@ -923,12 +923,12 @@ export default function LaporanAkhirPage() {
 
               <div>
                 <div className="flex justify-between items-end mb-2">
-                  <h3 className="text-lg font-bold text-slate-800">BAB IV. Penutup</h3>
+                  <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">BAB IV. Penutup</h3>
                 </div>
-                <div className="space-y-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <div className="space-y-4 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
                   {currentForm.bab4_sections.map((sec, idx) => (
                     <div key={sec.id}>
-                      <label className="block text-sm font-bold text-slate-700 mb-1">
+                      <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
                         {(activeMode === 'individu' ? DEFAULT_SECTIONS_INDIVIDU.bab4 : DEFAULT_SECTIONS_KELOMPOK.bab4).find(s => s.id === sec.id)?.title || sec.title}
                       </label>
                       {currentForm.catatan_dpl?.[sec.id] && (
@@ -950,7 +950,7 @@ export default function LaporanAkhirPage() {
                           newSecs[idx].content = e.target.value;
                           setCurrentForm({...currentForm, bab4_sections: newSecs});
                         }}
-                        className="w-full h-32 border-slate-300 rounded-xl p-4 focus:ring-2 focus:ring-teal-500 text-sm"
+                        className="w-full h-32 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl p-4 focus:ring-2 focus:ring-teal-500 text-sm"
                         placeholder={(activeMode === 'individu' ? DEFAULT_SECTIONS_INDIVIDU.bab4 : DEFAULT_SECTIONS_KELOMPOK.bab4).find(s => s.id === sec.id)?.placeholder || 'Ketik di sini...'}
                       ></textarea>
                       <div className="flex justify-between items-center text-xs mt-2 px-1">
@@ -976,9 +976,9 @@ export default function LaporanAkhirPage() {
                 <strong>Penting:</strong> Dokumen lampiran ini berlaku untuk Laporan <b>{activeMode}</b>.
               </div>
 
-              <div className="border border-slate-200 rounded-2xl p-6">
-                <h4 className="font-bold text-slate-800 mb-1">1. Surat Pengantar</h4>
-                <input disabled={['submitted', 'disetujui'].includes(currentForm.status)} type="file" accept="image/*,application/pdf" onChange={(e) => handleFileChange(e, 'file_pengantar')} className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100" />
+              <div className="border border-slate-200 dark:border-slate-700 rounded-2xl p-6">
+                <h4 className="font-bold text-slate-800 dark:text-white mb-1">1. Surat Pengantar</h4>
+                <input disabled={['submitted', 'disetujui'].includes(currentForm.status)} type="file" accept="image/*,application/pdf" onChange={(e) => handleFileChange(e, 'file_pengantar')} className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 dark:file:bg-teal-900/40 file:text-teal-700 dark:file:text-teal-300 hover:file:bg-teal-100 dark:bg-slate-800 dark:text-white" />
                 {currentForm.file_pengantar && (
                   <div className="mt-3 flex items-center gap-3">
                     <span className="text-xs font-bold text-teal-600">✓ Berkas Tersimpan</span>
@@ -987,9 +987,9 @@ export default function LaporanAkhirPage() {
                 )}
               </div>
 
-              <div className="border border-slate-200 rounded-2xl p-6">
-                <h4 className="font-bold text-slate-800 mb-1">2. Surat Penerimaan</h4>
-                <input disabled={['submitted', 'disetujui'].includes(currentForm.status)} type="file" accept="image/*,application/pdf" onChange={(e) => handleFileChange(e, 'file_penerimaan')} className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100" />
+              <div className="border border-slate-200 dark:border-slate-700 rounded-2xl p-6">
+                <h4 className="font-bold text-slate-800 dark:text-white mb-1">2. Surat Penerimaan</h4>
+                <input disabled={['submitted', 'disetujui'].includes(currentForm.status)} type="file" accept="image/*,application/pdf" onChange={(e) => handleFileChange(e, 'file_penerimaan')} className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 dark:file:bg-teal-900/40 file:text-teal-700 dark:file:text-teal-300 hover:file:bg-teal-100 dark:bg-slate-800 dark:text-white" />
                 {currentForm.file_penerimaan && (
                   <div className="mt-3 flex items-center gap-3">
                     <span className="text-xs font-bold text-teal-600">✓ Berkas Tersimpan</span>
@@ -998,9 +998,9 @@ export default function LaporanAkhirPage() {
                 )}
               </div>
 
-              <div className="border border-slate-200 rounded-2xl p-6">
-                <h4 className="font-bold text-slate-800 mb-1">3. Surat Keterangan Selesai</h4>
-                <input disabled={['submitted', 'disetujui'].includes(currentForm.status)} type="file" accept="image/*,application/pdf" onChange={(e) => handleFileChange(e, 'file_keterangan')} className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100" />
+              <div className="border border-slate-200 dark:border-slate-700 rounded-2xl p-6">
+                <h4 className="font-bold text-slate-800 dark:text-white mb-1">3. Surat Keterangan Selesai</h4>
+                <input disabled={['submitted', 'disetujui'].includes(currentForm.status)} type="file" accept="image/*,application/pdf" onChange={(e) => handleFileChange(e, 'file_keterangan')} className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 dark:file:bg-teal-900/40 file:text-teal-700 dark:file:text-teal-300 hover:file:bg-teal-100 dark:bg-slate-800 dark:text-white" />
                 {currentForm.file_keterangan && (
                   <div className="mt-3 flex items-center gap-3">
                     <span className="text-xs font-bold text-teal-600">✓ Berkas Tersimpan</span>
@@ -1009,9 +1009,9 @@ export default function LaporanAkhirPage() {
                 )}
               </div>
 
-              <div className="border border-slate-200 rounded-2xl p-6">
-                <h4 className="font-bold text-slate-800 mb-1">4. Gambar Struktur Organisasi (Opsional)</h4>
-                <input disabled={['submitted', 'disetujui'].includes(currentForm.status)} type="file" accept="image/*" onChange={(e) => handleFileChange(e, 'file_struktur_organisasi')} className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100" />
+              <div className="border border-slate-200 dark:border-slate-700 rounded-2xl p-6">
+                <h4 className="font-bold text-slate-800 dark:text-white mb-1">4. Gambar Struktur Organisasi (Opsional)</h4>
+                <input disabled={['submitted', 'disetujui'].includes(currentForm.status)} type="file" accept="image/*" onChange={(e) => handleFileChange(e, 'file_struktur_organisasi')} className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 dark:file:bg-teal-900/40 file:text-teal-700 dark:file:text-teal-300 hover:file:bg-teal-100 dark:bg-slate-800 dark:text-white" />
                 {currentForm.file_struktur_organisasi && (
                   <div className="mt-3 flex items-center gap-3">
                     <span className="text-xs font-bold text-teal-600">✓ Gambar Tersimpan</span>
@@ -1029,9 +1029,9 @@ export default function LaporanAkhirPage() {
               {/* Laporan Akhir Card */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 
-                <div className="border border-slate-200 rounded-2xl p-8 hover:shadow-lg transition-all text-center group bg-white">
+                <div className="border border-slate-200 dark:border-slate-700 rounded-2xl p-8 hover:shadow-lg transition-all text-center group bg-white dark:bg-slate-900">
                   <div className="mx-auto w-16 h-16 bg-teal-100 text-teal-600 flex items-center justify-center rounded-2xl mb-4 group-hover:scale-110 transition-transform"><FileText className="w-8 h-8" /></div>
-                  <h3 className="font-black text-xl text-slate-800 mb-2">Laporan Akhir ({activeMode === 'individu' ? 'Individu' : 'Kelompok'})</h3>
+                  <h3 className="font-black text-xl text-slate-800 dark:text-white mb-2">Laporan Akhir ({activeMode === 'individu' ? 'Individu' : 'Kelompok'})</h3>
                   <p className="text-sm text-slate-500 mb-6">Dokumen lengkap beserta lampiran surat.</p>
                   
                   {(!currentForm.file_pengantar || !currentForm.file_penerimaan || !currentForm.file_keterangan || !currentForm.file_struktur_organisasi) ? (
@@ -1048,9 +1048,9 @@ export default function LaporanAkhirPage() {
                   )}
                 </div>
 
-                <div className="border border-slate-200 rounded-2xl p-8 hover:shadow-lg transition-all text-center group bg-white">
+                <div className="border border-slate-200 dark:border-slate-700 rounded-2xl p-8 hover:shadow-lg transition-all text-center group bg-white dark:bg-slate-900">
                   <div className="mx-auto w-16 h-16 bg-amber-100 text-amber-600 flex items-center justify-center rounded-2xl mb-4 group-hover:scale-110 transition-transform"><Award className="w-8 h-8" /></div>
-                  <h3 className="font-black text-xl text-slate-800 mb-2">Sertifikat Mahasiswa</h3>
+                  <h3 className="font-black text-xl text-slate-800 dark:text-white mb-2">Sertifikat Mahasiswa</h3>
                   <p className="text-sm text-slate-500 mb-6">Sertifikat kelulusan KKL Plus dengan Validasi QR Code SKPI.</p>
                   
                   {!penilaian?.dpl_sudah_menilai ? (
@@ -1075,7 +1075,7 @@ export default function LaporanAkhirPage() {
         {/* Aksi Bawah */}
         {!['submitted', 'disetujui'].includes(currentForm.status) && activeTab !== 'cetak' && (
           <div className="mt-8 flex justify-end gap-4">
-            <button onClick={() => handleSave(false)} disabled={isSaving} className="px-8 py-3 rounded-xl border border-slate-300 bg-white font-bold text-slate-700 hover:bg-slate-50 shadow-sm disabled:opacity-50 transition-colors">
+            <button onClick={() => handleSave(false)} disabled={isSaving} className="px-8 py-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 shadow-sm disabled:opacity-50 transition-colors">
               {isSaving ? 'Menyimpan...' : `Simpan Draf ${activeMode}`}
             </button>
             <button onClick={() => {

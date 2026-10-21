@@ -21,7 +21,7 @@ export default function PetunjukMentor() {
               <p>
                 Sebagai <strong>Mentor Industri</strong>, Anda adalah ujung tombak dalam membimbing mahasiswa mempraktikkan ilmu mereka di dunia nyata. Program <strong>KKL Plus Berdampak</strong> ini dirancang bukan sekadar untuk menjadikan mahasiswa sebagai tenaga bantuan administratif, melainkan agar mereka mampu memberikan <em>dampak nyata</em> melalui proyek inovasi dan penyelesaian masalah di instansi Anda.
               </p>
-              <div className="bg-white/10 rounded-xl p-5 mt-4 border border-white/20">
+              <div className="bg-white/10 dark:bg-white/10 rounded-xl p-5 mt-4 border border-white/20 dark:border-white/20 text-white dark:text-white">
                 <h3 className="font-bold text-white text-lg mb-2 flex items-center gap-2">
                   <span>📌</span> Peran Utama Anda:
                 </h3>

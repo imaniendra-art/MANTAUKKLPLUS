@@ -103,14 +103,14 @@ function JoinPokjaContent() {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-slate-50">
       <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/mantau_hero.png')" }}></div>
-      <div className="absolute inset-0 bg-white/40 pointer-events-none z-0"></div>
+      <div className="absolute inset-0 bg-white/40 dark:bg-slate-950/80 pointer-events-none z-0"></div>
       
-      <div className="max-w-md w-full relative z-10 bg-white/60 backdrop-blur-2xl p-8 rounded-3xl shadow-xl border border-white/60">
+      <div className="max-w-md w-full relative z-10 bg-white/60 dark:bg-slate-900/80 backdrop-blur-2xl p-8 rounded-3xl shadow-xl border border-white/60 dark:border-slate-700">
         <div className="text-center mb-6">
           <div className="w-16 h-16 bg-teal-600/10 text-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <Users size={32} />
           </div>
-          <h2 className="text-2xl font-bold text-slate-800">Undangan Kelompok</h2>
+          <h2 className="text-2xl font-bold text-slate-800 dark:text-white">Undangan Kelompok</h2>
           <p className="text-slate-500 mt-1">Anda diundang untuk bergabung ke kelompok KKL Plus.</p>
         </div>
 
@@ -125,18 +125,18 @@ function JoinPokjaContent() {
             <p>{success}</p>
           </div>
         ) : pokjaInfo && (
-          <div className="bg-white/50 border border-slate-200 rounded-xl p-5 mb-6 shadow-sm">
+          <div className="bg-white/50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl p-5 mb-6 shadow-sm">
             <p className="text-sm text-slate-500 mb-1">Nama Kelompok</p>
-            <p className="font-bold text-lg text-slate-800 mb-3">{pokjaInfo.nama_pokja}</p>
+            <p className="font-bold text-lg text-slate-800 dark:text-white mb-3">{pokjaInfo.nama_pokja}</p>
             
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-[10px] uppercase text-slate-400 font-bold">Ketua</p>
-                <p className="text-sm font-medium text-slate-700">{pokjaInfo.ketua_nama}</p>
+                <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{pokjaInfo.ketua_nama}</p>
               </div>
               <div>
                 <p className="text-[10px] uppercase text-slate-400 font-bold">Anggota Saat Ini</p>
-                <p className="text-sm font-medium text-slate-700">{pokjaInfo.jumlah_anggota} Orang</p>
+                <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{pokjaInfo.jumlah_anggota} Orang</p>
               </div>
             </div>
           </div>
@@ -147,7 +147,7 @@ function JoinPokjaContent() {
             <button
               onClick={() => router.push('/mahasiswa')}
               disabled={processing}
-              className="flex-1 py-3 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition-colors disabled:opacity-50"
+              className="flex-1 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors disabled:opacity-50"
             >
               Batal
             </button>

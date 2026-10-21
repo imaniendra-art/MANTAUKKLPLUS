@@ -165,7 +165,7 @@ function CetakSkContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-100 flex flex-col items-center justify-center p-6 text-slate-700">
+      <div className="min-h-screen bg-slate-100 dark:bg-slate-950 flex flex-col items-center justify-center p-6 text-slate-700 dark:text-slate-200">
         <div className="w-10 h-10 border-4 border-teal-600 border-t-transparent rounded-full animate-spin mb-4"></div>
         <p className="font-semibold text-sm">Menyiapkan Dokumen Surat Keputusan (SK)...</p>
       </div>
@@ -174,8 +174,8 @@ function CetakSkContent() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-slate-100 flex flex-col items-center justify-center p-6 text-slate-700">
-        <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full text-center border border-rose-200">
+      <div className="min-h-screen bg-slate-100 dark:bg-slate-950 flex flex-col items-center justify-center p-6 text-slate-700 dark:text-slate-200">
+        <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-xl max-w-md w-full text-center border border-rose-200 dark:border-rose-900/50">
           <p className="text-4xl mb-3">⚠️</p>
           <h2 className="text-lg font-bold text-rose-600 mb-2">Gagal Menampilkan SK</h2>
           <p className="text-sm text-slate-600 mb-6">{error}</p>
@@ -208,7 +208,7 @@ function CetakSkContent() {
         </button>
         <button
           onClick={() => window.close() || router.back()}
-          className="px-6 py-2.5 bg-white hover:bg-slate-50 text-slate-700 font-sans font-semibold rounded-xl shadow border border-slate-200 text-center transition-all cursor-pointer"
+          className="px-6 py-2.5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-sans font-semibold rounded-xl shadow border border-slate-200 dark:border-slate-700 text-center transition-all cursor-pointer"
         >
           Tutup
         </button>
@@ -532,7 +532,7 @@ function CetakSkContent() {
 export default function CetakSkPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-slate-100 flex flex-col items-center justify-center p-6 text-slate-700">
+      <div className="min-h-screen bg-slate-100 dark:bg-slate-950 flex flex-col items-center justify-center p-6 text-slate-700 dark:text-slate-200">
         <div className="w-10 h-10 border-4 border-teal-600 border-t-transparent rounded-full animate-spin mb-4"></div>
         <p className="font-semibold text-sm">Memuat Dokumen SK...</p>
       </div>

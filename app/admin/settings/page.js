@@ -220,16 +220,16 @@ export default function AdminSettingsPage() {
           {activeTab === 'system' && (
             <form onSubmit={handleSaveSystem} className="space-y-8">
               <div>
-                <h3 className="text-xl font-black text-slate-800 mb-2">Konfigurasi Periode KKL Plus</h3>
-                <p className="text-slate-500 text-sm mb-6">Pilih periode aktif saat ini. Data pada dashboard akan di-filter berdasarkan periode ini.</p>
+                <h3 className="text-xl font-black text-slate-800 dark:text-slate-100 mb-2">Konfigurasi Periode KKL Plus</h3>
+                <p className="text-slate-500 dark:text-slate-400 text-sm mb-6">Pilih periode aktif saat ini. Data pada dashboard akan di-filter berdasarkan periode ini.</p>
                 
                 <div className="max-w-md space-y-4">
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">Periode Aktif</label>
+                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Periode Aktif</label>
                     <select 
                       value={systemSettings.periode_aktif}
                       onChange={(e) => setSystemSettings({...systemSettings, periode_aktif: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring focus:ring-teal-200 focus:ring-opacity-50 transition-all bg-slate-50"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-teal-500 focus:ring focus:ring-teal-200 focus:ring-opacity-50 transition-all bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white"
                       required
                     >
                       {systemSettings.daftar_periode?.map(p => (
@@ -238,14 +238,14 @@ export default function AdminSettingsPage() {
                     </select>
                   </div>
                   
-                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl space-y-2">
-                    <label className="block text-sm font-bold text-slate-700">Tambah Periode Baru</label>
+                  <div className="p-4 bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700 rounded-xl space-y-2">
+                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300">Tambah Periode Baru</label>
                     <div className="flex gap-2">
                       <input 
                         type="text" 
                         value={newPeriode}
                         onChange={(e) => setNewPeriode(e.target.value)}
-                        className="flex-1 px-4 py-2 rounded-lg border border-slate-200 text-sm"
+                        className="flex-1 px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm"
                         placeholder="Misal: Genap 2026/2027"
                       />
                       <button 
@@ -269,14 +269,14 @@ export default function AdminSettingsPage() {
               </div>
 
               <div className="border-t border-slate-100 pt-8">
-                <h3 className="text-xl font-black text-slate-800 mb-2">Buka/Tutup Akses Fitur</h3>
-                <p className="text-slate-500 text-sm mb-6">Mengatur akses mahasiswa terhadap fitur-fitur KKL Plus.</p>
+                <h3 className="text-xl font-black text-slate-800 dark:text-slate-100 mb-2">Buka/Tutup Akses Fitur</h3>
+                <p className="text-slate-500 dark:text-slate-400 text-sm mb-6">Mengatur akses mahasiswa terhadap fitur-fitur KKL Plus.</p>
                 
                 <div className="space-y-4 max-w-2xl">
                   {/* Pendaftaran */}
-                  <div className="flex items-center justify-between p-4 border border-slate-200 rounded-2xl">
+                  <div className="flex items-center justify-between p-4 border border-slate-200 dark:border-slate-700 rounded-2xl bg-white/40 dark:bg-slate-900/40">
                     <div>
-                      <h4 className="font-bold text-slate-800">Pendaftaran POKJA Baru</h4>
+                      <h4 className="font-bold text-slate-800 dark:text-slate-100">Pendaftaran POKJA Baru</h4>
                       <p className="text-sm text-slate-500">Izinkan mahasiswa untuk mendaftarkan Kelompok Kerja (POKJA) baru.</p>
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer">
@@ -286,9 +286,9 @@ export default function AdminSettingsPage() {
                   </div>
 
                   {/* Logbook */}
-                  <div className="flex items-center justify-between p-4 border border-slate-200 rounded-2xl">
+                  <div className="flex items-center justify-between p-4 border border-slate-200 dark:border-slate-700 rounded-2xl bg-white/40 dark:bg-slate-900/40">
                     <div>
-                      <h4 className="font-bold text-slate-800">Pengisian Logbook Mingguan</h4>
+                      <h4 className="font-bold text-slate-800 dark:text-slate-100">Pengisian Logbook Mingguan</h4>
                       <p className="text-sm text-slate-500">Izinkan mahasiswa mengisi aktivitas logbook saat POKJA berstatus Berjalan.</p>
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer">
@@ -298,9 +298,9 @@ export default function AdminSettingsPage() {
                   </div>
 
                   {/* Laporan */}
-                  <div className="flex items-center justify-between p-4 border border-slate-200 rounded-2xl">
+                  <div className="flex items-center justify-between p-4 border border-slate-200 dark:border-slate-700 rounded-2xl bg-white/40 dark:bg-slate-900/40">
                     <div>
-                      <h4 className="font-bold text-slate-800">Pengumpulan Laporan Akhir</h4>
+                      <h4 className="font-bold text-slate-800 dark:text-slate-100">Pengumpulan Laporan Akhir</h4>
                       <p className="text-sm text-slate-500">Izinkan mahasiswa untuk submit dan cetak laporan akhir.</p>
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer">
@@ -326,8 +326,8 @@ export default function AdminSettingsPage() {
           {activeTab === 'arsip' && (
             <form onSubmit={handleSaveSystem} className="space-y-8">
               <div>
-                <h3 className="text-xl font-black text-slate-800 mb-2">Penandatangan Dokumen</h3>
-                <p className="text-slate-500 text-sm mb-6">Nama dan identitas pejabat yang berwenang menandatangani dokumen-dokumen resmi KKL Plus.</p>
+                <h3 className="text-xl font-black text-slate-800 dark:text-slate-100 mb-2">Penandatangan Dokumen</h3>
+                <p className="text-slate-500 dark:text-slate-400 text-sm mb-6">Nama dan identitas pejabat yang berwenang menandatangani dokumen-dokumen resmi KKL Plus.</p>
                 
                 <div className="space-y-6 max-w-4xl">
                   {/* Card Ketua Program Studi */}
@@ -346,7 +346,7 @@ export default function AdminSettingsPage() {
                           type="text" 
                           value={systemSettings.kaprodi_nama}
                           onChange={(e) => setSystemSettings({...systemSettings, kaprodi_nama: e.target.value})}
-                          className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-teal-500 focus:ring focus:ring-teal-200 text-sm bg-white dark:bg-slate-800"
+                          className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-teal-500 focus:ring focus:ring-teal-200 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                           required
                         />
                       </div>
@@ -356,7 +356,7 @@ export default function AdminSettingsPage() {
                           type="text" 
                           value={systemSettings.kaprodi_nip}
                           onChange={(e) => setSystemSettings({...systemSettings, kaprodi_nip: e.target.value})}
-                          className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-teal-500 focus:ring focus:ring-teal-200 text-sm bg-white dark:bg-slate-800"
+                          className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-teal-500 focus:ring focus:ring-teal-200 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                           required
                         />
                       </div>
@@ -435,7 +435,7 @@ export default function AdminSettingsPage() {
                           type="text" 
                           value={systemSettings.ketua_lppm_nama || ''}
                           onChange={(e) => setSystemSettings({...systemSettings, ketua_lppm_nama: e.target.value})}
-                          className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-teal-500 focus:ring focus:ring-teal-200 text-sm bg-white dark:bg-slate-800"
+                          className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-teal-500 focus:ring focus:ring-teal-200 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                           required
                         />
                       </div>
@@ -445,7 +445,7 @@ export default function AdminSettingsPage() {
                           type="text" 
                           value={systemSettings.ketua_lppm_nidn || ''}
                           onChange={(e) => setSystemSettings({...systemSettings, ketua_lppm_nidn: e.target.value})}
-                          className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-teal-500 focus:ring focus:ring-teal-200 text-sm bg-white dark:bg-slate-800"
+                          className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-teal-500 focus:ring focus:ring-teal-200 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                           required
                         />
                       </div>
@@ -525,27 +525,27 @@ export default function AdminSettingsPage() {
           {activeTab === 'profile' && (
             <form onSubmit={handleSaveProfile} className="space-y-8">
               <div>
-                <h3 className="text-xl font-black text-slate-800 mb-2">Profil Admin</h3>
-                <p className="text-slate-500 text-sm mb-6">Ubah data profil dan alamat email Anda.</p>
+                <h3 className="text-xl font-black text-slate-800 dark:text-slate-100 mb-2">Profil Admin</h3>
+                <p className="text-slate-500 dark:text-slate-400 text-sm mb-6">Ubah data profil dan alamat email Anda.</p>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl">
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">Nama Lengkap</label>
+                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Nama Lengkap</label>
                     <input 
                       type="text" 
                       value={profileData.nama_lengkap}
                       onChange={(e) => setProfileData({...profileData, nama_lengkap: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring focus:ring-teal-200 focus:ring-opacity-50 transition-all bg-slate-50"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-teal-500 focus:ring focus:ring-teal-200 focus:ring-opacity-50 transition-all bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">Email</label>
+                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Email</label>
                     <input 
                       type="email" 
                       value={profileData.email}
                       onChange={(e) => setProfileData({...profileData, email: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring focus:ring-teal-200 focus:ring-opacity-50 transition-all bg-slate-50"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-teal-500 focus:ring focus:ring-teal-200 focus:ring-opacity-50 transition-all bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white"
                       required
                     />
                   </div>
@@ -553,27 +553,27 @@ export default function AdminSettingsPage() {
               </div>
 
               <div className="border-t border-slate-100 pt-8">
-                <h3 className="text-xl font-black text-slate-800 mb-2">Ubah Password</h3>
-                <p className="text-slate-500 text-sm mb-6">Biarkan kosong jika Anda tidak ingin mengubah password.</p>
+                <h3 className="text-xl font-black text-slate-800 dark:text-slate-100 mb-2">Ubah Password</h3>
+                <p className="text-slate-500 dark:text-slate-400 text-sm mb-6">Biarkan kosong jika Anda tidak ingin mengubah password.</p>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl">
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">Password Baru</label>
+                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Password Baru</label>
                     <input 
                       type="password" 
                       value={profileData.password}
                       onChange={(e) => setProfileData({...profileData, password: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring focus:ring-teal-200 focus:ring-opacity-50 transition-all bg-slate-50"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-teal-500 focus:ring focus:ring-teal-200 focus:ring-opacity-50 transition-all bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white"
                       placeholder="Masukkan password baru..."
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">Konfirmasi Password Baru</label>
+                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Konfirmasi Password Baru</label>
                     <input 
                       type="password" 
                       value={profileData.confirm_password}
                       onChange={(e) => setProfileData({...profileData, confirm_password: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring focus:ring-teal-200 focus:ring-opacity-50 transition-all bg-slate-50"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-teal-500 focus:ring focus:ring-teal-200 focus:ring-opacity-50 transition-all bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white"
                       placeholder="Ketik ulang password baru..."
                     />
                   </div>

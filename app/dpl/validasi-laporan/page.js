@@ -237,7 +237,7 @@ export default function DplValidasiLaporan() {
       )}
 
       {/* Tabs */}
-      <div className="flex bg-white rounded-t-2xl border-b border-slate-200 p-2 gap-2 shadow-sm mb-6 flex-wrap">
+      <div className="flex bg-white dark:bg-slate-800 rounded-t-2xl border-b border-slate-200 dark:border-slate-700 p-2 gap-2 shadow-sm mb-6 flex-wrap">
         <button 
           onClick={() => { setActiveTab('validasi'); setExpandedRow(null); }} 
           className={`px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${activeTab === 'validasi' ? 'bg-teal-100 text-teal-800' : 'text-slate-500 hover:bg-slate-50'}`}
@@ -259,11 +259,11 @@ export default function DplValidasiLaporan() {
         <div className="text-center py-20 text-slate-500 font-bold animate-pulse">Memuat data...</div>
       ) : activeTab === 'validasi' ? (
         <div className="space-y-6">
-          <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+          <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-slate-50 border-b border-slate-200 text-xs uppercase tracking-wider text-slate-500">
+                  <tr className="bg-slate-50 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-700 text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
                     <th className="py-4 px-6 font-bold">Jenis / Pembuat Laporan</th>
                     <th className="py-4 px-6 font-bold">Tempat KKL Plus</th>
                     <th className="py-4 px-6 font-bold text-center">Status</th>
@@ -285,7 +285,7 @@ export default function DplValidasiLaporan() {
                         <React.Fragment key={group.id}>
                           {/* Group Header Row */}
                           <tr 
-                            className="bg-slate-50 cursor-pointer hover:bg-slate-100 border-y border-slate-200"
+                            className="bg-slate-50 dark:bg-slate-900/50 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-750 border-y border-slate-200 dark:border-slate-700"
                             onClick={() => togglePokja(group.id)}
                           >
                             <td colSpan="4" className="py-4 px-6">
@@ -295,11 +295,11 @@ export default function DplValidasiLaporan() {
                                     {isPokjaExpanded ? <ChevronUp className="w-5 h-5 text-slate-600" /> : <ChevronDown className="w-5 h-5 text-slate-600" />}
                                   </div>
                                   <div>
-                                    <p className="font-bold text-slate-800 text-base">{group.nama_pokja}</p>
+                                    <p className="font-bold text-slate-800 dark:text-slate-100 text-base">{group.nama_pokja}</p>
                                     <p className="text-sm text-slate-500">{group.mitra}</p>
                                   </div>
                                 </div>
-                                <div className="bg-white px-3 py-1 rounded-full border border-slate-200 text-xs font-bold text-slate-600 shadow-sm">
+                                <div className="bg-white dark:bg-slate-800 px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300 shadow-sm">
                                   {group.laporans.length} Laporan
                                 </div>
                               </div>
@@ -323,19 +323,19 @@ export default function DplValidasiLaporan() {
                               {laporan.tipe_laporan === 'pokja' ? (
                                 <>
                                   <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-teal-100 text-teal-700 mb-1 border border-teal-200 uppercase">Laporan Kelompok</span>
-                                  <p className="font-bold text-sm text-slate-800">{laporan.pokja_id?.nama_pokja}</p>
+                                  <p className="font-bold text-sm text-slate-800 dark:text-white">{laporan.pokja_id?.nama_pokja}</p>
                                   <p className="text-xs text-slate-500 mt-1">Pokja / Kelompok</p>
                                 </>
                               ) : (
                                 <>
                                   <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-teal-100 text-teal-700 mb-1 border border-teal-200 uppercase">Laporan Individu</span>
-                                  <p className="font-bold text-sm text-slate-800">{laporan.mahasiswa_id?.nama_lengkap || 'Tanpa Nama'}</p>
+                                  <p className="font-bold text-sm text-slate-800 dark:text-white">{laporan.mahasiswa_id?.nama_lengkap || 'Tanpa Nama'}</p>
                                   <p className="text-xs text-slate-500 mt-1">{laporan.mahasiswa_id?.nim_nidn || '-'}</p>
                                 </>
                               )}
                             </td>
                             <td className="py-4 px-6 align-middle">
-                              <p className="text-sm font-medium text-slate-700">
+                              <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
                                 {laporan.pokja_id?.mitra_id?.nama_instansi || 'N/A'}
                               </p>
                             </td>
@@ -381,54 +381,54 @@ export default function DplValidasiLaporan() {
                             <tr>
                               <td colSpan="4" className="p-0 border-b border-teal-100">
                                 <div className="bg-teal-50/30 p-6 md:p-8 shadow-inner border-y border-teal-100">
-                                  <div className="max-w-4xl mx-auto space-y-8 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                                  <div className="max-w-4xl mx-auto space-y-8 bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
                                     <div className="border-b pb-4">
-                                      <h3 className="text-xl font-bold text-slate-800">Form Validasi Laporan Akhir</h3>
+                                      <h3 className="text-xl font-bold text-slate-800 dark:text-white">Form Validasi Laporan Akhir</h3>
                                       <p className="text-slate-500 text-sm mt-1">Berikan catatan revisi spesifik pada tiap bagian yang menurut Anda kurang tepat.</p>
                                     </div>
 
                                     {/* Catatan Umum */}
-                                    <div className="space-y-3 bg-amber-50/50 p-4 rounded-xl border border-amber-100">
-                                      <h4 className="font-bold text-slate-700 text-lg flex items-center gap-2">Catatan Revisi Umum</h4>
+                                    <div className="space-y-3 bg-amber-50/50 dark:bg-amber-950/30 p-4 rounded-xl border border-amber-100 dark:border-amber-900/40">
+                                      <h4 className="font-bold text-slate-700 dark:text-slate-200 text-lg flex items-center gap-2">Catatan Revisi Umum</h4>
                                       <p className="text-xs text-slate-500">Gunakan kolom ini untuk revisi yang mencakup keseluruhan laporan (misal: format, tata bahasa, daftar isi, dll).</p>
                                       <textarea
                                         placeholder="Tambahkan catatan revisi umum di sini..."
                                         value={catatanDraft.global || ''}
                                         onChange={(e) => handleCatatanChange('global', e.target.value)}
-                                        className="w-full h-24 border-amber-200 bg-white rounded-xl p-3 focus:ring-2 focus:ring-amber-500 text-sm placeholder:text-slate-300 shadow-sm"
+                                        className="w-full h-24 border-amber-200 dark:border-amber-800 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 rounded-xl p-3 focus:ring-2 focus:ring-amber-500 text-sm shadow-sm"
                                       ></textarea>
                                     </div>
 
                                     {/* Kata Pengantar */}
                                     <div className="space-y-3">
-                                      <h4 className="font-bold text-slate-700 text-lg">Kata Pengantar</h4>
-                                      <div className="p-4 bg-slate-50 rounded-xl text-sm text-slate-700 whitespace-pre-wrap border border-slate-200">
+                                      <h4 className="font-bold text-slate-700 dark:text-slate-200 text-lg">Kata Pengantar</h4>
+                                      <div className="p-4 bg-slate-50 dark:bg-slate-900/60 rounded-xl text-sm text-slate-700 dark:text-slate-200 whitespace-pre-wrap border border-slate-200 dark:border-slate-700">
                                         {renderText(laporan.kata_pengantar)}
                                       </div>
                                       <textarea
                                         placeholder="Tambahkan catatan revisi untuk Kata Pengantar (opsional)..."
                                         value={catatanDraft.kata_pengantar || ''}
                                         onChange={(e) => handleCatatanChange('kata_pengantar', e.target.value)}
-                                        className="w-full h-20 border-amber-200 bg-amber-50/30 rounded-xl p-3 focus:ring-2 focus:ring-amber-500 text-sm placeholder:text-amber-300"
+                                        className="w-full h-20 border border-amber-200 dark:border-amber-700/60 bg-amber-50/30 dark:bg-amber-950/20 text-slate-900 dark:text-white rounded-xl p-3 focus:ring-2 focus:ring-amber-500 text-sm placeholder:text-amber-400 dark:placeholder:text-amber-300/60"
                                       ></textarea>
                                     </div>
 
                                     {/* Bab 1 */}
                                     <div className="space-y-6 pt-4 border-t border-slate-100">
-                                      <h4 className="font-bold text-slate-800 text-lg">BAB I. Pendahuluan</h4>
+                                      <h4 className="font-bold text-slate-800 dark:text-slate-100 text-lg">BAB I. Pendahuluan</h4>
                                       {sections.bab1.map((sec) => {
                                         const studentText = bab1Data.find(s => s.id === sec.id)?.content || '';
                                         return (
                                           <div key={sec.id} className="space-y-2">
-                                            <div className="font-bold text-sm text-teal-900 bg-teal-50 px-3 py-1.5 rounded-lg inline-block">{sec.title}</div>
-                                            <div className="p-4 bg-slate-50 rounded-xl text-sm text-slate-700 whitespace-pre-wrap border border-slate-200">
+                                            <div className="font-bold text-sm text-teal-900 dark:text-teal-200 bg-teal-50 dark:bg-teal-950/60 px-3 py-1.5 rounded-lg inline-block border border-teal-200 dark:border-teal-800/40">{sec.title}</div>
+                                            <div className="p-4 bg-slate-50 dark:bg-slate-900/60 rounded-xl text-sm text-slate-700 dark:text-slate-200 whitespace-pre-wrap border border-slate-200 dark:border-slate-700">
                                               {renderText(studentText)}
                                             </div>
                                             <textarea
                                               placeholder={`Catatan revisi untuk ${sec.title}...`}
                                               value={catatanDraft[sec.id] || ''}
                                               onChange={(e) => handleCatatanChange(sec.id, e.target.value)}
-                                              className="w-full h-20 border-amber-200 bg-amber-50/30 rounded-xl p-3 focus:ring-2 focus:ring-amber-500 text-sm placeholder:text-amber-300"
+                                              className="w-full h-20 border border-amber-200 dark:border-amber-700/60 bg-amber-50/30 dark:bg-amber-950/20 text-slate-900 dark:text-white rounded-xl p-3 focus:ring-2 focus:ring-amber-500 text-sm placeholder:text-amber-400 dark:placeholder:text-amber-300/60"
                                             ></textarea>
                                           </div>
                                         );
@@ -437,20 +437,20 @@ export default function DplValidasiLaporan() {
 
                                     {/* Bab 2 */}
                                     <div className="space-y-6 pt-4 border-t border-slate-100">
-                                      <h4 className="font-bold text-slate-800 text-lg">BAB II. Metode Pelaksanaan / Analisis</h4>
+                                      <h4 className="font-bold text-slate-800 dark:text-slate-100 text-lg">BAB II. Metode Pelaksanaan / Analisis</h4>
                                       {sections.bab2.map((sec) => {
                                         const studentText = bab2Data.find(s => s.id === sec.id)?.content || '';
                                         return (
                                           <div key={sec.id} className="space-y-2">
-                                            <div className="font-bold text-sm text-teal-900 bg-teal-50 px-3 py-1.5 rounded-lg inline-block">{sec.title}</div>
-                                            <div className="p-4 bg-slate-50 rounded-xl text-sm text-slate-700 whitespace-pre-wrap border border-slate-200">
+                                            <div className="font-bold text-sm text-teal-900 dark:text-teal-200 bg-teal-50 dark:bg-teal-950/60 px-3 py-1.5 rounded-lg inline-block border border-teal-200 dark:border-teal-800/40">{sec.title}</div>
+                                            <div className="p-4 bg-slate-50 dark:bg-slate-900/60 rounded-xl text-sm text-slate-700 dark:text-slate-200 whitespace-pre-wrap border border-slate-200 dark:border-slate-700">
                                               {renderText(studentText)}
                                             </div>
                                             <textarea
                                               placeholder={`Catatan revisi untuk ${sec.title}...`}
                                               value={catatanDraft[sec.id] || ''}
                                               onChange={(e) => handleCatatanChange(sec.id, e.target.value)}
-                                              className="w-full h-20 border-amber-200 bg-amber-50/30 rounded-xl p-3 focus:ring-2 focus:ring-amber-500 text-sm placeholder:text-amber-300"
+                                              className="w-full h-20 border border-amber-200 dark:border-amber-700/60 bg-amber-50/30 dark:bg-amber-950/20 text-slate-900 dark:text-white rounded-xl p-3 focus:ring-2 focus:ring-amber-500 text-sm placeholder:text-amber-400 dark:placeholder:text-amber-300/60"
                                             ></textarea>
                                           </div>
                                         );
@@ -459,20 +459,20 @@ export default function DplValidasiLaporan() {
 
                                     {/* Bab 3 */}
                                     <div className="space-y-6 pt-4 border-t border-slate-100">
-                                      <h4 className="font-bold text-slate-800 text-lg">BAB III. Hasil dan Pembahasan</h4>
+                                      <h4 className="font-bold text-slate-800 dark:text-slate-100 text-lg">BAB III. Hasil dan Pembahasan</h4>
                                       {sections.bab3.map((sec) => {
                                         const studentText = bab3Data.find(s => s.id === sec.id)?.content || '';
                                         return (
                                           <div key={sec.id} className="space-y-2">
-                                            <div className="font-bold text-sm text-teal-900 bg-teal-50 px-3 py-1.5 rounded-lg inline-block">{sec.title}</div>
-                                            <div className="p-4 bg-slate-50 rounded-xl text-sm text-slate-700 whitespace-pre-wrap border border-slate-200">
+                                            <div className="font-bold text-sm text-teal-900 dark:text-teal-200 bg-teal-50 dark:bg-teal-950/60 px-3 py-1.5 rounded-lg inline-block border border-teal-200 dark:border-teal-800/40">{sec.title}</div>
+                                            <div className="p-4 bg-slate-50 dark:bg-slate-900/60 rounded-xl text-sm text-slate-700 dark:text-slate-200 whitespace-pre-wrap border border-slate-200 dark:border-slate-700">
                                               {renderText(studentText)}
                                             </div>
                                             <textarea
                                               placeholder={`Catatan revisi untuk ${sec.title}...`}
                                               value={catatanDraft[sec.id] || ''}
                                               onChange={(e) => handleCatatanChange(sec.id, e.target.value)}
-                                              className="w-full h-20 border-amber-200 bg-amber-50/30 rounded-xl p-3 focus:ring-2 focus:ring-amber-500 text-sm placeholder:text-amber-300"
+                                              className="w-full h-20 border border-amber-200 dark:border-amber-700/60 bg-amber-50/30 dark:bg-amber-950/20 text-slate-900 dark:text-white rounded-xl p-3 focus:ring-2 focus:ring-amber-500 text-sm placeholder:text-amber-400 dark:placeholder:text-amber-300/60"
                                             ></textarea>
                                           </div>
                                         );
@@ -481,20 +481,20 @@ export default function DplValidasiLaporan() {
 
                                     {/* Bab 4 */}
                                     <div className="space-y-6 pt-4 border-t border-slate-100">
-                                      <h4 className="font-bold text-slate-800 text-lg">BAB IV. Penutup</h4>
+                                      <h4 className="font-bold text-slate-800 dark:text-slate-100 text-lg">BAB IV. Penutup</h4>
                                       {sections.bab4.map((sec) => {
                                         const studentText = bab4Data.find(s => s.id === sec.id)?.content || '';
                                         return (
                                           <div key={sec.id} className="space-y-2">
-                                            <div className="font-bold text-sm text-teal-900 bg-teal-50 px-3 py-1.5 rounded-lg inline-block">{sec.title}</div>
-                                            <div className="p-4 bg-slate-50 rounded-xl text-sm text-slate-700 whitespace-pre-wrap border border-slate-200">
+                                            <div className="font-bold text-sm text-teal-900 dark:text-teal-200 bg-teal-50 dark:bg-teal-950/60 px-3 py-1.5 rounded-lg inline-block border border-teal-200 dark:border-teal-800/40">{sec.title}</div>
+                                            <div className="p-4 bg-slate-50 dark:bg-slate-900/60 rounded-xl text-sm text-slate-700 dark:text-slate-200 whitespace-pre-wrap border border-slate-200 dark:border-slate-700">
                                               {renderText(studentText)}
                                             </div>
                                             <textarea
                                               placeholder={`Catatan revisi untuk ${sec.title}...`}
                                               value={catatanDraft[sec.id] || ''}
                                               onChange={(e) => handleCatatanChange(sec.id, e.target.value)}
-                                              className="w-full h-20 border-amber-200 bg-amber-50/30 rounded-xl p-3 focus:ring-2 focus:ring-amber-500 text-sm placeholder:text-amber-300"
+                                              className="w-full h-20 border border-amber-200 dark:border-amber-700/60 bg-amber-50/30 dark:bg-amber-950/20 text-slate-900 dark:text-white rounded-xl p-3 focus:ring-2 focus:ring-amber-500 text-sm placeholder:text-amber-400 dark:placeholder:text-amber-300/60"
                                             ></textarea>
                                           </div>
                                         );
@@ -504,7 +504,7 @@ export default function DplValidasiLaporan() {
                                     {/* Lampiran Dokumen */}
                                     {(laporan.file_pengantar || laporan.file_penerimaan || laporan.file_keterangan || laporan.file_struktur_organisasi) && (
                                       <div className="space-y-4 pt-4 border-t border-slate-100">
-                                        <h4 className="font-bold text-slate-800 text-lg">Lampiran Dokumen</h4>
+                                        <h4 className="font-bold text-slate-800 dark:text-slate-100 text-lg">Lampiran Dokumen</h4>
                                         <div className="flex flex-wrap gap-3">
                                           {laporan.file_pengantar && (
                                             <a href={laporan.file_pengantar} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-sm font-bold text-teal-700 bg-teal-50 px-4 py-2 rounded-xl border border-teal-200 hover:bg-teal-100 transition-colors">
@@ -531,7 +531,7 @@ export default function DplValidasiLaporan() {
                                     )}
 
                                     {/* Action Buttons */}
-                                    <div className="pt-6 border-t border-slate-200 flex justify-end gap-3 sticky bottom-4 bg-white/90 backdrop-blur-sm p-4 rounded-xl shadow-lg border">
+                                    <div className="pt-6 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3 sticky bottom-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm p-4 rounded-xl shadow-lg border border-slate-200 dark:border-slate-800">
                                       {laporan.status !== 'disetujui' && (
                                         <>
                                           <button 
@@ -589,7 +589,7 @@ export default function DplValidasiLaporan() {
             </p>
           </div>
 
-          <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
@@ -616,13 +616,13 @@ export default function DplValidasiLaporan() {
                       return (
                         <tr key={pokja._id} className="hover:bg-slate-50 transition-colors">
                           <td className="py-4 px-6 align-middle">
-                            <p className="font-bold text-sm text-slate-800">{pokja.nama_pokja}</p>
+                            <p className="font-bold text-sm text-slate-800 dark:text-white">{pokja.nama_pokja}</p>
                           </td>
                           <td className="py-4 px-6 align-middle">
-                            <p className="text-sm text-slate-700">{pokja.ketua_id?.nama_lengkap || '-'}</p>
+                            <p className="text-sm text-slate-700 dark:text-slate-300">{pokja.ketua_id?.nama_lengkap || '-'}</p>
                           </td>
                           <td className="py-4 px-6 align-middle">
-                            <p className="text-sm font-medium text-slate-700">{pokja.mitra_id?.nama_instansi || '-'}</p>
+                            <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{pokja.mitra_id?.nama_instansi || '-'}</p>
                           </td>
                           <td className="py-4 px-6 align-middle">
                             {repStatus.isAllApproved ? (
@@ -648,7 +648,7 @@ export default function DplValidasiLaporan() {
                           <td className="py-4 px-6 align-middle">
                             {pokja.mentor_id?.nomor_hp ? (
                               <div className="flex items-center gap-2 flex-wrap">
-                                <p className="text-sm text-slate-700">{pokja.mentor_id.nama_lengkap || '-'}</p>
+                                <p className="text-sm text-slate-700 dark:text-slate-300">{pokja.mentor_id.nama_lengkap || '-'}</p>
                                 <button
                                   onClick={() => {
                                     const baseUrl = (typeof window !== 'undefined' && window.location.origin.includes('stimiapps.my.id'))
@@ -666,7 +666,7 @@ export default function DplValidasiLaporan() {
                                 </button>
                               </div>
                             ) : (
-                              <p className="text-sm text-slate-700">{pokja.mentor_id?.nama_lengkap || '-'}</p>
+                              <p className="text-sm text-slate-700 dark:text-slate-300">{pokja.mentor_id?.nama_lengkap || '-'}</p>
                             )}
                           </td>
                           <td className="py-4 px-6 align-middle text-right">

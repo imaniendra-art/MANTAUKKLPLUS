@@ -45,11 +45,11 @@ export default function SuratTugasPage({ params }) {
   if (!['disetujui_admin', 'berjalan', 'selesai'].includes(pokja.status_pokja)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-100">
-        <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md text-center border-t-4 border-red-500">
+        <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-xl max-w-md text-center border border-slate-200 dark:border-slate-800 border-t-4 border-t-red-500">
           <div className="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
           </div>
-          <h2 className="text-xl font-bold text-slate-800 mb-2">Akses Ditolak</h2>
+          <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-2">Akses Ditolak</h2>
           <p className="text-slate-600 mb-6">Surat Tugas (SK Penugasan) belum diterbitkan karena kelompok Anda belum berstatus Disetujui Admin atau Berjalan.</p>
           <button onClick={() => router.back()} className="px-6 py-2 bg-slate-800 text-white font-bold rounded-lg w-full">Kembali</button>
         </div>
@@ -81,7 +81,7 @@ export default function SuratTugasPage({ params }) {
         </button>
         <button 
           onClick={() => router.back()} 
-          className="px-6 py-3 bg-white text-slate-700 font-bold rounded-xl shadow border border-slate-200 text-center"
+          className="px-6 py-3 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold rounded-xl shadow border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-center"
         >
           Kembali
         </button>

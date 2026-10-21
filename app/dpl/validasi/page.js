@@ -695,7 +695,7 @@ const toggleSelectLog = (id) => {
                 type="text" 
                 readOnly 
                 value={lastGeneratedLink} 
-                className="bg-transparent border-none focus:ring-0 text-sm font-medium text-slate-700 dark:text-slate-300 w-full outline-none"
+                className="bg-transparent dark:bg-transparent border-none focus:ring-0 text-sm font-medium text-slate-700 dark:text-slate-300 w-full outline-none"
               />
               <button 
                 onClick={() => {

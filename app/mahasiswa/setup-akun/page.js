@@ -265,7 +265,7 @@ function SetupAkunContent() {
                 type="button"
                 onClick={() => signOut({ callbackUrl: '/login' })}
                 disabled={loading || success}
-                className="w-full py-3.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold rounded-xl transition-all disabled:opacity-50"
+                className="w-full py-3.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold rounded-xl transition-all disabled:opacity-50"
               >
                 Batal & Ganti Akun
               </button>

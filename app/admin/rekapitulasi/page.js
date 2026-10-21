@@ -71,16 +71,16 @@ export default function RekapitulasiNilai() {
 
   return (
     <DashboardLayout title="Rekapitulasi Nilai">
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
         
         {/* Header & Controls */}
-        <div className="p-6 border-b border-slate-200 bg-slate-50/50 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="p-6 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+            <h2 className="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
               <Award className="w-6 h-6 text-teal-600" />
               Master Data Nilai
             </h2>
-            <p className="text-slate-500 text-sm mt-1">Pemantauan dan rekapitulasi nilai akhir seluruh mahasiswa KKL Plus.</p>
+            <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Pemantauan dan rekapitulasi nilai akhir seluruh mahasiswa KKL Plus.</p>
           </div>
           <button 
             onClick={exportToExcel}
@@ -91,7 +91,7 @@ export default function RekapitulasiNilai() {
         </div>
 
         {/* Filters */}
-        <div className="p-4 bg-white border-b border-slate-100 flex flex-col sm:flex-row gap-3">
+        <div className="p-4 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
             <Search className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
             <input 
@@ -99,13 +99,13 @@ export default function RekapitulasiNilai() {
               placeholder="Cari NIM, Nama, atau Kelompok..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 outline-none"
+              className="w-full pl-9 pr-4 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 outline-none"
             />
           </div>
           <select 
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="py-2 px-4 border border-slate-200 rounded-xl text-sm bg-white focus:ring-2 focus:ring-teal-500 outline-none min-w-[200px]"
+            className="py-2 px-4 border border-slate-200 dark:border-slate-700 rounded-xl text-sm bg-white dark:bg-slate-800 text-slate-800 dark:text-white focus:ring-2 focus:ring-teal-500 outline-none min-w-[200px]"
           >
             <option value="all">Semua Status</option>
             <option value="lengkap">Nilai Lengkap (Selesai)</option>
@@ -116,7 +116,7 @@ export default function RekapitulasiNilai() {
         {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm whitespace-nowrap">
-            <thead className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
+            <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 font-semibold border-b border-slate-200 dark:border-slate-700">
               <tr>
                 <th className="px-6 py-4">Mahasiswa</th>
                 <th className="px-6 py-4">Kelompok & Mitra</th>
@@ -126,10 +126,10 @@ export default function RekapitulasiNilai() {
                 <th className="px-6 py-4 text-center">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {loading ? (
                 <tr>
-                  <td colSpan="6" className="px-6 py-12 text-center text-slate-500">
+                  <td colSpan="6" className="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
                     <div className="animate-pulse flex flex-col items-center">
                       <div className="h-8 w-8 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mb-4"></div>
                       Memuat data nilai...
@@ -138,7 +138,7 @@ export default function RekapitulasiNilai() {
                 </tr>
               ) : filteredData.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="px-6 py-12 text-center text-slate-500 font-medium">
+                  <td colSpan="6" className="px-6 py-12 text-center text-slate-500 dark:text-slate-400 font-medium">
                     Tidak ada data yang ditemukan.
                   </td>
                 </tr>
@@ -152,48 +152,48 @@ export default function RekapitulasiNilai() {
                   const mentorTotal = ((item.nilai_mentor_kelompok + item.nilai_mentor_individu) / 2).toFixed(1);
 
                   return (
-                    <tr key={item._id} className="hover:bg-slate-50 transition-colors">
+                    <tr key={item._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                       <td className="px-6 py-4">
-                        <p className="font-bold text-slate-800">{mhs.nama_lengkap || '-'}</p>
-                        <p className="text-xs text-slate-500 mt-0.5">{mhs.nim_nidn || '-'}</p>
+                        <p className="font-bold text-slate-800 dark:text-white">{mhs.nama_lengkap || '-'}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{mhs.nim_nidn || '-'}</p>
                       </td>
                       <td className="px-6 py-4">
-                        <p className="font-semibold text-slate-700 text-xs bg-slate-100 px-2 py-0.5 rounded inline-block mb-1">
+                        <p className="font-semibold text-slate-700 dark:text-slate-200 text-xs bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded inline-block mb-1">
                           {pokja.nama_pokja || 'Tanpa Kelompok'}
                         </p>
-                        <p className="text-xs text-slate-500 truncate max-w-[200px]" title={pokja.mitra_id?.nama_instansi}>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 truncate max-w-[200px]" title={pokja.mitra_id?.nama_instansi}>
                           {pokja.mitra_id?.nama_instansi || 'N/A'}
                         </p>
                       </td>
                       <td className="px-6 py-4 text-center">
                         {item.dpl_sudah_menilai ? (
-                          <span className="font-bold text-slate-700">{dplTotal}</span>
+                          <span className="font-bold text-slate-700 dark:text-slate-200">{dplTotal}</span>
                         ) : (
-                          <span className="text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded">Menunggu</span>
+                          <span className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 px-2 py-1 rounded border border-amber-200 dark:border-amber-800/50">Menunggu</span>
                         )}
                       </td>
                       <td className="px-6 py-4 text-center">
                         {item.mentor_sudah_menilai ? (
-                          <span className="font-bold text-slate-700">{mentorTotal}</span>
+                          <span className="font-bold text-slate-700 dark:text-slate-200">{mentorTotal}</span>
                         ) : (
-                          <span className="text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded">Menunggu</span>
+                          <span className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 px-2 py-1 rounded border border-amber-200 dark:border-amber-800/50">Menunggu</span>
                         )}
                       </td>
                       <td className="px-6 py-4 text-center">
                         <div className="flex flex-col items-center justify-center">
-                          <span className="text-lg font-black text-teal-700">{item.nilai_akhir_angka?.toFixed(2) || '0.00'}</span>
-                          <span className="text-xs font-bold px-2 py-0.5 bg-teal-100 text-teal-800 rounded mt-1 shadow-sm">
+                          <span className="text-lg font-black text-teal-700 dark:text-teal-400">{item.nilai_akhir_angka?.toFixed(2) || '0.00'}</span>
+                          <span className="text-xs font-bold px-2 py-0.5 bg-teal-100 dark:bg-teal-900/60 text-teal-800 dark:text-teal-200 rounded mt-1 shadow-sm border border-teal-200 dark:border-teal-800">
                             Grade: {item.nilai_akhir_huruf || '-'}
                           </span>
                         </div>
                       </td>
                       <td className="px-6 py-4 text-center">
                         {isLengkap ? (
-                          <div className="flex items-center justify-center gap-1.5 text-teal-600 bg-teal-50 px-3 py-1.5 rounded-full border border-teal-100 text-xs font-bold">
+                          <div className="flex items-center justify-center gap-1.5 text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/40 px-3 py-1.5 rounded-full border border-teal-100 dark:border-teal-800 text-xs font-bold">
                             <CheckCircle className="w-3.5 h-3.5" /> Selesai
                           </div>
                         ) : (
-                          <div className="flex items-center justify-center gap-1.5 text-amber-600 bg-amber-50 px-3 py-1.5 rounded-full border border-amber-100 text-xs font-bold">
+                          <div className="flex items-center justify-center gap-1.5 text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 px-3 py-1.5 rounded-full border border-amber-100 dark:border-amber-800 text-xs font-bold">
                             <Clock className="w-3.5 h-3.5" /> Proses
                           </div>
                         )}

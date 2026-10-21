@@ -81,25 +81,26 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 relative py-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 relative py-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
       {/* Background Image from Landing Page */}
       <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/mantau_hero.png')" }}></div>
-      <div className="absolute inset-0 bg-white/40 pointer-events-none z-0"></div> {/* Light overlay */}
+      <div className="absolute inset-0 bg-white/40 dark:bg-slate-950/70 pointer-events-none z-0"></div> {/* Light overlay */}
       
       {/* Glow effect */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,_rgba(255,255,255,0.8),_transparent_60%)] pointer-events-none z-0"></div>
 
-      <div className="max-w-md w-full relative z-10 space-y-8 bg-white/30 backdrop-blur-2xl p-10 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.1)] border border-white/60">
+      <div className="max-w-md w-full relative z-10 space-y-8 bg-white/40 dark:bg-slate-900/80 backdrop-blur-2xl p-10 rounded-[2rem] shadow-xl border border-white/60 dark:border-slate-700">
         <div>
           <div className="text-center">
             <Link href="/" className="inline-block mb-2">
-              <img src="/mk_gelap.png" alt="MANTAUKKLPLUS Logo" className="h-12 mx-auto drop-shadow-md" />
+              <img src="/mk_terang.png" alt="MANTAUKKLPLUS Logo" className="h-12 mx-auto drop-shadow-md dark:hidden block" />
+              <img src="/mk_gelap.png" alt="MANTAUKKLPLUS Logo" className="h-12 mx-auto drop-shadow-md hidden dark:block" />
             </Link>
           </div>
-          <h2 className="mt-4 text-center text-3xl font-extrabold text-slate-900">
+          <h2 className="mt-4 text-center text-3xl font-extrabold text-slate-900 dark:text-white">
             Selamat Datang
           </h2>
-          <p className="mt-2 text-center text-sm text-slate-700 font-medium">
+          <p className="mt-2 text-center text-sm text-slate-700 dark:text-slate-300 font-medium">
             Masuk untuk memantau aktivitas KKL Plus Anda
           </p>
         </div>
@@ -111,7 +112,7 @@ export default function Login() {
             </div>
           )}
           
-          <div className="bg-amber-500/10 backdrop-blur-sm border border-amber-500/20 text-amber-800 p-4 rounded-xl text-sm mb-6 shadow-sm">
+          <div className="bg-amber-500/10 dark:bg-amber-500/15 backdrop-blur-sm border border-amber-500/20 dark:border-amber-500/30 text-amber-800 dark:text-amber-200 p-4 rounded-xl text-sm mb-6 shadow-sm">
             <p className="text-sm font-medium leading-relaxed">
               <span className="font-bold mr-1">💡 Informasi:</span> 
               Gunakan ID / Username / NIM Anda untuk masuk. <strong>Password default adalah Nomor HP Anda</strong> (atau gunakan NIM/ID jika Nomor HP kosong). 
@@ -121,14 +122,14 @@ export default function Login() {
           
           <div className="space-y-5">
             <div>
-              <label className="block text-sm font-bold text-slate-700 mb-2" htmlFor="email">Email / NIM / Username</label>
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2" htmlFor="email">Email / NIM / Username</label>
               <input
                 id="email"
                 name="email"
                 type="text"
                 autoComplete="username"
                 required
-                className="appearance-none relative block w-full px-4 py-3.5 border border-slate-300 placeholder:text-slate-400 text-slate-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-600 focus:border-teal-600 sm:text-sm bg-white/70 backdrop-blur-md transition-all shadow-sm"
+                className="appearance-none relative block w-full px-4 py-3.5 border border-slate-300 dark:border-slate-600 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-slate-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-600 focus:border-teal-600 sm:text-sm bg-white/70 dark:bg-slate-800/80 backdrop-blur-md transition-all shadow-sm"
                 placeholder="Masukkan Email atau NIM"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -136,7 +137,7 @@ export default function Login() {
             </div>
             <div>
               <div className="flex justify-between items-center mb-2">
-                <label className="block text-sm font-bold text-slate-700" htmlFor="password">Password</label>
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300" htmlFor="password">Password</label>
                 <a 
                   href={`https://wa.me/6285256096248?text=${encodeURIComponent("Halo Admin MANTAU KKL PLUS (https://kklplus.stimiapps.my.id), saya mengalami kendala lupa password akun saya. Mohon bantuannya untuk verifikasi dan reset password akun saya. Terima kasih.")}`}
                   target="_blank" 
@@ -154,7 +155,7 @@ export default function Login() {
                   type={showPassword ? "text" : "password"}
                   autoComplete="current-password"
                   required
-                  className="appearance-none block w-full px-4 py-3.5 border border-slate-300 placeholder:text-slate-400 text-slate-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-600 focus:border-teal-600 sm:text-sm bg-white/70 backdrop-blur-md transition-all pr-12 shadow-sm"
+                  className="appearance-none block w-full px-4 py-3.5 border border-slate-300 dark:border-slate-600 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-slate-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-600 focus:border-teal-600 sm:text-sm bg-white/70 dark:bg-slate-800/80 backdrop-blur-md transition-all pr-12 shadow-sm"
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}

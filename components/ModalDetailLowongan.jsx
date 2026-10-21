@@ -20,7 +20,7 @@ export default function ModalDetailLowongan({ isOpen, onClose, mitra }) {
       case 'corporate': return 'bg-teal-100 text-teal-700';
       case 'pemerintahan': return 'bg-amber-100 text-amber-700';
       case 'wirausaha': return 'bg-teal-100 text-teal-700';
-      default: return 'bg-slate-100 text-slate-700';
+      default: return 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300';
     }
   };
 
@@ -30,7 +30,7 @@ export default function ModalDetailLowongan({ isOpen, onClose, mitra }) {
       case 'keuangan': return 'bg-teal-100 text-teal-700';
       case 'pemasaran': return 'bg-amber-100 text-amber-700';
       case 'pengembangan bisnis': return 'bg-teal-100 text-teal-700';
-      default: return 'bg-slate-100 text-slate-700';
+      default: return 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300';
     }
   };
 
@@ -43,15 +43,15 @@ export default function ModalDetailLowongan({ isOpen, onClose, mitra }) {
       ></div>
 
       {/* Slide-over panel */}
-      <div className="relative w-full max-w-2xl bg-white h-full flex flex-col shadow-2xl transform transition-transform animate-slide-left overflow-hidden">
+      <div className="relative w-full max-w-2xl bg-white dark:bg-slate-800 h-full flex flex-col shadow-2xl transform transition-transform animate-slide-left overflow-hidden text-slate-900 dark:text-slate-100">
         {/* Header */}
-        <div className="px-6 py-6 border-b border-slate-100 bg-slate-50/80 flex justify-between items-start sticky top-0 z-10 backdrop-blur-md">
+        <div className="px-6 py-6 border-b border-slate-100 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-900/80 flex justify-between items-start sticky top-0 z-10 backdrop-blur-md">
           <div className="flex gap-5 items-start pr-8">
             <div className="w-16 h-16 shrink-0 bg-gradient-to-br from-teal-600 to-teal-700 text-white rounded-2xl flex items-center justify-center font-extrabold text-2xl shadow-[0_10px_20px_-10px_rgba(79,70,229,0.5)] border border-teal-500/20">
               {mitra.nama_instansi.substring(0, 2).toUpperCase()}
             </div>
             <div>
-              <h2 className="text-2xl font-extrabold text-slate-900 mb-2 leading-tight tracking-tight">{mitra.nama_instansi}</h2>
+              <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white mb-2 leading-tight tracking-tight">{mitra.nama_instansi}</h2>
               <div className="flex flex-wrap gap-2 items-center text-sm">
                 <span className={`px-2.5 py-1 rounded-md font-bold text-[11px] uppercase tracking-wider ${getBadgeColor(mitra.jenis_skema)}`}>
                   {mitra.jenis_skema || 'Mitra'}
@@ -71,11 +71,11 @@ export default function ModalDetailLowongan({ isOpen, onClose, mitra }) {
         </div>
 
         {/* Content scrollable */}
-        <div className="flex-1 overflow-y-auto p-6 lg:p-8 space-y-10 custom-scrollbar bg-white">
+        <div className="flex-1 overflow-y-auto p-6 lg:p-8 space-y-10 custom-scrollbar bg-white dark:bg-slate-800">
           
           {/* Section 1: Profil */}
           <section>
-            <h3 className="text-[17px] font-extrabold text-slate-900 mb-4 flex items-center gap-2">
+            <h3 className="text-[17px] font-extrabold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
               <Building size={20} className="text-teal-600" />
               Tentang Instansi / Perusahaan
             </h3>
@@ -90,7 +90,7 @@ export default function ModalDetailLowongan({ isOpen, onClose, mitra }) {
 
           {/* Section 2: Pendaftaran */}
           <section>
-            <h3 className="text-[17px] font-extrabold text-slate-900 mb-5 flex items-center gap-2">
+            <h3 className="text-[17px] font-extrabold text-slate-900 dark:text-white mb-5 flex items-center gap-2">
               <Briefcase size={20} className="text-teal-600" />
               Informasi Pendaftaran KKL Plus
             </h3>
@@ -98,15 +98,15 @@ export default function ModalDetailLowongan({ isOpen, onClose, mitra }) {
             {mitra.posisi_list?.length > 0 ? (
               <div className="space-y-5">
                 {mitra.posisi_list.map((pos) => (
-                  <div key={pos._id} className="border border-slate-200 rounded-3xl p-6 hover:border-teal-300 hover:shadow-[0_10px_30px_-15px_rgba(79,70,229,0.2)] transition-all duration-300 group bg-white">
+                  <div key={pos._id} className="border border-slate-200 dark:border-slate-800 rounded-3xl p-6 hover:border-teal-300 dark:hover:border-teal-600 hover:shadow-xl transition-all duration-300 group bg-white dark:bg-slate-900">
                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-5">
                       <div>
-                        <h4 className="text-lg font-extrabold text-slate-900 group-hover:text-teal-600 transition-colors leading-tight">{pos.nama_posisi}</h4>
+                        <h4 className="text-lg font-extrabold text-slate-900 dark:text-white group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors leading-tight">{pos.nama_posisi}</h4>
                         <div className="flex flex-wrap gap-2 mt-2.5">
                           <span className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider ${getKonsentrasiColor(pos.konsentrasi)}`}>
                             {pos.konsentrasi || 'Umum'}
                           </span>
-                          <span className="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-md text-[11px] font-bold uppercase tracking-wider">
+                          <span className="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-md text-[11px] font-bold uppercase tracking-wider">
                             {pos.sistem_kerja || 'WFO'}
                           </span>
                         </div>

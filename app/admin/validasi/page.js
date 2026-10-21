@@ -322,7 +322,7 @@ export default function ValidasiPokja() {
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-white/20 dark:bg-slate-900/20/50 border-b border-white/60 dark:border-slate-700 text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">
+                  <tr className="bg-white/20 dark:bg-slate-900/50 border-b border-white/60 dark:border-slate-700 text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">
                     <th className="py-4 px-4 text-center">No</th>
                     <th className="py-4 px-4 text-left">Nama Kelompok</th>
                     <th className="py-4 px-4 text-left">Ketua</th>
@@ -352,7 +352,7 @@ export default function ValidasiPokja() {
                       return (
                       <React.Fragment key={p._id}>
                       <tr 
-                        className="hover:bg-white/50 dark:hover:bg-slate-700/60 transition-colors text-sm cursor-pointer"
+                        className="bg-transparent hover:bg-white/50 dark:hover:bg-slate-700/60 transition-colors text-sm cursor-pointer"
                         onClick={() => setExpandedRow(isExpanded ? null : p._id)}
                       >
                         <td className="py-4 px-4 text-center font-medium text-slate-500 dark:text-slate-400">{index + 1}</td>
@@ -471,7 +471,7 @@ export default function ValidasiPokja() {
                 rows={4}
                 value={rejectReason} 
                 onChange={(e) => setRejectReason(e.target.value)} 
-                className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 mb-4"
+                className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 mb-4"
               ></textarea>
               <div className="flex justify-end gap-3">
                 <button type="button" onClick={() => setShowRejectModal(false)} className="px-5 py-2 font-bold text-slate-500">Batal</button>
@@ -498,7 +498,7 @@ export default function ValidasiPokja() {
                 required 
                 value={selectedDplId} 
                 onChange={(e) => setSelectedDplId(e.target.value)} 
-                className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 mb-6"
+                className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white mb-6"
               >
                 <option value="" disabled>-- Pilih DPL --</option>
                 {dpls.map(dpl => (
@@ -540,9 +540,9 @@ export default function ValidasiPokja() {
                     </div>
                     <div className="flex gap-2">
                       {selectedPokja.file_surat_tugas && <a href={selectedPokja.file_surat_tugas} target="_blank" className="px-3 py-1 bg-teal-100 text-teal-700 text-xs font-bold rounded-lg hover:bg-teal-200">Lihat</a>}
-                      <label className="cursor-pointer px-3 py-1 bg-slate-200 text-slate-700 hover:bg-slate-300 text-xs font-bold rounded-lg relative overflow-hidden">
+                      <label className="cursor-pointer px-3 py-1 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-600 text-xs font-bold rounded-lg relative overflow-hidden">
                         <span className={submitting ? "opacity-0" : ""}>Upload</span>
-                        <input type="file" className="hidden" accept=".pdf" onChange={(e) => handleAdminUpload(e, 'sk')} disabled={submitting} />
+                        <input type="file" className="hidden dark:bg-transparent dark:text-white" accept=".pdf" onChange={(e) => handleAdminUpload(e, 'sk')} disabled={submitting} />
                         {submitting && <div className="absolute inset-0 flex items-center justify-center"><div className="w-4 h-4 border-2 border-slate-700 border-t-transparent rounded-full animate-spin"></div></div>}
                       </label>
                     </div>
@@ -555,9 +555,9 @@ export default function ValidasiPokja() {
                     </div>
                     <div className="flex gap-2">
                       {selectedPokja.file_surat_balasan && <a href={selectedPokja.file_surat_balasan} target="_blank" className="px-3 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded-lg hover:bg-amber-200">Lihat</a>}
-                      <label className="cursor-pointer px-3 py-1 bg-slate-200 text-slate-700 hover:bg-slate-300 text-xs font-bold rounded-lg relative overflow-hidden">
+                      <label className="cursor-pointer px-3 py-1 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-600 text-xs font-bold rounded-lg relative overflow-hidden">
                         <span className={submitting ? "opacity-0" : ""}>Upload</span>
-                        <input type="file" className="hidden" accept=".pdf" onChange={(e) => handleAdminUpload(e, 'loa')} disabled={submitting} />
+                        <input type="file" className="hidden dark:bg-transparent dark:text-white" accept=".pdf" onChange={(e) => handleAdminUpload(e, 'loa')} disabled={submitting} />
                         {submitting && <div className="absolute inset-0 flex items-center justify-center"><div className="w-4 h-4 border-2 border-slate-700 border-t-transparent rounded-full animate-spin"></div></div>}
                       </label>
                     </div>
@@ -591,9 +591,9 @@ export default function ValidasiPokja() {
                     <p className="font-bold text-sm text-slate-800 dark:text-white mb-2">MOU</p>
                     <div className="flex flex-wrap gap-2">
                       {selectedPokja.mitra_id?.file_mou && <a href={selectedPokja.mitra_id.file_mou} target="_blank" className="px-3 py-1 bg-teal-100 text-teal-700 text-xs font-bold rounded-lg hover:bg-teal-200">Lihat MOU</a>}
-                      <label className="cursor-pointer px-3 py-1 bg-slate-200 text-slate-700 hover:bg-slate-300 text-xs font-bold rounded-lg relative overflow-hidden flex-1 text-center">
+                      <label className="cursor-pointer px-3 py-1 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-600 text-xs font-bold rounded-lg relative overflow-hidden flex-1 text-center">
                         <span className={submitting ? "opacity-0" : ""}>Upload MOU</span>
-                        <input type="file" className="hidden" accept=".pdf" onChange={(e) => handleAdminUpload(e, 'mou')} disabled={submitting} />
+                        <input type="file" className="hidden dark:bg-transparent dark:text-white" accept=".pdf" onChange={(e) => handleAdminUpload(e, 'mou')} disabled={submitting} />
                         {submitting && <div className="absolute inset-0 flex items-center justify-center"><div className="w-4 h-4 border-2 border-slate-700 border-t-transparent rounded-full animate-spin"></div></div>}
                       </label>
                     </div>
@@ -603,9 +603,9 @@ export default function ValidasiPokja() {
                     <p className="font-bold text-sm text-slate-800 dark:text-white mb-2">MOA</p>
                     <div className="flex flex-wrap gap-2">
                       {selectedPokja.mitra_id?.file_moa && <a href={selectedPokja.mitra_id.file_moa} target="_blank" className="px-3 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded-lg hover:bg-amber-200">Lihat MOA</a>}
-                      <label className="cursor-pointer px-3 py-1 bg-slate-200 text-slate-700 hover:bg-slate-300 text-xs font-bold rounded-lg relative overflow-hidden flex-1 text-center">
+                      <label className="cursor-pointer px-3 py-1 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-600 text-xs font-bold rounded-lg relative overflow-hidden flex-1 text-center">
                         <span className={submitting ? "opacity-0" : ""}>Upload MOA</span>
-                        <input type="file" className="hidden" accept=".pdf" onChange={(e) => handleAdminUpload(e, 'moa')} disabled={submitting} />
+                        <input type="file" className="hidden dark:bg-transparent dark:text-white" accept=".pdf" onChange={(e) => handleAdminUpload(e, 'moa')} disabled={submitting} />
                         {submitting && <div className="absolute inset-0 flex items-center justify-center"><div className="w-4 h-4 border-2 border-slate-700 border-t-transparent rounded-full animate-spin"></div></div>}
                       </label>
                     </div>
@@ -615,9 +615,9 @@ export default function ValidasiPokja() {
                     <p className="font-bold text-sm text-slate-800 dark:text-white mb-2">IA</p>
                     <div className="flex flex-wrap gap-2">
                       {selectedPokja.mitra_id?.file_ia && <a href={selectedPokja.mitra_id.file_ia} target="_blank" className="px-3 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded-lg hover:bg-amber-200">Lihat IA</a>}
-                      <label className="cursor-pointer px-3 py-1 bg-slate-200 text-slate-700 hover:bg-slate-300 text-xs font-bold rounded-lg relative overflow-hidden flex-1 text-center">
+                      <label className="cursor-pointer px-3 py-1 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-600 text-xs font-bold rounded-lg relative overflow-hidden flex-1 text-center">
                         <span className={submitting ? "opacity-0" : ""}>Upload IA</span>
-                        <input type="file" className="hidden" accept=".pdf" onChange={(e) => handleAdminUpload(e, 'ia')} disabled={submitting} />
+                        <input type="file" className="hidden dark:bg-transparent dark:text-white" accept=".pdf" onChange={(e) => handleAdminUpload(e, 'ia')} disabled={submitting} />
                         {submitting && <div className="absolute inset-0 flex items-center justify-center"><div className="w-4 h-4 border-2 border-slate-700 border-t-transparent rounded-full animate-spin"></div></div>}
                       </label>
                     </div>
@@ -654,7 +654,7 @@ export default function ValidasiPokja() {
                   value={plotForm.nama_pokja} 
                   onChange={(e) => setPlotForm({...plotForm, nama_pokja: e.target.value})} 
                   placeholder="Masukkan nama kelompok"
-                  className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/60 dark:bg-slate-900/60"
+                  className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/60 dark:bg-slate-900/60 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                 />
               </div>
               
@@ -665,7 +665,7 @@ export default function ValidasiPokja() {
                   placeholder="Cari nama / NIM ketua..." 
                   value={searchKetua}
                   onChange={(e) => setSearchKetua(e.target.value)}
-                  className="w-full px-4 py-2 mb-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm focus:ring-2 focus:ring-teal-500 outline-none"
+                  className="w-full px-4 py-2 mb-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm focus:ring-2 focus:ring-teal-500 outline-none"
                 />
                 <div className="bg-white/60 dark:bg-slate-900/60 border border-white/60 dark:border-slate-700 rounded-xl p-4 max-h-48 overflow-y-auto space-y-2">
                   {filteredKetuaList.length === 0 ? (
@@ -679,7 +679,7 @@ export default function ValidasiPokja() {
                           required
                           checked={plotForm.ketua_id === mhs._id}
                           onChange={() => setPlotForm({...plotForm, ketua_id: mhs._id, anggota_ids: plotForm.anggota_ids.filter(id => id !== mhs._id)})}
-                          className="mt-1 w-4 h-4 text-teal-600 rounded-full border-slate-300 focus:ring-teal-500"
+                          className="mt-1 w-4 h-4 text-teal-600 rounded-full border-slate-300 dark:border-slate-600 dark:bg-slate-800 focus:ring-teal-500"
                         />
                         <div>
                           <p className="text-sm font-bold text-slate-800 dark:text-slate-200">{mhs.nama_lengkap}</p>
@@ -699,7 +699,7 @@ export default function ValidasiPokja() {
                           required
                           checked={true}
                           onChange={() => {}}
-                          className="mt-1 w-4 h-4 text-teal-600 rounded-full border-slate-300 focus:ring-teal-500"
+                          className="mt-1 w-4 h-4 text-teal-600 rounded-full border-slate-300 dark:border-slate-600 dark:bg-slate-800 focus:ring-teal-500"
                         />
                         <div>
                           <p className="text-sm font-bold text-slate-800 dark:text-slate-200">{selected.nama_lengkap}</p>
@@ -744,7 +744,7 @@ export default function ValidasiPokja() {
                   placeholder="Cari nama / NIM anggota..." 
                   value={searchAnggota}
                   onChange={(e) => setSearchAnggota(e.target.value)}
-                  className="w-full px-4 py-2 mb-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm focus:ring-2 focus:ring-teal-500 outline-none"
+                  className="w-full px-4 py-2 mb-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm focus:ring-2 focus:ring-teal-500 outline-none"
                 />
                 
                 <div className="bg-white/60 dark:bg-slate-900/60 border border-white/60 dark:border-slate-700 rounded-xl p-4 max-h-48 overflow-y-auto space-y-2">
@@ -757,7 +757,7 @@ export default function ValidasiPokja() {
                           type="checkbox" 
                           checked={plotForm.anggota_ids.includes(mhs._id)}
                           onChange={() => handleCheckboxAnggota(mhs._id)}
-                          className="mt-1 w-4 h-4 text-teal-600 rounded border-slate-300 focus:ring-teal-500"
+                          className="mt-1 w-4 h-4 text-teal-600 rounded border-slate-300 dark:border-slate-600 dark:bg-slate-800 focus:ring-teal-500"
                         />
                         <div>
                           <p className="text-sm font-bold text-slate-800 dark:text-slate-200">{mhs.nama_lengkap}</p>
@@ -775,7 +775,7 @@ export default function ValidasiPokja() {
                   <select 
                     value={plotForm.mitra_id} 
                     onChange={(e) => setPlotForm({...plotForm, mitra_id: e.target.value})} 
-                    className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/60 dark:bg-slate-900/60"
+                    className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/60 dark:bg-slate-900/60 text-slate-900 dark:text-white"
                   >
                     <option value="">-- Pilih Mitra --</option>
                     {mitraList.map(mitra => (
@@ -788,7 +788,7 @@ export default function ValidasiPokja() {
                   <select 
                     value={plotForm.dpl_id} 
                     onChange={(e) => setPlotForm({...plotForm, dpl_id: e.target.value})} 
-                    className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/60 dark:bg-slate-900/60"
+                    className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/60 dark:bg-slate-900/60 text-slate-900 dark:text-white"
                   >
                     <option value="">-- Pilih DPL --</option>
                     {dpls.map(dpl => (

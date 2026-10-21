@@ -165,7 +165,7 @@ export default function MonevDPLPage() {
       )}
       
       <div className="space-y-6 pb-12">
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden relative">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden relative">
           <div className="bg-gradient-to-br from-teal-600 to-teal-700 p-8 text-white relative">
             <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
               <Camera className="w-48 h-48" />
@@ -193,11 +193,11 @@ export default function MonevDPLPage() {
                 {/* Dropdown Filter Kelompok */}
                 {pokjas.length > 1 && (
                   <div className="flex justify-end items-center mb-6">
-                    <label className="text-sm font-semibold text-slate-700 mr-3">Tampilkan Kelompok:</label>
+                    <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 mr-3">Tampilkan Kelompok:</label>
                     <select
                       value={filterPokjaId}
                       onChange={(e) => setFilterPokjaId(e.target.value)}
-                      className="px-4 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+                      className="px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
                     >
                       <option value="ALL">-- Semua Kelompok --</option>
                       {pokjas.map(p => (
@@ -217,20 +217,20 @@ export default function MonevDPLPage() {
                     const progress = monevs.length;
 
                     return (
-                      <div key={pokja._id} className="border border-slate-200 rounded-xl overflow-hidden bg-slate-50">
-                      <div className="bg-white p-6 border-b border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                      <div key={pokja._id} className="border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden bg-slate-50 dark:bg-slate-900/40">
+                      <div className="bg-white dark:bg-slate-800 p-6 border-b border-slate-200 dark:border-slate-700 flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div>
-                          <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                          <h2 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
                             {pokja.nama_pokja && <span className="bg-teal-600 text-white px-2 py-0.5 rounded text-xs">{pokja.nama_pokja}</span>}
                             Ketua: {pokja.ketua_id?.nama_lengkap || "Belum ada ketua"}
                           </h2>
-                          <p className="text-sm text-slate-600 flex items-center mt-1">
+                          <p className="text-sm text-slate-600 dark:text-slate-400 flex items-center mt-1">
                             <MapPin className="w-4 h-4 mr-1 text-slate-400" />
                             {pokja.mitra_id?.nama_mitra || "-"} ({pokja.mitra_id?.wilayah || "-"})
                           </p>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-semibold text-slate-600">Progress:</span>
+                          <span className="text-sm font-semibold text-slate-600 dark:text-slate-400">Progress:</span>
                           <span className={`px-3 py-1 rounded-full text-sm font-bold ${progress === 3 ? "bg-teal-100 text-teal-700" : progress > 0 ? "bg-amber-100 text-amber-700" : "bg-slate-200 text-slate-600"}`}>
                             {progress} / 3 Kunjungan
                           </span>
@@ -242,19 +242,19 @@ export default function MonevDPLPage() {
                           const monevRecord = monevs.find((m) => m.jenis_kunjungan === jenis);
 
                           return (
-                            <div key={jenis} className={`rounded-xl border p-5 flex flex-col h-full ${monevRecord ? "bg-teal-50 border-teal-200" : "bg-white border-slate-200"}`}>
-                              <h3 className="font-bold text-slate-800 flex items-center justify-between mb-4">
+                            <div key={jenis} className={`rounded-xl border p-5 flex flex-col h-full ${monevRecord ? "bg-teal-50 dark:bg-teal-950/40 border-teal-200 dark:border-teal-800 text-slate-800 dark:text-white" : "bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white"}`}>
+                              <h3 className="font-bold text-slate-800 dark:text-white flex items-center justify-between mb-4">
                                 {jenis}
                                 {monevRecord && <CheckCircle2 className="w-5 h-5 text-teal-600" />}
                               </h3>
 
                               {monevRecord ? (
                                 <div className="space-y-3 flex-grow flex flex-col">
-                                  <div className="text-sm text-slate-600">
+                                  <div className="text-sm text-slate-600 dark:text-slate-300">
                                     <span className="font-semibold block">Tanggal:</span>
                                     {new Date(monevRecord.tanggal_kunjungan).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                                   </div>
-                                  <div className="text-sm text-slate-600 flex-grow">
+                                  <div className="text-sm text-slate-600 dark:text-slate-300 flex-grow">
                                     <span className="font-semibold block">Catatan:</span>
                                     <p className="line-clamp-3">{monevRecord.catatan || "-"}</p>
                                   </div>
@@ -266,13 +266,13 @@ export default function MonevDPLPage() {
                                 </div>
                               ) : (
                                 <div className="flex flex-col items-center justify-center flex-grow py-8 text-center">
-                                  <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mb-3">
+                                  <div className="w-12 h-12 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center mb-3">
                                     <Camera className="w-6 h-6 text-slate-400" />
                                   </div>
-                                  <p className="text-sm text-slate-500 mb-4">Belum ada dokumentasi</p>
+                                  <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">Belum ada dokumentasi</p>
                                   <button
                                     onClick={() => handleOpenModal(pokja, jenis)}
-                                    className="px-4 py-2 bg-slate-800 text-white rounded-lg text-sm font-semibold hover:bg-slate-700 transition flex items-center gap-2"
+                                    className="px-4 py-2 bg-slate-800 dark:bg-slate-700 text-white rounded-lg text-sm font-semibold hover:bg-slate-700 dark:hover:bg-slate-600 transition flex items-center gap-2"
                                   >
                                     <PlusCircle className="w-4 h-4" /> Upload
                                   </button>
@@ -301,9 +301,9 @@ export default function MonevDPLPage() {
       {/* Modal Form */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center px-4 bg-slate-900/50 backdrop-blur-sm">
-          <div className="bg-white w-full max-w-xl rounded-2xl shadow-xl overflow-hidden max-h-[95vh] overflow-y-auto">
-            <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
-              <h3 className="font-bold text-slate-800 text-lg">Upload Dokumentasi {selectedJenis}</h3>
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full max-w-xl rounded-2xl shadow-xl overflow-hidden max-h-[95vh] overflow-y-auto">
+            <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
+              <h3 className="font-bold text-slate-800 dark:text-white text-lg">Upload Dokumentasi {selectedJenis}</h3>
               <button onClick={handleCloseModal} className="text-slate-400 hover:text-slate-600">
                 <X className="w-5 h-5" />
               </button>
@@ -311,19 +311,19 @@ export default function MonevDPLPage() {
             
             <form onSubmit={handleSubmit} className="p-6 space-y-5">
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Tanggal Kunjungan</label>
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Tanggal Kunjungan</label>
                 <input
                   type="date"
                   required
                   value={tanggal}
                   onChange={(e) => setTanggal(e.target.value)}
-                  className="w-full border-slate-200 rounded-lg focus:ring-teal-500 focus:border-teal-500"
+                  className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg focus:ring-teal-500 focus:border-teal-500"
                 />
               </div>
               
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className="block text-sm font-semibold text-slate-700">Foto Dokumentasi</label>
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">Foto Dokumentasi</label>
                   <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
                     <Sparkles className="w-3 h-3 text-emerald-500" /> Auto-Compress Aktif
                   </span>
@@ -334,7 +334,7 @@ export default function MonevDPLPage() {
                   className={`w-full border-2 border-dashed rounded-xl p-5 flex flex-col items-center justify-center transition cursor-pointer ${
                     compressingImage 
                       ? 'border-amber-300 bg-amber-50/50' 
-                      : 'border-slate-300 hover:bg-slate-50'
+                      : 'border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50'
                   }`}
                 >
                   {compressingImage ? (
@@ -382,22 +382,22 @@ export default function MonevDPLPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Catatan Kunjungan (Opsional)</label>
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Catatan Kunjungan (Opsional)</label>
                 <textarea
                   rows="3"
                   value={catatan}
                   onChange={(e) => setCatatan(e.target.value)}
                   placeholder="Kondisi lapangan, kendala, atau arahan yang diberikan..."
-                  className="w-full border-slate-200 rounded-lg focus:ring-teal-500 focus:border-teal-500"
+                  className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 rounded-lg focus:ring-teal-500 focus:border-teal-500"
                 ></textarea>
               </div>
 
-              <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-100">
+              <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-100 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={handleCloseModal}
                   disabled={submitLoading || compressingImage}
-                  className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-slate-800"
+                  className="px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
                 >
                   Batal
                 </button>

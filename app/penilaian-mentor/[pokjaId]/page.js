@@ -127,13 +127,13 @@ export default function MentorPenilaianPage() {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-        <div className="bg-white p-8 rounded-2xl shadow-sm text-center max-w-md w-full border border-slate-100">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center p-4">
+        <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm text-center max-w-md w-full border border-slate-100 dark:border-slate-700">
           <div className="w-16 h-16 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckCircle2 className="w-8 h-8" />
           </div>
-          <h2 className="text-2xl font-bold text-slate-800 mb-2">Penilaian Diterima</h2>
-          <p className="text-slate-600 mb-6">Terima kasih, penilaian Anda telah berhasil disimpan dan diteruskan ke Dosen Pembimbing Lapangan (DPL).</p>
+          <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2">Penilaian Diterima</h2>
+          <p className="text-slate-600 dark:text-slate-300 mb-6">Terima kasih, penilaian Anda telah berhasil disimpan dan diteruskan ke Dosen Pembimbing Lapangan (DPL).</p>
           <button onClick={() => window.close()} className="px-6 py-2.5 bg-slate-800 text-white rounded-xl font-bold">
             Tutup Halaman
           </button>
@@ -143,32 +143,32 @@ export default function MentorPenilaianPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 pb-20 text-slate-900 dark:text-slate-100">
       {/* Header */}
-      <div className="bg-white border-b border-slate-200 sticky top-0 z-20 shadow-sm">
+      <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-20 shadow-sm">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#D4AF37] to-amber-600 flex items-center justify-center text-white font-black text-lg">
               K
             </div>
-            <span className="font-bold text-slate-800 tracking-tight">KKL<span className="text-[#D4AF37]">Plus</span></span>
+            <span className="font-bold text-slate-800 dark:text-white tracking-tight">KKL<span className="text-[#D4AF37]">Plus</span></span>
           </div>
-          <span className="text-xs font-bold text-teal-600 bg-teal-50 px-3 py-1.5 rounded-full border border-teal-100">
+          <span className="text-xs font-bold text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/60 px-3 py-1.5 rounded-full border border-teal-100 dark:border-teal-800">
             Form Mentor Lapangan
           </span>
         </div>
       </div>
 
       <div className="max-w-2xl mx-auto p-4 mt-4">
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 mb-6">
-          <h2 className="text-base font-bold text-slate-800 mb-2">1. Nilai Kelompok (Proker)</h2>
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-5 mb-6">
+          <h2 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-2">1. Nilai Kelompok (Proker)</h2>
           
-          <div className="mb-4 bg-slate-50 border border-slate-200 p-4 rounded-xl">
-            <p className="text-xs font-bold text-slate-700 mb-2">Daftar Program Kerja Kelompok (sebagai referensi):</p>
+          <div className="mb-4 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 p-4 rounded-xl">
+            <p className="text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">Daftar Program Kerja Kelompok (sebagai referensi):</p>
             {prokers.length === 0 ? (
-              <p className="text-xs text-slate-500 italic">Belum ada program kerja yang tercatat.</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 italic">Belum ada program kerja yang tercatat.</p>
             ) : (
-              <ul className="list-disc list-inside text-xs text-slate-600 space-y-1">
+              <ul className="list-disc list-inside text-xs text-slate-600 dark:text-slate-300 space-y-1">
                 {prokers.map(p => (
                   <li key={p._id}><span className="font-bold">{p.judul_proker}</span> - {p.deskripsi.substring(0, 50)}...</li>
                 ))}
@@ -176,132 +176,132 @@ export default function MentorPenilaianPage() {
             )}
           </div>
 
-          <div className="mb-4 bg-teal-50 border border-teal-100 p-4 rounded-xl">
-            <p className="text-xs font-bold text-teal-900 mb-2">Indikator Penilaian Kelompok:</p>
-            <ul className="list-disc list-inside text-xs text-teal-800 space-y-1 mb-2">
+          <div className="mb-4 bg-teal-50 dark:bg-teal-950/40 border border-teal-100 dark:border-teal-800/60 p-4 rounded-xl">
+            <p className="text-xs font-bold text-teal-900 dark:text-teal-300 mb-2">Indikator Penilaian Kelompok:</p>
+            <ul className="list-disc list-inside text-xs text-teal-800 dark:text-teal-300 space-y-1 mb-2">
               <li>Keberhasilan dan kualitas pelaksanaan Program Kerja (Proker) di instansi Anda</li>
               <li>Besar manfaat yang diberikan dari program kerja tersebut kepada instansi</li>
               <li>Kerjasama tim secara keseluruhan</li>
             </ul>
-            <p className="text-[10px] text-teal-700 italic">* Nilai kelompok berlaku merata untuk seluruh anggota.</p>
+            <p className="text-[10px] text-teal-700 dark:text-teal-400 italic">* Nilai kelompok berlaku merata untuk seluruh anggota.</p>
           </div>
           
           <div className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">A. Keberhasilan Pelaksanaan Proker (0-100)</label>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">A. Keberhasilan Pelaksanaan Proker (0-100)</label>
               <input 
                 type="number" 
                 min="0" max="100"
                 placeholder="0-100"
                 value={detailKelompokMentor.keberhasilan || ''}
                 onChange={(e) => setDetailKelompokMentor(prev => ({...prev, keberhasilan: e.target.value}))}
-                className="w-full sm:max-w-xs border-slate-300 rounded-lg shadow-sm focus:border-teal-500 focus:ring-teal-500 text-sm px-4 py-2.5"
+                className="w-full sm:max-w-xs border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-lg shadow-sm focus:border-teal-500 focus:ring-teal-500 text-sm px-4 py-2.5"
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">B. Manfaat bagi Instansi (0-100)</label>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">B. Manfaat bagi Instansi (0-100)</label>
               <input 
                 type="number" 
                 min="0" max="100"
                 placeholder="0-100"
                 value={detailKelompokMentor.manfaat || ''}
                 onChange={(e) => setDetailKelompokMentor(prev => ({...prev, manfaat: e.target.value}))}
-                className="w-full sm:max-w-xs border-slate-300 rounded-lg shadow-sm focus:border-teal-500 focus:ring-teal-500 text-sm px-4 py-2.5"
+                className="w-full sm:max-w-xs border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-lg shadow-sm focus:border-teal-500 focus:ring-teal-500 text-sm px-4 py-2.5"
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">C. Kerjasama Tim Lapangan (0-100)</label>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">C. Kerjasama Tim Lapangan (0-100)</label>
               <input 
                 type="number" 
                 min="0" max="100"
                 placeholder="0-100"
                 value={detailKelompokMentor.kerjasama || ''}
                 onChange={(e) => setDetailKelompokMentor(prev => ({...prev, kerjasama: e.target.value}))}
-                className="w-full sm:max-w-xs border-slate-300 rounded-lg shadow-sm focus:border-teal-500 focus:ring-teal-500 text-sm py-2"
+                className="w-full sm:max-w-xs border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-lg shadow-sm focus:border-teal-500 focus:ring-teal-500 text-sm px-4 py-2.5"
               />
             </div>
           </div>
           <div className="mt-4 pt-4 border-t border-slate-100 flex items-center gap-2">
-            <span className="text-sm font-bold text-slate-600">Rata-rata Nilai Kelompok:</span>
+            <span className="text-sm font-bold text-slate-600 dark:text-slate-300">Rata-rata Nilai Kelompok:</span>
             <span className="text-lg font-bold text-teal-600">{calculateKelompok().toFixed(2)}</span>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-6">
-          <div className="p-5 border-b border-slate-200 bg-slate-50/50">
-            <h2 className="text-base font-bold text-slate-800 mb-2">2. Nilai Individu Mahasiswa</h2>
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden mb-6">
+          <div className="p-5 border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/40">
+            <h2 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-2">2. Nilai Individu Mahasiswa</h2>
             <div className="bg-teal-50 border border-teal-100 p-4 rounded-xl">
-              <p className="text-xs font-bold text-teal-900 mb-2">Indikator Penilaian Individu:</p>
+              <p className="text-xs font-bold text-teal-900 dark:text-teal-300 mb-2">Indikator Penilaian Individu:</p>
               <ul className="list-disc list-inside text-xs text-teal-800 space-y-1 mb-2">
                 <li>Kedisiplinan dan Etika (Soft Skill) selama di instansi</li>
                 <li>Tanggung Jawab dan Inisiatif Kerja</li>
                 <li>Keterampilan Teknis dan Kualitas Kerja individu</li>
               </ul>
-              <p className="text-[10px] text-teal-700 italic">* Rata-rata dari indikator ini akan menjadi nilai individu masing-masing mahasiswa.</p>
+              <p className="text-[10px] text-teal-700 dark:text-teal-400 italic">* Rata-rata dari indikator ini akan menjadi nilai individu masing-masing mahasiswa.</p>
             </div>
 
             <div className="mt-4 bg-slate-50 border border-slate-200 p-4 rounded-xl">
-              <p className="text-sm font-bold text-slate-800 mb-3">Skala Penilaian (Konversi Huruf):</p>
+              <p className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-3">Skala Penilaian (Konversi Huruf):</p>
               <div className="flex flex-wrap gap-2 text-xs">
-                <span className="bg-white border border-slate-200 px-3 py-1.5 rounded-lg"><strong className="text-teal-700">A:</strong> 90-100</span>
-                <span className="bg-white border border-slate-200 px-3 py-1.5 rounded-lg"><strong className="text-teal-700">A-:</strong> 80-89.9</span>
-                <span className="bg-white border border-slate-200 px-3 py-1.5 rounded-lg"><strong className="text-teal-700">B+:</strong> 75-79.9</span>
-                <span className="bg-white border border-slate-200 px-3 py-1.5 rounded-lg"><strong className="text-teal-700">B:</strong> 70-74.9</span>
-                <span className="bg-white border border-slate-200 px-3 py-1.5 rounded-lg"><strong className="text-amber-600">B-:</strong> 66-69.9</span>
-                <span className="bg-white border border-slate-200 px-3 py-1.5 rounded-lg"><strong className="text-amber-600">C+:</strong> 61-65.9</span>
-                <span className="bg-white border border-slate-200 px-3 py-1.5 rounded-lg"><strong className="text-amber-600">C:</strong> 56-60.9</span>
-                <span className="bg-white border border-slate-200 px-3 py-1.5 rounded-lg"><strong className="text-rose-600">D:</strong> 46-55.9</span>
-                <span className="bg-white border border-slate-200 px-3 py-1.5 rounded-lg"><strong className="text-rose-600">E:</strong> &lt; 46</span>
+                <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 dark:text-slate-200 px-3 py-1.5 rounded-lg"><strong className="text-teal-700">A:</strong> 90-100</span>
+                <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 dark:text-slate-200 px-3 py-1.5 rounded-lg"><strong className="text-teal-700">A-:</strong> 80-89.9</span>
+                <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 dark:text-slate-200 px-3 py-1.5 rounded-lg"><strong className="text-teal-700">B+:</strong> 75-79.9</span>
+                <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 dark:text-slate-200 px-3 py-1.5 rounded-lg"><strong className="text-teal-700">B:</strong> 70-74.9</span>
+                <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 dark:text-slate-200 px-3 py-1.5 rounded-lg"><strong className="text-amber-600">B-:</strong> 66-69.9</span>
+                <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 dark:text-slate-200 px-3 py-1.5 rounded-lg"><strong className="text-amber-600">C+:</strong> 61-65.9</span>
+                <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 dark:text-slate-200 px-3 py-1.5 rounded-lg"><strong className="text-amber-600">C:</strong> 56-60.9</span>
+                <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 dark:text-slate-200 px-3 py-1.5 rounded-lg"><strong className="text-rose-600">D:</strong> 46-55.9</span>
+                <span className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 dark:text-slate-200 px-3 py-1.5 rounded-lg"><strong className="text-rose-600">E:</strong> &lt; 46</span>
               </div>
             </div>
           </div>
-          <div className="divide-y divide-slate-100">
+          <div className="divide-y divide-slate-100 dark:divide-slate-700">
             {penilaians.map((item) => {
               const avgIndividu = calculateIndividu(item.detail_mentor_individu);
               return (
               <div key={item._id} className="p-5 flex flex-col gap-4">
                 <div className="border-b border-slate-100 pb-2">
-                  <p className="font-bold text-slate-800 text-sm">{item.mahasiswa_id?.nama_lengkap}</p>
-                  <p className="text-xs text-slate-500">{item.mahasiswa_id?.nim}</p>
+                  <p className="font-bold text-slate-800 dark:text-slate-100 text-sm">{item.mahasiswa_id?.nama_lengkap}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">{item.mahasiswa_id?.nim}</p>
                 </div>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-600 mb-1 uppercase tracking-wider">A. Kedisiplinan & Etika</label>
+                    <label className="block text-[10px] font-bold text-slate-600 dark:text-slate-400 mb-1 uppercase tracking-wider">A. Kedisiplinan & Etika</label>
                     <input 
                       type="number" 
                       min="0" max="100"
                       placeholder="0-100"
                       value={item.detail_mentor_individu?.kedisiplinan || ''}
                       onChange={(e) => handleIndividuDetailChange(item._id, 'kedisiplinan', e.target.value)}
-                      className="w-full px-4 py-2.5 border-slate-300 rounded-lg shadow-sm focus:border-teal-500 focus:ring-teal-500 font-bold text-sm"
+                      className="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-lg shadow-sm focus:border-teal-500 focus:ring-teal-500 font-bold text-sm"
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-600 mb-1 uppercase tracking-wider">B. Tanggung Jawab & Inisiatif</label>
+                    <label className="block text-[10px] font-bold text-slate-600 dark:text-slate-400 mb-1 uppercase tracking-wider">B. Tanggung Jawab & Inisiatif</label>
                     <input 
                       type="number" 
                       min="0" max="100"
                       placeholder="0-100"
                       value={item.detail_mentor_individu?.tanggungjawab || ''}
                       onChange={(e) => handleIndividuDetailChange(item._id, 'tanggungjawab', e.target.value)}
-                      className="w-full px-4 py-2.5 border-slate-300 rounded-lg shadow-sm focus:border-teal-500 focus:ring-teal-500 font-bold text-sm"
+                      className="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-lg shadow-sm focus:border-teal-500 focus:ring-teal-500 font-bold text-sm"
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-600 mb-1 uppercase tracking-wider">C. Keterampilan Teknis (Kerja)</label>
+                    <label className="block text-[10px] font-bold text-slate-600 dark:text-slate-400 mb-1 uppercase tracking-wider">C. Keterampilan Teknis (Kerja)</label>
                     <input 
                       type="number" 
                       min="0" max="100"
                       placeholder="0-100"
                       value={item.detail_mentor_individu?.keterampilan || ''}
                       onChange={(e) => handleIndividuDetailChange(item._id, 'keterampilan', e.target.value)}
-                      className="w-full px-4 py-2.5 border-slate-300 rounded-lg shadow-sm focus:border-teal-500 focus:ring-teal-500 font-bold text-sm"
+                      className="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-lg shadow-sm focus:border-teal-500 focus:ring-teal-500 font-bold text-sm"
                     />
                   </div>
                 </div>
                 
-                <div className="flex justify-end gap-2 items-center bg-slate-50 px-3 py-2 rounded-lg border border-slate-100">
+                <div className="flex justify-end gap-2 items-center bg-slate-50 dark:bg-slate-900/60 px-3 py-2 rounded-lg border border-slate-100 dark:border-slate-700">
                   <span className="text-xs font-bold text-slate-500 uppercase">Rata-rata:</span>
                   <span className="text-sm font-bold text-teal-600">{avgIndividu.toFixed(2)}</span>
                 </div>

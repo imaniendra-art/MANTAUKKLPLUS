@@ -9,7 +9,7 @@ export default function PetunjukDPL() {
     <DashboardLayout title="Petunjuk & Panduan DPL">
       <div className="space-y-6 pb-12 mt-6">
         {/* Banner Penjelasan & Alur Lengkap */}
-        <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden relative">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden relative">
           <div className="bg-gradient-to-br from-teal-600 to-teal-700 p-8 text-white relative">
             <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
               <svg xmlns="http://www.w3.org/2000/svg" className="w-64 h-64" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14l9-5-9-5-9 5 9 5z" /><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" /></svg>
@@ -24,58 +24,58 @@ export default function PetunjukDPL() {
             </div>
           </div>
           
-          <div className="p-8 space-y-8 text-slate-700">
+          <div className="p-8 space-y-8 text-slate-700 dark:text-slate-300">
             {/* Bagian 1: Alur Validasi */}
             <section>
-              <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2"><span className="text-teal-600">1.</span> Alur Pelaksanaan KKL Plus bagi DPL</h2>
+              <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2"><span className="text-teal-600">1.</span> Alur Pelaksanaan KKL Plus bagi DPL</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                 
                 {/* A */}
-                <div className="bg-slate-50 border border-slate-200 p-5 rounded-xl hover:shadow-md transition">
-                  <h3 className="font-bold text-slate-800 mb-2 flex items-center gap-2">
+                <div className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 p-5 rounded-xl hover:shadow-md transition">
+                  <h3 className="font-bold text-slate-800 dark:text-white mb-2 flex items-center gap-2">
                     <Car className="w-5 h-5 text-slate-500" /> A. Pengantaran Mahasiswa
                   </h3>
-                  <p className="text-sm text-slate-600 leading-relaxed">
+                  <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                     DPL wajib membawa dan mengantarkan mahasiswa ke lokasi KKL Plus, serta secara resmi menyerahkan mahasiswa kepada pihak pimpinan instansi/mitra.
                   </p>
                 </div>
 
                 {/* B */}
-                <div className="bg-slate-50 border border-slate-200 p-5 rounded-xl hover:shadow-md transition">
-                  <h3 className="font-bold text-slate-800 mb-2 flex items-center gap-2">
+                <div className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 p-5 rounded-xl hover:shadow-md transition">
+                  <h3 className="font-bold text-slate-800 dark:text-white mb-2 flex items-center gap-2">
                     <UserCheck className="w-5 h-5 text-slate-500" /> B. Menunjuk Mentor Lapangan
                   </h3>
-                  <p className="text-sm text-slate-600 leading-relaxed">
+                  <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                     DPL berkoordinasi dengan instansi untuk menunjuk Mentor Lapangan, lalu mendaftarkan nama dan kontak mentor tersebut ke dalam sistem.
                   </p>
                 </div>
 
                 {/* C */}
-                <div className="bg-slate-50 border border-slate-200 p-5 rounded-xl hover:shadow-md transition">
-                  <h3 className="font-bold text-slate-800 mb-2 flex items-center gap-2">
+                <div className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 p-5 rounded-xl hover:shadow-md transition">
+                  <h3 className="font-bold text-slate-800 dark:text-white mb-2 flex items-center gap-2">
                     <Target className="w-5 h-5 text-slate-500" /> C. Validasi Program Kerja
                   </h3>
-                  <p className="text-sm text-slate-600 leading-relaxed">
+                  <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                     Membantu menyusun dan memvalidasi usulan Proker. Proker wajib dibagi menjadi dua kategori utama: <strong>Proker Core (Inti)</strong> dan <strong>Proker Pendukung</strong>.
                   </p>
                 </div>
 
                 {/* D */}
-                <div className="bg-slate-50 border border-slate-200 p-5 rounded-xl hover:shadow-md transition">
-                  <h3 className="font-bold text-slate-800 mb-2 flex items-center gap-2">
+                <div className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 p-5 rounded-xl hover:shadow-md transition">
+                  <h3 className="font-bold text-slate-800 dark:text-white mb-2 flex items-center gap-2">
                     <FileText className="w-5 h-5 text-slate-500" /> D. Validasi Logbook
                   </h3>
-                  <p className="text-sm text-slate-600 leading-relaxed">
+                  <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                     Memantau kegiatan mahasiswa setiap minggu. DPL mengecek, memberi catatan revisi, dan menyetujui logbook harian melalui menu <strong>Validasi Logbook</strong>.
                   </p>
                 </div>
 
                 {/* E */}
-                <div className="bg-teal-50 border border-teal-300 p-5 rounded-xl shadow-sm relative">
-                  <h3 className="font-bold text-teal-900 mb-2 flex items-center gap-2">
+                <div className="bg-teal-50 dark:bg-teal-950/40 border border-teal-300 dark:border-teal-800 p-5 rounded-xl shadow-sm relative">
+                  <h3 className="font-bold text-teal-900 dark:text-teal-200 mb-2 flex items-center gap-2">
                     <MapPin className="w-5 h-5 text-teal-600" /> E. Kunjungan Lapangan
                   </h3>
-                  <div className="text-sm text-teal-800 leading-relaxed">
+                  <div className="text-sm text-teal-800 dark:text-teal-300 leading-relaxed">
                     DPL <strong>wajib melakukan minimal 3 kali kunjungan</strong> ke lokasi:
                     <ul className="list-disc list-inside mt-2 space-y-1 font-semibold">
                       <li>Kunjungan Pengantaran (Awal)</li>
@@ -86,24 +86,24 @@ export default function PetunjukDPL() {
                 </div>
 
                 {/* F */}
-                <div className="bg-amber-50 border border-amber-300 p-5 rounded-xl shadow-sm relative flex flex-col">
-                  <h3 className="font-bold text-amber-900 mb-2 flex items-center gap-2">
+                <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 p-5 rounded-xl shadow-sm relative flex flex-col">
+                  <h3 className="font-bold text-amber-900 dark:text-amber-200 mb-2 flex items-center gap-2">
                     <LinkIcon className="w-5 h-5 text-amber-600" /> F. Laporan & Link Mentor
                   </h3>
-                  <p className="text-sm text-amber-800 leading-relaxed mb-3 flex-grow">
+                  <p className="text-sm text-amber-800 dark:text-amber-300 leading-relaxed mb-3 flex-grow">
                     Validasi Laporan Akhir adalah syarat agar form Penilaian terbuka.
                   </p>
-                  <div className="bg-white p-2.5 rounded-lg border border-amber-300 text-xs font-semibold text-amber-900 mt-auto">
+                  <div className="bg-white dark:bg-slate-800 p-2.5 rounded-lg border border-amber-300 dark:border-amber-700 text-xs font-semibold text-amber-900 dark:text-amber-200 mt-auto">
                     <span className="text-red-600 font-bold">🚨 SANGAT PENTING:</span> Setelah memvalidasi, copy pop-up <strong>Magic Link</strong> dan berikan langsung ke Mentor Eksternal!
                   </div>
                 </div>
 
                 {/* G */}
-                <div className="bg-indigo-50 border border-indigo-200 p-5 rounded-xl hover:shadow-md transition">
-                  <h3 className="font-bold text-indigo-900 mb-2 flex items-center gap-2">
+                <div className="bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 p-5 rounded-xl hover:shadow-md transition">
+                  <h3 className="font-bold text-indigo-900 dark:text-indigo-200 mb-2 flex items-center gap-2">
                     <Award className="w-5 h-5 text-indigo-600" /> G. Evaluasi & Penilaian
                   </h3>
-                  <p className="text-sm text-indigo-800 leading-relaxed">
+                  <p className="text-sm text-indigo-800 dark:text-indigo-300 leading-relaxed">
                     Setelah validasi selesai dan Mentor memberikan nilai, DPL mengkalkulasi dan menetapkan <strong>Nilai Akhir</strong> untuk mahasiswa di menu <strong>Evaluasi</strong>.
                   </p>
                 </div>
@@ -113,27 +113,27 @@ export default function PetunjukDPL() {
 
             {/* Bagian 2: Skema Penilaian */}
             <section>
-              <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2"><span className="text-teal-600">2.</span> Skema & Perhitungan Penilaian</h2>
-              <p className="text-sm text-slate-600 mb-4">
+              <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2"><span className="text-teal-600">2.</span> Skema & Perhitungan Penilaian</h2>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
                 Penilaian KKL Plus terdiri dari <strong>Nilai Kelompok</strong> (merata untuk semua anggota) dan <strong>Nilai Individu</strong> (spesifik per mahasiswa), yang diberikan oleh DPL dan Mentor Eksternal. Menu <strong>Penilaian</strong> baru bisa diakses setelah Anda memvalidasi Laporan Akhir.
               </p>
               
-              <div className="bg-teal-50 border border-teal-200 rounded-xl overflow-hidden mb-6">
+              <div className="bg-teal-50 dark:bg-teal-950/30 border border-teal-200 dark:border-teal-800/80 rounded-xl overflow-hidden mb-6">
                 <div className="bg-teal-600 text-white p-3 px-5 font-bold text-sm">
                   Komponen Penilaian (Rentang 0 - 100)
                 </div>
                 <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
                   <div>
-                    <h4 className="font-bold text-teal-900 border-b border-teal-200 pb-2 mb-3">Nilai Kelompok (50%)</h4>
-                    <ul className="list-disc list-inside space-y-1 text-teal-800">
+                    <h4 className="font-bold text-teal-900 dark:text-teal-200 border-b border-teal-200 dark:border-teal-800 pb-2 mb-3">Nilai Kelompok (50%)</h4>
+                    <ul className="list-disc list-inside space-y-1 text-teal-800 dark:text-teal-300">
                       <li>Ketercapaian Target Proker</li>
                       <li>Kesesuaian Proker dengan Bidang Studi</li>
                       <li>Dampak/Manfaat Proker bagi Masyarakat/Instansi</li>
                     </ul>
                   </div>
                   <div>
-                    <h4 className="font-bold text-teal-900 border-b border-teal-200 pb-2 mb-3">Nilai Individu (50%)</h4>
-                    <ul className="list-disc list-inside space-y-1 text-teal-800">
+                    <h4 className="font-bold text-teal-900 dark:text-teal-200 border-b border-teal-200 dark:border-teal-800 pb-2 mb-3">Nilai Individu (50%)</h4>
+                    <ul className="list-disc list-inside space-y-1 text-teal-800 dark:text-teal-300">
                       <li>Kualitas Penyusunan Laporan Akhir</li>
                       <li>Kedisiplinan Pengisian Logbook Harian</li>
                       <li>Etika dan Komunikasi selama Bimbingan</li>
@@ -143,7 +143,7 @@ export default function PetunjukDPL() {
               </div>
 
               <div className="bg-slate-800 text-slate-300 rounded-xl p-6 text-sm">
-                <h3 className="text-white font-bold text-base mb-3">Rumus Perhitungan Nilai Akhir (Otomatis oleh Sistem)</h3>
+                <h3 className="text-white dark:text-white font-bold text-base mb-3">Rumus Perhitungan Nilai Akhir (Otomatis oleh Sistem)</h3>
                 <div className="space-y-4 font-mono bg-slate-900 p-4 rounded-lg text-xs md:text-sm leading-relaxed overflow-x-auto">
                   <p><span className="text-fuchsia-400">Total DPL</span> = (Rata-rata Kelompok DPL + Rata-rata Individu DPL) / 2</p>
                   <p><span className="text-sky-400">Total Mentor</span> = (Rata-rata Kelompok Mentor + Rata-rata Individu Mentor) / 2</p>

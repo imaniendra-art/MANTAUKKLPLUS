@@ -346,13 +346,13 @@ function MahasiswaDashboardContent() {
             <div className="bg-white dark:bg-slate-800 backdrop-blur-xl p-6 rounded-2xl w-full max-w-md shadow-2xl max-h-[95vh] overflow-y-auto">
               <h3 className="text-xl font-bold mb-4">Buat Kelompok KKL Plus</h3>
               <form onSubmit={handleCreatePokja}>
-                <label className="block text-sm font-bold text-slate-700 mb-2">Nama Kelompok (Opsional)</label>
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Nama Kelompok (Opsional)</label>
                 <input 
                   type="text" 
                   value={namaPokja}
                   onChange={(e) => setNamaPokja(e.target.value)}
                   placeholder="Misal: Kelompok 1, atau Tim Hebat"
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 mb-6 focus:outline-indigo-500 text-slate-900"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 mb-6 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-teal-500 text-sm"
                 />
                 <div className="flex gap-3 justify-end">
                   <button type="button" onClick={() => setShowCreateModal(false)} className="px-4 py-2 font-bold text-slate-500">Batal</button>
@@ -452,13 +452,13 @@ function MahasiswaDashboardContent() {
           </div>
 
           {myStatus === 'menunggu' && (
-            <div className="bg-amber-50 border border-amber-200 p-4 rounded-2xl flex items-center justify-between">
+            <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 p-4 rounded-2xl flex items-center justify-between">
               <div>
-                <h4 className="font-bold text-amber-800">Undangan Bergabung</h4>
-                <p className="text-sm text-amber-700">Anda diundang untuk bergabung di kelompok ini.</p>
+                <h4 className="font-bold text-amber-800 dark:text-amber-200">Undangan Bergabung</h4>
+                <p className="text-sm text-amber-700 dark:text-amber-300">Anda diundang untuk bergabung di kelompok ini.</p>
               </div>
               <div className="flex gap-2">
-                <button onClick={() => handleRespondInvite('ditolak')} className="px-4 py-2 text-amber-600 font-bold bg-white rounded-lg">Tolak</button>
+                <button onClick={() => handleRespondInvite('ditolak')} className="px-4 py-2 text-amber-600 dark:text-amber-400 font-bold bg-white dark:bg-slate-800 border border-amber-200 dark:border-amber-800 rounded-lg hover:bg-amber-50 dark:hover:bg-slate-700">Tolak</button>
                 <button onClick={() => handleRespondInvite('bergabung')} className="px-4 py-2 bg-amber-600 text-white font-bold rounded-lg shadow">Terima Undangan</button>
               </div>
             </div>
@@ -588,7 +588,7 @@ function MahasiswaDashboardContent() {
               ) : (
                 <div className="flex flex-col p-5 bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl rounded-2xl border border-slate-100 dark:border-slate-700 h-full">
                   <div className="flex items-center gap-4 mb-4">
-                    <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-2xl shrink-0 text-blue-900"><Building className="w-5 h-5 inline-block -mt-0.5" /></div>
+                    <div className="w-12 h-12 bg-white dark:bg-slate-800 rounded-xl shadow-sm flex items-center justify-center text-2xl shrink-0 text-blue-900 dark:text-blue-300"><Building className="w-5 h-5 inline-block -mt-0.5" /></div>
                     <div className="flex-1">
                       <h4 className="font-bold text-blue-950 dark:text-white flex items-center gap-2">
                         {pokja.mitra_id.nama_instansi}
@@ -604,10 +604,10 @@ function MahasiswaDashboardContent() {
                   
                   {isKetua && !pokja.mitra_id.is_lengkap ? (
                     ['disetujui_admin', 'berjalan', 'selesai'].includes(pokja.status_pokja) ? (
-                      <div className="mt-auto p-4 bg-teal-50 border border-teal-100 rounded-xl flex flex-col gap-3">
+                      <div className="mt-auto p-4 bg-teal-50 dark:bg-teal-950/40 border border-teal-100 dark:border-teal-800/60 rounded-xl flex flex-col gap-3">
                         <div>
-                          <h5 className="font-bold text-teal-900 text-sm">Lengkapi Profil Mitra</h5>
-                          <p className="text-xs text-teal-700 mt-1">Anda wajib melengkapi detail lokasi instansi untuk memulai KKL Plus.</p>
+                          <h5 className="font-bold text-teal-900 dark:text-teal-200 text-sm">Lengkapi Profil Mitra</h5>
+                          <p className="text-xs text-teal-700 dark:text-teal-300 mt-1">Anda wajib melengkapi detail lokasi instansi untuk memulai KKL Plus.</p>
                         </div>
                         <button 
                           onClick={() => {
@@ -632,9 +632,9 @@ function MahasiswaDashboardContent() {
                         </button>
                       </div>
                     ) : (
-                      <div className="mt-auto p-4 bg-amber-50 border border-amber-200 rounded-xl flex flex-col gap-2">
-                        <h5 className="font-bold text-amber-700 text-sm">Menunggu Persetujuan Admin</h5>
-                        <p className="text-xs text-amber-600">Anda dapat melengkapi profil lokasi instansi KKL Plus ini setelah pengajuan disetujui oleh Admin.</p>
+                      <div className="mt-auto p-4 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-xl flex flex-col gap-2">
+                        <h5 className="font-bold text-amber-700 dark:text-amber-200 text-sm">Menunggu Persetujuan Admin</h5>
+                        <p className="text-xs text-amber-600 dark:text-amber-300">Anda dapat melengkapi profil lokasi instansi KKL Plus ini setelah pengajuan disetujui oleh Admin.</p>
                       </div>
                     )
                   ) : (
@@ -874,29 +874,29 @@ function MahasiswaDashboardContent() {
                 
                 {/* Bagian Alamat */}
                 <div className="space-y-4">
-                  <h4 className="font-bold text-slate-700 dark:text-slate-300 border-b pb-2">Informasi Alamat</h4>
+                  <h4 className="font-bold text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 pb-2">Informasi Alamat</h4>
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">Alamat Lengkap</label>
-                    <textarea required value={mitraProfileForm.alamat_lengkap} onChange={e => setMitraProfileForm({...mitraProfileForm, alamat_lengkap: e.target.value})} rows="2" className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-indigo-500" placeholder="Jl. Raya Contoh No. 123..."></textarea>
+                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Alamat Lengkap</label>
+                    <textarea required value={mitraProfileForm.alamat_lengkap} onChange={e => setMitraProfileForm({...mitraProfileForm, alamat_lengkap: e.target.value})} rows="2" className="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-teal-500 text-sm" placeholder="Jl. Raya Contoh No. 123..."></textarea>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-sm font-bold text-slate-700 mb-2">Desa / Kelurahan</label>
-                      <input required type="text" value={mitraProfileForm.desa_kelurahan || ''} onChange={e => setMitraProfileForm({...mitraProfileForm, desa_kelurahan: e.target.value})} className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-indigo-500" placeholder="Desa..." />
+                      <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Desa / Kelurahan</label>
+                      <input required type="text" value={mitraProfileForm.desa_kelurahan || ''} onChange={e => setMitraProfileForm({...mitraProfileForm, desa_kelurahan: e.target.value})} className="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-teal-500 text-sm" placeholder="Desa..." />
                     </div>
                     <div>
-                      <label className="block text-sm font-bold text-slate-700 mb-2">Kecamatan</label>
-                      <input required type="text" value={mitraProfileForm.kecamatan} onChange={e => setMitraProfileForm({...mitraProfileForm, kecamatan: e.target.value})} className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-indigo-500" placeholder="Kecamatan..." />
+                      <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Kecamatan</label>
+                      <input required type="text" value={mitraProfileForm.kecamatan} onChange={e => setMitraProfileForm({...mitraProfileForm, kecamatan: e.target.value})} className="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-teal-500 text-sm" placeholder="Kecamatan..." />
                     </div>
                     <div>
-                      <label className="block text-sm font-bold text-slate-700 mb-2">Kabupaten / Kota</label>
-                      <input required type="text" value={mitraProfileForm.kabupaten_kota} onChange={e => setMitraProfileForm({...mitraProfileForm, kabupaten_kota: e.target.value})} className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-indigo-500" placeholder="Kabupaten/Kota..." />
+                      <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Kabupaten / Kota</label>
+                      <input required type="text" value={mitraProfileForm.kabupaten_kota} onChange={e => setMitraProfileForm({...mitraProfileForm, kabupaten_kota: e.target.value})} className="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-teal-500 text-sm" placeholder="Kabupaten/Kota..." />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">Link Google Maps (Opsional)</label>
+                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Link Google Maps (Opsional)</label>
                     <div className="flex gap-2">
-                      <input type="text" value={mitraProfileForm.link_maps} onChange={e => setMitraProfileForm({...mitraProfileForm, link_maps: e.target.value})} className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-indigo-500" placeholder="https://maps.app.goo.gl/..." />
+                      <input type="text" value={mitraProfileForm.link_maps} onChange={e => setMitraProfileForm({...mitraProfileForm, link_maps: e.target.value})} className="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-teal-500 text-sm" placeholder="https://maps.app.goo.gl/..." />
                       {mitraProfileForm.link_maps && (
                         <a href={mitraProfileForm.link_maps.startsWith('http') ? mitraProfileForm.link_maps : `https://${mitraProfileForm.link_maps}`} target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-teal-100 text-teal-700 hover:bg-teal-200 font-bold rounded-xl whitespace-nowrap flex items-center justify-center">
                           Buka Maps
@@ -905,33 +905,33 @@ function MahasiswaDashboardContent() {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">Titik Koordinat (Opsional)</label>
-                    <input type="text" value={mitraProfileForm.titik_koordinat} onChange={e => setMitraProfileForm({...mitraProfileForm, titik_koordinat: e.target.value})} className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-indigo-500" placeholder="-5.1333, 119.4166 (Dari Google Maps)" />
+                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Titik Koordinat (Opsional)</label>
+                    <input type="text" value={mitraProfileForm.titik_koordinat} onChange={e => setMitraProfileForm({...mitraProfileForm, titik_koordinat: e.target.value})} className="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-teal-500 text-sm" placeholder="-5.1333, 119.4166 (Dari Google Maps)" />
                   </div>
                 </div>
 
                 {/* Bagian Kontak */}
                 <div className="space-y-4">
-                  <h4 className="font-bold text-slate-700 dark:text-slate-300 border-b pb-2">Kontak Penanggung Jawab / Pimpinan</h4>
+                  <h4 className="font-bold text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 pb-2">Kontak Penanggung Jawab / Pimpinan</h4>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-bold text-slate-700 mb-2">Nama Pimpinan / PIC</label>
-                      <input required type="text" value={mitraProfileForm.nama_pimpinan} onChange={e => setMitraProfileForm({...mitraProfileForm, nama_pimpinan: e.target.value})} className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-indigo-500" placeholder="Nama PIC di lokasi..." />
+                      <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Nama Pimpinan / PIC</label>
+                      <input required type="text" value={mitraProfileForm.nama_pimpinan} onChange={e => setMitraProfileForm({...mitraProfileForm, nama_pimpinan: e.target.value})} className="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-teal-500 text-sm" placeholder="Nama PIC di lokasi..." />
                     </div>
                     <div>
-                      <label className="block text-sm font-bold text-slate-700 mb-2">Nomor Kontak (WhatsApp)</label>
-                      <input required type="text" value={mitraProfileForm.kontak_mitra} onChange={e => setMitraProfileForm({...mitraProfileForm, kontak_mitra: e.target.value})} className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-indigo-500" placeholder="081234567890" />
+                      <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Nomor Kontak (WhatsApp)</label>
+                      <input required type="text" value={mitraProfileForm.kontak_mitra} onChange={e => setMitraProfileForm({...mitraProfileForm, kontak_mitra: e.target.value})} className="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-teal-500 text-sm" placeholder="081234567890" />
                     </div>
                   </div>
                 </div>
 
                 {/* Bagian Administrasi & Fasilitas */}
                 <div className="space-y-4">
-                  <h4 className="font-bold text-slate-700 dark:text-slate-300 border-b pb-2">Administrasi & Kesepakatan</h4>
+                  <h4 className="font-bold text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 pb-2">Administrasi & Kesepakatan</h4>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="md:col-span-1">
-                      <label className="block text-sm font-bold text-slate-700 mb-2">Status Kerja Sama</label>
-                      <select required value={mitraProfileForm.status_kerjasama} onChange={e => setMitraProfileForm({...mitraProfileForm, status_kerjasama: e.target.value})} className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-indigo-500 bg-white">
+                      <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Status Kerja Sama</label>
+                      <select required value={mitraProfileForm.status_kerjasama} onChange={e => setMitraProfileForm({...mitraProfileForm, status_kerjasama: e.target.value})} className="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-teal-500 text-sm">
                         <option value="Belum Ada">Belum Ada MoU/MoA</option>
                         <option value="Proses Penjajakan (Siap MoU)">Proses Penjajakan (Siap MoU)</option>
                         <option value="Memorandum of Understanding (MoU)">Memorandum of Understanding (MoU)</option>
@@ -940,19 +940,19 @@ function MahasiswaDashboardContent() {
                       </select>
                     </div>
                     <div className="md:col-span-2">
-                      <label className="block text-sm font-bold text-slate-700 mb-2 whitespace-nowrap">Kemampuan Penerimaan Kuota Mahasiswa KKL Plus / Semester</label>
-                      <input required type="number" min="1" max="100" value={mitraProfileForm.kuota_maksimal} onChange={e => setMitraProfileForm({...mitraProfileForm, kuota_maksimal: e.target.value})} className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-indigo-500" />
+                      <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 whitespace-nowrap">Kemampuan Penerimaan Kuota Mahasiswa KKL Plus / Semester</label>
+                      <input required type="number" min="1" max="100" value={mitraProfileForm.kuota_maksimal} onChange={e => setMitraProfileForm({...mitraProfileForm, kuota_maksimal: e.target.value})} className="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-teal-500 text-sm" />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">Fasilitas Khusus dari Mitra (Opsional)</label>
-                    <textarea value={mitraProfileForm.fasilitas_khusus} onChange={e => setMitraProfileForm({...mitraProfileForm, fasilitas_khusus: e.target.value})} rows="2" className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-indigo-500" placeholder="Misal: Disediakan mess / uang makan / transport lokal..."></textarea>
+                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Fasilitas Khusus dari Mitra (Opsional)</label>
+                    <textarea value={mitraProfileForm.fasilitas_khusus} onChange={e => setMitraProfileForm({...mitraProfileForm, fasilitas_khusus: e.target.value})} rows="2" className="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-teal-500 text-sm" placeholder="Misal: Disediakan mess / uang makan / transport lokal..."></textarea>
                   </div>
                 </div>
 
                 {/* Bagian Foto Profil Instansi */}
                 <div className="space-y-4">
-                  <h4 className="font-bold text-slate-700 dark:text-slate-300 border-b pb-2">Foto Profil Instansi</h4>
+                  <h4 className="font-bold text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 pb-2">Foto Profil Instansi</h4>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="text-center">
                       <p className="font-bold text-xs mb-2">Foto Luar Bangunan / Gedung</p>
@@ -989,7 +989,7 @@ function MahasiswaDashboardContent() {
                     <div className="text-center">
                       <p className="font-bold text-xs mb-2">Logo Instansi</p>
                       {pokja?.mitra_id?.logo_mitra ? (
-                        <img src={pokja.mitra_id.logo_mitra} alt="Logo" onError={(e) => { e.currentTarget.style.display = 'none'; }} className="w-full h-24 object-contain rounded-xl shadow-sm border border-slate-200 mb-2 bg-white p-2" />
+                        <img src={pokja.mitra_id.logo_mitra} alt="Logo" onError={(e) => { e.currentTarget.style.display = 'none'; }} className="w-full h-24 object-contain rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 mb-2 bg-white dark:bg-slate-800 p-2" />
                       ) : (
                         <div className="w-full h-24 bg-slate-100 dark:bg-slate-800 rounded-xl border border-dashed border-slate-300 flex items-center justify-center mb-2">
                           <span className="text-[10px] text-slate-400">Belum ada logo</span>
@@ -1028,7 +1028,7 @@ function MahasiswaDashboardContent() {
                   value={editNamaPokja} 
                   onChange={(e) => setEditNamaPokja(e.target.value)} 
                   placeholder="Misal: Kelompok 1 - ITB"
-                  className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/60 dark:bg-slate-900/60 focus:ring-2 focus:ring-teal-600 focus:border-teal-600 outline-none transition-all"
+                  className="w-full px-4 py-3 rounded-xl border border-white/60 dark:border-slate-700 bg-white/60 dark:bg-slate-900/60 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-teal-600 focus:border-teal-600 outline-none transition-all"
                 />
               </div>
               <div className="flex justify-end gap-3 mt-6">

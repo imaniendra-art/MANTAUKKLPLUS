@@ -218,7 +218,7 @@ export default function LaporanDplPage() {
           </div>
         )}
 
-        <div className="flex bg-white rounded-t-2xl border-b border-slate-200 p-2 gap-2 shadow-sm flex-wrap print:hidden">
+        <div className="flex bg-white dark:bg-slate-800 rounded-t-2xl border-b border-slate-200 dark:border-slate-700 p-2 gap-2 shadow-sm flex-wrap print:hidden">
           <button onClick={() => setActiveTab('panduan')} className={`px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${activeTab === 'panduan' ? 'bg-amber-100 text-amber-800' : 'text-slate-500 hover:bg-slate-50'}`}>
             <BookOpen className="w-4 h-4" /> Panduan Pengisian
           </button>
@@ -232,27 +232,27 @@ export default function LaporanDplPage() {
           )}
         </div>
 
-        <div className="bg-white p-4 md:p-8 rounded-b-2xl shadow-sm border border-t-0 border-slate-100 min-h-[500px] print:p-0 print:border-none print:shadow-none print:bg-transparent">
+        <div className="bg-white dark:bg-slate-800 p-4 md:p-8 rounded-b-2xl shadow-sm border border-t-0 border-slate-100 dark:border-slate-700 min-h-[500px] print:p-0 print:border-none print:shadow-none print:bg-transparent">
           
           {activeTab === 'panduan' && (
-            <div className="space-y-6 text-slate-700 print:hidden">
-              <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6">
+            <div className="space-y-6 text-slate-700 dark:text-slate-300 print:hidden">
+              <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-2xl p-6">
                 <h2 className="text-xl font-bold text-amber-800 mb-4 flex items-center gap-2">
                   <BookOpen className="w-6 h-6" /> Panduan Penulisan Laporan DPL
                 </h2>
                 <div className="space-y-4 text-sm md:text-base">
                   <p>Laporan ini merupakan evaluasi pelaksanaan Kuliah Kerja Lapangan Plus (KKLP) yang disusun oleh Dosen Pembimbing Lapangan (DPL). Silakan lengkapi form pada tab <strong>Form Isi Laporan</strong> dengan panduan berikut:</p>
                   
-                  <div className="bg-white p-4 rounded-xl border border-amber-100 shadow-sm">
-                    <h3 className="font-bold text-lg mb-2 text-amber-900">Bab I. Pendahuluan</h3>
+                  <div className="bg-white dark:bg-slate-800/90 p-4 rounded-xl border border-amber-100 dark:border-amber-800/40 shadow-sm">
+                    <h3 className="font-bold text-lg mb-2 text-amber-900 dark:text-amber-200">Bab I. Pendahuluan</h3>
                     <ul className="list-disc pl-5 space-y-1">
                       <li><strong>Latar Belakang:</strong> Uraikan gambaran umum mengenai pentingnya KKLP dan peran DPL dalam mengarahkan mahasiswa di lokasi mitra.</li>
                       <li><strong>Tujuan Pembimbingan:</strong> Sebutkan tujuan spesifik dari proses bimbingan yang Anda lakukan terhadap kelompok mahasiswa (misal: adaptasi, penyusunan proker, dsb).</li>
                     </ul>
                   </div>
 
-                  <div className="bg-white p-4 rounded-xl border border-amber-100 shadow-sm">
-                    <h3 className="font-bold text-lg mb-2 text-amber-900">Bab II. Pelaksanaan Pembimbingan dan Monitoring</h3>
+                  <div className="bg-white dark:bg-slate-800/90 p-4 rounded-xl border border-amber-100 dark:border-amber-800/40 shadow-sm">
+                    <h3 className="font-bold text-lg mb-2 text-amber-900 dark:text-amber-200">Bab II. Pelaksanaan Pembimbingan dan Monitoring</h3>
                     <ul className="list-disc pl-5 space-y-1">
                       <li><strong>Data Mahasiswa Bimbingan:</strong> Otomatis diisi oleh sistem berdasarkan data pembagian kelompok (Pokja) Anda.</li>
                       <li><strong>Jadwal Pembekalan:</strong> Jelaskan kapan dan apa saja arahan yang diberikan pada tahap pembekalan awal.</li>
@@ -261,16 +261,16 @@ export default function LaporanDplPage() {
                     </ul>
                   </div>
 
-                  <div className="bg-white p-4 rounded-xl border border-amber-100 shadow-sm">
-                    <h3 className="font-bold text-lg mb-2 text-amber-900">Bab III. Hasil Capaian Program Kerja</h3>
+                  <div className="bg-white dark:bg-slate-800/90 p-4 rounded-xl border border-amber-100 dark:border-amber-800/40 shadow-sm">
+                    <h3 className="font-bold text-lg mb-2 text-amber-900 dark:text-amber-200">Bab III. Hasil Capaian Program Kerja</h3>
                     <ul className="list-disc pl-5 space-y-1">
                       <li><strong>Evaluasi per Program Kerja:</strong> Daftar Program Kerja mahasiswa akan muncul secara otomatis. Anda diminta untuk memberikan evaluasi capaian pada masing-masing proker tersebut.</li>
                       <li><strong>Evaluasi Umum (Opsional):</strong> Berikan tambahan evaluasi umum mengenai kinerja, kedisiplinan, dan tanggung jawab mahasiswa jika diperlukan.</li>
                     </ul>
                   </div>
 
-                  <div className="bg-white p-4 rounded-xl border border-amber-100 shadow-sm">
-                    <h3 className="font-bold text-lg mb-2 text-amber-900">Bab IV & V. Permasalahan, Solusi, Kesimpulan & Saran</h3>
+                  <div className="bg-white dark:bg-slate-800/90 p-4 rounded-xl border border-amber-100 dark:border-amber-800/40 shadow-sm">
+                    <h3 className="font-bold text-lg mb-2 text-amber-900 dark:text-amber-200">Bab IV & V. Permasalahan, Solusi, Kesimpulan & Saran</h3>
                     <ul className="list-disc pl-5 space-y-1">
                       <li><strong>Kendala & Solusi:</strong> Uraikan masalah yang dihadapi di lapangan beserta solusi yang Anda berikan selaku DPL.</li>
                       <li><strong>Kesimpulan:</strong> Berikan kesimpulan akhir kelayakan dan pencapaian target.</li>
@@ -287,45 +287,45 @@ export default function LaporanDplPage() {
               <div className="flex-1 space-y-8">
                 {/* BAB I */}
                 <div className="space-y-4">
-                  <h3 className="text-xl font-bold border-b pb-2">I. PENDAHULUAN</h3>
+                  <h3 className="text-xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 text-slate-800 dark:text-slate-100">I. PENDAHULUAN</h3>
                   <div>
-                    <label className="font-bold block mb-1">A. Latar Belakang</label>
-                    <textarea name="latar_belakang" value={formData.latar_belakang} onChange={handleChange} disabled={isReadonly} placeholder="Uraikan latar belakang..." className="w-full p-3 border rounded-xl h-32" />
+                    <label className="font-bold block mb-1 text-slate-700 dark:text-slate-300">A. Latar Belakang</label>
+                    <textarea name="latar_belakang" value={formData.latar_belakang} onChange={handleChange} disabled={isReadonly} placeholder="Uraikan latar belakang..." className="w-full p-3 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl h-32 focus:ring-2 focus:ring-teal-500 outline-none" />
                   </div>
                   <div>
-                    <label className="font-bold block mb-1">B. Tujuan Pembimbingan</label>
-                    <textarea name="tujuan_pembimbingan" value={formData.tujuan_pembimbingan} onChange={handleChange} disabled={isReadonly} placeholder="Uraikan tujuan pembimbingan..." className="w-full p-3 border rounded-xl h-32" />
+                    <label className="font-bold block mb-1 text-slate-700 dark:text-slate-300">B. Tujuan Pembimbingan</label>
+                    <textarea name="tujuan_pembimbingan" value={formData.tujuan_pembimbingan} onChange={handleChange} disabled={isReadonly} placeholder="Uraikan tujuan pembimbingan..." className="w-full p-3 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl h-32 focus:ring-2 focus:ring-teal-500 outline-none" />
                   </div>
                 </div>
 
                 {/* BAB II */}
                 <div className="space-y-4">
-                  <h3 className="text-xl font-bold border-b pb-2">II. PELAKSANAAN PEMBIMBINGAN DAN MONITORING</h3>
+                  <h3 className="text-xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 text-slate-800 dark:text-slate-100">II. PELAKSANAAN PEMBIMBINGAN DAN MONITORING</h3>
                   <div className="p-4 bg-slate-50 border rounded-xl text-sm text-slate-600 mb-4">
                     <Info className="w-4 h-4 inline mr-2 text-teal-600" />
                     Data Mahasiswa Bimbingan akan otomatis dimasukkan pada dokumen laporan cetak.
                   </div>
                   <div>
-                    <label className="font-bold block mb-1">Tahap Pembekalan & Koordinasi Awal (Tanggal & Keterangan)</label>
-                    <textarea name="jadwal_pembekalan" value={formData.jadwal_pembekalan} onChange={handleChange} disabled={isReadonly} placeholder="Contoh: 15 Juli 2026 - Memberikan arahan etika profesi..." className="w-full p-3 border rounded-xl h-24" />
+                    <label className="font-bold block mb-1 text-slate-700 dark:text-slate-300">Tahap Pembekalan & Koordinasi Awal (Tanggal & Keterangan)</label>
+                    <textarea name="jadwal_pembekalan" value={formData.jadwal_pembekalan} onChange={handleChange} disabled={isReadonly} placeholder="Contoh: 15 Juli 2026 - Memberikan arahan etika profesi..." className="w-full p-3 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl h-24 focus:ring-2 focus:ring-teal-500 outline-none" />
                   </div>
                   <div>
-                    <label className="font-bold block mb-1">Tahap Monitoring I (Tanggal & Keterangan)</label>
-                    <textarea name="jadwal_monitoring_1" value={formData.jadwal_monitoring_1} onChange={handleChange} disabled={isReadonly} placeholder="Contoh: 1 Agustus 2026 - Kunjungan ke instansi mitra..." className="w-full p-3 border rounded-xl h-24" />
+                    <label className="font-bold block mb-1 text-slate-700 dark:text-slate-300">Tahap Monitoring I (Tanggal & Keterangan)</label>
+                    <textarea name="jadwal_monitoring_1" value={formData.jadwal_monitoring_1} onChange={handleChange} disabled={isReadonly} placeholder="Contoh: 1 Agustus 2026 - Kunjungan ke instansi mitra..." className="w-full p-3 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl h-24 focus:ring-2 focus:ring-teal-500 outline-none" />
                   </div>
                   <div>
-                    <label className="font-bold block mb-1">Tahap Monitoring II (Tanggal & Keterangan)</label>
-                    <textarea name="jadwal_monitoring_2" value={formData.jadwal_monitoring_2} onChange={handleChange} disabled={isReadonly} placeholder="Contoh: 15 Agustus 2026 - Mengevaluasi progres..." className="w-full p-3 border rounded-xl h-24" />
+                    <label className="font-bold block mb-1 text-slate-700 dark:text-slate-300">Tahap Monitoring II (Tanggal & Keterangan)</label>
+                    <textarea name="jadwal_monitoring_2" value={formData.jadwal_monitoring_2} onChange={handleChange} disabled={isReadonly} placeholder="Contoh: 15 Agustus 2026 - Mengevaluasi progres..." className="w-full p-3 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl h-24 focus:ring-2 focus:ring-teal-500 outline-none" />
                   </div>
                   <div>
-                    <label className="font-bold block mb-1">Tahap Penarikan Mahasiswa (Tanggal & Keterangan)</label>
-                    <textarea name="jadwal_penarikan" value={formData.jadwal_penarikan} onChange={handleChange} disabled={isReadonly} placeholder="Contoh: 30 Agustus 2026 - Serah terima plakat..." className="w-full p-3 border rounded-xl h-24" />
+                    <label className="font-bold block mb-1 text-slate-700 dark:text-slate-300">Tahap Penarikan Mahasiswa (Tanggal & Keterangan)</label>
+                    <textarea name="jadwal_penarikan" value={formData.jadwal_penarikan} onChange={handleChange} disabled={isReadonly} placeholder="Contoh: 30 Agustus 2026 - Serah terima plakat..." className="w-full p-3 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl h-24 focus:ring-2 focus:ring-teal-500 outline-none" />
                   </div>
                 </div>
 
                 {/* BAB III */}
                 <div className="space-y-4">
-                  <h3 className="text-xl font-bold border-b pb-2">III. HASIL CAPAIAN PROGRAM KERJA MAHASISWA</h3>
+                  <h3 className="text-xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 text-slate-800 dark:text-slate-100">III. HASIL CAPAIAN PROGRAM KERJA MAHASISWA</h3>
                   
                   {pokjas.length === 0 || pokjas.every(p => !p.prokers || p.prokers.length === 0) ? (
                     <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-amber-800">
@@ -342,7 +342,7 @@ export default function LaporanDplPage() {
                               <div key={proker._id} className="border border-slate-200 rounded-xl overflow-hidden shadow-sm">
                                 <div className="bg-slate-50 px-4 py-3 border-b border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-2">
                                   <div>
-                                    <span className="font-bold text-slate-800">{proker.judul_proker}</span>
+                                    <span className="font-bold text-slate-800 dark:text-white">{proker.judul_proker}</span>
                                     <span className={`ml-3 text-[10px] px-2 py-1 rounded-full font-bold uppercase tracking-wider inline-block align-middle ${
                                       proker.jenis_proker === 'core' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'
                                     }`}>
@@ -351,7 +351,7 @@ export default function LaporanDplPage() {
                                   </div>
                                 </div>
                                 <div className="p-4">
-                                  <label className="font-bold block mb-2 text-sm text-slate-700">Evaluasi Kinerja & Capaian:</label>
+                                  <label className="font-bold block mb-2 text-sm text-slate-700 dark:text-slate-300">Evaluasi Kinerja & Capaian:</label>
                                   <textarea 
                                     value={formData.evaluasi_prokers[proker._id] || ''} 
                                     onChange={(e) => setFormData(prev => ({
@@ -363,7 +363,7 @@ export default function LaporanDplPage() {
                                     }))}
                                     disabled={isReadonly} 
                                     placeholder="Tuliskan evaluasi kinerja dan capaian untuk proker ini..." 
-                                    className="w-full p-3 border border-slate-300 rounded-xl h-24 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all" 
+                                    className="w-full p-3 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 rounded-xl h-24 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all" 
                                   />
                                 </div>
                               </div>
@@ -375,41 +375,41 @@ export default function LaporanDplPage() {
                   )}
 
                   <div className="mt-6 pt-4 border-t border-slate-100">
-                    <label className="font-bold block mb-1">Evaluasi Umum (Opsional)</label>
-                    <textarea name="evaluasi_kinerja" value={formData.evaluasi_kinerja} onChange={handleChange} disabled={isReadonly} placeholder="Evaluasi umum kinerja kelompok mahasiswa..." className="w-full p-3 border rounded-xl h-24" />
+                    <label className="font-bold block mb-1 text-slate-700 dark:text-slate-300">Evaluasi Umum (Opsional)</label>
+                    <textarea name="evaluasi_kinerja" value={formData.evaluasi_kinerja} onChange={handleChange} disabled={isReadonly} placeholder="Evaluasi umum kinerja kelompok mahasiswa..." className="w-full p-3 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl h-24 focus:ring-2 focus:ring-teal-500 outline-none" />
                   </div>
                 </div>
 
                 {/* BAB IV */}
                 <div className="space-y-4">
-                  <h3 className="text-xl font-bold border-b pb-2">IV. PERMASALAHAN DAN SOLUSI</h3>
+                  <h3 className="text-xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 text-slate-800 dark:text-slate-100">IV. PERMASALAHAN DAN SOLUSI</h3>
                   <div>
-                    <label className="font-bold block mb-1">Kendala di Lapangan</label>
-                    <textarea name="kendala_lapangan" value={formData.kendala_lapangan} onChange={handleChange} disabled={isReadonly} placeholder="Kendala yang dialami..." className="w-full p-3 border rounded-xl h-24" />
+                    <label className="font-bold block mb-1 text-slate-700 dark:text-slate-300">Kendala di Lapangan</label>
+                    <textarea name="kendala_lapangan" value={formData.kendala_lapangan} onChange={handleChange} disabled={isReadonly} placeholder="Kendala yang dialami..." className="w-full p-3 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl h-24 focus:ring-2 focus:ring-teal-500 outline-none" />
                   </div>
                   <div>
-                    <label className="font-bold block mb-1">Solusi / Pemecahan Masalah</label>
-                    <textarea name="solusi_lapangan" value={formData.solusi_lapangan} onChange={handleChange} disabled={isReadonly} placeholder="Solusi yang diberikan..." className="w-full p-3 border rounded-xl h-24" />
+                    <label className="font-bold block mb-1 text-slate-700 dark:text-slate-300">Solusi / Pemecahan Masalah</label>
+                    <textarea name="solusi_lapangan" value={formData.solusi_lapangan} onChange={handleChange} disabled={isReadonly} placeholder="Solusi yang diberikan..." className="w-full p-3 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl h-24 focus:ring-2 focus:ring-teal-500 outline-none" />
                   </div>
                 </div>
 
                 {/* BAB V */}
                 <div className="space-y-4">
-                  <h3 className="text-xl font-bold border-b pb-2">V. KESIMPULAN DAN SARAN</h3>
+                  <h3 className="text-xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 text-slate-800 dark:text-slate-100">V. KESIMPULAN DAN SARAN</h3>
                   <div>
-                    <label className="font-bold block mb-1">A. Kesimpulan</label>
-                    <textarea name="kesimpulan" value={formData.kesimpulan} onChange={handleChange} disabled={isReadonly} placeholder="Kesimpulan pelaksanaan KKLP..." className="w-full p-3 border rounded-xl h-24" />
+                    <label className="font-bold block mb-1 text-slate-700 dark:text-slate-300">A. Kesimpulan</label>
+                    <textarea name="kesimpulan" value={formData.kesimpulan} onChange={handleChange} disabled={isReadonly} placeholder="Kesimpulan pelaksanaan KKLP..." className="w-full p-3 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl h-24 focus:ring-2 focus:ring-teal-500 outline-none" />
                   </div>
                   <div>
-                    <label className="font-bold block mb-1">B. Saran</label>
-                    <textarea name="saran" value={formData.saran} onChange={handleChange} disabled={isReadonly} placeholder="Saran ke depan..." className="w-full p-3 border rounded-xl h-32" />
+                    <label className="font-bold block mb-1 text-slate-700 dark:text-slate-300">B. Saran</label>
+                    <textarea name="saran" value={formData.saran} onChange={handleChange} disabled={isReadonly} placeholder="Saran ke depan..." className="w-full p-3 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl h-32 focus:ring-2 focus:ring-teal-500 outline-none" />
                   </div>
                 </div>
 
                 {/* ACTION BUTTONS */}
                 {!isReadonly && (
                   <div className="flex gap-4 pt-4 border-t border-slate-200">
-                    <button onClick={() => handleSave(false)} className="flex-1 py-4 bg-slate-200 text-slate-800 font-bold rounded-xl hover:bg-slate-300 transition-colors">
+                    <button onClick={() => handleSave(false)} className="flex-1 py-4 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-100 hover:bg-slate-300 dark:hover:bg-slate-600 font-bold rounded-xl hover:bg-slate-300 transition-colors">
                       Simpan Draft
                     </button>
                     <button onClick={() => {
@@ -431,23 +431,23 @@ export default function LaporanDplPage() {
               
               {/* SIDEBAR INFORMASI POKJA */}
               <div className="xl:w-1/3">
-                <div className="bg-slate-50 rounded-2xl shadow-sm border border-slate-200 overflow-hidden sticky top-24">
-                  <div className="px-6 py-4 border-b border-slate-200 bg-white">
-                    <h3 className="text-md font-bold text-slate-800 flex items-center gap-2">
+                <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden sticky top-24">
+                  <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80">
+                    <h3 className="text-md font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
                       <Info className="w-5 h-5 text-teal-600" />
                       Data Bimbingan & Proker
                     </h3>
                   </div>
                   <div className="p-6 space-y-4 max-h-[700px] overflow-y-auto">
                     {pokjas.map((pokja, idx) => (
-                      <div key={pokja._id} className="p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
+                      <div key={pokja._id} className="p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
                         <div className="mb-3">
                           <p className="font-bold text-teal-700">{pokja.nama_pokja || `Pokja ${idx + 1}`}</p>
                           <p className="text-xs text-slate-500">{pokja.mitra_id?.nama_instansi}</p>
                         </div>
                         
                         <div className="mb-3">
-                          <p className="text-xs font-bold text-slate-700 border-b pb-1 mb-1">Anggota:</p>
+                          <p className="text-xs font-bold text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 pb-1 mb-1">Anggota:</p>
                           <ul className="text-xs text-slate-600 list-disc pl-4 space-y-1">
                             {pokja.anggota?.map(a => (
                               <li key={a.user_id?._id}>{a.user_id?.nama_lengkap}</li>
@@ -456,7 +456,7 @@ export default function LaporanDplPage() {
                         </div>
 
                         <div>
-                          <p className="text-xs font-bold text-slate-700 border-b pb-1 mb-1">Proker Diajukan:</p>
+                          <p className="text-xs font-bold text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700 pb-1 mb-1">Proker Diajukan:</p>
                           {pokja.prokers?.length > 0 ? (
                              <ul className="text-xs text-slate-600 list-disc pl-4 space-y-1">
                                {pokja.prokers.map(pr => (

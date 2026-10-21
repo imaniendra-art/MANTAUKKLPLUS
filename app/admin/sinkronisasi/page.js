@@ -20,7 +20,7 @@ export default function SinkronisasiPage() {
       <div className="flex flex-col items-center justify-center min-h-[80vh] p-4 animate-in fade-in zoom-in duration-700">
         
         {/* Kontainer Utama */}
-        <div className="bg-white border border-teal-100 rounded-3xl p-10 md:p-16 max-w-2xl w-full text-center shadow-xl shadow-teal-900/5 relative overflow-hidden group">
+        <div className="bg-white dark:bg-slate-900 border border-teal-100 dark:border-slate-800 rounded-3xl p-10 md:p-16 max-w-2xl w-full text-center shadow-xl shadow-teal-900/5 relative overflow-hidden group">
           
           {/* Latar Belakang Dekoratif Animasi */}
           <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-20 pointer-events-none">
@@ -32,16 +32,16 @@ export default function SinkronisasiPage() {
           <div className="relative z-10 flex flex-col items-center">
             {/* Animasi Ikon */}
             <div className="relative mb-8">
-              <div className="w-32 h-32 bg-teal-50 rounded-full flex items-center justify-center border-4 border-teal-100 relative shadow-inner">
+              <div className="w-32 h-32 bg-teal-50 dark:bg-teal-950/40 rounded-full flex items-center justify-center border-4 border-teal-100 dark:border-teal-800 relative shadow-inner">
                 <CloudSync className="w-16 h-16 text-teal-500 animate-pulse" />
                 
                 {/* Gear yang berputar */}
-                <div className="absolute -top-2 -right-2 bg-white rounded-full p-1.5 shadow-md">
+                <div className="absolute -top-2 -right-2 bg-white dark:bg-slate-800 rounded-full p-1.5 shadow-md">
                   <Cog className="w-8 h-8 text-amber-500 animate-[spin_3s_linear_infinite]" />
                 </div>
                 
                 {/* Kunci pas yang mengayun */}
-                <div className="absolute -bottom-2 -left-2 bg-white rounded-full p-1.5 shadow-md origin-bottom-right animate-[wiggle_1s_ease-in-out_infinite]">
+                <div className="absolute -bottom-2 -left-2 bg-white dark:bg-slate-800 rounded-full p-1.5 shadow-md origin-bottom-right animate-[wiggle_1s_ease-in-out_infinite]">
                   <Wrench className="w-7 h-7 text-slate-400" />
                 </div>
               </div>
@@ -52,7 +52,7 @@ export default function SinkronisasiPage() {
               Under Construction
             </h1>
             
-            <h2 className="text-xl md:text-2xl font-semibold text-slate-700 mb-4 flex items-center gap-2 justify-center">
+            <h2 className="text-xl md:text-2xl font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center gap-2 justify-center">
               <HardHat className="w-6 h-6 text-amber-500" />
               Menu Sinkronisasi PDDikti
             </h2>

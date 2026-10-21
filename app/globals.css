@@ -53,6 +53,34 @@ body {
   --foreground: #f8fafc;
 }
 
+/* ═══════════════════════ FORM & THEME BASE DEFAULTS ═══════════════════════ */
+input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="file"]):not([type="range"]):not([type="color"]),
+textarea,
+select {
+  color: var(--foreground);
+}
+
+::placeholder {
+  color: #94a3b8;
+  opacity: 1;
+}
+
+.dark ::placeholder {
+  color: #64748b;
+  opacity: 1;
+}
+
+select option {
+  background-color: #ffffff;
+  color: #0f172a;
+}
+
+.dark select option {
+  background-color: #1e293b;
+  color: #f8fafc;
+}
+
+
 
 
 /* ═══════════════════════ ANIMATIONS ═══════════════════════ */

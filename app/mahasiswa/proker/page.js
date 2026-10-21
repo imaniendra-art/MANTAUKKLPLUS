@@ -323,7 +323,7 @@ export default function DaftarProker() {
                     required
                     value={formData.jenis_proker}
                     onChange={(e) => setFormData({...formData, jenis_proker: e.target.value})}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-teal-500 outline-none transition-all"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-teal-500 outline-none transition-all"
                   >
                     <option value="Utama">Utama (Core Project)</option>
                     <option value="Pendukung">Pendukung (Opsional)</option>
@@ -336,7 +336,7 @@ export default function DaftarProker() {
                       required
                       value={formData.pic_id[0] || ''}
                       onChange={(e) => setFormData({...formData, pic_id: [e.target.value]})}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-teal-500 outline-none transition-all"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-teal-500 outline-none transition-all"
                     >
                       <option value="" disabled>Pilih PIC (Maks. 1 orang)</option>
                       {pokja?.ketua_id && <option value={pokja.ketua_id._id}>{pokja.ketua_id.nama_lengkap} (Ketua)</option>}
@@ -394,7 +394,7 @@ export default function DaftarProker() {
                   value={formData.judul_proker}
                   onChange={(e) => setFormData({...formData, judul_proker: e.target.value})}
                   placeholder="Misal: Revitalisasi Tata Kelola BUMDes"
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-teal-500 outline-none transition-all"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-teal-500 outline-none transition-all"
                 />
               </div>
               
@@ -406,7 +406,7 @@ export default function DaftarProker() {
                     type="date" 
                     value={formData.tanggal_mulai}
                     onChange={(e) => setFormData({...formData, tanggal_mulai: e.target.value})}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-teal-500 outline-none transition-all"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-teal-500 outline-none transition-all"
                   />
                 </div>
                 <div>
@@ -416,7 +416,7 @@ export default function DaftarProker() {
                     type="date" 
                     value={formData.tanggal_selesai}
                     onChange={(e) => setFormData({...formData, tanggal_selesai: e.target.value})}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-teal-500 outline-none transition-all"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-teal-500 outline-none transition-all"
                   />
                 </div>
               </div>
@@ -428,7 +428,7 @@ export default function DaftarProker() {
                   rows={3}
                   value={formData.deskripsi}
                   onChange={(e) => setFormData({...formData, deskripsi: e.target.value})}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-teal-500 outline-none transition-all text-sm"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-teal-500 outline-none transition-all text-sm"
                 />
               </div>
               <div>
@@ -438,7 +438,7 @@ export default function DaftarProker() {
                   rows={2}
                   value={formData.target_dampak}
                   onChange={(e) => setFormData({...formData, target_dampak: e.target.value})}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-teal-500 outline-none transition-all text-sm"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-teal-500 outline-none transition-all text-sm"
                 />
               </div>
               <div className="flex gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
