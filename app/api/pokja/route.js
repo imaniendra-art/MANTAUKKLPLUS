@@ -115,6 +115,56 @@ async function attachProkerStats(pokjas) {
   }
 }
 
+async function attachMonevStats(pokjas) {
+  if (!pokjas || pokjas.length === 0) return [];
+  try {
+    const Monev = (await import('@/models/Monev')).default;
+    const pokjaIds = pokjas.map(p => p._id);
+    const monevRecords = await Monev.find({ pokja_id: { $in: pokjaIds } })
+      .sort({ tanggal_kunjungan: 1, createdAt: 1 })
+      .lean();
+
+    const monevMap = new Map();
+    monevRecords.forEach(m => {
+      const pid = m.pokja_id.toString();
+      if (!monevMap.has(pid)) {
+        monevMap.set(pid, []);
+      }
+      monevMap.get(pid).push(m);
+    });
+
+    return pokjas.map(p => {
+      const plain = p.toObject ? p.toObject() : { ...p };
+      const records = monevMap.get(plain._id.toString()) || [];
+      const pengantaran = records.find(r => r.jenis_kunjungan === 'Pengantaran') || null;
+      const pertengahan = records.find(r => r.jenis_kunjungan === 'Pertengahan') || null;
+      const penarikan = records.find(r => r.jenis_kunjungan === 'Penarikan') || null;
+
+      const totalCompleted = [pengantaran, pertengahan, penarikan].filter(Boolean).length;
+
+      return {
+        ...plain,
+        monev_records: records,
+        monev_detail: {
+          pengantaran,
+          pertengahan,
+          penarikan
+        },
+        monev_summary: {
+          total: totalCompleted,
+          has_pengantaran: !!pengantaran,
+          has_pertengahan: !!pertengahan,
+          has_penarikan: !!penarikan,
+          is_complete: totalCompleted === 3
+        }
+      };
+    });
+  } catch (err) {
+    console.error('Gagal agregasi monev_stats:', err);
+    return pokjas;
+  }
+}
+
 export async function GET(req) {
   await dbConnect();
   try {
@@ -148,7 +198,8 @@ export async function GET(req) {
 
       if (pokja) {
         const processed = await processPokjaUrls(pokja);
-        const [withStats] = await attachProkerStats([processed]);
+        const [withProker] = await attachProkerStats([processed]);
+        const [withStats] = await attachMonevStats([withProker]);
         return NextResponse.json(withStats);
       }
       return NextResponse.json(null);
@@ -176,7 +227,8 @@ export async function GET(req) {
         .sort({ createdAt: -1 });
         
       const processed = await Promise.all(pokjas.map(p => processPokjaUrls(p)));
-      const withStats = await attachProkerStats(processed);
+      const withProker = await attachProkerStats(processed);
+      const withStats = await attachMonevStats(withProker);
       return NextResponse.json(withStats);
     }
     
@@ -218,7 +270,8 @@ export async function GET(req) {
         .sort({ createdAt: -1 });
         
       const processed = await Promise.all(pokjas.map(p => processPokjaUrls(p)));
-      const withStats = await attachProkerStats(processed);
+      const withProker = await attachProkerStats(processed);
+      const withStats = await attachMonevStats(withProker);
       return NextResponse.json(withStats);
     }
     

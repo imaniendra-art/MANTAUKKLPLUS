@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
-import { Camera, MapPin, CheckCircle2, UploadCloud, Loader2, X, PlusCircle, Sparkles } from "lucide-react";
+import { Camera, MapPin, CheckCircle2, UploadCloud, Loader2, X, PlusCircle, Sparkles, Pencil } from "lucide-react";
 import { compressImage, formatBytes } from "@/lib/imageCompressor";
 
 export default function MonevDPLPage() {
@@ -16,6 +16,9 @@ export default function MonevDPLPage() {
   };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editMonevId, setEditMonevId] = useState(null);
+  const [existingFotoUrl, setExistingFotoUrl] = useState("");
   const [selectedPokja, setSelectedPokja] = useState(null);
   const [selectedJenis, setSelectedJenis] = useState("");
   const [filterPokjaId, setFilterPokjaId] = useState("ALL");
@@ -50,16 +53,39 @@ export default function MonevDPLPage() {
   }, []);
 
   const handleOpenModal = (pokja, jenis) => {
+    setIsEditMode(false);
+    setEditMonevId(null);
+    setExistingFotoUrl("");
     setSelectedPokja(pokja);
     setSelectedJenis(jenis);
     setTanggal(new Date().toISOString().split("T")[0]);
     setCatatan("");
     setFotoBase64("");
+    setCompressionInfo(null);
+    setIsModalOpen(true);
+  };
+
+  const handleOpenEditModal = (pokja, jenis, monevRecord) => {
+    setIsEditMode(true);
+    setEditMonevId(monevRecord._id);
+    setSelectedPokja(pokja);
+    setSelectedJenis(jenis);
+    const formattedDate = monevRecord.tanggal_kunjungan
+      ? new Date(monevRecord.tanggal_kunjungan).toISOString().split("T")[0]
+      : "";
+    setTanggal(formattedDate);
+    setCatatan(monevRecord.catatan || "");
+    setExistingFotoUrl(monevRecord.foto_url || "");
+    setFotoBase64("");
+    setCompressionInfo(null);
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    setIsEditMode(false);
+    setEditMonevId(null);
+    setExistingFotoUrl("");
     setSelectedPokja(null);
     setSelectedJenis("");
     setTanggal("");
@@ -113,40 +139,68 @@ export default function MonevDPLPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!fotoBase64) {
+    if (!fotoBase64 && !existingFotoUrl) {
       showToast("Foto wajib diunggah.");
       return;
     }
+    if (!tanggal) {
+      showToast("Tanggal kunjungan wajib diisi.");
+      return;
+    }
+
     setSubmitLoading(true);
 
     try {
-      // 1. Upload photo
-      const uploadRes = await fetch("/api/upload", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageBase64: fotoBase64, prefix: "monev" }),
-      });
-      const uploadData = await uploadRes.json();
-      if (!uploadRes.ok) throw new Error(uploadData.error || "Gagal upload foto");
+      let finalFotoUrl = existingFotoUrl;
 
-      // 2. Submit monev data
-      const monevRes = await fetch("/api/dpl/monev", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          pokja_id: selectedPokja._id,
-          jenis_kunjungan: selectedJenis,
-          tanggal_kunjungan: tanggal,
-          catatan,
-          foto_url: uploadData.url,
-        }),
-      });
-      const monevData = await monevRes.json();
-      if (!monevRes.ok) throw new Error(monevData.error || "Gagal menyimpan data");
+      // 1. Upload foto baru jika ada perubahan foto
+      if (fotoBase64) {
+        const uploadRes = await fetch("/api/upload", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ imageBase64: fotoBase64, prefix: "monev" }),
+        });
+        const uploadData = await uploadRes.json();
+        if (!uploadRes.ok) throw new Error(uploadData.error || "Gagal upload foto");
+        finalFotoUrl = uploadData.url;
+      }
 
-      showToast(`Dokumentasi ${selectedJenis} berhasil disimpan!`);
+      // 2. Submit monev data (PUT untuk edit, POST untuk baru)
+      if (isEditMode) {
+        const monevRes = await fetch("/api/dpl/monev", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            monev_id: editMonevId,
+            pokja_id: selectedPokja._id,
+            jenis_kunjungan: selectedJenis,
+            tanggal_kunjungan: tanggal,
+            catatan,
+            foto_url: finalFotoUrl,
+          }),
+        });
+        const monevData = await monevRes.json();
+        if (!monevRes.ok) throw new Error(monevData.error || "Gagal memperbarui data");
+        showToast(`Dokumentasi ${selectedJenis} berhasil diperbarui!`);
+      } else {
+        const monevRes = await fetch("/api/dpl/monev", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            pokja_id: selectedPokja._id,
+            jenis_kunjungan: selectedJenis,
+            tanggal_kunjungan: tanggal,
+            catatan,
+            foto_url: finalFotoUrl,
+          }),
+        });
+        const monevData = await monevRes.json();
+        if (!monevRes.ok) throw new Error(monevData.error || "Gagal menyimpan data");
+        showToast(`Dokumentasi ${selectedJenis} berhasil disimpan!`);
+      }
+
       handleCloseModal();
-      fetchMonev(); // Refresh data
+      fetchMonev();
     } catch (error) {
       showToast(error.message);
     } finally {
@@ -258,10 +312,22 @@ export default function MonevDPLPage() {
                                     <span className="font-semibold block">Catatan:</span>
                                     <p className="line-clamp-3">{monevRecord.catatan || "-"}</p>
                                   </div>
-                                  <div className="mt-auto pt-4">
-                                    <a href={monevRecord.foto_url} target="_blank" rel="noopener noreferrer" className="block w-full py-2 text-center text-sm font-semibold text-teal-700 bg-teal-100 rounded-lg hover:bg-teal-200 transition">
+                                  <div className="mt-auto pt-4 flex items-center gap-2">
+                                    <a
+                                      href={monevRecord.foto_url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="flex-1 py-2 text-center text-xs sm:text-sm font-semibold text-teal-700 dark:text-teal-300 bg-teal-100 dark:bg-teal-900/40 rounded-lg hover:bg-teal-200 dark:hover:bg-teal-900/60 transition"
+                                    >
                                       Lihat Foto
                                     </a>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleOpenEditModal(pokja, jenis, monevRecord)}
+                                      className="flex-1 py-2 text-center text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition flex items-center justify-center gap-1.5"
+                                    >
+                                      <Pencil className="w-3.5 h-3.5" /> Edit
+                                    </button>
                                   </div>
                                 </div>
                               ) : (
@@ -298,12 +364,14 @@ export default function MonevDPLPage() {
         </div>
       </div>
 
-      {/* Modal Form */}
+      {/* Modal Form (Upload & Edit) */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center px-4 bg-slate-900/50 backdrop-blur-sm">
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full max-w-xl rounded-2xl shadow-xl overflow-hidden max-h-[95vh] overflow-y-auto">
             <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
-              <h3 className="font-bold text-slate-800 dark:text-white text-lg">Upload Dokumentasi {selectedJenis}</h3>
+              <h3 className="font-bold text-slate-800 dark:text-white text-lg">
+                {isEditMode ? "Edit Dokumentasi" : "Upload Dokumentasi"} {selectedJenis}
+              </h3>
               <button onClick={handleCloseModal} className="text-slate-400 hover:text-slate-600">
                 <X className="w-5 h-5" />
               </button>
@@ -324,7 +392,7 @@ export default function MonevDPLPage() {
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">Foto Dokumentasi</label>
-                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
                     <Sparkles className="w-3 h-3 text-emerald-500" /> Auto-Compress Aktif
                   </span>
                 </div>
@@ -333,40 +401,50 @@ export default function MonevDPLPage() {
                   onClick={() => !compressingImage && fileInputRef.current?.click()}
                   className={`w-full border-2 border-dashed rounded-xl p-5 flex flex-col items-center justify-center transition cursor-pointer ${
                     compressingImage 
-                      ? 'border-amber-300 bg-amber-50/50' 
+                      ? 'border-amber-300 bg-amber-50/50 dark:bg-amber-950/30' 
                       : 'border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50'
                   }`}
                 >
                   {compressingImage ? (
-                    <div className="flex flex-col items-center py-4 text-amber-700">
-                      <Loader2 className="w-8 h-8 animate-spin mb-2 text-amber-600" />
+                    <div className="flex flex-col items-center py-4 text-amber-700 dark:text-amber-300">
+                      <Loader2 className="w-8 h-8 animate-spin mb-2 text-amber-600 dark:text-amber-400" />
                       <p className="text-xs font-bold">Mengompresi resolusi foto...</p>
-                      <p className="text-[11px] text-amber-600">Menyesuaikan ke resolusi HD ringan</p>
+                      <p className="text-[11px] text-amber-600 dark:text-amber-400">Menyesuaikan ke resolusi HD ringan (max 1280px)</p>
                     </div>
                   ) : fotoBase64 ? (
                     <div className="flex flex-col items-center gap-2">
-                      <img src={fotoBase64} alt="Preview" className="h-40 object-contain rounded-lg shadow-xs" />
-                      <p className="text-xs text-slate-500 font-medium">Klik untuk mengganti foto</p>
+                      <img src={fotoBase64} alt="Preview Baru" className="h-40 object-contain rounded-lg shadow-xs" />
+                      <p className="text-xs text-teal-600 dark:text-teal-400 font-semibold">Foto baru siap diunggah. Klik untuk memilih foto lain.</p>
+                    </div>
+                  ) : existingFotoUrl ? (
+                    <div className="flex flex-col items-center gap-2">
+                      <img src={existingFotoUrl} alt="Foto Saat Ini" className="h-40 object-contain rounded-lg shadow-xs border border-slate-200 dark:border-slate-700" />
+                      <div className="text-center">
+                        <span className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium text-[11px] inline-block mb-1">
+                          Foto Saat Ini
+                        </span>
+                        <p className="text-xs text-slate-500 font-medium">Klik di sini jika ingin mengganti dengan foto baru</p>
+                      </div>
                     </div>
                   ) : (
                     <>
                       <UploadCloud className="w-10 h-10 text-slate-400 mb-2" />
-                      <p className="text-sm text-slate-600 font-medium">Klik untuk memilih foto kunjungan</p>
-                      <p className="text-xs text-slate-400 mt-0.5">Kamera HP resolusi tinggi otomatis dioptimalkan</p>
+                      <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">Klik untuk memilih foto kunjungan</p>
+                      <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Kamera HP resolusi tinggi otomatis dioptimalkan</p>
                     </>
                   )}
                 </div>
 
                 {/* Info Hasil Kompresi */}
                 {compressionInfo && !compressingImage && (
-                  <div className="mt-2.5 p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 flex items-center justify-between shadow-xs">
+                  <div className="mt-2.5 p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 text-xs text-emerald-900 dark:text-emerald-200 flex items-center justify-between shadow-xs">
                     <div className="flex items-center gap-1.5 font-medium">
                       <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                       <span>
-                        <span className="line-through text-slate-400">{formatBytes(compressionInfo.originalSize)}</span> ➔ <strong className="font-bold text-emerald-700">{formatBytes(compressionInfo.compressedSize)}</strong> ({compressionInfo.width}×{compressionInfo.height}px)
+                        <span className="line-through text-slate-400">{formatBytes(compressionInfo.originalSize)}</span> ➔ <strong className="font-bold text-emerald-700 dark:text-emerald-400">{formatBytes(compressionInfo.compressedSize)}</strong> ({compressionInfo.width}×{compressionInfo.height}px)
                       </span>
                     </div>
-                    <span className="px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-800 font-bold text-[10px]">
+                    <span className="px-2 py-0.5 rounded-full bg-emerald-200 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-100 font-bold text-[10px]">
                       Hemat {compressionInfo.ratio}%
                     </span>
                   </div>
@@ -403,14 +481,18 @@ export default function MonevDPLPage() {
                 </button>
                 <button
                   type="submit"
-                  disabled={submitLoading || compressingImage || !fotoBase64 || !tanggal}
+                  disabled={submitLoading || compressingImage || (!fotoBase64 && !existingFotoUrl) || !tanggal}
                   className="px-5 py-2 bg-teal-600 text-white rounded-lg text-sm font-semibold hover:bg-teal-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
                   {submitLoading ? (
                     <><Loader2 className="w-4 h-4 animate-spin" /> Menyimpan...</>
                   ) : compressingImage ? (
                     <><Loader2 className="w-4 h-4 animate-spin" /> Mengompres...</>
-                  ) : "Simpan Dokumentasi"}
+                  ) : isEditMode ? (
+                    "Simpan Perubahan"
+                  ) : (
+                    "Simpan Dokumentasi"
+                  )}
                 </button>
               </div>
             </form>
