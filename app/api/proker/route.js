@@ -125,6 +125,13 @@ export async function PATCH(req) {
       }
     }
 
+    if (session.user.role === 'dpl') {
+      const pokja = await Pokja.findById(targetProker.pokja_id);
+      if (!pokja || pokja.dpl_id?.toString() !== session.user.id) {
+        return NextResponse.json({ error: "Anda bukan DPL untuk kelompok ini." }, { status: 403 });
+      }
+    }
+
     if (!['usulan', 'revisi'].includes(targetProker.status?.toLowerCase())) {
       if (judul_proker || deskripsi || target_dampak || jenis_proker || pic_id || tanggal_mulai || tanggal_selesai) {
         return NextResponse.json({ error: "Program kerja yang telah disetujui tidak dapat diubah. Ajukan revisi kepada DPL." }, { status: 400 });
@@ -150,11 +157,14 @@ export async function PATCH(req) {
     if (tanggal_mulai) updatePayload.tanggal_mulai = tanggal_mulai;
     if (tanggal_selesai) updatePayload.tanggal_selesai = tanggal_selesai;
 
-    // Jika mahasiswa mengedit isi proker (ditandai dengan adanya field judul_proker dll), 
-    // maka kembalikan statusnya ke 'usulan' agar direview ulang oleh DPL.
-    // (DPL tidak mengirimkan judul_proker saat melakukan review)
-    if (judul_proker || deskripsi || target_dampak) {
-      updatePayload.status = 'usulan';
+    // Jika mahasiswa mengedit isi proker atau mengajukan ulang proker revisi, 
+    // kembalikan statusnya ke 'usulan' agar direview ulang oleh DPL.
+    if (session.user.role === 'mahasiswa') {
+      if (['usulan', 'revisi'].includes(targetProker.status?.toLowerCase())) {
+        if (judul_proker || deskripsi || target_dampak || jenis_proker || pic_id || tanggal_mulai || tanggal_selesai || status === 'usulan') {
+          updatePayload.status = 'usulan';
+        }
+      }
     }
 
     const updated = await Proker.findByIdAndUpdate(

@@ -33,15 +33,17 @@ export async function GET(req) {
       .sort({ updatedAt: -1 })
       .lean();
 
-    // Attach proker approval status
+    // Attach proker approval status & stats
     for (let pokja of bimbinganList) {
       const prokers = await Proker.find({ pokja_id: pokja._id }).lean();
       pokja.total_proker = prokers.length;
-      if (prokers.length > 0) {
-        pokja.all_proker_approved = prokers.every(p => p.status === 'disetujui_dpl');
-      } else {
-        pokja.all_proker_approved = false;
-      }
+      const total = prokers.length;
+      const disetujui = prokers.filter(p => ['disetujui_dpl', 'selesai'].includes(p.status)).length;
+      const revisi = prokers.filter(p => p.status === 'revisi').length;
+      const usulan = prokers.filter(p => p.status === 'usulan').length;
+
+      pokja.proker_stats = { total, disetujui, revisi, usulan };
+      pokja.all_proker_approved = total > 0 && disetujui === total;
     }
 
     return NextResponse.json(bimbinganList);

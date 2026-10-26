@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { useSession } from "@/components/AuthProvider";
-import { Plus, X, Lock, Info, CheckCircle2 } from "lucide-react";
+import { Plus, X, Lock, Info, CheckCircle2, AlertTriangle } from "lucide-react";
 
 export default function DaftarProker() {
   const { data: session } = useSession();
@@ -72,6 +72,7 @@ export default function DaftarProker() {
       }
       
       if (res.ok) {
+        const wasRevision = editingProker?.status === 'revisi';
         setFormData({ 
           judul_proker: "", deskripsi: "", target_dampak: "", 
           jenis_proker: "Utama", pic_id: [], tanggal_mulai: "", tanggal_selesai: "" 
@@ -81,6 +82,10 @@ export default function DaftarProker() {
         const resProker = await fetch(`/api/proker?pokjaId=${pokja._id}`);
         const dataProker = await resProker.json();
         setProkers(Array.isArray(dataProker) ? dataProker : []);
+
+        if (wasRevision) {
+          alert("Revisi Program Kerja berhasil disimpan dan telah diajukan ulang ke DPL untuk diperiksa!");
+        }
       } else {
         const errorData = await res.json();
         alert(`Gagal menyimpan: ${errorData.error || 'Unknown error'}`);
@@ -101,6 +106,7 @@ export default function DaftarProker() {
   );
 
   const isAllProkerApproved = prokers.length > 0 && prokers.every(p => p.status === 'disetujui_dpl' || p.status === 'selesai');
+  const editingProker = prokers.find(p => p._id === editingId);
 
   return (
     <DashboardLayout title="Daftar Program Kerja POKJA">
@@ -211,9 +217,14 @@ export default function DaftarProker() {
                   </div>
 
                   {p.status === 'revisi' && p.catatan_revisi && (
-                    <div className="bg-amber-50 dark:bg-amber-900/10 p-3 rounded-xl border border-amber-200 dark:border-amber-800/30 mb-4">
-                      <p className="text-[11px] font-bold text-amber-800 dark:text-amber-500 mb-1 uppercase tracking-wider">Catatan Revisi DPL</p>
+                    <div className="bg-amber-50 dark:bg-amber-900/10 p-3.5 rounded-xl border border-amber-200 dark:border-amber-800/30 mb-4">
+                      <p className="text-[11px] font-bold text-amber-800 dark:text-amber-500 mb-1 uppercase tracking-wider flex items-center gap-1.5">
+                        <AlertTriangle className="w-3.5 h-3.5 text-amber-600" /> Catatan Revisi DPL
+                      </p>
                       <p className="text-sm text-amber-700 dark:text-amber-300 font-medium">{p.catatan_revisi}</p>
+                      <p className="text-[11px] text-amber-600/80 dark:text-amber-400/80 mt-1.5 italic">
+                        💡 Klik tombol &quot;Perbaiki Proker&quot; di bawah untuk mengubah rincian atau klik &quot;Ajukan Ulang&quot; jika sudah disepakati dengan DPL.
+                      </p>
                     </div>
                   )}
 
@@ -255,7 +266,37 @@ export default function DaftarProker() {
                     </div>
 
                     {isKetua && p.status !== 'disetujui_dpl' && (p.status_pelaksanaan === 'Belum Dimulai' || !p.status_pelaksanaan) && (
-                      <div className="flex gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        {p.status === 'revisi' && (
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              if (confirm('Kirim usulan proker ini kembali ke DPL untuk diperiksa ulang?')) {
+                                try {
+                                  const res = await fetch('/api/proker', {
+                                    method: 'PATCH',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ id: p._id, status: 'usulan' })
+                                  });
+                                  if (res.ok) {
+                                    alert('Program kerja berhasil diajukan ulang ke DPL!');
+                                    const resProker = await fetch(`/api/proker?pokjaId=${pokja._id}`);
+                                    const dataProker = await resProker.json();
+                                    setProkers(Array.isArray(dataProker) ? dataProker : []);
+                                  } else {
+                                    const err = await res.json();
+                                    alert(err.error || 'Gagal mengajukan ulang');
+                                  }
+                                } catch (e) {
+                                  alert('Terjadi kesalahan koneksi');
+                                }
+                              }
+                            }}
+                            className="px-3.5 py-1.5 text-xs font-bold text-teal-700 bg-teal-50 border border-teal-200 rounded-lg hover:bg-teal-100 transition-colors dark:bg-teal-900/30 dark:text-teal-400 dark:border-teal-800 flex items-center gap-1"
+                          >
+                            <CheckCircle2 className="w-3.5 h-3.5" /> Ajukan Ulang
+                          </button>
+                        )}
                         <button 
                           onClick={() => {
                             setEditingId(p._id);
@@ -270,9 +311,13 @@ export default function DaftarProker() {
                             });
                             setIsModalOpen(true);
                           }}
-                          className="px-4 py-1.5 text-xs font-bold text-teal-700 bg-teal-50 border border-teal-200 rounded-lg hover:bg-teal-100 transition-colors dark:bg-teal-900/30 dark:text-teal-400 dark:border-teal-800"
+                          className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-colors flex items-center gap-1.5 ${
+                            p.status === 'revisi'
+                              ? 'text-white bg-amber-600 hover:bg-amber-700 shadow-xs'
+                              : 'text-teal-700 bg-teal-50 border border-teal-200 rounded-lg hover:bg-teal-100 dark:bg-teal-900/30 dark:text-teal-400 dark:border-teal-800'
+                          }`}
                         >
-                          Edit
+                          {p.status === 'revisi' ? '✏️ Perbaiki Proker' : 'Edit'}
                         </button>
                         <button 
                           onClick={async () => {
@@ -311,9 +356,20 @@ export default function DaftarProker() {
               <X className="w-5 h-5" />
             </button>
 
-            <h2 className="text-xl font-bold mb-6 text-slate-800 dark:text-white pr-10">
-              {editingId ? 'Edit Program Kerja' : 'Buat Program Kerja Baru'}
+            <h2 className="text-xl font-bold mb-4 text-slate-800 dark:text-white pr-10">
+              {editingId ? (editingProker?.status === 'revisi' ? 'Perbaiki & Ajukan Ulang Program Kerja' : 'Edit Program Kerja') : 'Buat Program Kerja Baru'}
             </h2>
+
+            {editingProker?.status === 'revisi' && editingProker?.catatan_revisi && (
+              <div className="mb-5 p-4 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-2xl">
+                <div className="flex items-center gap-2 text-xs font-bold text-amber-800 dark:text-amber-400 mb-1">
+                  <AlertTriangle className="w-4 h-4 text-amber-600" /> Catatan Revisi dari DPL:
+                </div>
+                <p className="text-xs text-amber-700 dark:text-amber-300 leading-relaxed font-medium">
+                  {editingProker.catatan_revisi}
+                </p>
+              </div>
+            )}
             
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -452,9 +508,17 @@ export default function DaftarProker() {
                 <button 
                   type="submit"
                   disabled={submitting}
-                  className="flex-1 py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl disabled:opacity-50 transition-colors shadow-md"
+                  className={`flex-1 py-3 text-white font-bold rounded-xl disabled:opacity-50 transition-colors shadow-md ${
+                    editingProker?.status === 'revisi'
+                      ? 'bg-amber-600 hover:bg-amber-700'
+                      : 'bg-teal-600 hover:bg-teal-700'
+                  }`}
                 >
-                  {submitting ? 'Menyimpan...' : (editingId ? 'Simpan Perubahan' : 'Tambahkan Proker')}
+                  {submitting 
+                    ? 'Menyimpan...' 
+                    : (editingId 
+                        ? (editingProker?.status === 'revisi' ? 'Simpan & Ajukan Ulang ke DPL' : 'Simpan Perubahan') 
+                        : 'Tambahkan Proker')}
                 </button>
               </div>
             </form>

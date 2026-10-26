@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
-import { UserCircle, MapPin, Phone, Mail, CheckCircle2, UserPlus, Clock, Info, Eye, RefreshCcw, Upload, AlertCircle, MessageSquare } from "lucide-react";
+import { UserCircle, MapPin, Phone, Mail, CheckCircle2, UserPlus, Clock, Info, Eye, RefreshCcw, Upload, AlertCircle, MessageSquare, AlertTriangle } from "lucide-react";
 
 export default function DaftarBimbinganPage() {
   const [bimbinganList, setBimbinganList] = useState([]);
@@ -92,21 +92,32 @@ export default function DaftarBimbinganPage() {
       });
 
       if (res.ok) {
+        showToast(action === 'disetujui_dpl' ? 'Program kerja berhasil disetujui (ACC)!' : 'Catatan revisi berhasil dikirim ke mahasiswa!');
         // Refresh proker list
         const refreshedRes = await fetch(`/api/proker?pokjaId=${selectedPokjaProker._id}`);
         const data = await refreshedRes.json();
         const updatedList = Array.isArray(data) ? data : [];
         setProkerList(updatedList);
         
-        // Update all_proker_approved locally
-        if (updatedList.length > 0 && updatedList.every(p => p.status === 'disetujui_dpl')) {
-          setBimbinganList(prev => prev.map(b => b._id === selectedPokjaProker._id ? { ...b, all_proker_approved: true } : b));
-        } else {
-          setBimbinganList(prev => prev.map(b => b._id === selectedPokjaProker._id ? { ...b, all_proker_approved: false } : b));
-        }
+        // Update all_proker_approved and proker_stats locally
+        const total = updatedList.length;
+        const disetujui = updatedList.filter(p => ['disetujui_dpl', 'selesai'].includes(p.status)).length;
+        const revisi = updatedList.filter(p => p.status === 'revisi').length;
+        const usulan = updatedList.filter(p => p.status === 'usulan').length;
+        const allApproved = total > 0 && disetujui === total;
+
+        setBimbinganList(prev => prev.map(b => b._id === selectedPokjaProker._id ? {
+          ...b,
+          all_proker_approved: allApproved,
+          proker_stats: { total, disetujui, revisi, usulan }
+        } : b));
+      } else {
+        const errData = await res.json();
+        alert(errData.error || 'Gagal memproses proker');
       }
     } catch (error) {
       console.error("Error reviewing proker:", error);
+      alert('Terjadi kesalahan koneksi');
     }
   };
 
@@ -434,6 +445,10 @@ export default function DaftarBimbinganPage() {
                                 <span className="inline-flex items-center justify-center gap-1.5 px-3 py-1 bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400 text-[11px] font-bold rounded-full border border-rose-200 dark:border-rose-800 w-full">
                                   <AlertCircle className="w-3.5 h-3.5" /> Belum Ada Proker
                                 </span>
+                              ) : (item.proker_stats?.revisi > 0) ? (
+                                <span className="inline-flex items-center justify-center gap-1.5 px-3 py-1 bg-orange-50 text-orange-700 dark:bg-orange-950/40 dark:text-orange-400 text-[11px] font-bold rounded-full border border-orange-200 dark:border-orange-800 w-full">
+                                  <AlertTriangle className="w-3.5 h-3.5" /> {item.proker_stats.revisi} Perlu Revisi
+                                </span>
                               ) : (item.proker_stats?.usulan > 0) ? (
                                 <span className="inline-flex items-center justify-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 text-[11px] font-bold rounded-full border border-amber-200 dark:border-amber-800 w-full animate-pulse">
                                   <Clock className="w-3.5 h-3.5" /> {item.proker_stats.usulan} Perlu Disetujui
@@ -627,14 +642,13 @@ export default function DaftarBimbinganPage() {
 
                                           {p.status !== 'disetujui_dpl' && (
                                             <div className="space-y-2">
-                                              {p.status !== 'revisi' && (
-                                                <button
-                                                  onClick={() => handleReviewProker(p._id, 'disetujui_dpl')}
-                                                  className="w-full py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-xl transition-colors shadow-sm"
-                                                >
-                                                  Setujui Proker
-                                                </button>
-                                              )}
+                                              <button
+                                                onClick={() => handleReviewProker(p._id, 'disetujui_dpl')}
+                                                className="w-full py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-xl transition-colors shadow-sm flex items-center justify-center gap-1.5"
+                                              >
+                                                <CheckCircle2 className="w-4 h-4" />
+                                                {p.status === 'revisi' ? 'Setujui Proker (ACC Revisi)' : 'Setujui Proker'}
+                                              </button>
                                               <div className="bg-slate-100 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-200 dark:border-slate-700">
                                                 <textarea
                                                   placeholder="Catatan revisi..."
@@ -647,7 +661,7 @@ export default function DaftarBimbinganPage() {
                                                   disabled={!revisiNotes[p._id]}
                                                   className="w-full py-2 bg-amber-100 text-amber-700 hover:bg-amber-200 text-xs font-bold rounded-lg transition-colors disabled:opacity-50"
                                                 >
-                                                  {p.status === 'revisi' ? 'Perbarui Revisi' : 'Minta Revisi'}
+                                                  {p.status === 'revisi' ? 'Perbarui Catatan Revisi' : 'Minta Revisi'}
                                                 </button>
                                               </div>
                                             </div>
@@ -825,6 +839,12 @@ export default function DaftarBimbinganPage() {
               </button>
             </div>
           </div>
+        </div>
+      )}
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-[9999] bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-2 border border-slate-700 animate-in fade-in slide-in-from-bottom-2">
+          <CheckCircle2 className="w-5 h-5 text-teal-400" />
+          <span className="text-sm font-bold">{toastMessage}</span>
         </div>
       )}
     </DashboardLayout>
