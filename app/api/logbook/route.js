@@ -72,8 +72,13 @@ export async function GET(req) {
       }
     }
 
-    if (pokjaId && tipe === 'pokja') {
-      const logs = await Logbook.find({ pokja_id: pokjaId, tipe_logbook: 'pokja' })
+    if (pokjaId) {
+      const query = { pokja_id: pokjaId };
+      if (tipe && tipe !== 'semua') {
+        query.tipe_logbook = tipe;
+      }
+      const logs = await Logbook.find(query)
+        .populate({ path: 'mahasiswa_id', select: 'nama_lengkap nim_nidn program_studi' })
         .populate({ path: 'proker_id', select: 'judul_proker' })
         .sort({ tanggal: -1, createdAt: -1 });
       const processedLogs = await processLogbookArray(logs);

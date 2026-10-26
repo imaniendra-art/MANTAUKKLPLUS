@@ -4,15 +4,18 @@ import React, { useState, useEffect, useCallback } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Check, X, Search, CheckCircle2, Clock, Users, UserCheck, AlertTriangle, MessageSquare, Zap, ExternalLink, Camera, MapPin, Eye, FileText } from "lucide-react";
 
-// Sub-komponen untuk mengambil dan menampilkan logbook pokja
+// Sub-komponen untuk mengambil dan menampilkan seluruh logbook pokja (Individu & Kelompok) untuk Admin
 function PokjaLogbookList({ pokjaId }) {
   const [logbooks, setLogbooks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filterStatus, setFilterStatus] = useState("semua"); // 'semua' | 'tertunda' | 'selesai'
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [toastMsg, setToastMsg] = useState("");
 
-  useEffect(() => {
+  const fetchLogbooks = useCallback(() => {
     let isMounted = true;
     setLoading(true);
-    fetch(`/api/logbook?pokjaId=${pokjaId}&tipe=pokja`)
+    fetch(`/api/logbook?pokjaId=${pokjaId}`)
       .then(r => r.json())
       .then(data => {
         if (isMounted) {
@@ -26,6 +29,10 @@ function PokjaLogbookList({ pokjaId }) {
       });
     return () => { isMounted = false; };
   }, [pokjaId]);
+
+  useEffect(() => {
+    fetchLogbooks();
+  }, [fetchLogbooks]);
 
   const handleViewFile = (dataUrl) => {
     try {
@@ -51,50 +58,186 @@ function PokjaLogbookList({ pokjaId }) {
     }
   };
 
-  const getStatusBadge = (status) => {
-    switch (status) {
-      case 'menunggu_mentor': return <span className="px-2 py-1 bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-bold rounded shadow-sm">⏳ Menunggu Mentor</span>;
-      case 'divalidasi_mentor': return <span className="px-2 py-1 bg-teal-50 text-teal-700 border border-teal-200 text-[10px] font-bold rounded shadow-sm">🔹 Divalidasi Mentor</span>;
-      case 'divalidasi_dpl': return <span className="px-2 py-1 bg-teal-50 text-teal-700 border border-teal-200 text-[10px] font-bold rounded shadow-sm"><Check className="w-4 h-4 inline-block mr-1.5 -mt-0.5" /> Divalidasi DPL</span>;
-      case 'revisi': return <span className="px-2 py-1 bg-red-50 text-red-700 border border-red-200 text-[10px] font-bold rounded shadow-sm"><X className="w-4 h-4 inline-block mr-1.5 -mt-0.5" /> Direvisi</span>;
-      default: return <span className="px-2 py-1 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 text-[10px] font-bold rounded shadow-sm">{status}</span>;
+  const handleAdminApproveSingle = async (logId) => {
+    if (!confirm("Validasi dan setujui (ACC) logbook ini sebagai Admin?")) return;
+    setIsProcessing(true);
+    try {
+      const res = await fetch('/api/logbook', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: logId, status_validasi: 'selesai' })
+      });
+      if (res.ok) {
+        setToastMsg("Logbook berhasil disetujui (ACC Admin)!");
+        setTimeout(() => setToastMsg(""), 3000);
+        fetchLogbooks();
+      } else {
+        const err = await res.json();
+        alert(err.error || "Gagal memvalidasi logbook");
+      }
+    } catch (e) {
+      alert("Terjadi kesalahan koneksi");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
-  if (loading) return <div className="p-8 text-center text-slate-500 font-bold animate-pulse text-sm">Mengambil data logbook POKJA...</div>;
-  if (logbooks.length === 0) return <div className="p-8 text-center text-slate-500 text-sm">Belum ada riwayat logbook kelompok (POKJA).</div>;
+  const handleAdminApproveBulk = async () => {
+    const pendingLogs = logbooks.filter(l => l.status_validasi !== 'selesai');
+    if (pendingLogs.length === 0) return;
+    if (!confirm(`Validasi dan setujui seluruh ${pendingLogs.length} logbook yang tertunda sebagai Admin?`)) return;
+
+    setIsProcessing(true);
+    try {
+      const ids = pendingLogs.map(l => l._id);
+      const res = await fetch('/api/logbook', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids, status_validasi: 'selesai' })
+      });
+      if (res.ok) {
+        setToastMsg(`Berhasil menyetujui ${pendingLogs.length} logbook sekaligus!`);
+        setTimeout(() => setToastMsg(""), 3000);
+        fetchLogbooks();
+      } else {
+        const err = await res.json();
+        alert(err.error || "Gagal memvalidasi logbook");
+      }
+    } catch (e) {
+      alert("Terjadi kesalahan koneksi");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case 'menunggu_mentor': return <span className="px-2 py-0.5 bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 border border-amber-200 dark:border-amber-800 text-[10px] font-bold rounded">⏳ Menunggu Mentor</span>;
+      case 'divalidasi_mentor': return <span className="px-2 py-0.5 bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400 border border-blue-200 dark:border-blue-800 text-[10px] font-bold rounded">🔹 Divalidasi Mentor</span>;
+      case 'menunggu_dpl': return <span className="px-2 py-0.5 bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 border border-amber-200 dark:border-amber-800 text-[10px] font-bold rounded">⏳ Menunggu DPL</span>;
+      case 'divalidasi_dpl': return <span className="px-2 py-0.5 bg-teal-50 text-teal-700 dark:bg-teal-950/40 dark:text-teal-400 border border-teal-200 dark:border-teal-800 text-[10px] font-bold rounded">✓ Divalidasi DPL</span>;
+      case 'selesai': return <span className="px-2 py-0.5 bg-teal-50 text-teal-700 dark:bg-teal-950/40 dark:text-teal-400 border border-teal-200 dark:border-teal-800 text-[10px] font-bold rounded">✅ Selesai (ACC)</span>;
+      case 'revisi': return <span className="px-2 py-0.5 bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-400 border border-red-200 dark:border-red-800 text-[10px] font-bold rounded">❌ Direvisi</span>;
+      default: return <span className="px-2 py-0.5 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 text-[10px] font-bold rounded">{status}</span>;
+    }
+  };
+
+  const filteredLogs = logbooks.filter(l => {
+    if (filterStatus === 'tertunda') return l.status_validasi !== 'selesai';
+    if (filterStatus === 'selesai') return l.status_validasi === 'selesai';
+    return true;
+  });
+
+  const pendingCount = logbooks.filter(l => l.status_validasi !== 'selesai').length;
+
+  if (loading) return <div className="p-8 text-center text-slate-500 font-bold animate-pulse text-sm">Mengambil seluruh logbook mahasiswa (Individu & Kelompok)...</div>;
+  if (logbooks.length === 0) return <div className="p-8 text-center text-slate-500 text-sm">Belum ada riwayat logbook yang diisi oleh mahasiswa kelompok ini.</div>;
 
   return (
-    <div className="p-4 bg-slate-50/50 dark:bg-slate-900/30">
-      <div className="space-y-4">
-        {logbooks.map(log => (
-          <div key={log._id} className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl p-4 rounded-xl border border-white/60 dark:border-slate-700 shadow-sm flex flex-col md:flex-row gap-4">
-            <div className="shrink-0 w-40 border-r border-slate-100 dark:border-slate-700 pr-4">
+    <div className="p-4 bg-slate-50/50 dark:bg-slate-900/30 space-y-4">
+      {/* Toast Notification */}
+      {toastMsg && (
+        <div className="p-3 bg-teal-600 text-white text-xs font-bold rounded-xl flex items-center gap-2 shadow-xs animate-fade-in">
+          <CheckCircle2 className="w-4 h-4" /> {toastMsg}
+        </div>
+      )}
+
+      {/* Header Bar PokjaLogbookList with Filters & Bulk Action */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-xs font-bold text-slate-500">Filter Logbook:</span>
+          <button
+            onClick={() => setFilterStatus('semua')}
+            className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-colors ${
+              filterStatus === 'semua' ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900' : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
+            }`}
+          >
+            Semua ({logbooks.length})
+          </button>
+          <button
+            onClick={() => setFilterStatus('tertunda')}
+            className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-colors ${
+              filterStatus === 'tertunda' ? 'bg-amber-600 text-white' : 'bg-amber-50 text-amber-700 border border-amber-200'
+            }`}
+          >
+            Tertunda ({pendingCount})
+          </button>
+          <button
+            onClick={() => setFilterStatus('selesai')}
+            className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-colors ${
+              filterStatus === 'selesai' ? 'bg-teal-600 text-white' : 'bg-teal-50 text-teal-700 border border-teal-200'
+            }`}
+          >
+            Selesai ({logbooks.length - pendingCount})
+          </button>
+        </div>
+
+        {/* Eksekusi Masal oleh Admin jika DPL/Mentor Berhalangan */}
+        {pendingCount > 0 && (
+          <button
+            onClick={handleAdminApproveBulk}
+            disabled={isProcessing}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors disabled:opacity-50"
+          >
+            <Zap className="w-3.5 h-3.5" /> ACC Semua Tertunda ({pendingCount} Logbook)
+          </button>
+        )}
+      </div>
+
+      <div className="space-y-3">
+        {filteredLogs.map(log => (
+          <div key={log._id} className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-md p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-2xs flex flex-col md:flex-row gap-4 items-start">
+            <div className="shrink-0 w-full md:w-56 border-b md:border-b-0 md:border-r border-slate-100 dark:border-slate-700 pb-3 md:pb-0 md:pr-4">
               <p className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                {new Date(log.tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                📅 {new Date(log.tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
               </p>
-              <div className="mt-2">{getStatusBadge(log.status_validasi)}</div>
+              <p className="text-xs font-bold text-teal-700 dark:text-teal-400 mt-1">
+                👤 {log.mahasiswa_id?.nama_lengkap || 'Mahasiswa'}
+              </p>
+              <p className="text-[10px] text-slate-500 font-medium">
+                NIM: {log.mahasiswa_id?.nim_nidn || '-'}
+              </p>
+              <div className="mt-2 flex items-center gap-1.5 flex-wrap">
+                <span className="px-1.5 py-0.5 text-[9px] font-bold rounded bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
+                  {log.tipe_logbook === 'pokja' ? 'POKJA' : 'Individu'}
+                </span>
+                {getStatusBadge(log.status_validasi)}
+              </div>
             </div>
             
-            <div className="flex-1">
-              <p className="text-sm font-bold text-slate-800 dark:text-white mb-1">
-                {log.proker_id?.judul_proker || "Umum / Personal"}
+            <div className="flex-1 space-y-1">
+              <p className="text-sm font-bold text-slate-800 dark:text-white">
+                📌 {log.proker_id?.judul_proker || "Kegiatan Umum / Personal"}
               </p>
-              <div className="text-sm font-medium text-slate-700 dark:text-slate-300 leading-relaxed space-y-1 mb-2">
-                <p><strong>Rencana:</strong> {log.rencana_target}</p>
-                <p><strong>Uraian:</strong> {log.uraian_kegiatan}</p>
-                <p><strong>Hasil:</strong> {log.hasil_output}</p>
+              <div className="text-xs font-medium text-slate-600 dark:text-slate-300 leading-relaxed space-y-1">
+                <p><strong>Rencana:</strong> {log.rencana_target || '-'}</p>
+                <p><strong>Uraian:</strong> {log.uraian_kegiatan || '-'}</p>
+                <p><strong>Hasil:</strong> {log.hasil_output || '-'}</p>
                 {log.kendala_solusi && <p><strong>Kendala/Solusi:</strong> {log.kendala_solusi}</p>}
               </div>
             </div>
             
-            {log.bukti_kegiatan && (
-              <div className="shrink-0">
-                <button onClick={() => handleViewFile(log.bukti_kegiatan)} className="text-xs font-bold text-teal-600 bg-teal-50 hover:bg-teal-100 px-3 py-1.5 rounded-lg transition-colors border border-teal-200">
-                  🖼️ Bukti
+            <div className="shrink-0 flex md:flex-col gap-2 w-full md:w-auto justify-end pt-2 md:pt-0">
+              {log.bukti_kegiatan && (
+                <button 
+                  onClick={() => handleViewFile(log.bukti_kegiatan)} 
+                  className="text-xs font-bold text-teal-700 bg-teal-50 hover:bg-teal-100 px-3 py-1.5 rounded-lg transition-colors border border-teal-200 inline-flex items-center gap-1"
+                >
+                  <Camera className="w-3.5 h-3.5" /> Bukti Foto
                 </button>
-              </div>
-            )}
+              )}
+
+              {log.status_validasi !== 'selesai' && (
+                <button
+                  onClick={() => handleAdminApproveSingle(log._id)}
+                  disabled={isProcessing}
+                  className="text-xs font-bold text-white bg-teal-600 hover:bg-teal-700 px-3 py-1.5 rounded-lg transition-colors shadow-2xs inline-flex items-center gap-1 disabled:opacity-50"
+                  title="Setujui dan selesaikan validasi logbook ini sebagai Admin"
+                >
+                  <CheckCircle2 className="w-3.5 h-3.5" /> ACC Admin
+                </button>
+              )}
+            </div>
           </div>
         ))}
       </div>
@@ -112,6 +255,63 @@ export default function MonitoringPokjaPage() {
 
   // Filter khusus Tab Monev
   const [monevFilter, setMonevFilter] = useState("semua"); // 'semua' | 'belum_lengkap' | 'belum_pengantaran' | 'belum_pertengahan' | 'belum_penarikan' | 'tuntas'
+
+  // Modal Detail & Eksekusi Proker untuk Admin
+  const [selectedPokjaForProker, setSelectedPokjaForProker] = useState(null);
+  const [prokerModalList, setProkerModalList] = useState([]);
+  const [isProkerModalLoading, setIsProkerModalLoading] = useState(false);
+  const [adminProkerRevisiNotes, setAdminProkerRevisiNotes] = useState({});
+  const [adminProkerSubmitting, setAdminProkerSubmitting] = useState(false);
+
+  const handleOpenProkerModal = async (pokja) => {
+    setSelectedPokjaForProker(pokja);
+    setIsProkerModalLoading(true);
+    try {
+      const res = await fetch(`/api/proker?pokjaId=${pokja._id}`);
+      const data = await res.json();
+      setProkerModalList(Array.isArray(data) ? data : []);
+      setAdminProkerRevisiNotes({});
+    } catch (err) {
+      console.error(err);
+      alert('Gagal mengambil data program kerja');
+    } finally {
+      setIsProkerModalLoading(false);
+    }
+  };
+
+  const handleAdminReviewProker = async (prokerId, action) => {
+    setAdminProkerSubmitting(true);
+    try {
+      const body = { id: prokerId, status: action };
+      if (action === 'revisi') {
+        body.catatan_revisi = adminProkerRevisiNotes[prokerId] || 'Silakan perbaiki proker ini (Catatan Admin)';
+      } else {
+        body.catatan_revisi = '';
+      }
+
+      const res = await fetch('/api/proker', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+
+      if (res.ok) {
+        alert(action === 'disetujui_dpl' ? 'Program kerja berhasil disetujui (ACC) oleh Admin!' : 'Catatan revisi Admin berhasil dikirim!');
+        const resProker = await fetch(`/api/proker?pokjaId=${selectedPokjaForProker._id}`);
+        const dataProker = await resProker.json();
+        setProkerModalList(Array.isArray(dataProker) ? dataProker : []);
+        fetchData();
+      } else {
+        const err = await res.json();
+        alert(err.error || 'Gagal memproses proker');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Terjadi kesalahan koneksi');
+    } finally {
+      setAdminProkerSubmitting(false);
+    }
+  };
 
   // Modal Detail Kunjungan Monev
   const [selectedMonevDetail, setSelectedMonevDetail] = useState(null);
@@ -496,51 +696,63 @@ export default function MonitoringPokjaPage() {
                               {/* Status Program Kerja */}
                               <td className="py-4 px-6 align-top">
                                 {['berjalan', 'disetujui_admin'].includes(p.status_pokja) ? (
-                                  (p.proker_stats?.total === 0 || !p.proker_stats) ? (
-                                    <div className="space-y-1">
-                                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400 text-xs font-bold rounded-lg border border-rose-200 dark:border-rose-800">
-                                        <AlertTriangle className="w-3.5 h-3.5" /> Belum Ada Proker
+                                  <div className="space-y-2">
+                                    {(p.proker_stats?.total === 0 || !p.proker_stats) ? (
+                                      <div className="space-y-1">
+                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400 text-xs font-bold rounded-lg border border-rose-200 dark:border-rose-800">
+                                          <AlertTriangle className="w-3.5 h-3.5" /> Belum Ada Proker
+                                        </span>
+                                        {p.ketua_id?.nomor_hp && (
+                                          <div>
+                                            <a 
+                                              href={`https://wa.me/${p.ketua_id.nomor_hp.replace(/^0/, '62').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Halo ${p.ketua_id.nama_lengkap || 'Ketua Pokja'}, kelompok KKL Plus Anda (${p.nama_pokja}) saat ini sudah aktif/berjalan. Mohon segera merancang dan mengajukan Program Kerja ke DPL melalui portal resmi MANTAU KKL Plus:\nhttps://kklplus.stimiapps.my.id\n\nTerima kasih.`)}`}
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                              className="inline-flex items-center gap-1 text-[11px] text-teal-600 dark:text-teal-400 hover:underline font-semibold"
+                                            >
+                                              <MessageSquare className="w-3 h-3" /> Chat WA Ketua POKJA
+                                            </a>
+                                          </div>
+                                        )}
+                                      </div>
+                                    ) : (p.proker_stats?.revisi > 0) ? (
+                                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-orange-50 text-orange-700 dark:bg-orange-950/40 dark:text-orange-400 text-xs font-bold rounded-lg border border-orange-200 dark:border-orange-800">
+                                        <AlertTriangle className="w-3.5 h-3.5" /> {p.proker_stats.revisi} Perlu Revisi
                                       </span>
-                                      {p.ketua_id?.nomor_hp && (
-                                        <div>
-                                          <a 
-                                            href={`https://wa.me/${p.ketua_id.nomor_hp.replace(/^0/, '62').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Halo ${p.ketua_id.nama_lengkap || 'Ketua Pokja'}, kelompok KKL Plus Anda (${p.nama_pokja}) saat ini sudah aktif/berjalan. Mohon segera merancang dan mengajukan Program Kerja ke DPL melalui portal resmi MANTAU KKL Plus:\nhttps://kklplus.stimiapps.my.id\n\nTerima kasih.`)}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-1 text-[11px] text-teal-600 dark:text-teal-400 hover:underline font-semibold"
-                                          >
-                                            <MessageSquare className="w-3 h-3" /> Chat WA Ketua POKJA
-                                          </a>
-                                        </div>
-                                      )}
-                                    </div>
-                                  ) : (p.proker_stats?.usulan > 0) ? (
-                                    <div className="space-y-1">
-                                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 text-xs font-bold rounded-lg border border-amber-200 dark:border-amber-800 animate-pulse">
-                                        <Clock className="w-3.5 h-3.5" /> {p.proker_stats.usulan} Menunggu DPL
+                                    ) : (p.proker_stats?.usulan > 0) ? (
+                                      <div className="space-y-1">
+                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 text-xs font-bold rounded-lg border border-amber-200 dark:border-amber-800 animate-pulse">
+                                          <Clock className="w-3.5 h-3.5" /> {p.proker_stats.usulan} Menunggu DPL
+                                        </span>
+                                        {p.dpl_id?.nomor_hp && (
+                                          <div>
+                                            <a 
+                                              href={`https://wa.me/${p.dpl_id.nomor_hp.replace(/^0/, '62').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Yth. Bapak/Ibu ${p.dpl_id.nama_lengkap}, kelompok bimbingan Anda (${p.nama_pokja}) telah mengajukan usulan Program Kerja. Mohon kesediaannya untuk meninjau dan memberikan persetujuan melalui portal MANTAU KKL Plus:\nhttps://kklplus.stimiapps.my.id\n\nTerima kasih.`)}`}
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                              className="inline-flex items-center gap-1 text-[11px] text-teal-600 dark:text-teal-400 hover:underline font-semibold"
+                                            >
+                                              <MessageSquare className="w-3 h-3" /> Chat WA DPL
+                                            </a>
+                                          </div>
+                                        )}
+                                      </div>
+                                    ) : (
+                                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-teal-50 text-teal-700 dark:bg-teal-950/40 dark:text-teal-400 text-xs font-bold rounded-lg border border-teal-200 dark:border-teal-800">
+                                        <CheckCircle2 className="w-3.5 h-3.5" /> {p.proker_stats?.disetujui || 0} Proker Disetujui
                                       </span>
-                                      {p.dpl_id?.nomor_hp && (
-                                        <div>
-                                          <a 
-                                            href={`https://wa.me/${p.dpl_id.nomor_hp.replace(/^0/, '62').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Yth. Bapak/Ibu ${p.dpl_id.nama_lengkap}, kelompok bimbingan Anda (${p.nama_pokja}) telah mengajukan usulan Program Kerja. Mohon kesediaannya untuk meninjau dan memberikan persetujuan melalui portal MANTAU KKL Plus:\nhttps://kklplus.stimiapps.my.id\n\nTerima kasih.`)}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-1 text-[11px] text-teal-600 dark:text-teal-400 hover:underline font-semibold"
-                                          >
-                                            <MessageSquare className="w-3 h-3" /> Chat WA DPL
-                                          </a>
-                                        </div>
-                                      )}
-                                    </div>
-                                  ) : (p.proker_stats?.revisi > 0) ? (
-                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-orange-50 text-orange-700 dark:bg-orange-950/40 dark:text-orange-400 text-xs font-bold rounded-lg border border-orange-200 dark:border-orange-800">
-                                      <AlertTriangle className="w-3.5 h-3.5" /> {p.proker_stats.revisi} Perlu Revisi
-                                    </span>
-                                  ) : (
-                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-teal-50 text-teal-700 dark:bg-teal-950/40 dark:text-teal-400 text-xs font-bold rounded-lg border border-teal-200 dark:border-teal-800">
-                                      <CheckCircle2 className="w-3.5 h-3.5" /> {p.proker_stats?.disetujui || 0} Proker Disetujui
-                                    </span>
-                                  )
+                                    )}
+
+                                    {/* Tombol Lihat & Kelola Proker untuk Admin */}
+                                    {p.proker_stats?.total > 0 && (
+                                      <button
+                                        onClick={() => handleOpenProkerModal(p)}
+                                        className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-bold text-teal-700 bg-teal-50 dark:bg-teal-900/40 dark:text-teal-300 border border-teal-200 dark:border-teal-800 rounded-lg hover:bg-teal-100 dark:hover:bg-teal-900/60 transition-colors shadow-2xs"
+                                      >
+                                        <Eye className="w-3.5 h-3.5" /> Lihat & Kelola Proker ({p.proker_stats.total})
+                                      </button>
+                                    )}
+                                  </div>
                                 ) : (
                                   <span className="text-xs text-slate-400 italic">Menunggu Aktivasi</span>
                                 )}
@@ -914,6 +1126,147 @@ export default function MonitoringPokjaPage() {
         )}
 
       </div>
+
+      {/* MODAL DETAIL & KELOLA PROGRAM KERJA POKJA OLEH ADMIN */}
+      {selectedPokjaForProker && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-4xl w-full max-h-[90vh] shadow-2xl border border-slate-200 dark:border-slate-700 flex flex-col overflow-hidden animate-scale-up">
+            
+            {/* Modal Header */}
+            <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/50">
+              <div>
+                <div className="flex items-center gap-3">
+                  <span className="px-2.5 py-1 bg-teal-50 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300 border border-teal-200 dark:border-teal-800 rounded-lg text-xs font-bold uppercase">
+                    Monitoring Program Kerja
+                  </span>
+                  <h3 className="text-xl font-bold text-slate-800 dark:text-white">
+                    {selectedPokjaForProker.nama_pokja}
+                  </h3>
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  Mitra: <strong>{selectedPokjaForProker.mitra_id?.nama_instansi || '-'}</strong> • DPL: <strong>{selectedPokjaForProker.dpl_id?.nama_lengkap || '-'}</strong> • Ketua: <strong>{selectedPokjaForProker.ketua_id?.nama_lengkap || '-'}</strong>
+                </p>
+              </div>
+              <button 
+                onClick={() => setSelectedPokjaForProker(null)}
+                className="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 flex items-center justify-center transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 overflow-y-auto space-y-5 flex-1">
+              {isProkerModalLoading ? (
+                <div className="text-center py-16 text-slate-500 font-bold animate-pulse">
+                  Mengambil data program kerja...
+                </div>
+              ) : prokerModalList.length === 0 ? (
+                <div className="text-center py-16 text-slate-500 bg-slate-50 dark:bg-slate-800/30 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700">
+                  <p className="text-base font-bold">Belum ada usulan program kerja</p>
+                  <p className="text-xs text-slate-400 mt-1">Kelompok ini belum mengajukan kegiatan proker.</p>
+                </div>
+              ) : (
+                prokerModalList.map((p, idx) => (
+                  <div key={p._id} className="p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col lg:flex-row gap-5">
+                    <div className="flex-1 space-y-3">
+                      <div className="flex items-center gap-3">
+                        <span className="w-8 h-8 rounded-full bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300 flex items-center justify-center font-black text-sm shrink-0">
+                          {idx + 1}
+                        </span>
+                        <div>
+                          <h4 className="font-bold text-base text-slate-800 dark:text-white leading-tight">
+                            {p.judul_proker}
+                          </h4>
+                          <div className="flex items-center gap-2 mt-1 flex-wrap">
+                            <span className={`text-[10px] px-2 py-0.5 rounded-md font-bold uppercase ${
+                              p.jenis_proker === 'Utama' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300'
+                            }`}>
+                              {p.jenis_proker}
+                            </span>
+                            <span className="text-[11px] text-slate-500 font-medium bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded-md">
+                              PIC: {p.pic_id?.nama_lengkap || '-'}
+                            </span>
+                            <span className="text-[11px] text-slate-500 font-medium bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded-md">
+                              Jadwal: {new Date(p.tanggal_mulai).toLocaleDateString('id-ID')} s/d {new Date(p.tanggal_selesai).toLocaleDateString('id-ID')}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed ml-11">
+                        {p.deskripsi}
+                      </p>
+
+                      <div className="ml-11 bg-teal-50 dark:bg-teal-900/20 p-3 rounded-xl border border-teal-100 dark:border-teal-800/30">
+                        <p className="text-[10px] font-bold text-teal-800 dark:text-teal-400 uppercase tracking-wider mb-0.5">Target Capaian</p>
+                        <p className="text-xs text-teal-700 dark:text-teal-300">{p.target_dampak}</p>
+                      </div>
+
+                      {p.catatan_revisi && (
+                        <div className="ml-11 bg-amber-50 dark:bg-amber-900/20 p-3 rounded-xl border border-amber-200 dark:border-amber-800/30">
+                          <p className="text-[10px] font-bold text-amber-800 dark:text-amber-400 uppercase tracking-wider mb-0.5">Catatan Terakhir DPL/Admin</p>
+                          <p className="text-xs text-amber-700 dark:text-amber-300">{p.catatan_revisi}</p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Admin Action Column */}
+                    <div className="w-full lg:w-64 shrink-0 flex flex-col justify-center border-t lg:border-t-0 lg:border-l border-slate-100 dark:border-slate-700 pt-4 lg:pt-0 lg:pl-5 space-y-2">
+                      <div className="text-center mb-1">
+                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold border ${
+                          p.status === 'disetujui_dpl'
+                            ? 'bg-teal-50 text-teal-700 border-teal-200 dark:bg-teal-900/30 dark:border-teal-800'
+                            : p.status === 'revisi'
+                            ? 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-950/40 dark:border-orange-800'
+                            : 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:border-amber-800'
+                        }`}>
+                          {p.status === 'disetujui_dpl' ? '✓ Disetujui DPL' : p.status === 'revisi' ? '⚠️ Perlu Revisi' : '⏳ Menunggu Persetujuan'}
+                        </span>
+                      </div>
+
+                      <button
+                        onClick={() => handleAdminReviewProker(p._id, 'disetujui_dpl')}
+                        disabled={adminProkerSubmitting}
+                        className="w-full py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-xl transition-colors shadow-2xs flex items-center justify-center gap-1.5 disabled:opacity-50"
+                      >
+                        <CheckCircle2 className="w-4 h-4" />
+                        {p.status === 'disetujui_dpl' ? 'Update Persetujuan Admin' : 'Setujui Proker (ACC Admin)'}
+                      </button>
+
+                      <div className="bg-slate-50 dark:bg-slate-900/50 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700">
+                        <textarea
+                          placeholder="Beri catatan revisi admin..."
+                          value={adminProkerRevisiNotes[p._id] || ''}
+                          onChange={(e) => setAdminProkerRevisiNotes({...adminProkerRevisiNotes, [p._id]: e.target.value})}
+                          className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 rounded-lg p-2 text-xs mb-1.5 resize-none h-14 focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                        ></textarea>
+                        <button
+                          onClick={() => handleAdminReviewProker(p._id, 'revisi')}
+                          disabled={adminProkerSubmitting || !adminProkerRevisiNotes[p._id]}
+                          className="w-full py-1.5 bg-amber-100 text-amber-800 hover:bg-amber-200 text-xs font-bold rounded-lg transition-colors disabled:opacity-50"
+                        >
+                          Minta Revisi (Admin)
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex justify-end">
+              <button 
+                onClick={() => setSelectedPokjaForProker(null)}
+                className="px-6 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-xl text-xs transition-colors"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* MODAL PREVIEW DETAIL DOKUMENTASI MONEV */}
       {selectedMonevDetail && (
