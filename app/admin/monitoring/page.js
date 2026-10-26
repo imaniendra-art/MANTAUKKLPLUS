@@ -1,14 +1,16 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
-import { Check, X, Search, CheckCircle2, Clock, Users, UserCheck, AlertTriangle, MessageSquare, Zap, ExternalLink, Camera, MapPin, Eye, FileText } from "lucide-react";
+import { Check, X, Search, CheckCircle2, Clock, Users, UserCheck, AlertTriangle, MessageSquare, Zap, ExternalLink, Camera, MapPin, Eye, FileText, ChevronDown, ChevronUp, User, Award, ShieldAlert, Sparkles, Filter } from "lucide-react";
 
-// Sub-komponen untuk mengambil dan menampilkan seluruh logbook pokja (Individu & Kelompok) untuk Admin
-function PokjaLogbookList({ pokjaId }) {
+// Sub-komponen untuk mengambil dan mengelompokkan logbook pokja per Mahasiswa untuk Admin
+function PokjaLogbookList({ pokjaId, pokja }) {
   const [logbooks, setLogbooks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filterStatus, setFilterStatus] = useState("semua"); // 'semua' | 'tertunda' | 'selesai'
+  const [selectedStudentId, setSelectedStudentId] = useState(null); // student._id | 'pokja' | null
+  const [studentLogFilter, setStudentLogFilter] = useState("semua"); // 'semua' | 'tertunda' | 'selesai'
+  const [searchStudent, setSearchStudent] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [toastMsg, setToastMsg] = useState("");
 
@@ -33,6 +35,128 @@ function PokjaLogbookList({ pokjaId }) {
   useEffect(() => {
     fetchLogbooks();
   }, [fetchLogbooks]);
+
+  // Ekstrak daftar seluruh mahasiswa yang terdaftar di pokja ini (Ketua + Anggota + siapapun yang punya logbook)
+  const students = useMemo(() => {
+    const list = [];
+    const seen = new Set();
+
+    // 1. Ketua Pokja
+    if (pokja?.ketua_id && pokja.ketua_id._id) {
+      const ketuaIdStr = pokja.ketua_id._id.toString();
+      seen.add(ketuaIdStr);
+      list.push({
+        _id: ketuaIdStr,
+        nama_lengkap: pokja.ketua_id.nama_lengkap || 'Ketua Pokja',
+        nim_nidn: pokja.ketua_id.nim_nidn || '-',
+        program_studi: pokja.ketua_id.program_studi || '',
+        isKetua: true,
+      });
+    }
+
+    // 2. Anggota Pokja
+    if (Array.isArray(pokja?.anggota)) {
+      pokja.anggota.forEach(item => {
+        const u = item.user_id;
+        if (u && u._id) {
+          const uIdStr = u._id.toString();
+          if (!seen.has(uIdStr)) {
+            seen.add(uIdStr);
+            list.push({
+              _id: uIdStr,
+              nama_lengkap: u.nama_lengkap || 'Anggota',
+              nim_nidn: u.nim_nidn || '-',
+              program_studi: u.program_studi || '',
+              isKetua: false,
+            });
+          }
+        }
+      });
+    }
+
+    // 3. Fallback jika ada mahasiswa di data logbook yang belum terdaftar di array pokja
+    logbooks.forEach(l => {
+      const m = l.mahasiswa_id;
+      if (m && m._id) {
+        const mIdStr = m._id.toString();
+        if (!seen.has(mIdStr)) {
+          seen.add(mIdStr);
+          list.push({
+            _id: mIdStr,
+            nama_lengkap: m.nama_lengkap || 'Mahasiswa',
+            nim_nidn: m.nim_nidn || '-',
+            program_studi: m.program_studi || '',
+            isKetua: false,
+          });
+        }
+      }
+    });
+
+    return list;
+  }, [pokja, logbooks]);
+
+  // Petakan logbook berdasarkan mahasiswa_id._id atau 'pokja' (kelompok)
+  const studentLogsMap = useMemo(() => {
+    const map = {};
+    logbooks.forEach(log => {
+      if (log.tipe_logbook === 'pokja') {
+        if (!map['pokja']) map['pokja'] = [];
+        map['pokja'].push(log);
+      } else {
+        const mId = log.mahasiswa_id?._id?.toString() || log.mahasiswa_id?.toString() || 'unknown';
+        if (!map[mId]) map[mId] = [];
+        map[mId].push(log);
+      }
+    });
+    return map;
+  }, [logbooks]);
+
+  const pokjaLogs = studentLogsMap['pokja'] || [];
+  const pendingCountTotal = logbooks.filter(l => l.status_validasi !== 'selesai').length;
+
+  // Filter daftar mahasiswa berdasarkan input pencarian
+  const filteredStudents = useMemo(() => {
+    if (!searchStudent.trim()) return students;
+    const q = searchStudent.toLowerCase();
+    return students.filter(s =>
+      s.nama_lengkap.toLowerCase().includes(q) ||
+      s.nim_nidn.toLowerCase().includes(q) ||
+      s.program_studi.toLowerCase().includes(q)
+    );
+  }, [students, searchStudent]);
+
+  // Logbook dari entitas yang sedang dipilih (Mahasiswa tertentu atau Kelompok Pokja)
+  const activeLogs = useMemo(() => {
+    if (!selectedStudentId) return [];
+    const raw = studentLogsMap[selectedStudentId] || [];
+    return raw.filter(l => {
+      if (studentLogFilter === 'tertunda') return l.status_validasi !== 'selesai';
+      if (studentLogFilter === 'selesai') return l.status_validasi === 'selesai';
+      return true;
+    });
+  }, [selectedStudentId, studentLogsMap, studentLogFilter]);
+
+  const selectedEntityInfo = useMemo(() => {
+    if (!selectedStudentId) return null;
+    if (selectedStudentId === 'pokja') {
+      return {
+        nama_lengkap: 'Logbook Kelompok (Pokja)',
+        nim_nidn: 'Kegiatan Bersama Kelompok',
+        program_studi: '',
+        isKetua: false,
+        isPokja: true,
+      };
+    }
+    return students.find(s => s._id === selectedStudentId) || {
+      nama_lengkap: 'Mahasiswa',
+      nim_nidn: '-',
+      program_studi: '',
+      isKetua: false,
+    };
+  }, [selectedStudentId, students]);
+
+  const activeRawLogs = selectedStudentId ? (studentLogsMap[selectedStudentId] || []) : [];
+  const activePendingCount = activeRawLogs.filter(l => l.status_validasi !== 'selesai').length;
 
   const handleViewFile = (dataUrl) => {
     try {
@@ -82,10 +206,40 @@ function PokjaLogbookList({ pokjaId }) {
     }
   };
 
+  // Bulk ACC untuk satu mahasiswa atau entitas yang sedang aktif
+  const handleAdminApproveEntity = async () => {
+    const pendingLogs = activeRawLogs.filter(l => l.status_validasi !== 'selesai');
+    if (pendingLogs.length === 0) return;
+    if (!confirm(`Validasi dan setujui seluruh ${pendingLogs.length} logbook tertunda milik "${selectedEntityInfo?.nama_lengkap}" sebagai Admin?`)) return;
+
+    setIsProcessing(true);
+    try {
+      const ids = pendingLogs.map(l => l._id);
+      const res = await fetch('/api/logbook', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids, status_validasi: 'selesai' })
+      });
+      if (res.ok) {
+        setToastMsg(`Berhasil menyetujui ${pendingLogs.length} logbook milik ${selectedEntityInfo?.nama_lengkap}!`);
+        setTimeout(() => setToastMsg(""), 3000);
+        fetchLogbooks();
+      } else {
+        const err = await res.json();
+        alert(err.error || "Gagal memvalidasi logbook");
+      }
+    } catch (e) {
+      alert("Terjadi kesalahan koneksi");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  // Bulk ACC seluruh Pokja (global)
   const handleAdminApproveBulk = async () => {
     const pendingLogs = logbooks.filter(l => l.status_validasi !== 'selesai');
     if (pendingLogs.length === 0) return;
-    if (!confirm(`Validasi dan setujui seluruh ${pendingLogs.length} logbook yang tertunda sebagai Admin?`)) return;
+    if (!confirm(`Validasi dan setujui seluruh ${pendingLogs.length} logbook yang tertunda di Pokja ini sebagai Admin?`)) return;
 
     setIsProcessing(true);
     try {
@@ -122,19 +276,16 @@ function PokjaLogbookList({ pokjaId }) {
     }
   };
 
-  const filteredLogs = logbooks.filter(l => {
-    if (filterStatus === 'tertunda') return l.status_validasi !== 'selesai';
-    if (filterStatus === 'selesai') return l.status_validasi === 'selesai';
-    return true;
-  });
+  if (loading) {
+    return <div className="p-8 text-center text-slate-500 font-bold animate-pulse text-sm">Mengambil seluruh logbook mahasiswa (Individu & Kelompok)...</div>;
+  }
 
-  const pendingCount = logbooks.filter(l => l.status_validasi !== 'selesai').length;
-
-  if (loading) return <div className="p-8 text-center text-slate-500 font-bold animate-pulse text-sm">Mengambil seluruh logbook mahasiswa (Individu & Kelompok)...</div>;
-  if (logbooks.length === 0) return <div className="p-8 text-center text-slate-500 text-sm">Belum ada riwayat logbook yang diisi oleh mahasiswa kelompok ini.</div>;
+  // Hitung jumlah mahasiswa yang sudah isi vs belum isi
+  const studentsWithLogsCount = students.filter(s => (studentLogsMap[s._id]?.length || 0) > 0).length;
+  const studentsZeroLogsCount = students.length - studentsWithLogsCount;
 
   return (
-    <div className="p-4 bg-slate-50/50 dark:bg-slate-900/30 space-y-4">
+    <div className="p-4 sm:p-5 bg-slate-50/70 dark:bg-slate-900/40 space-y-4">
       {/* Toast Notification */}
       {toastMsg && (
         <div className="p-3 bg-teal-600 text-white text-xs font-bold rounded-xl flex items-center gap-2 shadow-xs animate-fade-in">
@@ -142,105 +293,357 @@ function PokjaLogbookList({ pokjaId }) {
         </div>
       )}
 
-      {/* Header Bar PokjaLogbookList with Filters & Bulk Action */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700">
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-xs font-bold text-slate-500">Filter Logbook:</span>
-          <button
-            onClick={() => setFilterStatus('semua')}
-            className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-colors ${
-              filterStatus === 'semua' ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900' : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
-            }`}
-          >
-            Semua ({logbooks.length})
-          </button>
-          <button
-            onClick={() => setFilterStatus('tertunda')}
-            className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-colors ${
-              filterStatus === 'tertunda' ? 'bg-amber-600 text-white' : 'bg-amber-50 text-amber-700 border border-amber-200'
-            }`}
-          >
-            Tertunda ({pendingCount})
-          </button>
-          <button
-            onClick={() => setFilterStatus('selesai')}
-            className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-colors ${
-              filterStatus === 'selesai' ? 'bg-teal-600 text-white' : 'bg-teal-50 text-teal-700 border border-teal-200'
-            }`}
-          >
-            Selesai ({logbooks.length - pendingCount})
-          </button>
+      {/* Header Bar: Ringkasan Pokja & Tombol Aksi Global */}
+      <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-2xs space-y-3">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+          <div>
+            <h4 className="text-sm font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+              <Users className="w-4 h-4 text-teal-600" />
+              Monitoring Logbook Anggota Pokja ({students.length} Mahasiswa)
+            </h4>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              Pilih mahasiswa di bawah untuk membuka riwayat logbook harian mereka secara spesifik.
+            </p>
+          </div>
+
+          {/* Quick Global Action */}
+          {pendingCountTotal > 0 && (
+            <button
+              onClick={handleAdminApproveBulk}
+              disabled={isProcessing}
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors disabled:opacity-50 shrink-0"
+              title="Setujui seluruh logbook tertunda di pokja ini sekaligus"
+            >
+              <Zap className="w-3.5 h-3.5" /> ACC Semua Tertunda Pokja ({pendingCountTotal})
+            </button>
+          )}
         </div>
 
-        {/* Eksekusi Masal oleh Admin jika DPL/Mentor Berhalangan */}
-        {pendingCount > 0 && (
-          <button
-            onClick={handleAdminApproveBulk}
-            disabled={isProcessing}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors disabled:opacity-50"
-          >
-            <Zap className="w-3.5 h-3.5" /> ACC Semua Tertunda ({pendingCount} Logbook)
-          </button>
+        {/* Ringkasan Bar Statistik */}
+        <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-100 dark:border-slate-700/60 text-xs">
+          <span className="px-2.5 py-1 bg-slate-100 dark:bg-slate-700/60 text-slate-700 dark:text-slate-300 rounded-lg font-bold">
+            Total Logbook: <strong>{logbooks.length}</strong>
+          </span>
+          <span className="px-2.5 py-1 bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-400 border border-teal-200 dark:border-teal-800 rounded-lg font-bold">
+            ✓ Selesai: <strong>{logbooks.length - pendingCountTotal}</strong>
+          </span>
+          <span className={`px-2.5 py-1 rounded-lg font-bold border ${
+            pendingCountTotal > 0 
+              ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800' 
+              : 'bg-slate-50 dark:bg-slate-800 text-slate-500 border-slate-200 dark:border-slate-700'
+          }`}>
+            ⏳ Tertunda: <strong>{pendingCountTotal}</strong>
+          </span>
+          <span className="px-2.5 py-1 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800 rounded-lg font-bold">
+            👥 Sudah Mengisi: <strong>{studentsWithLogsCount}/{students.length}</strong>
+          </span>
+          {studentsZeroLogsCount > 0 && (
+            <span className="px-2.5 py-1 bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800 rounded-lg font-bold">
+              ⚠️ Belum Mengisi: <strong>{studentsZeroLogsCount}</strong>
+            </span>
+          )}
+        </div>
+
+        {/* Pencarian Mahasiswa */}
+        {students.length > 4 && (
+          <div className="relative pt-1">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3.5" />
+            <input
+              type="text"
+              placeholder="Cari nama atau NIM mahasiswa di pokja ini..."
+              value={searchStudent}
+              onChange={(e) => setSearchStudent(e.target.value)}
+              className="w-full pl-9 pr-4 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-hidden focus:ring-2 focus:ring-teal-500"
+            />
+          </div>
         )}
       </div>
 
-      <div className="space-y-3">
-        {filteredLogs.map(log => (
-          <div key={log._id} className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-md p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-2xs flex flex-col md:flex-row gap-4 items-start">
-            <div className="shrink-0 w-full md:w-56 border-b md:border-b-0 md:border-r border-slate-100 dark:border-slate-700 pb-3 md:pb-0 md:pr-4">
-              <p className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                📅 {new Date(log.tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
-              </p>
-              <p className="text-xs font-bold text-teal-700 dark:text-teal-400 mt-1">
-                👤 {log.mahasiswa_id?.nama_lengkap || 'Mahasiswa'}
-              </p>
-              <p className="text-[10px] text-slate-500 font-medium">
-                NIM: {log.mahasiswa_id?.nim_nidn || '-'}
-              </p>
-              <div className="mt-2 flex items-center gap-1.5 flex-wrap">
-                <span className="px-1.5 py-0.5 text-[9px] font-bold rounded bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
-                  {log.tipe_logbook === 'pokja' ? 'POKJA' : 'Individu'}
+      {/* Grid Kartu Mahasiswa */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+        {/* Kartu Khusus Logbook Kelompok (Pokja) jika ada */}
+        {pokjaLogs.length > 0 && (
+          <div
+            onClick={() => {
+              setSelectedStudentId(selectedStudentId === 'pokja' ? null : 'pokja');
+              setStudentLogFilter('semua');
+            }}
+            className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
+              selectedStudentId === 'pokja'
+                ? 'bg-teal-500/10 border-teal-500 ring-2 ring-teal-500 dark:bg-teal-950/40 shadow-sm'
+                : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-teal-300 dark:hover:border-teal-700 shadow-2xs'
+            }`}
+          >
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 font-bold flex items-center justify-center shrink-0">
+                🏢
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="px-1.5 py-0.5 text-[9px] font-bold rounded bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300">
+                    KELOMPOK
+                  </span>
+                </div>
+                <h5 className="text-xs font-bold text-slate-800 dark:text-slate-100 truncate mt-0.5">
+                  Logbook Kegiatan Pokja
+                </h5>
+                <p className="text-[10px] text-slate-500 truncate">Kegiatan Bersama</p>
+              </div>
+            </div>
+
+            <div className="mt-3 pt-2 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between">
+              <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300">
+                {pokjaLogs.length} Logbook
+              </span>
+              <span className="text-[11px] font-bold text-teal-600 dark:text-teal-400 flex items-center gap-0.5">
+                {selectedStudentId === 'pokja' ? 'Tutup ▲' : 'Buka ▼'}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Kartu Mahasiswa Individu */}
+        {filteredStudents.map(student => {
+          const studentLogs = studentLogsMap[student._id] || [];
+          const logCount = studentLogs.length;
+          const pendingCount = studentLogs.filter(l => l.status_validasi !== 'selesai').length;
+          const isSelected = selectedStudentId === student._id;
+
+          return (
+            <div
+              key={student._id}
+              onClick={() => {
+                setSelectedStudentId(isSelected ? null : student._id);
+                setStudentLogFilter('semua');
+              }}
+              className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
+                isSelected
+                  ? 'bg-teal-500/10 border-teal-500 ring-2 ring-teal-500 dark:bg-teal-950/40 shadow-sm'
+                  : logCount === 0
+                  ? 'bg-white/60 dark:bg-slate-800/40 border-slate-200 dark:border-slate-800 opacity-80 hover:opacity-100'
+                  : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-teal-300 dark:hover:border-teal-700 shadow-2xs'
+              }`}
+            >
+              <div className="flex items-start gap-3">
+                {/* Avatar / Inisial */}
+                <div className={`w-10 h-10 rounded-xl font-bold flex items-center justify-center shrink-0 text-xs ${
+                  student.isKetua
+                    ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 ring-1 ring-amber-300'
+                    : logCount > 0
+                    ? 'bg-teal-100 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300'
+                    : 'bg-slate-100 dark:bg-slate-700 text-slate-400'
+                }`}>
+                  {student.isKetua ? '👑' : student.nama_lengkap.substring(0, 2).toUpperCase()}
+                </div>
+
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    {student.isKetua && (
+                      <span className="px-1.5 py-0.5 text-[9px] font-bold rounded bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
+                        KETUA
+                      </span>
+                    )}
+                    {logCount === 0 ? (
+                      <span className="px-1.5 py-0.5 text-[9px] font-bold rounded bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400 border border-rose-200 dark:border-rose-800">
+                        Belum Mengisi
+                      </span>
+                    ) : pendingCount > 0 ? (
+                      <span className="px-1.5 py-0.5 text-[9px] font-bold rounded bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
+                        {pendingCount} Tertunda
+                      </span>
+                    ) : (
+                      <span className="px-1.5 py-0.5 text-[9px] font-bold rounded bg-teal-50 text-teal-700 dark:bg-teal-950/40 dark:text-teal-400 border border-teal-200 dark:border-teal-800">
+                        ✓ Tuntas
+                      </span>
+                    )}
+                  </div>
+
+                  <h5 className="text-xs font-bold text-slate-800 dark:text-slate-100 truncate mt-1" title={student.nama_lengkap}>
+                    {student.nama_lengkap}
+                  </h5>
+                  <p className="text-[10px] text-slate-500 truncate">
+                    NIM: {student.nim_nidn}
+                  </p>
+                </div>
+              </div>
+
+              {/* Footer Kartu Mahasiswa */}
+              <div className="mt-3 pt-2 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between text-[11px]">
+                <span className={`font-bold ${logCount > 0 ? 'text-slate-700 dark:text-slate-300' : 'text-slate-400'}`}>
+                  {logCount} Logbook
                 </span>
-                {getStatusBadge(log.status_validasi)}
+                <span className="font-bold text-teal-600 dark:text-teal-400 flex items-center gap-0.5">
+                  {logCount === 0 ? (
+                    <span className="text-[10px] text-slate-400">Kosong</span>
+                  ) : isSelected ? (
+                    'Tutup ▲'
+                  ) : (
+                    'Buka ▼'
+                  )}
+                </span>
               </div>
             </div>
-            
-            <div className="flex-1 space-y-1">
-              <p className="text-sm font-bold text-slate-800 dark:text-white">
-                📌 {log.proker_id?.judul_proker || "Kegiatan Umum / Personal"}
-              </p>
-              <div className="text-xs font-medium text-slate-600 dark:text-slate-300 leading-relaxed space-y-1">
-                <p><strong>Rencana:</strong> {log.rencana_target || '-'}</p>
-                <p><strong>Uraian:</strong> {log.uraian_kegiatan || '-'}</p>
-                <p><strong>Hasil:</strong> {log.hasil_output || '-'}</p>
-                {log.kendala_solusi && <p><strong>Kendala/Solusi:</strong> {log.kendala_solusi}</p>}
+          );
+        })}
+      </div>
+
+      {/* Accordion Detail Logbook untuk Mahasiswa / Kelompok yang Dipilih */}
+      {selectedStudentId && (
+        <div className="mt-4 p-4 sm:p-5 bg-white dark:bg-slate-800 rounded-2xl border-2 border-teal-500/40 shadow-sm space-y-4 animate-in slide-in-from-top-2 duration-300">
+          {/* Header Mahasiswa Aktif */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-700">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-teal-100 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 font-bold flex items-center justify-center text-sm">
+                👤
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h4 className="text-sm font-extrabold text-slate-900 dark:text-white">
+                    {selectedEntityInfo?.nama_lengkap}
+                  </h4>
+                  {selectedEntityInfo?.isKetua && (
+                    <span className="px-1.5 py-0.5 text-[9px] font-bold rounded bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
+                      KETUA
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  NIM: {selectedEntityInfo?.nim_nidn} {selectedEntityInfo?.program_studi ? `• ${selectedEntityInfo.program_studi}` : ''}
+                </p>
               </div>
             </div>
-            
-            <div className="shrink-0 flex md:flex-col gap-2 w-full md:w-auto justify-end pt-2 md:pt-0">
-              {log.bukti_kegiatan && (
-                <button 
-                  onClick={() => handleViewFile(log.bukti_kegiatan)} 
-                  className="text-xs font-bold text-teal-700 bg-teal-50 hover:bg-teal-100 px-3 py-1.5 rounded-lg transition-colors border border-teal-200 inline-flex items-center gap-1"
+
+            <div className="flex items-center gap-2 w-full sm:w-auto justify-end flex-wrap">
+              {/* Tombol ACC Semua Milik Mahasiswa ini jika ada yang pending */}
+              {activePendingCount > 0 && (
+                <button
+                  onClick={handleAdminApproveEntity}
+                  disabled={isProcessing}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors disabled:opacity-50"
+                  title="ACC semua logbook tertunda milik mahasiswa ini"
                 >
-                  <Camera className="w-3.5 h-3.5" /> Bukti Foto
+                  <Zap className="w-3.5 h-3.5" /> ACC Semua Tertunda Mahasiswa Ini ({activePendingCount})
                 </button>
               )}
 
-              {log.status_validasi !== 'selesai' && (
-                <button
-                  onClick={() => handleAdminApproveSingle(log._id)}
-                  disabled={isProcessing}
-                  className="text-xs font-bold text-white bg-teal-600 hover:bg-teal-700 px-3 py-1.5 rounded-lg transition-colors shadow-2xs inline-flex items-center gap-1 disabled:opacity-50"
-                  title="Setujui dan selesaikan validasi logbook ini sebagai Admin"
-                >
-                  <CheckCircle2 className="w-3.5 h-3.5" /> ACC Admin
-                </button>
-              )}
+              <button
+                onClick={() => setSelectedStudentId(null)}
+                className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-xl transition-colors"
+              >
+                ✕ Tutup
+              </button>
             </div>
           </div>
-        ))}
-      </div>
+
+          {/* Sub Filter Status Logbook Mahasiswa ini */}
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="text-xs font-bold text-slate-500">Filter Status:</span>
+              <button
+                onClick={() => setStudentLogFilter('semua')}
+                className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-colors ${
+                  studentLogFilter === 'semua'
+                    ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
+                    : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
+                }`}
+              >
+                Semua ({activeRawLogs.length})
+              </button>
+              <button
+                onClick={() => setStudentLogFilter('tertunda')}
+                className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-colors ${
+                  studentLogFilter === 'tertunda'
+                    ? 'bg-amber-600 text-white'
+                    : 'bg-amber-50 text-amber-700 border border-amber-200'
+                }`}
+              >
+                Tertunda ({activePendingCount})
+              </button>
+              <button
+                onClick={() => setStudentLogFilter('selesai')}
+                className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-colors ${
+                  studentLogFilter === 'selesai'
+                    ? 'bg-teal-600 text-white'
+                    : 'bg-teal-50 text-teal-700 border border-teal-200'
+                }`}
+              >
+                Selesai ({activeRawLogs.length - activePendingCount})
+              </button>
+            </div>
+
+            <span className="text-xs font-medium text-slate-500">
+              Menampilkan {activeLogs.length} dari {activeRawLogs.length} logbook
+            </span>
+          </div>
+
+          {/* Daftar Kartu Logbook Mahasiswa */}
+          {activeLogs.length === 0 ? (
+            <div className="p-8 text-center text-slate-500 text-xs bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
+              {activeRawLogs.length === 0
+                ? "Mahasiswa ini belum mengisi logbook sama sekali."
+                : "Tidak ada logbook dengan filter status ini."}
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {activeLogs.map(log => (
+                <div
+                  key={log._id}
+                  className="bg-slate-50/70 dark:bg-slate-900/40 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-2xs flex flex-col md:flex-row gap-4 items-start"
+                >
+                  {/* Kolom Kiri: Tanggal & Status */}
+                  <div className="shrink-0 w-full md:w-52 border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-700/60 pb-3 md:pb-0 md:pr-4 space-y-1.5">
+                    <p className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                      📅 {new Date(log.tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    </p>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="px-1.5 py-0.5 text-[9px] font-bold rounded bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">
+                        {log.tipe_logbook === 'pokja' ? 'POKJA' : 'Individu'}
+                      </span>
+                      {getStatusBadge(log.status_validasi)}
+                    </div>
+                  </div>
+
+                  {/* Kolom Tengah: Konten Logbook */}
+                  <div className="flex-1 space-y-1.5">
+                    <p className="text-sm font-bold text-slate-800 dark:text-white">
+                      📌 {log.proker_id?.judul_proker || "Kegiatan Umum / Personal"}
+                    </p>
+                    <div className="text-xs font-medium text-slate-600 dark:text-slate-300 leading-relaxed space-y-1">
+                      <p><strong>Rencana Target:</strong> {log.rencana_target || '-'}</p>
+                      <p><strong>Uraian Kegiatan:</strong> {log.uraian_kegiatan || '-'}</p>
+                      <p><strong>Hasil Output:</strong> {log.hasil_output || '-'}</p>
+                      {log.kendala_solusi && <p><strong>Kendala & Solusi:</strong> {log.kendala_solusi}</p>}
+                    </div>
+                  </div>
+
+                  {/* Kolom Kanan: Tombol Bukti & ACC Admin */}
+                  <div className="shrink-0 flex md:flex-col gap-2 w-full md:w-auto justify-end pt-2 md:pt-0">
+                    {log.bukti_kegiatan && (
+                      <button
+                        onClick={() => handleViewFile(log.bukti_kegiatan)}
+                        className="text-xs font-bold text-teal-700 bg-teal-50 hover:bg-teal-100 px-3 py-1.5 rounded-lg transition-colors border border-teal-200 inline-flex items-center gap-1 shrink-0"
+                      >
+                        <Camera className="w-3.5 h-3.5" /> Bukti Foto
+                      </button>
+                    )}
+
+                    {log.status_validasi !== 'selesai' && (
+                      <button
+                        onClick={() => handleAdminApproveSingle(log._id)}
+                        disabled={isProcessing}
+                        className="text-xs font-bold text-white bg-teal-600 hover:bg-teal-700 px-3 py-1.5 rounded-lg transition-colors shadow-2xs inline-flex items-center gap-1 disabled:opacity-50 shrink-0"
+                        title="Setujui logbook ini sebagai Admin"
+                      >
+                        <CheckCircle2 className="w-3.5 h-3.5" /> ACC Admin
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -1109,7 +1512,7 @@ export default function MonitoringPokjaPage() {
                               <tr>
                                 <td colSpan="5" className="p-0 border-b-2 border-teal-200 dark:border-teal-800/50">
                                   <div className="animate-in slide-in-from-top-2 fade-in duration-300">
-                                    <PokjaLogbookList pokjaId={p._id} />
+                                    <PokjaLogbookList pokjaId={p._id} pokja={p} />
                                   </div>
                                 </td>
                               </tr>

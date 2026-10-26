@@ -39,8 +39,49 @@ export async function GET(req, { params }) {
       return NextResponse.json({ error: 'Akses ditolak' }, { status: 403 });
     }
 
-    // Cek apakah file fisik ada di disk
+    // Cek apakah file fisik ada di disk lokal
     if (!fs.existsSync(fullFilePath)) {
+      // Fallback cerdas saat development / localhost:
+      // Ambil file dari server produksi jika file fisik belum ada di harddisk lokal
+      const host = req.headers.get('host') || '';
+      const isLocal = host.includes('localhost') || host.includes('127.0.0.1') || process.env.NODE_ENV !== 'production';
+
+      if (isLocal) {
+        const remoteBase = process.env.REMOTE_UPLOADS_ORIGIN || 'https://kklplus.stimiapps.my.id';
+        const remoteUrl = `${remoteBase}/uploads/${safeSegments.join('/')}`;
+        try {
+          const remoteRes = await fetch(remoteUrl);
+          if (remoteRes.ok) {
+            const arrayBuffer = await remoteRes.arrayBuffer();
+            const buffer = Buffer.from(arrayBuffer);
+
+            // Simpan cache ke harddisk lokal agar request berikutnya langsung cepat tanpa fetch ulang
+            try {
+              await fs.promises.mkdir(path.dirname(fullFilePath), { recursive: true });
+              await fs.promises.writeFile(fullFilePath, buffer);
+            } catch (writeErr) {
+              console.warn('Gagal menyimpan file cache lokal:', writeErr.message);
+            }
+
+            const ext = path.extname(fullFilePath).toLowerCase();
+            const contentType = remoteRes.headers.get('content-type') || MIME_TYPES[ext] || 'application/octet-stream';
+            const baseFileName = path.basename(fullFilePath);
+
+            return new NextResponse(buffer, {
+              status: 200,
+              headers: {
+                'Content-Type': contentType,
+                'Content-Length': buffer.length.toString(),
+                'Content-Disposition': `inline; filename="${baseFileName}"`,
+                'Cache-Control': 'public, max-age=86400, stale-while-revalidate=604800',
+              },
+            });
+          }
+        } catch (fetchErr) {
+          console.warn('Remote upload fallback fetch error:', fetchErr.message);
+        }
+      }
+
       return NextResponse.json({ error: 'File tidak ditemukan di server' }, { status: 404 });
     }
 
